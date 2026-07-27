@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "wildscapes:block/stripped_cypress_wood"
+    },
+    "axis=z": {
+      "model": "wildscapes:block/stripped_cypress_wood",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "wildscapes:block/stripped_cypress_wood",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

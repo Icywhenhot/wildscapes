@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "wildscapes:block/stripped_cypress_log"
+    },
+    "axis=z": {
+      "model": "wildscapes:block/stripped_cypress_log",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "wildscapes:block/stripped_cypress_log",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

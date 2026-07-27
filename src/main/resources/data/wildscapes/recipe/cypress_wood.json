@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "wildscapes:cypress_log"
+    }
+  },
+  "result": {
+    "id": "wildscapes:cypress_wood",
+    "count": 3
+  }
+}

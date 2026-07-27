@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "wildscapes:cypress_log",
+    "wildscapes:stripped_cypress_log",
+    "wildscapes:cypress_wood",
+    "wildscapes:stripped_cypress_wood"
+  ]
+}

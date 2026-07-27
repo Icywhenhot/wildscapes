@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(find . -type d -not -path '*/\\\\.git/*' -not -path '*/build/*' -not -path '*/\\\\.gradle/*' | head -80)"
+    ]
+  }
+}

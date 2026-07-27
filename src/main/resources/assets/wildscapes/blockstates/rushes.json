@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "wildscapes:block/rushes_bottom"
+    },
+    "half=upper": {
+      "model": "wildscapes:block/rushes_top"
+    }
+  }
+}

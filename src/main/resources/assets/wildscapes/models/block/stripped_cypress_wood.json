@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "wildscapes:block/stripped_cypress_log",
+    "side": "wildscapes:block/stripped_cypress_log"
+  }
+}

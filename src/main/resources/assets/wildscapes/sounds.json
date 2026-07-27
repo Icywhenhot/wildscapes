@@ -1,0 +1,108 @@
+{
+  "abomination.step": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.step",
+    "sounds": [
+      { "name": "wildscapes:abomination/step_a", "volume": 0.5 },
+      { "name": "wildscapes:abomination/step_b", "volume": 0.5 },
+      { "name": "wildscapes:abomination/step_c", "volume": 0.5 }
+    ]
+  },
+  "abomination.croak": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.croak",
+    "sounds": [
+      "wildscapes:abomination/croak_eleven",
+      "wildscapes:abomination/croak_freesound",
+      "wildscapes:abomination/croak_frog"
+    ]
+  },
+  "abomination.tongue": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.tongue",
+    "sounds": [
+      "wildscapes:abomination/tongue_say"
+    ]
+  },
+  "abomination.slurp": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.slurp",
+    "sounds": [
+      "wildscapes:abomination/slurp",
+      "wildscapes:abomination/swallow"
+    ]
+  },
+  "abomination.jump_charge": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.jump",
+    "sounds": [
+      { "name": "wildscapes:abomination/jump_charge", "volume": 0.5 }
+    ]
+  },
+  "abomination.jump_windup": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.jump",
+    "sounds": [
+      { "name": "wildscapes:abomination/jump_windup", "volume": 0.5 }
+    ]
+  },
+  "abomination.jump_leap": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.jump",
+    "sounds": [
+      { "name": "wildscapes:abomination/jump_leap", "volume": 0.5 }
+    ]
+  },
+  "abomination.jump_fall": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.jump",
+    "sounds": [
+      { "name": "wildscapes:abomination/jump_fall", "volume": 0.5 }
+    ]
+  },
+  "abomination.jump_land": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.jump",
+    "sounds": [
+      { "name": "wildscapes:abomination/jump_land", "volume": 0.5 }
+    ]
+  },
+  "abomination.water_stand": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.water",
+    "sounds": [
+      "wildscapes:abomination/water_stand"
+    ]
+  },
+  "abomination.water_splash": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.water",
+    "sounds": [
+      "wildscapes:abomination/water_splash"
+    ]
+  },
+  "abomination.ambient": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.ambient",
+    "sounds": [
+      "wildscapes:abomination/ambient_charge",
+      "wildscapes:abomination/ambient_throwup"
+    ]
+  },
+  "abomination.hurt": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.hurt",
+    "sounds": [
+      "wildscapes:abomination/hurt_bite",
+      "wildscapes:abomination/hurt_lash",
+      "wildscapes:abomination/hurt_empress"
+    ]
+  },
+  "abomination.death": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.abomination.death",
+    "sounds": [
+      "wildscapes:abomination/death"
+    ]
+  }
+}
