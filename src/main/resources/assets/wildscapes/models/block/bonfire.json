@@ -1,0 +1,74 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "wildscapes:block/bonfire_side",
+    "fire": "wildscapes:block/bonfire_fire",
+    "embers": "wildscapes:block/bonfire_embers",
+    "ash": "wildscapes:block/bonfire_ash",
+    "side": "wildscapes:block/bonfire_side"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 8],
+      "to": [16, 16, 8],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#fire"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#fire"}
+      }
+    },
+    {
+      "from": [8, 0, 0],
+      "to": [8, 16, 16],
+      "faces": {
+        "east": {"uv": [0, 0, 16, 16], "texture": "#fire"},
+        "west": {"uv": [0, 0, 16, 16], "texture": "#fire"}
+      }
+    },
+    {
+      "from": [2, 0, 2],
+      "to": [14, 13, 2],
+      "faces": {
+        "north": {"uv": [0, 3, 12, 16], "texture": "#side"},
+        "south": {"uv": [0, 3, 12, 16], "texture": "#side"}
+      }
+    },
+    {
+      "from": [2, 0, 14],
+      "to": [14, 13, 14],
+      "faces": {
+        "north": {"uv": [0, 3, 12, 16], "texture": "#side"},
+        "south": {"uv": [0, 3, 12, 16], "texture": "#side"}
+      }
+    },
+    {
+      "from": [2, 0, 2],
+      "to": [2, 13, 14],
+      "faces": {
+        "west": {"uv": [0, 3, 12, 16], "texture": "#side"},
+        "east": {"uv": [0, 3, 12, 16], "texture": "#side"}
+      }
+    },
+    {
+      "from": [14, 0, 2],
+      "to": [14, 13, 14],
+      "faces": {
+        "west": {"uv": [0, 3, 12, 16], "texture": "#side"},
+        "east": {"uv": [0, 3, 12, 16], "texture": "#side"}
+      }
+    },
+    {
+      "from": [3, 0.01, 3],
+      "to": [13, 2.01, 13],
+      "faces": {
+        "north": {"uv": [13, 6, 3, 8], "texture": "#embers"},
+        "east": {"uv": [1, 6, 3, 16], "rotation": 270, "texture": "#embers"},
+        "south": {"uv": [4, 14, 13, 16], "texture": "#embers"},
+        "west": {"uv": [13, 6, 15, 16], "rotation": 90, "texture": "#embers"},
+        "up": {"uv": [3, 6, 13, 16], "texture": "#embers"},
+        "down": {"uv": [0, 6, 10, 16], "texture": "#ash"}
+      }
+    }
+  ]
+}

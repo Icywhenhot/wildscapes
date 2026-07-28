@@ -1,11 +1,15 @@
 package com.wildscapes.block;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.wildscapes.Wildscapes;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.worldgen.WildscapesTreeGrowers;
 
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.PlaceOnWaterBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.LeavesBlock;
@@ -90,7 +94,10 @@ public final class WildscapesBlocks {
                     .noCollission()
                     .instabreak()
                     .sound(SoundType.GRASS)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.DESTROY)),
+            // Same item as the lily pad: a plain BlockItem needs a solid face to click,
+            // so it ray-traces against the water surface instead and places on top of it.
+            block -> new PlaceOnWaterBlockItem(block, new Item.Properties()));
 
     public static final DeferredBlock<RushesBlock> RUSHES = register("rushes",
             () -> new RushesBlock(BlockBehaviour.Properties.of()
@@ -100,6 +107,24 @@ public final class WildscapesBlocks {
                     .sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
                     .pushReaction(PushReaction.DESTROY)));
+
+    // ---- Swamp decoration ----
+    public static final DeferredBlock<BonfireBlock> BONFIRE = register("bonfire",
+            () -> new BonfireBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BROWN)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .lightLevel(state -> 15)
+                    .noOcclusion()
+                    .ignitedByLava()));
+
+    public static final DeferredBlock<Block> WITCH_CAULDRON = register("witch_cauldron",
+            () -> new Block(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(2.0F)
+                    .sound(SoundType.METAL)
+                    .lightLevel(state -> 3)
+                    .noOcclusion()));
 
     private static BlockBehaviour.Properties logProps() {
         return BlockBehaviour.Properties.of()
@@ -113,6 +138,14 @@ public final class WildscapesBlocks {
     private static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
         WildscapesItems.ITEMS.registerSimpleBlockItem(name, block);
+        return block;
+    }
+
+    /** As {@link #register(String, Supplier)}, for blocks needing a non-default item. */
+    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier,
+            Function<T, ? extends BlockItem> itemFactory) {
+        DeferredBlock<T> block = BLOCKS.register(name, supplier);
+        WildscapesItems.ITEMS.register(name, () -> itemFactory.apply(block.get()));
         return block;
     }
 

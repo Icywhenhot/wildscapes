@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.entity.AbominationEntity;
+import com.wildscapes.entity.SwampVariants;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.sound.WildscapesSounds;
@@ -54,6 +55,8 @@ public class Wildscapes {
                         output.accept(WildscapesBlocks.CYPRESS_TRAPDOOR.get());
                         output.accept(WildscapesBlocks.DUCKWEED.get());
                         output.accept(WildscapesBlocks.RUSHES.get());
+                        output.accept(WildscapesBlocks.BONFIRE.get());
+                        output.accept(WildscapesBlocks.WITCH_CAULDRON.get());
                         output.accept(WildscapesItems.FROG_LEGS.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
                     }).build());
@@ -62,6 +65,7 @@ public class Wildscapes {
         WildscapesBlocks.register(modEventBus);
         WildscapesItems.register(modEventBus);
         WildscapesEntities.register(modEventBus);
+        SwampVariants.register(modEventBus);
         WildscapesSounds.register(modEventBus);
         WildscapesFeatures.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);

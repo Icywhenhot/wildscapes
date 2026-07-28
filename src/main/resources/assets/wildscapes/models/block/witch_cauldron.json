@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "wildscapes:block/witch_cauldron_side",
+    "front": "wildscapes:block/witch_cauldron_front",
+    "side": "wildscapes:block/witch_cauldron_side",
+    "top": "wildscapes:block/witch_cauldron_top",
+    "bottom": "wildscapes:block/witch_cauldron_bottom",
+    "inner": "wildscapes:block/witch_cauldron_inner",
+    "brew": "wildscapes:block/witch_cauldron_brew",
+    "lid": "wildscapes:block/witch_cauldron_lid"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 18, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#front"},
+        "east": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#front"},
+        "west": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#top"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#bottom"}
+      }
+    },
+    {
+      "from": [0, 3, 0],
+      "to": [16, 3, 16],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 16], "texture": "#inner"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#inner"}
+      }
+    },
+    {
+      "from": [0, 17, 0],
+      "to": [16, 17, 16],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 16], "texture": "#brew"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#inner"}
+      }
+    },
+    {
+      "from": [1, 18, 1],
+      "to": [15, 18, 15],
+      "rotation": {"origin": [15, 18, 8], "axis": "z", "angle": -45},
+      "faces": {
+        "up": {"uv": [1, 1, 15, 15], "texture": "#lid"},
+        "down": {"uv": [1, 1, 15, 15], "texture": "#lid"}
+      }
+    }
+  ]
+}
