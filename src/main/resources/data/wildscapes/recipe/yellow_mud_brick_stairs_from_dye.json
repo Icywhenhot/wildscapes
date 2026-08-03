@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "dyed_mud_brick_stairs",
+  "ingredients": [
+    {
+      "tag": "wildscapes:mud_brick_stairs"
+    },
+    {
+      "item": "minecraft:yellow_dye"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:yellow_mud_brick_stairs",
+    "count": 1
+  }
+}

@@ -3,13 +3,20 @@ package com.wildscapes;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
+import com.wildscapes.block.CauldronSwap;
+import com.wildscapes.block.MudBrickBlocks;
+import com.wildscapes.block.MudBrickDyeing;
 import com.wildscapes.block.WildscapesBlocks;
+import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.AbominationEntity;
+import com.wildscapes.entity.SlimeMerging;
 import com.wildscapes.entity.SwampVariants;
 import com.wildscapes.entity.WildscapesEntities;
+import com.wildscapes.item.WildscapesDataComponents;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.sound.WildscapesSounds;
 import com.wildscapes.worldgen.WildscapesFeatures;
+import com.wildscapes.worldgen.WildscapesPlacementModifiers;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -18,6 +25,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
@@ -57,23 +65,41 @@ public class Wildscapes {
                         output.accept(WildscapesBlocks.RUSHES.get());
                         output.accept(WildscapesBlocks.BONFIRE.get());
                         output.accept(WildscapesBlocks.WITCH_CAULDRON.get());
+                        output.accept(MudBrickBlocks.CHISELED_MUD_BRICKS.get());
+                        for (DyeColor color : DyeColor.values()) {
+                            output.accept(MudBrickBlocks.BRICKS.get(color).get());
+                            output.accept(MudBrickBlocks.CHISELED.get(color).get());
+                            output.accept(MudBrickBlocks.STAIRS.get(color).get());
+                            output.accept(MudBrickBlocks.SLABS.get(color).get());
+                            output.accept(MudBrickBlocks.WALLS.get(color).get());
+                        }
                         output.accept(WildscapesItems.FROG_LEGS.get());
+                        output.accept(WildscapesItems.LADLE.get());
+                        output.accept(WildscapesItems.MAGIC_SOUP.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
                     }).build());
 
     public Wildscapes(IEventBus modEventBus) {
         WildscapesBlocks.register(modEventBus);
+        WildscapesBlockEntities.register(modEventBus);
         WildscapesItems.register(modEventBus);
+        WildscapesDataComponents.register(modEventBus);
         WildscapesEntities.register(modEventBus);
         SwampVariants.register(modEventBus);
         WildscapesSounds.register(modEventBus);
         WildscapesFeatures.register(modEventBus);
+        WildscapesPlacementModifiers.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::registerEntityAttributes);
 
         NeoForge.EVENT_BUS.addListener(this::onLivingDrops);
+        NeoForge.EVENT_BUS.addListener(MudBrickDyeing::onRightClick);
+        NeoForge.EVENT_BUS.addListener(SlimeMerging::onEntityTick);
+        NeoForge.EVENT_BUS.addListener(CauldronSwap::onRightClick);
+        NeoForge.EVENT_BUS.addListener(CauldronSwap::onPlace);
+        NeoForge.EVENT_BUS.addListener(CauldronSwap::onNeighborNotify);
     }
 
     /** Make regular vanilla frogs drop frog legs when killed. */
@@ -93,6 +119,8 @@ public class Wildscapes {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            MudBrickDyeing.buildLookup();
+
             FireBlock fire = (FireBlock) Blocks.FIRE;
             fire.setFlammable(WildscapesBlocks.CYPRESS_LOG.get(), 5, 5);
             fire.setFlammable(WildscapesBlocks.STRIPPED_CYPRESS_LOG.get(), 5, 5);

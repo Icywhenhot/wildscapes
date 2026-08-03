@@ -1,0 +1,15 @@
+{
+  "type": "wildscapes:waterlogged_double_plant",
+  "config": {
+    "to_place": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "wildscapes:rushes",
+        "Properties": {
+          "half": "lower",
+          "waterlogged": "false"
+        }
+      }
+    }
+  }
+}

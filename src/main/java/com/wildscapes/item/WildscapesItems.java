@@ -24,6 +24,14 @@ public final class WildscapesItems {
     public static final DeferredItem<Item> FROG_LEGS = ITEMS.register("frog_legs",
             () -> new Item(new Item.Properties()));
 
+    // Stirs a boiling cauldron to mix in an ingredient; wears out after 10 stirs.
+    public static final DeferredItem<Item> LADLE = ITEMS.register("ladle",
+            () -> new Item(new Item.Properties().durability(10)));
+
+    // Scooped from a finished magic-soup cauldron; carries its effects in a SoupContents component.
+    public static final DeferredItem<MagicSoupItem> MAGIC_SOUP = ITEMS.register("magic_soup",
+            () -> new MagicSoupItem(new Item.Properties()));
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
     }

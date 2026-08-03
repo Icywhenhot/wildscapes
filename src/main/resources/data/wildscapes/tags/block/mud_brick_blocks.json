@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#wildscapes:chiseled_mud_bricks",
+    "#wildscapes:mud_brick_slabs",
+    "#wildscapes:mud_brick_stairs",
+    "#wildscapes:mud_brick_walls",
+    "#wildscapes:mud_bricks"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "chiseled_mud_bricks",
+  "key": {
+    "#": {
+      "item": "wildscapes:lime_mud_brick_slab"
+    }
+  },
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "result": {
+    "id": "wildscapes:chiseled_lime_mud_bricks",
+    "count": 1
+  }
+}

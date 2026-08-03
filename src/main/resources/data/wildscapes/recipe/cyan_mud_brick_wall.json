@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "mud_brick_walls",
+  "key": {
+    "#": {
+      "item": "wildscapes:cyan_mud_bricks"
+    }
+  },
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "result": {
+    "id": "wildscapes:cyan_mud_brick_wall",
+    "count": 6
+  }
+}

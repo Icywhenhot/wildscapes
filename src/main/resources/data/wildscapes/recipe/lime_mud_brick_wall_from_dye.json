@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyed_mud_brick_walls",
+  "ingredients": [
+    {
+      "tag": "wildscapes:mud_brick_walls"
+    },
+    {
+      "item": "minecraft:lime_dye"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:lime_mud_brick_wall",
+    "count": 1
+  }
+}

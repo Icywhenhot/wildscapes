@@ -1,0 +1,10 @@
+{
+  "feature": "wildscapes:duckweed",
+  "placement": [
+    { "type": "minecraft:count", "count": 256 },
+    { "type": "minecraft:in_square" },
+    { "type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG" },
+    { "type": "wildscapes:shore_density", "max_distance": 6 },
+    { "type": "minecraft:biome" }
+  ]
+}

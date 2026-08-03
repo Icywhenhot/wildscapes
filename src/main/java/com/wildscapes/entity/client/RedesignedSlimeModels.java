@@ -28,13 +28,13 @@ public final class RedesignedSlimeModels {
                 CubeListBuilder.create().texOffs(0, 16).addBox(-3F, 17F, -3F, 6F, 6F, 6F),
                 PartPose.ZERO);
         root.addOrReplaceChild("right_eye",
-                CubeListBuilder.create().texOffs(32, 0).addBox(-3.5F, 18F, -3.5F, 2F, 2F, 2F),
+                CubeListBuilder.create().texOffs(32, 4).addBox(-3.5F, 18F, -3.5F, 2F, 2F, 2F),
                 PartPose.ZERO);
         root.addOrReplaceChild("left_eye",
-                CubeListBuilder.create().texOffs(32, 4).addBox(1.5F, 18F, -3.5F, 2F, 2F, 2F),
+                CubeListBuilder.create().texOffs(32, 0).addBox(1.5F, 18F, -3.5F, 2F, 2F, 2F),
                 PartPose.ZERO);
         root.addOrReplaceChild("mouth",
-                CubeListBuilder.create().texOffs(32, 8).addBox(0F, 21F, -3.5F, 1F, 1F, 1F),
+                CubeListBuilder.create().texOffs(40, 6).addBox(-1F, 21F, -3.5F, 1F, 1F, 1F),
                 PartPose.ZERO);
 
         return LayerDefinition.create(mesh, 64, 32);

@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "wildscapes:block/concoction"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wildscapes:block/jumble_concoction"
+    }
+  ]
+}

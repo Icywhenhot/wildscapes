@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "mud_brick_stairs",
+  "key": {
+    "#": {
+      "item": "wildscapes:gray_mud_bricks"
+    }
+  },
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "result": {
+    "id": "wildscapes:gray_mud_brick_stairs",
+    "count": 4
+  }
+}

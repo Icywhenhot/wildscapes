@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "mud_brick_slabs",
+  "key": {
+    "#": {
+      "item": "wildscapes:brown_mud_bricks"
+    }
+  },
+  "pattern": [
+    "###"
+  ],
+  "result": {
+    "id": "wildscapes:brown_mud_brick_slab",
+    "count": 6
+  }
+}

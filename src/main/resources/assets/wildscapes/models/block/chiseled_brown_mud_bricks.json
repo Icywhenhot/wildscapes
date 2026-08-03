@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "wildscapes:block/chiseled_brown_mud_bricks"
+  }
+}

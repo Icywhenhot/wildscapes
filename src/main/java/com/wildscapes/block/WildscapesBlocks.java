@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
-import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -62,8 +61,8 @@ public final class WildscapesBlocks {
                     .pushReaction(PushReaction.DESTROY)
                     .isRedstoneConductor((state, level, pos) -> false)));
 
-    public static final DeferredBlock<SaplingBlock> CYPRESS_SAPLING = register("cypress_sapling",
-            () -> new SaplingBlock(WildscapesTreeGrowers.CYPRESS, BlockBehaviour.Properties.of()
+    public static final DeferredBlock<CypressSaplingBlock> CYPRESS_SAPLING = register("cypress_sapling",
+            () -> new CypressSaplingBlock(WildscapesTreeGrowers.CYPRESS, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
                     .noCollission()
                     .randomTicks()
@@ -126,6 +125,18 @@ public final class WildscapesBlocks {
                     .lightLevel(state -> 3)
                     .noOcclusion()));
 
+    // Internal block: players use the vanilla cauldron, which CauldronSwap swaps for this while it
+    // is heated or holds dyed water / a potion / a brewing soup. It has no BlockItem and drops a
+    // vanilla cauldron (see its loot table).
+    public static final DeferredBlock<WildscapesCauldronBlock> CAULDRON = BLOCKS.register("cauldron",
+            () -> new WildscapesCauldronBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .strength(2.0F)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()
+                    .noOcclusion()
+                    .lightLevel(state -> state.getValue(WildscapesCauldronBlock.BOILING) ? 3 : 0)));
+
     private static BlockBehaviour.Properties logProps() {
         return BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_BROWN)
@@ -135,7 +146,7 @@ public final class WildscapesBlocks {
     }
 
     /** Registers a block and a matching simple {@code BlockItem} under the same name. */
-    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier) {
+    static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
         WildscapesItems.ITEMS.registerSimpleBlockItem(name, block);
         return block;
@@ -150,6 +161,9 @@ public final class WildscapesBlocks {
     }
 
     public static void register(IEventBus bus) {
+        // Loads MudBrickBlocks so its static initialiser adds the dyed set to BLOCKS
+        // before the registry event fires.
+        MudBrickBlocks.init();
         BLOCKS.register(bus);
     }
 }

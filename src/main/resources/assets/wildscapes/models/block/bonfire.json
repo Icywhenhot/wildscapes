@@ -7,7 +7,8 @@
     "fire": "wildscapes:block/bonfire_fire",
     "embers": "wildscapes:block/bonfire_embers",
     "ash": "wildscapes:block/bonfire_ash",
-    "side": "wildscapes:block/bonfire_side"
+    "side": "wildscapes:block/bonfire_side",
+    "bottom": "wildscapes:block/bonfire_bottom"
   },
   "elements": [
     {
@@ -68,6 +69,14 @@
         "west": {"uv": [13, 6, 15, 16], "rotation": 90, "texture": "#embers"},
         "up": {"uv": [3, 6, 13, 16], "texture": "#embers"},
         "down": {"uv": [0, 6, 10, 16], "texture": "#ash"}
+      }
+    },
+    {
+      "from": [2, 0, 2],
+      "to": [14, 2, 14],
+      "faces": {
+        "down": {"uv": [2, 2, 14, 14], "texture": "#bottom", "cullface": "down"},
+        "up": {"uv": [2, 2, 14, 14], "texture": "#ash"}
       }
     }
   ]

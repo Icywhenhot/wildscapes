@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "wildscapes:block/orange_mud_bricks",
+    "side": "wildscapes:block/orange_mud_bricks",
+    "top": "wildscapes:block/orange_mud_bricks"
+  }
+}

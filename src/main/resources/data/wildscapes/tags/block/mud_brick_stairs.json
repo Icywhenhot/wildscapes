@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:mud_brick_stairs",
+    "wildscapes:white_mud_brick_stairs",
+    "wildscapes:orange_mud_brick_stairs",
+    "wildscapes:magenta_mud_brick_stairs",
+    "wildscapes:light_blue_mud_brick_stairs",
+    "wildscapes:yellow_mud_brick_stairs",
+    "wildscapes:lime_mud_brick_stairs",
+    "wildscapes:pink_mud_brick_stairs",
+    "wildscapes:gray_mud_brick_stairs",
+    "wildscapes:light_gray_mud_brick_stairs",
+    "wildscapes:cyan_mud_brick_stairs",
+    "wildscapes:purple_mud_brick_stairs",
+    "wildscapes:blue_mud_brick_stairs",
+    "wildscapes:brown_mud_brick_stairs",
+    "wildscapes:green_mud_brick_stairs",
+    "wildscapes:red_mud_brick_stairs",
+    "wildscapes:black_mud_brick_stairs"
+  ]
+}

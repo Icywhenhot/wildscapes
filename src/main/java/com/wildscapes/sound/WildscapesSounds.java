@@ -48,6 +48,12 @@ public final class WildscapesSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> ABOMINATION_HURT    = register("abomination.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> ABOMINATION_DEATH   = register("abomination.death");
 
+    // Boiling-cauldron / magic-soup sounds (played from CauldronBlockEntity and the cauldron block)
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_BOIL_START     = register("cauldron.boil_start");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_ADD_INGREDIENT = register("cauldron.add_ingredient");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_MIX            = register("cauldron.mix");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_SOUP_DONE      = register("cauldron.soup_done");
+
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(

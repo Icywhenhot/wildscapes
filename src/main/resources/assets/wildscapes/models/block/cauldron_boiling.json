@@ -1,0 +1,115 @@
+{
+  "parent": "block/block",
+  "render_type": "minecraft:cutout",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "wildscapes:block/cauldron_boiling_side",
+    "side": "wildscapes:block/cauldron_boiling_side",
+    "bottom": "wildscapes:block/cauldron_boiling_bottom",
+    "feet": "wildscapes:block/cauldron_boiling_bottom_full_feet",
+    "inside": "minecraft:block/cauldron_inner"
+  },
+  "elements": [
+    {
+      "name": "floor",
+      "from": [3, 4, 3],
+      "to": [13, 7, 13],
+      "faces": {
+        "up": {"uv": [3, 3, 13, 13], "texture": "#inside"},
+        "down": {"uv": [3, 3, 13, 13], "texture": "#bottom"}
+      }
+    },
+    {
+      "name": "wall_north",
+      "from": [2, 4, 2],
+      "to": [14, 16, 4],
+      "faces": {
+        "north": {"uv": [2, 0, 14, 12], "texture": "#side"},
+        "south": {"uv": [2, 0, 14, 12], "texture": "#inside"},
+        "up": {"uv": [2, 2, 14, 4], "texture": "#side"},
+        "west": {"uv": [2, 0, 4, 12], "texture": "#side"},
+        "east": {"uv": [12, 0, 14, 12], "texture": "#side"}
+      }
+    },
+    {
+      "name": "wall_south",
+      "from": [2, 4, 12],
+      "to": [14, 16, 14],
+      "faces": {
+        "south": {"uv": [2, 0, 14, 12], "texture": "#side"},
+        "north": {"uv": [2, 0, 14, 12], "texture": "#inside"},
+        "up": {"uv": [2, 12, 14, 14], "texture": "#side"},
+        "west": {"uv": [12, 0, 14, 12], "texture": "#side"},
+        "east": {"uv": [2, 0, 4, 12], "texture": "#side"}
+      }
+    },
+    {
+      "name": "wall_west",
+      "from": [2, 4, 4],
+      "to": [4, 16, 12],
+      "faces": {
+        "west": {"uv": [4, 0, 12, 12], "texture": "#side"},
+        "east": {"uv": [4, 0, 12, 12], "texture": "#inside"},
+        "up": {"uv": [2, 4, 4, 12], "texture": "#side"}
+      }
+    },
+    {
+      "name": "wall_east",
+      "from": [12, 4, 4],
+      "to": [14, 16, 12],
+      "faces": {
+        "east": {"uv": [4, 0, 12, 12], "texture": "#side"},
+        "west": {"uv": [4, 0, 12, 12], "texture": "#inside"},
+        "up": {"uv": [12, 4, 14, 12], "texture": "#side"}
+      }
+    },
+    {
+      "name": "foot_nw",
+      "from": [2, 0, 2],
+      "to": [5, 4, 5],
+      "faces": {
+        "north": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "south": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "west": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "east": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "down": {"uv": [2, 2, 5, 5], "texture": "#bottom"}
+      }
+    },
+    {
+      "name": "foot_ne",
+      "from": [11, 0, 2],
+      "to": [14, 4, 5],
+      "faces": {
+        "north": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "south": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "west": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "east": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "down": {"uv": [11, 2, 14, 5], "texture": "#bottom"}
+      }
+    },
+    {
+      "name": "foot_sw",
+      "from": [2, 0, 11],
+      "to": [5, 4, 14],
+      "faces": {
+        "north": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "south": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "west": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "east": {"uv": [2, 12, 5, 16], "texture": "#feet"},
+        "down": {"uv": [2, 11, 5, 14], "texture": "#bottom"}
+      }
+    },
+    {
+      "name": "foot_se",
+      "from": [11, 0, 11],
+      "to": [14, 4, 14],
+      "faces": {
+        "north": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "south": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "west": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "east": {"uv": [11, 12, 14, 16], "texture": "#feet"},
+        "down": {"uv": [11, 11, 14, 14], "texture": "#bottom"}
+      }
+    }
+  ]
+}

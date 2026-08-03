@@ -1,10 +1,13 @@
 package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.SlimeMerging;
 
 import net.minecraft.client.model.SlimeModel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +57,68 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
             MultiBufferSource buffer, int packedLight) {
         this.shadowRadius = 0.25F * entity.getSize();
         this.model = this.innerModels[modelIndex(entity)];
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+
+        // Merging slimes fade out as they shrink into each other, and the one they turn
+        // into fades in. Wrapping the buffer dims every layer, the outer shell included,
+        // without having to reimplement the vanilla render path.
+        float alpha = SlimeMerging.mergeAlpha(entity);
+        MultiBufferSource sink = alpha < 1.0F ? new FadingBufferSource(buffer, alpha) : buffer;
+        super.render(entity, entityYaw, partialTicks, poseStack, sink, packedLight);
+    }
+
+    @Override
+    protected RenderType getRenderType(Slime entity, boolean bodyVisible, boolean translucent, boolean glowing) {
+        // The inner body is a cutout normally, and cutouts cannot be faded.
+        return SlimeMerging.mergeAlpha(entity) < 1.0F
+                ? RenderType.entityTranslucent(this.getTextureLocation(entity))
+                : super.getRenderType(entity, bodyVisible, translucent, glowing);
+    }
+
+    /** Passes every buffer through {@link FadingConsumer}. */
+    private record FadingBufferSource(MultiBufferSource delegate, float alpha) implements MultiBufferSource {
+        @Override
+        public VertexConsumer getBuffer(RenderType renderType) {
+            return new FadingConsumer(this.delegate.getBuffer(renderType), this.alpha);
+        }
+    }
+
+    /** Forwards vertices untouched apart from scaling their alpha. */
+    private record FadingConsumer(VertexConsumer delegate, float alpha) implements VertexConsumer {
+        @Override
+        public VertexConsumer addVertex(float x, float y, float z) {
+            this.delegate.addVertex(x, y, z);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setColor(int red, int green, int blue, int vertexAlpha) {
+            this.delegate.setColor(red, green, blue, (int) (vertexAlpha * this.alpha));
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv(float u, float v) {
+            this.delegate.setUv(u, v);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv1(int u, int v) {
+            this.delegate.setUv1(u, v);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setUv2(int u, int v) {
+            this.delegate.setUv2(u, v);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
+            this.delegate.setNormal(normalX, normalY, normalZ);
+            return this;
+        }
     }
 
     @Override

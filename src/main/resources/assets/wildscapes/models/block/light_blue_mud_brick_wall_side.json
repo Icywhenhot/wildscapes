@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_wall_side",
+  "textures": {
+    "wall": "wildscapes:block/light_blue_mud_bricks"
+  }
+}

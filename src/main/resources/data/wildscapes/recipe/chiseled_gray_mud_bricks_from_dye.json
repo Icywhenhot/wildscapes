@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "dyed_chiseled_mud_bricks",
+  "ingredients": [
+    {
+      "tag": "wildscapes:chiseled_mud_bricks"
+    },
+    {
+      "item": "minecraft:gray_dye"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:chiseled_gray_mud_bricks",
+    "count": 1
+  }
+}

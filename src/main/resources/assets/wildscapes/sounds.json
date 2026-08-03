@@ -104,5 +104,33 @@
     "sounds": [
       "wildscapes:abomination/death"
     ]
+  },
+  "cauldron.boil_start": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.cauldron.boil",
+    "sounds": [
+      "wildscapes:cauldron/boil_start"
+    ]
+  },
+  "cauldron.add_ingredient": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.cauldron.add",
+    "sounds": [
+      "wildscapes:cauldron/add_ingredient"
+    ]
+  },
+  "cauldron.mix": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.cauldron.mix",
+    "sounds": [
+      "wildscapes:cauldron/mix"
+    ]
+  },
+  "cauldron.soup_done": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.cauldron.done",
+    "sounds": [
+      "wildscapes:cauldron/soup_done"
+    ]
   }
 }

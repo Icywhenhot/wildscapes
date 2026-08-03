@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "dyed_mud_bricks",
+  "ingredients": [
+    {
+      "tag": "wildscapes:mud_bricks"
+    },
+    {
+      "item": "minecraft:green_dye"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:green_mud_bricks",
+    "count": 1
+  }
+}

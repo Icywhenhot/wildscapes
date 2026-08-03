@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "wildscapes:block/yellow_mud_bricks",
+    "side": "wildscapes:block/yellow_mud_bricks",
+    "top": "wildscapes:block/yellow_mud_bricks"
+  }
+}

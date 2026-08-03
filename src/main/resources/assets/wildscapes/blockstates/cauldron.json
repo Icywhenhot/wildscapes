@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "boiling=false": { "model": "wildscapes:block/cauldron" },
+    "boiling=true": { "model": "wildscapes:block/cauldron_boiling" }
+  }
+}

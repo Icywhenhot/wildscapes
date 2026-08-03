@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:swamp",
+  "features": "wildscapes:swamp_oak_reduced",
+  "step": "vegetal_decoration"
+}
