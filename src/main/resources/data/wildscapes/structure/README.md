@@ -1,0 +1,98 @@
+# Hand-built trees
+
+Structure-block exports dropped in these folders are grown by the world. They are placed by
+`TemplateTreeFeature`, which swaps the dark oak they were drafted in for cypress on the way in —
+so the files stay exactly as Minecraft exported them and can be re-exported at any time.
+
+## Where each kind goes
+
+| Folder | Grown by | Placed on | Anchored |
+| --- | --- | --- | --- |
+| `tree/land/` | `swamp_trees_land` | dry soil, mud, clay or sand — never in water | surface block (`y_offset: -1`) |
+| `tree/water/` | `swamp_trees_water` | standing water only | bed of the water (`OCEAN_FLOOR_WG`) |
+| `tree/fallen/` | `swamp_fallen_trees` | standing water, about a third as often | water surface (`y_offset: -4`) |
+| `tree/roots/` | `swamp_tree_roots` | standing water, about a third as often | water surface (`y_offset: -1`) |
+
+The three anchorings come from how the current structures were actually built. The land trees
+carry their own layer of rooted dirt on the bottom layer, level with the first block of the
+trunk, so that layer has to land *on* the terrain's surface block rather than on top of it. The
+water trees start at the bottom of their roots with nothing underneath, so they are measured up
+from the bed. Fallen trees and roots float, so they hang off the water surface instead and do not
+care how deep the pool is — and the fallen ones sit three blocks lower again, because their
+structures carry foliage below the trunk, which is why they get a folder of their own. A new
+structure that is built differently wants its own `y_offset`.
+
+## Importing
+
+1. Copy the exports out of `<world>/generated/minecraft/structures/` into the folder above that
+   matches what they are. Note that folder is `structures`, plural — this one is `structure`,
+   singular. That is a Minecraft quirk, not a typo.
+2. From the repo root, run:
+
+   ```bash
+   python tools/sync_tree_structures.py
+   ```
+
+   That lists whatever it finds into the three configured features. Adding a tree later is
+   copying the file in and running it again — no JSON to edit by hand.
+3. Rebuild. Trees only appear in chunks generated after that.
+
+## Saving a tree in the first place
+
+On Minecraft **1.21.1** — a structure saved by a newer version will not load here. Structure
+block in **SAVE** mode, **Include entities off**, and size the box so that:
+
+- for a land tree, the **bottom layer is the first block of the trunk**, with no ground included;
+- for a water tree or debris, the **bottom layer is where it meets the bed of the water**, since
+  those are placed from the bottom up rather than from the waterline.
+
+If something lands a block or two too high or too low, set `y_offset` in its configured feature
+rather than re-saving — it shifts the whole structure and takes any value from -8 to 8.
+
+## What gets swapped
+
+| In the structure | Placed as |
+| --- | --- |
+| dark oak log / wood, stripped or not | the cypress equivalent, keeping the axis a branch was laid on |
+| mangrove **or** dark oak leaves | cypress leaves, persistent so a hand-built canopy never decays |
+| vines, moss carpet, grass, ferns, mushrooms, anything else | placed exactly as saved |
+| the structure block itself, if you left it in | skipped |
+| air | skipped, so a tree does not clear a box around itself |
+
+Each tree is randomly rotated and mirrored, turning about its own trunk. To change the mapping,
+edit `SWAP_TO_CYPRESS` in `TemplateTreeFeature`.
+
+## No two trees in the same space
+
+Two rules, because either alone lets trees mesh:
+
+1. No block of a tree's own wood or canopy may land on another tree's wood or on a cypress canopy.
+   This compares actual blocks rather than bounding boxes, so branches may still interlock.
+2. A trunk wants three blocks to itself, measured over the first few blocks of its height only.
+   Without this a tree turned a different way can thread itself through the gaps in another's
+   canopy without ever sharing a block — which is the tangle these rules exist to prevent.
+
+Vines, moss and undergrowth are ignored by both — those are meant to overlap. The first rule also
+guards the older model-built cypress trees.
+
+This means the counts below are *attempts*, not trees: raising them packs a swamp more densely
+without ever stacking two trees, and the extra attempts simply fail once there is no room.
+
+## Tuning how many
+
+`worldgen/placed_feature/swamp_trees_*_swamp.json` — land and water trees are 2 attempts per
+chunk each, debris is 1 attempt at a 1-in-3 chance. These are the only trees a swamp generates:
+the four older model-built ones no longer have a biome modifier, and are now reached only by
+growing a cypress sapling.
+
+## Checking a change
+
+`TreePlacementTests` plants a land tree on bare dirt and asserts it comes out cypress with no dark
+oak or mangrove left in it, and that land and water trees refuse each other's ground:
+
+```bash
+./gradlew runGameTestServer
+```
+
+It runs on a plain dirt platform generated by `tools/make_gametest_template.py`, which only needs
+re-running if that platform is ever changed.

@@ -19,6 +19,9 @@ public final class WildscapesFeatures {
     public static final DeferredHolder<Feature<?>, CypressTreeFeature> CYPRESS_TREE =
             FEATURES.register("cypress_tree", () -> new CypressTreeFeature(NoneFeatureConfiguration.CODEC));
 
+    public static final DeferredHolder<Feature<?>, TemplateTreeFeature> TEMPLATE_TREE =
+            FEATURES.register("template_tree", () -> new TemplateTreeFeature(TemplateTreeConfiguration.CODEC));
+
     public static final DeferredHolder<Feature<?>, WaterloggedDoublePlantFeature> WATERLOGGED_DOUBLE_PLANT =
             FEATURES.register("waterlogged_double_plant",
                     () -> new WaterloggedDoublePlantFeature(SimpleBlockConfiguration.CODEC));

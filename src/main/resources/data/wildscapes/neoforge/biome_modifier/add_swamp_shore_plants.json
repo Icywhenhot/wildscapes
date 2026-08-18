@@ -3,7 +3,8 @@
   "biomes": "#c:is_swamp",
   "features": [
     "wildscapes:duckweed_swamp",
-    "wildscapes:rushes_swamp"
+    "wildscapes:rushes_swamp",
+    "wildscapes:short_rushes_swamp"
   ],
   "step": "vegetal_decoration"
 }

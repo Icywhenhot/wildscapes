@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "wildscapes:cypress_leaves"
+    "wildscapes:cypress_leaves",
+    "wildscapes:moss_carpet",
+    "wildscapes:hanging_moss"
   ]
 }

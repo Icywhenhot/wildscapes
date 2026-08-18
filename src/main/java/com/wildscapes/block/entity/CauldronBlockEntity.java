@@ -10,9 +10,11 @@ import com.wildscapes.block.WildscapesCauldronBlock;
 import com.wildscapes.item.SoupContents;
 import com.wildscapes.item.WildscapesDataComponents;
 import com.wildscapes.item.WildscapesItems;
+import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,6 +27,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -59,12 +62,19 @@ public class CauldronBlockEntity extends BlockEntity {
     private int dyeColor = -1;
     private PotionContents potion = PotionContents.EMPTY;
     private boolean hasSoupBase;
+    /** Set when a finished brew is taken off the heat: it keeps, but takes no more ingredients. */
+    private boolean cooled;
     private final List<MobEffectInstance> soupEffects = new ArrayList<>();
     /** The ingredient dropped in and awaiting a stir, or empty. */
     private ItemStack pendingIngredient = ItemStack.EMPTY;
     private int mixTicks;
 
     private int ambientTimer;
+
+    /** Client-only: game time the current stir began, for the ingredient sink animation (-1 = idle). */
+    private long clientMixStart = -1;
+    /** Client-only: whether this cauldron's looping boil sound is currently playing. */
+    private boolean clientBoilSoundActive;
 
     public CauldronBlockEntity(BlockPos pos, BlockState state) {
         super(WildscapesBlockEntities.CAULDRON.get(), pos, state);
@@ -80,8 +90,7 @@ public class CauldronBlockEntity extends BlockEntity {
             if (heat) {
                 level.playSound(null, pos, WildscapesSounds.CAULDRON_BOIL_START.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
             } else {
-                // Yanking the fire ruins an in-progress brew (accepted trade-off of the swap design).
-                be.spoilBrew();
+                be.onHeatLost((ServerLevel) level, pos);
             }
         }
 
@@ -98,7 +107,8 @@ public class CauldronBlockEntity extends BlockEntity {
             if (++be.ambientTimer >= 40) {
                 be.ambientTimer = 0;
                 ((ServerLevel) level).sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                        pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5, 2, 0.25, 0.05, 0.25, 0.0);
+                        pos.getX() + 0.5, pos.getY() + be.getSurfaceHeight() + 0.05, pos.getZ() + 0.5,
+                        2, 0.25, 0.05, 0.25, 0.0);
             }
         }
 
@@ -109,14 +119,47 @@ public class CauldronBlockEntity extends BlockEntity {
         if (!state.getValue(WildscapesCauldronBlock.BOILING) || be.fillLevel <= 0) {
             return;
         }
-        double surface = pos.getY() + 0.42 + 0.16 * be.fillLevel;
+        // A heated, filled cauldron boils audibly the whole time.
+        if (!be.clientBoilSoundActive) {
+            com.wildscapes.entity.client.CauldronBoilSound.start(be);
+        }
+
+        // Remember when a stir started so the renderer can sink the ingredient.
+        if (be.mixTicks > 0) {
+            if (be.clientMixStart < 0) {
+                be.clientMixStart = level.getGameTime();
+            }
+        } else {
+            be.clientMixStart = -1;
+        }
+
+        double surface = pos.getY() + surfaceHeight(true, be.fillLevel);
         var random = level.random;
+        // Once nether wart has gone in, the pot bubbles with the soup's own bubbles, steaming
+        // their way up out of the rim; plain hot water just pops the vanilla way.
+        boolean brewing = be.hasSoupBase;
         int puffs = be.mixTicks > 0 ? 3 : 1;
         for (int i = 0; i < puffs; i++) {
             double x = pos.getX() + 0.25 + random.nextDouble() * 0.5;
             double z = pos.getZ() + 0.25 + random.nextDouble() * 0.5;
-            level.addParticle(ParticleTypes.BUBBLE_POP, x, surface, z, 0.0, 0.02, 0.0);
+            if (brewing) {
+                // Half rate: these live longer than a vanilla pop, so one a tick would crowd the pot.
+                if (random.nextBoolean()) {
+                    level.addParticle(WildscapesParticles.BREW_BUBBLE.get(), x, surface, z,
+                            0.0, 0.06 + random.nextDouble() * 0.04, 0.0);
+                }
+            } else {
+                level.addParticle(ParticleTypes.BUBBLE_POP, x, surface, z, 0.0, 0.02, 0.0);
+            }
         }
+        // An ingredient keeps steaming from the moment it lands until the stir has taken it under.
+        if (!be.pendingIngredient.isEmpty() && random.nextInt(3) == 0) {
+            double x = pos.getX() + 0.35 + random.nextDouble() * 0.3;
+            double z = pos.getZ() + 0.35 + random.nextDouble() * 0.3;
+            level.addParticle(WildscapesParticles.INGREDIENT_STEAM.get(), x, surface + 0.05, z,
+                    0.0, 0.04 + random.nextDouble() * 0.04, 0.0);
+        }
+
         if (random.nextInt(4) == 0) {
             level.addParticle(ParticleTypes.SMOKE, pos.getX() + 0.5, surface + 0.1, pos.getZ() + 0.5,
                     0.0, 0.01, 0.0);
@@ -124,15 +167,23 @@ public class CauldronBlockEntity extends BlockEntity {
     }
 
     private void finishMixing(ServerLevel level, BlockPos pos) {
-        if (!pendingIngredient.isEmpty() && soupEffects.size() < CauldronSoups.MAX_EFFECTS) {
-            MobEffectInstance effect = CauldronSoups.effectFor(pendingIngredient.getItem());
-            if (effect != null) {
-                soupEffects.add(effect);
+        Holder<MobEffect> effect = pendingIngredient.isEmpty()
+                ? null : CauldronSoups.effectOf(pendingIngredient.getItem());
+        if (effect != null) {
+            int existing = indexOfEffect(effect);
+            if (existing >= 0) {
+                // A second helping of the same ingredient deepens the effect a level instead of
+                // taking up another of the soup's three slots.
+                soupEffects.set(existing,
+                        CauldronSoups.instanceOf(effect, soupEffects.get(existing).getAmplifier() + 1));
+            } else if (soupEffects.size() < CauldronSoups.MAX_EFFECTS) {
+                soupEffects.add(CauldronSoups.instanceOf(effect, 0));
             }
         }
         pendingIngredient = ItemStack.EMPTY;
         level.playSound(null, pos, WildscapesSounds.CAULDRON_SOUP_DONE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5, pos.getY() + 1.05, pos.getZ() + 0.5,
+        level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                pos.getX() + 0.5, pos.getY() + getSurfaceHeight() + 0.05, pos.getZ() + 0.5,
                 12, 0.3, 0.2, 0.3, 0.0);
         sync();
     }
@@ -220,8 +271,7 @@ public class CauldronBlockEntity extends BlockEntity {
     }
 
     public boolean addIngredient(ItemStack stack) {
-        if (contents != Contents.BREW || !hasSoupBase || !pendingIngredient.isEmpty()
-                || mixTicks > 0 || soupEffects.size() >= CauldronSoups.MAX_EFFECTS) {
+        if (!canAcceptIngredient(stack)) {
             return false;
         }
         pendingIngredient = stack.copyWithCount(1);
@@ -230,6 +280,9 @@ public class CauldronBlockEntity extends BlockEntity {
     }
 
     public void startMixing() {
+        if (cooled || pendingIngredient.isEmpty() || mixTicks > 0) {
+            return;
+        }
         mixTicks = MIX_DURATION;
         sync();
     }
@@ -256,19 +309,49 @@ public class CauldronBlockEntity extends BlockEntity {
 
     private void clearBrew() {
         hasSoupBase = false;
+        cooled = false;
         soupEffects.clear();
         pendingIngredient = ItemStack.EMPTY;
         mixTicks = 0;
     }
 
-    private void spoilBrew() {
-        if (contents == Contents.BREW) {
+    /**
+     * The fire went out from under a brew. Whatever is already worked into the soup keeps — a stir
+     * in progress even lands, since the mixture was as good as done — but the pot is off the heat
+     * for good and takes no further ingredients. An ingredient that was still waiting to be stirred
+     * never made it in, so it is handed back, and a pot holding nothing but a wart base has nothing
+     * worth keeping and goes back to water.
+     */
+    private void onHeatLost(ServerLevel level, BlockPos pos) {
+        if (contents != Contents.BREW) {
+            return;
+        }
+        if (mixTicks > 0) {
+            mixTicks = 0;
+            finishMixing(level, pos);
+        }
+        if (!pendingIngredient.isEmpty()) {
+            Block.popResource(level, pos.above(), pendingIngredient);
+            pendingIngredient = ItemStack.EMPTY;
+        }
+        if (soupEffects.isEmpty()) {
             // Fall back to plain water at the same level; tryRevert then hands it to vanilla.
             contents = fillLevel > 0 ? Contents.WATER : Contents.EMPTY;
             dyeColor = -1;
             clearBrew();
-            sync();
+        } else {
+            cooled = true;
         }
+        sync();
+    }
+
+    private int indexOfEffect(Holder<MobEffect> effect) {
+        for (int i = 0; i < soupEffects.size(); i++) {
+            if (soupEffects.get(i).getEffect() == effect) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     // ---- Queries ----------------------------------------------------------------
@@ -281,9 +364,34 @@ public class CauldronBlockEntity extends BlockEntity {
         return fillLevel;
     }
 
-    public boolean canAddIngredient() {
-        return contents == Contents.BREW && hasSoupBase && pendingIngredient.isEmpty()
-                && mixTicks == 0 && soupEffects.size() < CauldronSoups.MAX_EFFECTS;
+    /** Whether the pot is a hot, idle soup base — ready in principle to take something. */
+    public boolean isBrewing() {
+        return contents == Contents.BREW && hasSoupBase && !cooled
+                && pendingIngredient.isEmpty() && mixTicks == 0;
+    }
+
+    /**
+     * Whether this exact ingredient can go in now. A soup holds up to three different effects, and
+     * repeating an ingredient deepens the one it already has — until that effect is at the strongest
+     * level vanilla has for it, at which point the pot simply refuses it.
+     */
+    public boolean canAcceptIngredient(ItemStack stack) {
+        if (!isBrewing()) {
+            return false;
+        }
+        Holder<MobEffect> effect = CauldronSoups.effectOf(stack.getItem());
+        if (effect == null) {
+            return false;
+        }
+        int existing = indexOfEffect(effect);
+        return existing < 0
+                ? soupEffects.size() < CauldronSoups.MAX_EFFECTS
+                : soupEffects.get(existing).getAmplifier() < CauldronSoups.maxAmplifier(effect);
+    }
+
+    /** Whether this brew has been taken off the heat and can no longer take ingredients. */
+    public boolean isCooled() {
+        return cooled;
     }
 
     public boolean isAwaitingStir() {
@@ -292,6 +400,16 @@ public class CauldronBlockEntity extends BlockEntity {
 
     public boolean isMixing() {
         return mixTicks > 0;
+    }
+
+    /** Client-only: game time the current stir began (-1 when not stirring). */
+    public long getClientMixStart() {
+        return clientMixStart;
+    }
+
+    /** Client-only flag tracking the looping boil sound (see CauldronBoilSound). */
+    public void setClientBoilSoundActive(boolean active) {
+        clientBoilSoundActive = active;
     }
 
     public boolean hasSoupBase() {
@@ -308,6 +426,20 @@ public class CauldronBlockEntity extends BlockEntity {
 
     public PotionContents getPotion() {
         return potion;
+    }
+
+    /**
+     * Height of the liquid surface within the block, used by the renderer and for placing
+     * particles. The boiling model is an open pot with its floor at 3/16 and its rim at 15/16;
+     * the cold state uses the vanilla cauldron shell, whose water sits lower and inset.
+     */
+    public static float surfaceHeight(boolean boiling, int fillLevel) {
+        return boiling ? 0.1875F + 0.25F * fillLevel : 0.30F + 0.17F * fillLevel;
+    }
+
+    /** Height of this cauldron's liquid surface within the block. */
+    public float getSurfaceHeight() {
+        return surfaceHeight(getBlockState().getValue(WildscapesCauldronBlock.BOILING), fillLevel);
     }
 
     /** The colour the liquid surface should render, or -1 if there is no surface. */
@@ -348,6 +480,7 @@ public class CauldronBlockEntity extends BlockEntity {
         tag.putByte("Level", (byte) fillLevel);
         tag.putInt("DyeColor", dyeColor);
         tag.putBoolean("HasBase", hasSoupBase);
+        tag.putBoolean("Cooled", cooled);
         tag.putInt("MixTicks", mixTicks);
         if (!potion.equals(PotionContents.EMPTY)) {
             PotionContents.CODEC.encodeStart(ops, potion).result().ifPresent(t -> tag.put("Potion", t));
@@ -369,6 +502,7 @@ public class CauldronBlockEntity extends BlockEntity {
         fillLevel = tag.getByte("Level");
         dyeColor = tag.getInt("DyeColor");
         hasSoupBase = tag.getBoolean("HasBase");
+        cooled = tag.getBoolean("Cooled");
         mixTicks = tag.getInt("MixTicks");
         potion = tag.contains("Potion")
                 ? PotionContents.CODEC.parse(ops, tag.get("Potion")).result().orElse(PotionContents.EMPTY)

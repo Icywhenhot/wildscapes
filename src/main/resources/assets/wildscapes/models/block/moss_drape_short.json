@@ -1,0 +1,19 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "ambientocclusion": false,
+  "textures": {
+    "drape": "wildscapes:block/moss_drape_end",
+    "particle": "minecraft:block/moss_block"
+  },
+  "elements": [
+    {
+      "from": [0, -10, -0.05],
+      "to": [16, 0, -0.05],
+      "faces": {
+        "north": { "uv": [0, 0, 16, 10], "texture": "#drape" },
+        "south": { "uv": [16, 0, 0, 10], "texture": "#drape" }
+      }
+    }
+  ]
+}

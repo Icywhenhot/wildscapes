@@ -1,0 +1,17 @@
+{
+  "type": "wildscapes:template_tree",
+  "config": {
+    "templates": [
+      "wildscapes:tree/water/watertree1",
+      "wildscapes:tree/water/watertree10",
+      "wildscapes:tree/water/watertree2",
+      "wildscapes:tree/water/watertree4",
+      "wildscapes:tree/water/watertree5",
+      "wildscapes:tree/water/watertree6",
+      "wildscapes:tree/water/watertree8",
+      "wildscapes:tree/water/watertree9"
+    ],
+    "ground": "water",
+    "y_offset": 0
+  }
+}

@@ -73,6 +73,16 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
         int[][] tVines = vinesSet[idx];
         int[][] tMoss = mossSet[idx];
 
+        // Don't grow through a tree that is already standing here. Checked over the wood and the
+        // canopy both, so two trees may stand close but never occupy the same blocks.
+        for (int[][] part : new int[][][] { tLogs, tLeaves }) {
+            for (int[] c : part) {
+                if (occupied(level.getBlockState(transform(origin, c, rotation, mirror)))) {
+                    return false;
+                }
+            }
+        }
+
         // Don't consume a sapling if the trunk/canopy space above ground is obstructed.
         for (int[] c : tLogs) {
             if (c[1] >= 1 && !canReplace(level, transform(origin, c, rotation, mirror))) {
@@ -134,9 +144,13 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
     }
 
     /**
-     * Places a vine attached to adjacent tree blocks: side faces toward any
-     * neighbouring log/leaf; otherwise it hangs from the block above (copying a
-     * vine chain's faces downward like vanilla hanging vines).
+     * Places a vine attached to adjacent tree blocks: side faces toward any neighbouring
+     * log/leaf, otherwise carrying on the faces of the vine above it so a chain hangs as one
+     * curtain.
+     *
+     * <p>A vine with nothing beside it is left out rather than pinned to the ceiling. Clinging
+     * upward is a real vine state, but it is the one that renders as a flat sheet lying under the
+     * block above instead of hanging from it, which reads as a glitch in a canopy.
      */
     private void placeVine(WorldGenLevel level, BlockPos pos) {
         if (!level.getBlockState(pos).isAir()) {
@@ -160,10 +174,6 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
                     }
                 }
             }
-            if (isTreeBlock(above) || (above.is(Blocks.VINE) && !attached)) {
-                vine = vine.setValue(VineBlock.UP, true);
-                attached = true;
-            }
         }
         if (attached) {
             setBlock(level, pos, vine);
@@ -174,6 +184,11 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
         if (level.getBlockState(pos).isAir() && isTreeBlock(level.getBlockState(pos.below()))) {
             setBlock(level, pos, Blocks.MOSS_CARPET.defaultBlockState());
         }
+    }
+
+    /** Space another tree has already taken — its wood, or a canopy of ours. */
+    private static boolean occupied(BlockState state) {
+        return state.is(BlockTags.LOGS) || state.is(WildscapesBlocks.CYPRESS_LEAVES.get());
     }
 
     private static boolean isTreeBlock(BlockState state) {

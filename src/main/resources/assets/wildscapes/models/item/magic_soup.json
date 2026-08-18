@@ -1,7 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:item/bowl",
-    "layer1": "wildscapes:item/magic_soup_broth"
+    "layer0": "wildscapes:item/magic_soup"
   }
 }

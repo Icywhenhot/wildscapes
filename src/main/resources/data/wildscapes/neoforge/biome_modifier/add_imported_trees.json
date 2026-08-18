@@ -1,0 +1,11 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#c:is_swamp",
+  "features": [
+    "wildscapes:swamp_trees_land_swamp",
+    "wildscapes:swamp_trees_water_swamp",
+    "wildscapes:swamp_fallen_trees_swamp",
+    "wildscapes:swamp_tree_roots_swamp"
+  ],
+  "step": "vegetal_decoration"
+}

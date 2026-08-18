@@ -2,6 +2,9 @@ package com.wildscapes.block;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
@@ -46,21 +49,49 @@ public final class CauldronSoups {
             Map.entry(Items.SLIME_BALL, MobEffects.MOVEMENT_SLOWDOWN),
             Map.entry(Items.GLOWSTONE_DUST, MobEffects.GLOWING));
 
+    /**
+     * The effects vanilla brewing can push past level I (with glowstone). A soup never goes above
+     * the strongest level the game already has for an effect, so there is no Night Vision II and
+     * no Strength III.
+     */
+    private static final Set<Holder<MobEffect>> STACKABLE = Set.of(
+            MobEffects.MOVEMENT_SPEED,
+            MobEffects.JUMP,
+            MobEffects.DAMAGE_BOOST,
+            MobEffects.HEAL,
+            MobEffects.POISON,
+            MobEffects.REGENERATION,
+            MobEffects.MOVEMENT_SLOWDOWN);
+
     /** Whether {@code item} is a recognised effect ingredient (not the nether wart base). */
     public static boolean isEffectIngredient(Item item) {
         return EFFECTS.containsKey(item);
     }
 
+    /** The effect a given ingredient contributes, or null if it is not an ingredient. */
+    @Nullable
+    public static Holder<MobEffect> effectOf(Item item) {
+        return EFFECTS.get(item);
+    }
+
+    /** The highest amplifier an effect may reach: 1 (level II) if vanilla has one, else 0. */
+    public static int maxAmplifier(Holder<MobEffect> effect) {
+        return STACKABLE.contains(effect) ? 1 : 0;
+    }
+
     /** The effect instance a given ingredient contributes, or null if it is not an ingredient. */
+    @Nullable
     public static MobEffectInstance effectFor(Item item) {
         Holder<MobEffect> effect = EFFECTS.get(item);
-        if (effect == null) {
-            return null;
-        }
+        return effect == null ? null : instanceOf(effect, 0);
+    }
+
+    /** A freshly brewed instance of {@code effect}, clamped to the level vanilla allows. */
+    public static MobEffectInstance instanceOf(Holder<MobEffect> effect, int amplifier) {
         boolean harmful = effect == MobEffects.POISON || effect == MobEffects.WEAKNESS
                 || effect == MobEffects.MOVEMENT_SLOWDOWN;
         int duration = effect.value().isInstantenous() ? 1 : (harmful ? SHORT_DURATION : EFFECT_DURATION);
-        return new MobEffectInstance(effect, duration, 0);
+        return new MobEffectInstance(effect, duration, Math.min(amplifier, maxAmplifier(effect)));
     }
 
     /**

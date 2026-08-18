@@ -1,0 +1,79 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "wildscapes:block/moss_carpet"
+      }
+    },
+    {
+      "when": {
+        "north": "short"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_short"
+      }
+    },
+    {
+      "when": {
+        "north": "long"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_long"
+      }
+    },
+    {
+      "when": {
+        "east": "short"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_short",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "long"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_long",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "short"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_short",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "long"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_long",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "short"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_short",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "long"
+      },
+      "apply": {
+        "model": "wildscapes:block/moss_drape_long",
+        "y": 270
+      }
+    }
+  ]
+}

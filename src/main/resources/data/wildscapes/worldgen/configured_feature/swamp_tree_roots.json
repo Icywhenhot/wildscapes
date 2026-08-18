@@ -1,0 +1,12 @@
+{
+  "type": "wildscapes:template_tree",
+  "config": {
+    "templates": [
+      "wildscapes:tree/roots/onwaterroot1",
+      "wildscapes:tree/roots/onwaterroot2",
+      "wildscapes:tree/roots/onwaterroot3"
+    ],
+    "ground": "water",
+    "y_offset": -1
+  }
+}

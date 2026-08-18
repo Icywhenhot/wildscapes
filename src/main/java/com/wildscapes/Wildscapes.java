@@ -4,16 +4,19 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 import com.wildscapes.block.CauldronSwap;
+import com.wildscapes.block.MossCarpetSwap;
 import com.wildscapes.block.MudBrickBlocks;
 import com.wildscapes.block.MudBrickDyeing;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.SlimeMerging;
+import com.wildscapes.entity.SwampSpawns;
 import com.wildscapes.entity.SwampVariants;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.item.WildscapesDataComponents;
 import com.wildscapes.item.WildscapesItems;
+import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.sound.WildscapesSounds;
 import com.wildscapes.worldgen.WildscapesFeatures;
 import com.wildscapes.worldgen.WildscapesPlacementModifiers;
@@ -63,6 +66,7 @@ public class Wildscapes {
                         output.accept(WildscapesBlocks.CYPRESS_TRAPDOOR.get());
                         output.accept(WildscapesBlocks.DUCKWEED.get());
                         output.accept(WildscapesBlocks.RUSHES.get());
+                        output.accept(WildscapesBlocks.SHORT_RUSHES.get());
                         output.accept(WildscapesBlocks.BONFIRE.get());
                         output.accept(WildscapesBlocks.WITCH_CAULDRON.get());
                         output.accept(MudBrickBlocks.CHISELED_MUD_BRICKS.get());
@@ -87,6 +91,7 @@ public class Wildscapes {
         WildscapesEntities.register(modEventBus);
         SwampVariants.register(modEventBus);
         WildscapesSounds.register(modEventBus);
+        WildscapesParticles.register(modEventBus);
         WildscapesFeatures.register(modEventBus);
         WildscapesPlacementModifiers.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
@@ -100,6 +105,10 @@ public class Wildscapes {
         NeoForge.EVENT_BUS.addListener(CauldronSwap::onRightClick);
         NeoForge.EVENT_BUS.addListener(CauldronSwap::onPlace);
         NeoForge.EVENT_BUS.addListener(CauldronSwap::onNeighborNotify);
+        NeoForge.EVENT_BUS.addListener(MossCarpetSwap::onPlace);
+        NeoForge.EVENT_BUS.addListener(MossCarpetSwap::onBonemeal);
+
+        modEventBus.addListener(SwampSpawns::registerSpawnPlacements);
     }
 
     /** Make regular vanilla frogs drop frog legs when killed. */

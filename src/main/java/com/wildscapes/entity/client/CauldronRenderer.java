@@ -1,6 +1,7 @@
 package com.wildscapes.entity.client;
 
 import com.wildscapes.Wildscapes;
+import com.wildscapes.block.WildscapesCauldronBlock;
 import com.wildscapes.block.entity.CauldronBlockEntity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -47,12 +48,16 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
             return;
         }
 
-        float y = 0.42F + 0.16F * fill;
-        renderSurface(be, pose, buffer, packedLight, y);
+        // The boiling model is a full-block pot whose brew sits high, just under the open rim;
+        // the cold state uses the vanilla cauldron shell, whose water sits lower and inset.
+        boolean boiling = be.getBlockState().getValue(WildscapesCauldronBlock.BOILING);
+        float y = CauldronBlockEntity.surfaceHeight(boiling, fill);
+        renderSurface(be, pose, buffer, packedLight, y, boiling);
         renderPendingIngredient(be, partialTick, pose, buffer, packedLight, packedOverlay, y);
     }
 
-    private void renderSurface(CauldronBlockEntity be, PoseStack pose, MultiBufferSource buffer, int light, float y) {
+    private void renderSurface(CauldronBlockEntity be, PoseStack pose, MultiBufferSource buffer, int light,
+            float y, boolean boiling) {
         boolean brew = be.getContents() == CauldronBlockEntity.Contents.BREW;
         Material material = brew ? (be.isMixing() ? JUMBLE : CONCOCTION) : WATER;
         TextureAtlasSprite sprite = material.sprite();
@@ -65,8 +70,9 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
         float b = (color & 0xFF) / 255.0F;
         float a = brew ? 1.0F : 0.9F;
 
-        float min = 0.125F;
-        float max = 0.875F;
+        // Fill the open rim when boiling; stay inside the vanilla walls when cold.
+        float min = boiling ? 0.0625F : 0.1875F;
+        float max = 1.0F - min;
         float u0 = sprite.getU0();
         float u1 = sprite.getU1();
         float v0 = sprite.getV0();
@@ -100,13 +106,30 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
         if (ingredient.isEmpty() || be.getLevel() == null) {
             return;
         }
-        float time = (be.getLevel().getGameTime() + partialTick);
-        float bob = (float) Math.sin(time * 0.1F) * 0.03F;
+        float time = be.getLevel().getGameTime() + partialTick;
+        float itemY = y + 0.12F;
+        float scale = 0.5F;
+        float spin = time * 2.0F;
+
+        if (be.isMixing()) {
+            // Once stirred, the ingredient sinks under the surface over ~1.25 s, then is gone.
+            long start = be.getClientMixStart();
+            float elapsed = start < 0 ? 0.0F : time - start;
+            float t = Math.min(Math.max(elapsed / 25.0F, 0.0F), 1.0F);
+            if (t >= 1.0F) {
+                return;
+            }
+            itemY = y + 0.12F - t * 0.5F;
+            scale = 0.5F * (1.0F - 0.35F * t);
+            spin = time * 2.0F + t * 540.0F;
+        } else {
+            itemY += (float) Math.sin(time * 0.1F) * 0.03F;
+        }
 
         pose.pushPose();
-        pose.translate(0.5F, y + 0.12F + bob, 0.5F);
-        pose.scale(0.5F, 0.5F, 0.5F);
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(time * 2.0F));
+        pose.translate(0.5F, itemY, 0.5F);
+        pose.scale(scale, scale, scale);
+        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(spin));
         minecraft.getItemRenderer().renderStatic(ingredient, ItemDisplayContext.GROUND, light, overlay,
                 pose, buffer, be.getLevel(), 0);
         pose.popPose();

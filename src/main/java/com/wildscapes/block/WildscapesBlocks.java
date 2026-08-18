@@ -107,6 +107,38 @@ public final class WildscapesBlocks {
                     .offsetType(BlockBehaviour.OffsetType.XZ)
                     .pushReaction(PushReaction.DESTROY)));
 
+    public static final DeferredBlock<ShortRushesBlock> SHORT_RUSHES = register("short_rushes",
+            () -> new ShortRushesBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT)
+                    .noCollission()
+                    .instabreak()
+                    .sound(SoundType.GRASS)
+                    .offsetType(BlockBehaviour.OffsetType.XZ)
+                    .pushReaction(PushReaction.DESTROY)));
+
+    // Internal blocks: players place and break plain vanilla moss carpets, which MossCarpetSwap
+    // swaps for this one so it can keep track of the moss creeping over each edge. Neither has a
+    // BlockItem, and the carpet drops a vanilla moss carpet (see its loot table).
+    // Vanilla moss carpet's own properties, spelled out rather than copied: ofFullCopy would drag
+    // the vanilla loot table along with them and quietly sideline ours.
+    public static final DeferredBlock<DrapingMossCarpetBlock> MOSS_CARPET = BLOCKS.register("moss_carpet",
+            () -> new DrapingMossCarpetBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GREEN)
+                    .strength(0.1F)
+                    .randomTicks()
+                    .sound(SoundType.MOSS_CARPET)
+                    .pushReaction(PushReaction.DESTROY)));
+
+    public static final DeferredBlock<HangingMossBlock> HANGING_MOSS = BLOCKS.register("hanging_moss",
+            () -> new HangingMossBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GREEN)
+                    .noCollission()
+                    .instabreak()
+                    .randomTicks()
+                    .sound(SoundType.MOSS_CARPET)
+                    .noOcclusion()
+                    .pushReaction(PushReaction.DESTROY)));
+
     // ---- Swamp decoration ----
     public static final DeferredBlock<BonfireBlock> BONFIRE = register("bonfire",
             () -> new BonfireBlock(BlockBehaviour.Properties.of()

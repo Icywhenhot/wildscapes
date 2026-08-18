@@ -1,0 +1,20 @@
+{
+  "type": "wildscapes:template_tree",
+  "config": {
+    "templates": [
+      "wildscapes:tree/land/tree1",
+      "wildscapes:tree/land/tree11",
+      "wildscapes:tree/land/tree12",
+      "wildscapes:tree/land/tree13",
+      "wildscapes:tree/land/tree14",
+      "wildscapes:tree/land/tree15",
+      "wildscapes:tree/land/tree2",
+      "wildscapes:tree/land/tree3",
+      "wildscapes:tree/land/tree6",
+      "wildscapes:tree/land/tree7",
+      "wildscapes:tree/land/tree8"
+    ],
+    "ground": "land",
+    "y_offset": -1
+  }
+}

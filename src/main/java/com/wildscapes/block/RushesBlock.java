@@ -23,10 +23,20 @@ import net.minecraft.world.level.material.Fluids;
 /**
  * Rushes are a two-block-tall swamp plant. They grow on the usual plant soils as
  * well as mud, so they feel at home around water — and they can be planted in the
- * water itself, standing in the shallows with either half submerged.
+ * water itself, standing in the shallows with either half submerged. Worldgen puts
+ * them there, in the shallows; {@link ShortRushesBlock} takes the bank beside them.
  */
 public class RushesBlock extends DoublePlantBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+
+    /** The soils either size of rush takes root in: the usual plant ones plus the wet ones. */
+    static boolean isRushSoil(BlockState state) {
+        return state.is(BlockTags.DIRT)
+                || state.is(Blocks.FARMLAND)
+                || state.is(Blocks.MUD)
+                || state.is(Blocks.CLAY)
+                || state.is(Blocks.SAND);
+    }
 
     public RushesBlock(Properties properties) {
         super(properties);
@@ -43,11 +53,7 @@ public class RushesBlock extends DoublePlantBlock implements SimpleWaterloggedBl
 
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.is(BlockTags.DIRT)
-                || state.is(Blocks.FARMLAND)
-                || state.is(Blocks.MUD)
-                || state.is(Blocks.CLAY)
-                || state.is(Blocks.SAND);
+        return isRushSoil(state);
     }
 
     @Nullable
