@@ -1,0 +1,15 @@
+{
+  "processors": [
+    {
+      "processor_type": "wildscapes:clear",
+      "margin": 1,
+      "headroom": 3
+    },
+    {
+      "processor_type": "wildscapes:stilts"
+    },
+    {
+      "processor_type": "wildscapes:connect"
+    }
+  ]
+}

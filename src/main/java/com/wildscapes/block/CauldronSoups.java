@@ -13,25 +13,15 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
-/**
- * Maps brewing ingredients to the effect they add to a magic soup, and derives a soup's
- * tint colour from its effects. The mapping mirrors vanilla potion brewing (sugar → speed,
- * spider eye → poison, …) but every effect is short-lived, since a soup trades duration for
- * being drinkable almost instantly and carrying several effects at once.
- */
 public final class CauldronSoups {
     private CauldronSoups() {}
 
-    /** Nether wart starts a soup; it adds no effect of its own. */
     public static final Item BASE_INGREDIENT = Items.NETHER_WART;
 
-    /** The most effects a single soup can hold. */
     public static final int MAX_EFFECTS = 3;
 
-    /** Effect length of a freshly mixed ingredient, in ticks — ~15 s, well under a potion. */
     public static final int EFFECT_DURATION = 300;
 
-    /** Poison/harm are punishing, so they run shorter still (~8 s). */
     public static final int SHORT_DURATION = 160;
 
     private static final Map<Item, Holder<MobEffect>> EFFECTS = Map.ofEntries(
@@ -49,11 +39,6 @@ public final class CauldronSoups {
             Map.entry(Items.SLIME_BALL, MobEffects.MOVEMENT_SLOWDOWN),
             Map.entry(Items.GLOWSTONE_DUST, MobEffects.GLOWING));
 
-    /**
-     * The effects vanilla brewing can push past level I (with glowstone). A soup never goes above
-     * the strongest level the game already has for an effect, so there is no Night Vision II and
-     * no Strength III.
-     */
     private static final Set<Holder<MobEffect>> STACKABLE = Set.of(
             MobEffects.MOVEMENT_SPEED,
             MobEffects.JUMP,
@@ -63,30 +48,25 @@ public final class CauldronSoups {
             MobEffects.REGENERATION,
             MobEffects.MOVEMENT_SLOWDOWN);
 
-    /** Whether {@code item} is a recognised effect ingredient (not the nether wart base). */
     public static boolean isEffectIngredient(Item item) {
         return EFFECTS.containsKey(item);
     }
 
-    /** The effect a given ingredient contributes, or null if it is not an ingredient. */
     @Nullable
     public static Holder<MobEffect> effectOf(Item item) {
         return EFFECTS.get(item);
     }
 
-    /** The highest amplifier an effect may reach: 1 (level II) if vanilla has one, else 0. */
     public static int maxAmplifier(Holder<MobEffect> effect) {
         return STACKABLE.contains(effect) ? 1 : 0;
     }
 
-    /** The effect instance a given ingredient contributes, or null if it is not an ingredient. */
     @Nullable
     public static MobEffectInstance effectFor(Item item) {
         Holder<MobEffect> effect = EFFECTS.get(item);
         return effect == null ? null : instanceOf(effect, 0);
     }
 
-    /** A freshly brewed instance of {@code effect}, clamped to the level vanilla allows. */
     public static MobEffectInstance instanceOf(Holder<MobEffect> effect, int amplifier) {
         boolean harmful = effect == MobEffects.POISON || effect == MobEffects.WEAKNESS
                 || effect == MobEffects.MOVEMENT_SLOWDOWN;
@@ -94,14 +74,9 @@ public final class CauldronSoups {
         return new MobEffectInstance(effect, duration, Math.min(amplifier, maxAmplifier(effect)));
     }
 
-    /**
-     * A colour for the soup surface and the bowl, blended from the effect particle colours the
-     * same way {@code PotionContents} blends a potion's colour. Falls back to a broth brown when
-     * the soup has no effects yet.
-     */
     public static int colorOf(List<MobEffectInstance> effects) {
         if (effects.isEmpty()) {
-            return 0x8B5A2B; // broth brown
+            return 0x8B5A2B;
         }
         int r = 0;
         int g = 0;

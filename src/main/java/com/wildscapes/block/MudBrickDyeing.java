@@ -19,24 +19,11 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-/**
- * Recolours a mud brick block in place when it is right-clicked with a dye.
- *
- * <p>This is handled as an interaction event rather than in a block class so it also
- * covers the four vanilla mud brick blocks, which we cannot change. Dyeing works in
- * both directions and between colours: any member of a family plus any dye gives that
- * colour, matching how the crafting recipes are tagged.
- */
 public final class MudBrickDyeing {
     private MudBrickDyeing() {}
 
-    /** Every dyeable block, mapped to the colour-keyed family it belongs to. */
     private static final Map<Block, Map<DyeColor, Block>> FAMILIES = new HashMap<>();
 
-    /**
-     * Fills in {@link #FAMILIES}. Must run after registration — {@code Wildscapes} calls
-     * this from common setup.
-     */
     public static void buildLookup() {
         FAMILIES.clear();
         addFamily(Blocks.MUD_BRICKS, MudBrickBlocks.BRICKS);
@@ -50,8 +37,6 @@ public final class MudBrickDyeing {
         Map<DyeColor, Block> byColor = new EnumMap<>(DyeColor.class);
         dyed.forEach((color, block) -> byColor.put(color, block.get()));
 
-        // The undyed block and all 16 dyed ones share one family, so any of them can be
-        // dyed into any other.
         FAMILIES.put(undyed, byColor);
         byColor.values().forEach(block -> FAMILIES.put(block, byColor));
     }
@@ -82,10 +67,6 @@ public final class MudBrickDyeing {
         }
     }
 
-    /**
-     * The given state in the requested colour, or null if the block is not dyeable or is
-     * already that colour.
-     */
     private static BlockState recolour(BlockState state, DyeColor color) {
         Map<DyeColor, Block> family = FAMILIES.get(state.getBlock());
         if (family == null) {
@@ -96,8 +77,6 @@ public final class MudBrickDyeing {
             return null;
         }
 
-        // Carry over facing, half, shape, slab type, wall connections and waterlogging so
-        // the block keeps its orientation and does not pop its water.
         BlockState dyed = target.defaultBlockState();
         for (Property<?> property : state.getProperties()) {
             dyed = copyProperty(state, dyed, property);

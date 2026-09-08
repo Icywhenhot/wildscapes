@@ -1,0 +1,68 @@
+{
+  "fallback": "wildscapes:village/swamp/decor",
+  "elements": [
+    {
+      "weight": 3,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/animalpen",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/decor1",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/decor3",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/decor4",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/decor5",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/decor6",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/decor7",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    }
+  ]
+}

@@ -25,37 +25,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-/**
- * Small slimes that have been around for a while pair up and merge into a medium one.
- *
- * <p>Half a minute after spawning a size-1 slime starts looking for another one that is
- * also ready. Seeking reuses vanilla's own {@code SlimeAttackGoal} by simply setting the
- * other slime as its attack target — that goal already steers a slime towards whatever it
- * is targeting, and a size-1 slime deals no damage ({@code isDealsDamage} is false when
- * tiny), so they bump into each other harmlessly. It also means a nearby player still wins
- * the slime's attention, since vanilla's targeting goals outrank this.
- *
- * <p>Once they touch, both shrink away over a second while a fresh medium slime grows in
- * their place. The animation is driven by a transient modifier on the vanilla
- * {@link Attributes#SCALE} attribute rather than a custom packet: attribute modifiers are
- * synced to clients already, so the renderer can read the merge straight off the entity and
- * fade it out. See {@code RedesignedSlimeRenderer}.
- *
- * <p>A named slime loses its name — the merged slime is a brand new entity and nothing is
- * copied onto it.
- */
 public final class SlimeMerging {
     private SlimeMerging() {}
 
-    /** Marks a slime mid-merge, and carries how far along it is. */
     public static final ResourceLocation MERGE_MODIFIER_ID =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "merging");
 
-    /** Takes scale from 1.0 down to 0.0625, the smallest the attribute allows. */
     public static final double MAX_SHRINK = 0.9375;
 
-    private static final int READY_AFTER_TICKS = 600; // 30 seconds
-    private static final int MERGE_TICKS = 20;        // 1 second of fading
+    private static final int READY_AFTER_TICKS = 600;
+    private static final int MERGE_TICKS = 20;
     private static final double SEEK_RADIUS = 16.0;
     private static final double TOUCH_DISTANCE = 1.0;
 
@@ -65,7 +44,6 @@ public final class SlimeMerging {
     private static final String TAG_GROWING = "WildscapesMergeGrowing";
 
     public static void onEntityTick(EntityTickEvent.Post event) {
-        // Magma cubes extend Slime but are left out of this deliberately.
         if (!(event.getEntity() instanceof Slime slime) || slime instanceof MagmaCube) {
             return;
         }
@@ -83,8 +61,6 @@ public final class SlimeMerging {
         }
     }
 
-    // ------------------------------------------------------------------ seeking
-
     private static void seekPartner(Slime slime, CompoundTag data) {
         if (!data.contains(TAG_DELAY)) {
             data.putInt(TAG_DELAY, READY_AFTER_TICKS);
@@ -95,9 +71,7 @@ public final class SlimeMerging {
             data.putInt(TAG_DELAY, delay - 1);
             return;
         }
-        // Chasing a player is more interesting than merging, so leave that alone. A slime
-        // that was spawned with its AI switched off is left alone too, since the merge
-        // turns AI back on when it finishes.
+
         if (slime.isNoAi() || slime.isPassenger() || slime.isVehicle() || slime.getTarget() instanceof Player) {
             return;
         }
@@ -135,8 +109,6 @@ public final class SlimeMerging {
         return data.hasUUID(TAG_PARTNER) || data.contains(TAG_GROWING);
     }
 
-    // ------------------------------------------------------------------ merging
-
     private static void link(Slime slime, Slime partner) {
         CompoundTag data = slime.getPersistentData();
         data.putUUID(TAG_PARTNER, partner.getUUID());
@@ -156,12 +128,10 @@ public final class SlimeMerging {
         data.putInt(TAG_PROGRESS, progress);
         setShrink(slime, (double) progress / MERGE_TICKS);
 
-        // Slide the pair together so they visibly meet before they vanish.
         Vec3 middle = slime.position().add(partner.position()).scale(0.5);
         Vec3 next = slime.position().lerp(middle, 0.35);
         slime.moveTo(next.x, next.y, next.z, slime.getYRot(), slime.getXRot());
 
-        // One of the two runs the finish, so the result is not spawned twice.
         if (progress >= MERGE_TICKS && slime.getUUID().compareTo(partner.getUUID()) < 0) {
             spawnMerged(slime, middle);
             partner.discard();
@@ -178,7 +148,6 @@ public final class SlimeMerging {
         return partner instanceof Slime other && other.getSize() == 1 ? other : null;
     }
 
-    /** Puts a slime back the way it was when its partner did not make it. */
     private static void abort(Slime slime, CompoundTag data) {
         data.remove(TAG_PARTNER);
         data.remove(TAG_PROGRESS);
@@ -197,15 +166,13 @@ public final class SlimeMerging {
         }
         merged.setSize(2, true);
         merged.moveTo(where.x, where.y, where.z, a.getYRot(), 0.0F);
-        // Nothing is carried over from the pair, so a named slime loses its name here.
+
         beginGrowing(merged);
         level.addFreshEntity(merged);
 
         level.sendParticles(ParticleTypes.ITEM_SLIME, where.x, where.y + 0.3, where.z, 24, 0.3, 0.3, 0.3, 0.0);
         level.playSound(null, where.x, where.y, where.z, SoundEvents.SLIME_SQUISH, SoundSource.HOSTILE, 1.0F, 0.8F);
     }
-
-    // ------------------------------------------------------------------ growing in
 
     private static void beginGrowing(Slime slime) {
         slime.getPersistentData().putInt(TAG_GROWING, MERGE_TICKS);
@@ -226,8 +193,6 @@ public final class SlimeMerging {
         setShrink(slime, (double) remaining / MERGE_TICKS);
     }
 
-    // ------------------------------------------------------------------ scale + alpha
-
     private static void setShrink(LivingEntity entity, double progress) {
         AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
         if (scale != null) {
@@ -244,14 +209,6 @@ public final class SlimeMerging {
         }
     }
 
-    /**
-     * How opaque a slime should be drawn, from the merge modifier alone. Reading the
-     * modifier rather than the resulting scale keeps this from fading slimes that are
-     * small for some unrelated reason, such as a command or another mod.
-     *
-     * <p>One expression covers both halves of the animation: the pair shrink towards zero
-     * as their modifier grows, and the merged slime grows back as its modifier unwinds.
-     */
     public static float mergeAlpha(LivingEntity entity) {
         AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
         if (scale == null) {

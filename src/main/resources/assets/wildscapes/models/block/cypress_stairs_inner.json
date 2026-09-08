@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "wildscapes:block/cypress_planks",
+    "top": "wildscapes:block/cypress_planks",
+    "side": "wildscapes:block/cypress_planks"
+  }
+}

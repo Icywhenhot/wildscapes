@@ -21,6 +21,13 @@ public final class WildscapesEntities {
                     .clientTrackingRange(10)
                     .build("abomination"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<MirelashHook>> MIRELASH_HOOK =
+            ENTITY_TYPES.register("mirelash_hook", () -> EntityType.Builder.<MirelashHook>of(MirelashHook::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .clientTrackingRange(12)
+                    .updateInterval(1)
+                    .build("mirelash_hook"));
+
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);
     }

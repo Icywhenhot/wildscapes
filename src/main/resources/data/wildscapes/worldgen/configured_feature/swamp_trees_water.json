@@ -12,6 +12,7 @@
       "wildscapes:tree/water/watertree9"
     ],
     "ground": "water",
-    "y_offset": 0
+    "y_offset": 0,
+    "max_water_depth": 5
   }
 }

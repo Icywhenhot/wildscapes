@@ -8,12 +8,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 
-/**
- * A bubble swelling up out of the brew when nether wart is added: it drifts slowly upwards while
- * playing its five sprite frames once, so the frame it shows tracks how close it is to popping.
- */
 public class BrewBubbleParticle extends TextureSheetParticle {
-
     private final SpriteSet sprites;
 
     protected BrewBubbleParticle(ClientLevel level, double x, double y, double z,

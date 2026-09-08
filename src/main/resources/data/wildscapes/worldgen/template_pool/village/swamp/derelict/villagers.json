@@ -1,0 +1,29 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 8,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/derelict_villager_grown",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/derelict"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/derelict_villager_child",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/derelict"
+      }
+    },
+    {
+      "weight": 6,
+      "element": {
+        "element_type": "minecraft:empty_pool_element"
+      }
+    }
+  ]
+}

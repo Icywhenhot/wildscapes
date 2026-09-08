@@ -46,28 +46,16 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/**
- * The enhanced-cauldron block. Players never craft or hold this — {@link CauldronSwap} swaps a
- * real {@code minecraft:cauldron} for it when the cauldron is heated or gains a dyed-water /
- * potion / soup state, and {@link CauldronBlockEntity} reverts it to vanilla once it is plain and
- * cold. It reimplements the vanilla water interactions plus the Bedrock-style ones (dyeing water
- * and leather, storing potions, tipping arrows) and the magic-soup brewing loop.
- */
 public class WildscapesCauldronBlock extends Block implements EntityBlock {
-
     public static final BooleanProperty BOILING = BooleanProperty.create("boiling");
 
     private static final VoxelShape INSIDE = box(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
-    /** The vanilla cauldron shell, used while cold (the cold state renders the vanilla model). */
+
     private static final VoxelShape SHAPE = Shapes.join(Shapes.block(),
             Shapes.or(box(0.0, 0.0, 4.0, 16.0, 3.0, 12.0), box(4.0, 0.0, 0.0, 12.0, 3.0, 16.0),
                     box(2.0, 0.0, 2.0, 14.0, 3.0, 14.0), INSIDE),
             BooleanOp.ONLY_FIRST);
 
-    /**
-     * The boiling pot: a one-block-thick shell standing on four corner legs, hollow from its floor
-     * at 3/16 up to the open rim. Matches {@code block/cauldron_boiling}.
-     */
     private static final VoxelShape BOILING_SHAPE = Shapes.or(
             Shapes.join(box(0.0, 3.0, 0.0, 16.0, 16.0, 16.0), box(1.0, 3.0, 1.0, 15.0, 16.0, 15.0),
                     BooleanOp.ONLY_FIRST),
@@ -79,17 +67,14 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
         registerDefaultState(stateDefinition.any().setValue(BOILING, false));
     }
 
-    // ---- Heat / swap helpers ----------------------------------------------------
-
     public static boolean hasHeatSourceBelow(Level level, BlockPos pos) {
         BlockState below = level.getBlockState(pos.below());
-        if (below.is(WildscapesBlocks.BONFIRE.get())) {
+        if (below.getBlock() instanceof BonfireBlock) {
             return true;
         }
         return below.getBlock() instanceof CampfireBlock && below.getValue(CampfireBlock.LIT);
     }
 
-    /** Turns this position back into the matching vanilla cauldron. */
     public static void revertToVanilla(Level level, BlockPos pos, int waterLevel) {
         BlockState vanilla = waterLevel <= 0
                 ? Blocks.CAULDRON.defaultBlockState()
@@ -97,8 +82,6 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
                         .setValue(LayeredCauldronBlock.LEVEL, Math.min(waterLevel, CauldronBlockEntity.MAX_LEVEL));
         level.setBlock(pos, vanilla, Block.UPDATE_ALL);
     }
-
-    // ---- Interactions -----------------------------------------------------------
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
@@ -110,12 +93,11 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
         CauldronBlockEntity.Contents contents = be.getContents();
         boolean boiling = state.getValue(BOILING);
 
-        // --- Magic soup brewing ---
         if (item == CauldronSoups.BASE_INGREDIENT && boiling
                 && contents == CauldronBlockEntity.Contents.WATER && !be.hasSoupBase()) {
             return act(level, () -> {
                 be.startSoupBase();
-                // Splash first: consuming the last wart would leave an empty stack to spray.
+
                 sfx(level, pos, be, WildscapesSounds.CAULDRON_ADD_INGREDIENT.get(), stack, true);
                 consume(player, stack);
             });
@@ -142,17 +124,12 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             });
         }
 
-        // Once nether wart has gone in, the pot is a soup pot and nothing else: a bucket, a dye or
-        // a bottle would otherwise wipe out a brew that took a stir apiece to build, and a brewing
-        // item that got this far had nothing to do (a full or capped soup, no stir pending). Refuse
-        // both outright; anything unrelated still passes through so blocks can be placed as normal.
         if (contents == CauldronBlockEntity.Contents.BREW) {
             return isBrewingItem(item) || isVesselItem(stack)
                     ? ItemInteractionResult.FAIL
                     : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        // --- Water ---
         if (isWaterBottle(stack)) {
             if ((contents == CauldronBlockEntity.Contents.EMPTY
                     || (contents == CauldronBlockEntity.Contents.WATER && be.getSurfaceColor() == CauldronBlockEntity.WATER_COLOR))
@@ -183,7 +160,6 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             });
         }
 
-        // --- Bedrock dye / leather ---
         if (item instanceof DyeItem dye && contents == CauldronBlockEntity.Contents.WATER) {
             return act(level, () -> {
                 be.mixInDye(dye.getDyeColor().getTextureDiffuseColor() & 0xFFFFFF);
@@ -204,7 +180,6 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             });
         }
 
-        // --- Bedrock potions / tipped arrows ---
         if (isStorablePotion(stack)) {
             PotionContents pc = stack.get(DataComponents.POTION_CONTENTS);
             if (pc != null && be.addPotion(pc)) {
@@ -261,7 +236,6 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
         void run();
     }
 
-    /** Runs the mutation server-side only, returning the sided result so the arm still swings on the client. */
     private static ItemInteractionResult act(Level level, CauldronAction action) {
         if (!level.isClientSide) {
             action.run();
@@ -275,10 +249,6 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
         }
     }
 
-    /**
-     * Plops something into the pot: the sound, a spray of the item itself, and the brew's own
-     * reaction — fat bubbles boiling up for the nether-wart base, a splash for an ingredient.
-     */
     private static void sfx(Level level, BlockPos pos, CauldronBlockEntity be,
             net.minecraft.sounds.SoundEvent sound, ItemStack ingredient, boolean base) {
         level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -296,13 +266,11 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
         }
     }
 
-    /** Items the brewing loop uses: the base, an effect ingredient, the ladle, a bowl to scoop with. */
     private static boolean isBrewingItem(Item item) {
         return item == CauldronSoups.BASE_INGREDIENT || CauldronSoups.isEffectIngredient(item)
                 || item == WildscapesItems.LADLE.get() || item == Items.BOWL;
     }
 
-    /** Items the cauldron handles as a plain vessel — filling, emptying, dyeing, storing potions. */
     private static boolean isVesselItem(ItemStack stack) {
         Item item = stack.getItem();
         return item == Items.WATER_BUCKET || item == Items.BUCKET || item == Items.GLASS_BOTTLE
@@ -331,8 +299,6 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
         }
         return !isWaterBottle(stack);
     }
-
-    // ---- Block entity wiring ----------------------------------------------------
 
     @Nullable
     @Override

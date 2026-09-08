@@ -10,14 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 
-/**
- * A looping boil ambience that plays for as long as a heated cauldron holds liquid. Started from
- * {@link CauldronBlockEntity#clientTick} and self-stops (via {@link #tick()}) once the cauldron
- * stops boiling, is emptied, or unloads — clearing the block entity's flag so it can start again
- * later. Client-only; never referenced on a dedicated server.
- */
 public final class CauldronBoilSound extends AbstractTickableSoundInstance {
-
     private final CauldronBlockEntity cauldron;
     private final Level level;
     private final BlockPos pos;

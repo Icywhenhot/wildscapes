@@ -10,11 +10,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/**
- * The knee-high rush: a single block of the same plant as {@link RushesBlock}, caught before it
- * has run to full height. It takes the same soils as its taller sibling, but not the water —
- * worldgen grows it along the bank while the tall rushes stand in the shallows.
- */
 public class ShortRushesBlock extends BushBlock {
     public static final MapCodec<ShortRushesBlock> CODEC = simpleCodec(ShortRushesBlock::new);
 

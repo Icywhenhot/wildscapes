@@ -5,6 +5,11 @@
     "wildscapes:cypress_planks",
     "wildscapes:cypress_door",
     "wildscapes:cypress_trapdoor",
-    "wildscapes:bonfire"
+    "wildscapes:bonfire",
+    "wildscapes:soul_bonfire",
+    "wildscapes:cypress_fence",
+    "wildscapes:cypress_fence_gate",
+    "wildscapes:cypress_stairs",
+    "wildscapes:cypress_slab"
   ]
 }

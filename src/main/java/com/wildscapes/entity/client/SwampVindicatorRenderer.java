@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Vindicator;
 
-/** As {@link SwampPillagerRenderer}, for vindicators. */
 public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
     private static final ResourceLocation VANILLA =
             ResourceLocation.withDefaultNamespace("textures/entity/illager/vindicator.png");
@@ -27,8 +26,7 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
         super(context, new IllagerModel<>(context.bakeLayer(ModelLayers.VINDICATOR)), 0.5F);
         this.vanillaModel = this.model;
         this.swampModel = new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.VINDICATOR_SWAMP));
-        // Vanilla only draws the axe while the vindicator is aggressive; otherwise its
-        // arms are crossed and there is no hand to put it in.
+
         this.addLayer(new ItemInHandLayer<Vindicator, IllagerModel<Vindicator>>(this, context.getItemInHandRenderer()) {
             @Override
             public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Vindicator entity,

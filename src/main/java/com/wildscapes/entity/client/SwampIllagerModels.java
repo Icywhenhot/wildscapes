@@ -8,24 +8,9 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-/**
- * Swamp-dweller geometry for pillagers and vindicators, converted from
- * {@code models/redesign/*.bbmodel}.
- *
- * <p>The part names and pivots deliberately match {@link IllagerModel}'s so the vanilla
- * model class can drive them: everything vanilla animates — head tracking, the walk
- * cycle, the crossbow poses, the vindicator's crossed arms — keeps working, and the
- * redesign rides along as extra cubes on the same bones.
- *
- * <p>{@code hat} is empty on purpose. {@link IllagerModel} hides it, so the second head
- * cube lives on {@code head} instead; {@code left_shoulder} is likewise a placeholder the
- * vanilla class expects to find. Pillagers never strike the crossed-arms pose, so their
- * {@code arms} part carries no cubes either.
- */
 public final class SwampIllagerModels {
     private SwampIllagerModels() {}
 
-    /** Vanilla's crossed-arms pivot; the bbmodel leaves this bone unposed. */
     private static final PartPose ARMS_POSE = PartPose.offsetAndRotation(0.0F, 3.0F, -1.0F, -0.75F, 0.0F, 0.0F);
 
     public static LayerDefinition createPillagerLayer() {
@@ -87,10 +72,7 @@ public final class SwampIllagerModels {
                 CubeListBuilder.create()
                         .texOffs(0, 0).addBox(-4F, -10F, -4F, 8F, 10F, 8F),
                 PartPose.ZERO);
-        // The bbmodel keeps vanilla's overlay cube, but the vindicator texture leaves that
-        // UV region blank — so it goes on the hat, which IllagerModel hides, exactly as
-        // vanilla does. (The pillager's redesign paints a hood there, so its copy stays on
-        // the head.) Move this back onto `head` if the texture ever gains art here.
+
         head.addOrReplaceChild("hat",
                 CubeListBuilder.create()
                         .texOffs(32, 0).addBox(-4F, -10F, -4F, 8F, 10F, 8F, new CubeDeformation(0.25F)),

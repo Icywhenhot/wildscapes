@@ -46,16 +46,6 @@ import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.animation.keyframe.event.builtin.AutoPlayingSoundKeyframeHandler;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-/**
- * "Abomination of the Witches" — a hostile GeckoLib-animated mob (a big witch's toad).
- *
- * <p>Combat: leaps at players from &gt; 10 blocks (dropping a potion-residue cloud on
- * landing), tongue-yanks players within 10 blocks (or reels them out of water), avoids
- * &amp; actively escapes water, is immune to potions and fall damage, and does little
- * direct melee damage. The leap is a four-phase sequence — anticipation ({@code pre_jump}),
- * ascent ({@code jump_up}), peak ({@code intermediate_jump}), descent ({@code jump_down}) —
- * with the physics driven to match each phase.
- */
 public class AbominationEntity extends Monster implements GeoEntity {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.abomination.static");
     private static final RawAnimation WALK = RawAnimation.begin().thenLoop("animation.abomination.walk");
@@ -69,39 +59,28 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private static final RawAnimation JUMP_PEAK = RawAnimation.begin().thenPlayAndHold("animation.abomination.intermediate_jump");
     private static final RawAnimation JUMP_DOWN = RawAnimation.begin().thenLoop("animation.abomination.jump_down");
 
-    // Jump phase, synced so the animation matches the physics on the client.
     private static final int ST_NONE = 0, ST_PREJUMP = 1, ST_ASCENT = 2, ST_PEAK = 3, ST_DESCENT = 4;
     private static final EntityDataAccessor<Integer> JUMP_STATE =
             SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.INT);
-    // Jump animation playback speed, synced so the client speeds the animation up to
-    // match the computed arc.
+
     private static final EntityDataAccessor<Float> JUMP_SPEED =
             SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.FLOAT);
-    // Entity id of the tongue's current victim (-1 = none), synced so the client-side
-    // model can aim and stretch the tongue bone at it.
+
     private static final EntityDataAccessor<Integer> TONGUE_TARGET =
             SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.INT);
 
-    // Jump tuning (20 ticks = 1s). The leap is a real ballistic arc whose flight time
-    // scales with distance, and the jump animation is sped up to match so it doesn't
-    // hang in the air.
-    private static final int PRE_JUMP_LAUNCH = 24;      // ~1.19s into pre_jump = when jump.wav plays
-    private static final double JUMP_G = 0.09D;         // per-tick gravity for the arc
-    private static final double LEAP_H_MAX = 1.2D;      // horizontal speed cap (enough to reach far targets)
-    private static final int T_MIN = 12, T_MAX = 26;    // flight-time bounds (ticks) ≈ 0.6–1.3s
-    private static final int INTERMEDIATE_TICKS = 13;   // length of intermediate_jump (~0.67s)
-    private static final int REFERENCE_AIR = 20;        // flight time at which anim speed = 1.0
+    private static final int PRE_JUMP_LAUNCH = 24;
+    private static final double JUMP_G = 0.09D;
+    private static final double LEAP_H_MAX = 1.2D;
+    private static final int T_MIN = 12, T_MAX = 26;
+    private static final int INTERMEDIATE_TICKS = 13;
+    private static final int REFERENCE_AIR = 20;
 
-    // Tongue timing (thounge is ~1.25s = 25 ticks). These are synced to the baked tongue
-    // reveal in the animation (scaleY peaks at ~0.83s and retracts by ~1.04s, i.e. ticks
-    // 14–21). The grab is held until the tongue has fully reached out and is touching the
-    // target (~tick 19) so the reel only starts once the tongue has actually caught them —
-    // then it reels them in as the tongue retracts, settling ~1 block from the mob.
-    private static final int TONGUE_GRAB_TICK = 19;   // tongue has reached the target — catch
-    private static final int TONGUE_REEL_END = 23;    // stop reeling (tongue is retracting)
-    private static final int TONGUE_END_TICK = 25;    // animation ends
-    private static final double TONGUE_HOLD_RADIUS = 1.0D; // desired final distance (blocks)
-    private static final double TONGUE_REEL_SPEED = 2.5D;  // max reel step per tick (fast whip)
+    private static final int TONGUE_GRAB_TICK = 19;
+    private static final int TONGUE_REEL_END = 23;
+    private static final int TONGUE_END_TICK = 25;
+    private static final double TONGUE_HOLD_RADIUS = 1.0D;
+    private static final double TONGUE_REEL_SPEED = 2.5D;
 
     private static final Holder<MobEffect>[] RESIDUE_EFFECTS = residueEffects();
 
@@ -115,7 +94,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
     }
 
     private int jumpTicks = -1;
-    private int jumpFlightTime;      // computed flight time (ticks) for the current leap
+    private int jumpFlightTime;
     private double jumpVX, jumpVY0, jumpVZ;
     private int tongueTicks = -1;
     private int croakCooldown = 100;
@@ -126,7 +105,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     public AbominationEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
-        this.setPathfindingMalus(PathType.WATER, 16.0F); // bad swimmer: avoid water
+        this.setPathfindingMalus(PathType.WATER, 16.0F);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -146,7 +125,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
         builder.define(TONGUE_TARGET, -1);
     }
 
-    /** Entity id the tongue is currently grabbing, or -1. Used by the client model. */
     public int getTongueTargetId() {
         return this.entityData.get(TONGUE_TARGET);
     }
@@ -183,15 +161,14 @@ public class AbominationEntity extends Monster implements GeoEntity {
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
-    // ---- Immunities ----
     @Override
     public boolean canBeAffected(MobEffectInstance effect) {
-        return false; // immune to all potion effects
+        return false;
     }
 
     @Override
     public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
-        return false; // never takes fall damage (it leaps constantly)
+        return false;
     }
 
     @Override
@@ -201,7 +178,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
             return;
         }
 
-        // Can't swim — bail on any action and scramble back to land.
         if (this.isInWaterOrBubble()) {
             if (this.jumpTicks >= 0 || this.getJumpState() != ST_NONE) {
                 this.setNoGravity(false);
@@ -236,7 +212,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
             boolean targetInWater = target.isInWaterOrBubble();
 
             if (targetInWater) {
-                // Never leap at a target in water — close in and tongue them out.
                 if (los && this.tongueCooldown <= 0 && dist <= 12.0D) {
                     startTongue();
                     this.tongueCooldown = 80 + this.random.nextInt(40);
@@ -250,14 +225,13 @@ public class AbominationEntity extends Monster implements GeoEntity {
             }
         } else if (this.getDeltaMovement().horizontalDistanceSqr() < 1.0E-4 && --this.croakCooldown <= 0) {
             triggerAnim("special", "croak");
-            this.croakCooldown = 200 + this.random.nextInt(100); // 10–15s
+            this.croakCooldown = 200 + this.random.nextInt(100);
         }
     }
 
-    // ---- Leap (four phases: anticipation → ascent → peak → descent) ----
     private void startLeap() {
         this.setJumpState(ST_PREJUMP);
-        this.setJumpSpeed(1.0F);   // pre_jump windup plays at normal speed
+        this.setJumpSpeed(1.0F);
         this.jumpTicks = 0;
         this.getNavigation().stop();
     }
@@ -269,7 +243,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         }
 
         if (this.getJumpState() == ST_PREJUMP) {
-            this.setDeltaMovement(0.0D, this.getDeltaMovement().y, 0.0D); // wind up in place
+            this.setDeltaMovement(0.0D, this.getDeltaMovement().y, 0.0D);
             if (++this.jumpTicks >= PRE_JUMP_LAUNCH) {
                 launch(target);
                 this.jumpTicks = 0;
@@ -278,12 +252,10 @@ public class AbominationEntity extends Monster implements GeoEntity {
             return;
         }
 
-        // Airborne — follow the pre-computed ballistic arc (no artificial hang).
         double vy = this.jumpVY0 - JUMP_G * this.jumpTicks;
         homeHorizontal(target);
         this.setDeltaMovement(this.jumpVX, vy, this.jumpVZ);
 
-        // Animation phase from the arc: rising → apex flourish → falling.
         int ascentTicks = (int) Math.round(this.jumpVY0 / JUMP_G);
         int peakDur = Math.max(2, (int) Math.ceil(INTERMEDIATE_TICKS / this.getJumpSpeed()));
         int phase = this.jumpTicks < ascentTicks ? ST_ASCENT
@@ -303,7 +275,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
         }
     }
 
-    /** Compute a ballistic arc that lands on the target and set the launch velocity. */
     private void launch(@Nullable LivingEntity target) {
         this.setNoGravity(true);
         this.getNavigation().stop();
@@ -319,8 +290,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
         }
         double dist = Math.sqrt(dx * dx + dz * dz);
 
-        // Flight time scales with distance (short hop vs long leap), then the vertical
-        // launch speed is whatever makes the arc land after that many ticks.
         int t = Mth.clamp((int) Math.round(dist * 0.9D), T_MIN, T_MAX);
         this.jumpFlightTime = t;
         this.jumpVY0 = JUMP_G * t / 2.0D;
@@ -328,12 +297,10 @@ public class AbominationEntity extends Monster implements GeoEntity {
         this.jumpVX = dist > 1.0E-4 ? dx / dist * speed : 0.0D;
         this.jumpVZ = dist > 1.0E-4 ? dz / dist * speed : 0.0D;
 
-        // Speed the jump animation up so a quick arc doesn't play in slow motion.
         this.setJumpSpeed((float) Mth.clamp((double) REFERENCE_AIR / t, 1.0D, 2.5D));
         this.setDeltaMovement(this.jumpVX, this.jumpVY0, this.jumpVZ);
     }
 
-    /** Re-aim horizontal velocity at the target each tick so the leap lands on them. */
     private void homeHorizontal(@Nullable LivingEntity target) {
         if (target == null) {
             return;
@@ -342,7 +309,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         double dz = target.getZ() - this.getZ();
         double dist = Math.sqrt(dx * dx + dz * dz);
         int remaining = Math.max(1, this.jumpFlightTime - this.jumpTicks);
-        double speed = Math.min(dist / remaining, LEAP_H_MAX); // arrive at the target as it lands
+        double speed = Math.min(dist / remaining, LEAP_H_MAX);
         this.jumpVX = dist > 1.0E-4 ? dx / dist * speed : 0.0D;
         this.jumpVZ = dist > 1.0E-4 ? dz / dist * speed : 0.0D;
     }
@@ -361,10 +328,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         this.level().addFreshEntity(cloud);
     }
 
-    // ---- Tongue reel ----
     private void startTongue() {
-        // The thounge (mouth-open) animation is driven by the movement controller while
-        // a tongue target is set — see movementController().
         this.tongueTicks = 0;
         LivingEntity target = this.getTarget();
         setTongueTarget(target != null ? target.getId() : -1);
@@ -372,7 +336,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
     }
 
     private void tickTongue() {
-        this.setDeltaMovement(0.0D, this.getDeltaMovement().y, 0.0D); // mob stays planted while lashing
+        this.setDeltaMovement(0.0D, this.getDeltaMovement().y, 0.0D);
         LivingEntity target = this.getTarget();
         if (target != null) {
             this.getLookControl().setLookAt(target);
@@ -387,29 +351,22 @@ public class AbominationEntity extends Monster implements GeoEntity {
         }
     }
 
-    /**
-     * Reel {@code target} toward the mob, decelerating so it settles ~{@link #TONGUE_HOLD_RADIUS}
-     * block away instead of overshooting. Sets velocity each tick so it converges (Minecraft
-     * won't let a player be positioned to the exact centimetre — the collision boxes keep them
-     * a hair over 1 block — but they end up reliably adjacent).
-     */
     private void reelTarget(LivingEntity target, boolean firstTick) {
         double dx = this.getX() - target.getX();
         double dz = this.getZ() - target.getZ();
         double dist = Math.sqrt(dx * dx + dz * dz);
-        double vy = firstTick && target.onGround() ? 0.3D : target.getDeltaMovement().y; // pop off the ground once
+        double vy = firstTick && target.onGround() ? 0.3D : target.getDeltaMovement().y;
         double overshoot = dist - TONGUE_HOLD_RADIUS;
         if (overshoot > 0.05D && dist > 1.0E-4) {
             double step = Math.min(overshoot, TONGUE_REEL_SPEED);
             target.setDeltaMovement(dx / dist * step, vy, dz / dist * step);
         } else {
-            target.setDeltaMovement(0.0D, vy, 0.0D); // arrived — hold at ~1 block
+            target.setDeltaMovement(0.0D, vy, 0.0D);
         }
-        target.hurtMarked = true; // sync the velocity to the client each tick
+        target.hurtMarked = true;
         target.hasImpulse = true;
     }
 
-    // ---- Water escape ----
     private void escapeWater() {
         BlockPos land = findNearestLand();
         if (land != null) {
@@ -453,7 +410,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
                 && below.isFaceSturdy(level, pos.below(), Direction.UP);
     }
 
-    // ---- Gameplay sounds ----
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
@@ -470,7 +426,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
         return WildscapesSounds.ABOMINATION_DEATH.get();
     }
 
-    // ---- GeckoLib ----
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "movement", 5, this::movementController)
@@ -498,7 +453,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
             return PlayState.CONTINUE;
         }
         if (this.getTongueTargetId() >= 0) {
-            state.setAnimation(THOUNGE); // mouth-open / lash body motion
+            state.setAnimation(THOUNGE);
             return PlayState.CONTINUE;
         }
         state.setAnimation(state.isMoving() ? WALK : IDLE);

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "bonfire",
+  "key": {
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "S": {
+      "item": "minecraft:soul_sand"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "N N",
+    "NSN",
+    "III"
+  ],
+  "result": {
+    "id": "wildscapes:soul_bonfire",
+    "count": 1
+  }
+}

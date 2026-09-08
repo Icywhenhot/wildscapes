@@ -9,17 +9,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-/**
- * Witch geometry converted from {@code models/complete redesign/witch.bbmodel}.
- *
- * <p>Part names mirror {@link WitchModel} / {@link VillagerModel} so the vanilla classes
- * still drive it — the twitching nose, the head tracking, the walk cycle and the
- * potion-drinking pose all come along unchanged.
- *
- * <p>{@code hat_rim} is empty: the redesign replaces vanilla's wide flat brim with the
- * chunkier {@code hat} block, but {@link VillagerModel}'s constructor still looks the part
- * up. {@code jacket} and {@code mole} carry the redesign's second body and nose cubes.
- */
 public final class RedesignedWitchModel {
     private RedesignedWitchModel() {}
 

@@ -20,20 +20,10 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-/**
- * Tracks which vanilla mobs were born in a swamp so the client can give them their
- * swamp-only look. The answer is baked in once, at the spot the mob first appeared,
- * and then travels with it — a pillager patrol that wanders out of the marsh keeps
- * the mossy robes it grew up in.
- *
- * <p>Mobs that always get a redesign regardless of biome (witches, slimes) don't go
- * through here at all; their renderers simply never look at vanilla's textures.
- */
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class SwampVariants {
     private SwampVariants() {}
 
-    /** Biomes whose pillagers and vindicators wear the swamp redesign. */
     public static final TagKey<Biome> SWAMP_BIOMES = TagKey.create(Registries.BIOME,
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "swamp_variant_biomes"));
 
@@ -44,11 +34,6 @@ public final class SwampVariants {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Wildscapes.MODID);
 
-    /**
-     * Tri-state so we can tell "spawned outside a swamp" apart from "not looked at yet":
-     * the flag is decided once and then persists, instead of being re-derived from
-     * wherever the mob happens to be standing when its chunk reloads.
-     */
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<Byte>> SWAMP_BORN =
             ATTACHMENT_TYPES.register("swamp_born", () -> AttachmentType.<Byte>builder(() -> UNDECIDED)
                     .serialize(Codec.BYTE)
@@ -59,7 +44,6 @@ public final class SwampVariants {
         ATTACHMENT_TYPES.register(bus);
     }
 
-    /** Whether this entity should be rendered with its swamp redesign. */
     public static boolean isSwampBorn(Entity entity) {
         return entity.getData(SWAMP_BORN) == SWAMP;
     }
@@ -70,8 +54,7 @@ public final class SwampVariants {
         if (event.getLevel().isClientSide() || !hasSwampVariant(entity)) {
             return;
         }
-        // Fires for freshly spawned mobs *and* for ones being read back off disk, so only
-        // mobs that have never been judged get judged — the rest keep what they were born with.
+
         if (entity.getData(SWAMP_BORN) != UNDECIDED) {
             return;
         }

@@ -20,22 +20,11 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-/**
- * Checks that the hand-built trees actually come out of their structure files and come out as
- * cypress. The feature is called directly rather than through worldgen, since what is worth
- * pinning down here is the loading and the block swap, not which chunks it lands in.
- */
 @GameTestHolder("wildscapes")
 @PrefixGameTestTemplate(false)
 public class TreePlacementTests {
-
-    /** Resolved against {@link GameTestHolder}'s namespace; the class-name prefix is off above. */
     private static final String PLATFORM = "gametest/tree_platform";
 
-    /**
-     * The first free block above the platform. Game tests place their structure one above the
-     * marker block, so the dirt floor of {@code tree_platform} lands at y 1, not y 0.
-     */
     private static final BlockPos GROUND = new BlockPos(12, 2, 12);
 
     @GameTest(template = PLATFORM)
@@ -52,10 +41,6 @@ public class TreePlacementTests {
         });
     }
 
-    /**
-     * tree2 carries a vine saved clinging to nothing, which has no model and leaves a hole in the
-     * drape it belongs to. Every vine the tree puts down should end up hanging off something.
-     */
     @GameTest(template = PLATFORM)
     public static void noVineIsLeftClingingToNothing(GameTestHelper helper) {
         helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree2",
@@ -65,14 +50,13 @@ public class TreePlacementTests {
             if (!anyFace(vine)) {
                 throw new AssertionError("a vine at " + pos + " is clinging to nothing");
             }
-            // up-only is the state that renders as a flat sheet instead of hanging.
+
             if (vine.getValue(VineBlock.UP) && !anySideFace(vine)) {
                 throw new AssertionError("a vine at " + pos + " is pinned flat to the ceiling");
             }
         }));
     }
 
-    /** Walks every vine the tree put down, a good margin past the platform. */
     private static void forEachVine(GameTestHelper helper, java.util.function.BiConsumer<BlockPos, BlockState> check) {
         for (int x = 0; x < 24; x++) {
             for (int y = 0; y < 20; y++) {
@@ -100,11 +84,6 @@ public class TreePlacementTests {
         return false;
     }
 
-    /**
-     * The same rule for the four model-built trees a sapling grows. They are no longer part of
-     * worldgen, but a sapling still puts one down, and they used to pin a vine to the ceiling
-     * whenever it had a branch above it and nothing beside it.
-     */
     @GameTest(template = PLATFORM)
     public static void saplingTreeHangsNoFlatVines(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
@@ -123,8 +102,7 @@ public class TreePlacementTests {
     public static void treesRefuseToGrowThroughEachOther(GameTestHelper helper) {
         helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree1",
                 TemplateTreeConfiguration.Ground.LAND, -1), "the first tree refused to place");
-        // Tried repeatedly: rotation and mirror are rolled per attempt, and a tree turned a
-        // different way used to be able to thread itself through the gaps in the first one.
+
         for (int attempt = 0; attempt < 12; attempt++) {
             helper.assertFalse(grow(helper, GROUND, "wildscapes:tree/land/tree1",
                     TemplateTreeConfiguration.Ground.LAND, -1),
@@ -150,9 +128,37 @@ public class TreePlacementTests {
         helper.succeed();
     }
 
-    /** Runs the feature at a spot inside the test area, as worldgen would. */
+    @GameTest(template = PLATFORM)
+    public static void waterTreeRefusesDeepWater(GameTestHelper helper) {
+        flood(helper, GROUND, 7);
+        boolean placed = grow(helper, GROUND, "wildscapes:tree/water/watertree1",
+                TemplateTreeConfiguration.Ground.WATER, 0, 5);
+        helper.assertFalse(placed, "a water tree planted itself under seven blocks of water");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void waterTreeAcceptsShallowWater(GameTestHelper helper) {
+        flood(helper, GROUND, 3);
+        boolean placed = grow(helper, GROUND, "wildscapes:tree/water/watertree1",
+                TemplateTreeConfiguration.Ground.WATER, 0, 5);
+        helper.assertTrue(placed, "a water tree refused three blocks of water, inside its cap");
+        helper.succeed();
+    }
+
+    private static void flood(GameTestHelper helper, BlockPos bed, int depth) {
+        for (int y = 0; y < depth; y++) {
+            helper.setBlock(bed.above(y), Blocks.WATER);
+        }
+    }
+
     private static boolean grow(GameTestHelper helper, BlockPos relative, String template,
             TemplateTreeConfiguration.Ground ground, int yOffset) {
+        return grow(helper, relative, template, ground, yOffset, 5);
+    }
+
+    private static boolean grow(GameTestHelper helper, BlockPos relative, String template,
+            TemplateTreeConfiguration.Ground ground, int yOffset, int maxWaterDepth) {
         ServerLevel level = helper.getLevel();
         BlockPos origin = helper.absolutePos(relative);
         return WildscapesFeatures.TEMPLATE_TREE.get().place(new FeaturePlaceContext<>(
@@ -162,7 +168,8 @@ public class TreePlacementTests {
                 level.getRandom(),
                 origin,
                 new TemplateTreeConfiguration(
-                        java.util.List.of(ResourceLocation.parse(template)), ground, yOffset)));
+                        java.util.List.of(ResourceLocation.parse(template)), ground, yOffset,
+                        maxWaterDepth)));
     }
 
     private static void assertPresent(GameTestHelper helper, BlockState state, String what) {

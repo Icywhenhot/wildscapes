@@ -1,0 +1,281 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/animalpen2",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/animalpen3",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/armorerhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/butcherhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/butcherhouse2",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/cartogopherhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/clerichouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/clerichouse2",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/farm1",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/farm2",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/fishermanhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/fletcherhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse1",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse10",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse11",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse2",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse3",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse4",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse5",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse6",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse8",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 4,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/generichouse9",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/leatherworkerhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/leatherworkerstation",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/librarianhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/librarianhouse2",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/masonhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/sheperdhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/toolsmithhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/weaponsmithhouse",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/stilts"
+      }
+    },
+    {
+      "weight": 6,
+      "element": {
+        "element_type": "minecraft:empty_pool_element"
+      }
+    }
+  ]
+}

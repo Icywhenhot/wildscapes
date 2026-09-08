@@ -1,0 +1,23 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/townsquare1",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/derelict"
+      }
+    },
+    {
+      "weight": 2,
+      "element": {
+        "element_type": "minecraft:legacy_single_pool_element",
+        "location": "wildscapes:village/swamp/townsquare2",
+        "projection": "rigid",
+        "processors": "wildscapes:village/swamp/derelict"
+      }
+    }
+  ]
+}

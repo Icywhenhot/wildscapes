@@ -6,17 +6,6 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-/**
- * Slime geometry converted from {@code models/complete redesign/slime/*.bbmodel}.
- *
- * <p>Unlike vanilla — one 1-block model the renderer scales up — each size was modelled
- * at its real size: slime1 is the small (size 1) slime, slime2 the medium (size 2) and
- * slime3 the big one (size 4). {@link RedesignedSlimeRenderer} picks the matching pair and
- * only scales when a slime's size doesn't land on one of those three.
- *
- * <p>Part names match vanilla's {@code SlimeModel} layers so the translucent outer shell
- * and the inner core split the same way.
- */
 public final class RedesignedSlimeModels {
     private RedesignedSlimeModels() {}
 

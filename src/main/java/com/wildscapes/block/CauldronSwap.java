@@ -21,17 +21,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
-/**
- * Bridges the vanilla cauldron and {@link WildscapesCauldronBlock}. A real {@code minecraft:cauldron}
- * is swapped for our block the moment it gains a heat source below (so it can boil) or is
- * right-clicked with a dye or potion (so it can hold that enhanced state, which the vanilla
- * cauldron has nowhere to store). Reverting the other way is handled by
- * {@link CauldronBlockEntity#serverTick} once the cauldron is plain and cold again.
- */
 public final class CauldronSwap {
     private CauldronSwap() {}
-
-    // ---- Heat: swap in on placement / lighting ----------------------------------
 
     public static void onPlace(BlockEvent.EntityPlaceEvent event) {
         if (!(event.getLevel() instanceof Level level)) {
@@ -40,12 +31,11 @@ public final class CauldronSwap {
         BlockPos pos = event.getPos();
         BlockState placed = event.getPlacedBlock();
 
-        // A cauldron dropped straight onto a heat source.
         if (isVanillaCauldron(placed) && WildscapesCauldronBlock.hasHeatSourceBelow(level, pos)) {
             swapForHeat(level, pos, placed);
             return;
         }
-        // A heat source slid under an existing cauldron.
+
         if (isHeatSource(placed)) {
             heatCauldronAbove(level, pos.above());
         }
@@ -55,7 +45,7 @@ public final class CauldronSwap {
         if (!(event.getLevel() instanceof Level level)) {
             return;
         }
-        // Catches a campfire being lit under a cauldron (its state change notifies neighbours).
+
         if (isHeatSource(event.getState())) {
             heatCauldronAbove(level, event.getPos().above());
         }
@@ -77,8 +67,6 @@ public final class CauldronSwap {
         });
     }
 
-    // ---- Dye / potion: swap in on interaction -----------------------------------
-
     public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
@@ -86,7 +74,6 @@ public final class CauldronSwap {
         ItemStack held = event.getItemStack();
         Player player = event.getEntity();
 
-        // Dye a water cauldron.
         if (held.getItem() instanceof DyeItem dye && state.is(Blocks.WATER_CAULDRON)) {
             int waterLevel = state.getValue(LayeredCauldronBlock.LEVEL);
             int color = dye.getDyeColor().getTextureDiffuseColor() & 0xFFFFFF;
@@ -98,7 +85,6 @@ public final class CauldronSwap {
             return;
         }
 
-        // Pour a potion into an empty cauldron.
         if (isStorablePotion(held) && state.is(Blocks.CAULDRON)) {
             PotionContents pc = held.get(DataComponents.POTION_CONTENTS);
             boolean heat = WildscapesCauldronBlock.hasHeatSourceBelow(level, pos);
@@ -109,8 +95,6 @@ public final class CauldronSwap {
         }
     }
 
-    // ---- Helpers ----------------------------------------------------------------
-
     private static void toOurBlock(Level level, BlockPos pos, boolean boiling, Consumer<CauldronBlockEntity> init) {
         level.setBlock(pos, WildscapesBlocks.CAULDRON.get().defaultBlockState()
                 .setValue(WildscapesCauldronBlock.BOILING, boiling), Block.UPDATE_ALL);
@@ -119,7 +103,6 @@ public final class CauldronSwap {
         }
     }
 
-    /** Cancels the vanilla interaction and runs our swap server-side, keeping the arm swing on the client. */
     private static void finish(PlayerInteractEvent.RightClickBlock event, Level level, Runnable serverAction) {
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide));
@@ -149,7 +132,7 @@ public final class CauldronSwap {
     }
 
     private static boolean isHeatSource(BlockState state) {
-        return state.is(WildscapesBlocks.BONFIRE.get())
+        return state.getBlock() instanceof BonfireBlock
                 || (state.getBlock() instanceof net.minecraft.world.level.block.CampfireBlock
                         && state.getValue(net.minecraft.world.level.block.CampfireBlock.LIT));
     }

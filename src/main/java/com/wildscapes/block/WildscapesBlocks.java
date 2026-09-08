@@ -12,12 +12,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PlaceOnWaterBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
@@ -29,7 +34,6 @@ public final class WildscapesBlocks {
 
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Wildscapes.MODID);
 
-    // ---- Cypress wood set ----
     public static final DeferredBlock<RotatedPillarBlock> STRIPPED_CYPRESS_LOG = register("stripped_cypress_log",
             () -> new RotatedPillarBlock(logProps()));
     public static final DeferredBlock<RotatedPillarBlock> CYPRESS_LOG = register("cypress_log",
@@ -86,7 +90,18 @@ public final class WildscapesBlocks {
                     .isValidSpawn((state, level, pos, type) -> false)
                     .ignitedByLava()));
 
-    // ---- Wetland plants ----
+    public static final DeferredBlock<FenceBlock> CYPRESS_FENCE = register("cypress_fence",
+            () -> new FenceBlock(plankProps()));
+
+    public static final DeferredBlock<FenceGateBlock> CYPRESS_FENCE_GATE = register("cypress_fence_gate",
+            () -> new FenceGateBlock(WoodType.OAK, plankProps()));
+
+    public static final DeferredBlock<StairBlock> CYPRESS_STAIRS = register("cypress_stairs",
+            () -> new StairBlock(CYPRESS_PLANKS.get().defaultBlockState(), plankProps()));
+
+    public static final DeferredBlock<SlabBlock> CYPRESS_SLAB = register("cypress_slab",
+            () -> new SlabBlock(plankProps()));
+
     public static final DeferredBlock<DuckweedBlock> DUCKWEED = register("duckweed",
             () -> new DuckweedBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
@@ -94,8 +109,7 @@ public final class WildscapesBlocks {
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .pushReaction(PushReaction.DESTROY)),
-            // Same item as the lily pad: a plain BlockItem needs a solid face to click,
-            // so it ray-traces against the water surface instead and places on top of it.
+
             block -> new PlaceOnWaterBlockItem(block, new Item.Properties()));
 
     public static final DeferredBlock<RushesBlock> RUSHES = register("rushes",
@@ -116,11 +130,6 @@ public final class WildscapesBlocks {
                     .offsetType(BlockBehaviour.OffsetType.XZ)
                     .pushReaction(PushReaction.DESTROY)));
 
-    // Internal blocks: players place and break plain vanilla moss carpets, which MossCarpetSwap
-    // swaps for this one so it can keep track of the moss creeping over each edge. Neither has a
-    // BlockItem, and the carpet drops a vanilla moss carpet (see its loot table).
-    // Vanilla moss carpet's own properties, spelled out rather than copied: ofFullCopy would drag
-    // the vanilla loot table along with them and quietly sideline ours.
     public static final DeferredBlock<DrapingMossCarpetBlock> MOSS_CARPET = BLOCKS.register("moss_carpet",
             () -> new DrapingMossCarpetBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
@@ -139,13 +148,21 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .pushReaction(PushReaction.DESTROY)));
 
-    // ---- Swamp decoration ----
     public static final DeferredBlock<BonfireBlock> BONFIRE = register("bonfire",
-            () -> new BonfireBlock(BlockBehaviour.Properties.of()
+            () -> new BonfireBlock(1.0F, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(2.0F)
                     .sound(SoundType.WOOD)
                     .lightLevel(state -> 15)
+                    .noOcclusion()
+                    .ignitedByLava()));
+
+    public static final DeferredBlock<BonfireBlock> SOUL_BONFIRE = register("soul_bonfire",
+            () -> new BonfireBlock(2.0F, BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BROWN)
+                    .strength(2.0F)
+                    .sound(SoundType.WOOD)
+                    .lightLevel(state -> 10)
                     .noOcclusion()
                     .ignitedByLava()));
 
@@ -157,9 +174,6 @@ public final class WildscapesBlocks {
                     .lightLevel(state -> 3)
                     .noOcclusion()));
 
-    // Internal block: players use the vanilla cauldron, which CauldronSwap swaps for this while it
-    // is heated or holds dyed water / a potion / a brewing soup. It has no BlockItem and drops a
-    // vanilla cauldron (see its loot table).
     public static final DeferredBlock<WildscapesCauldronBlock> CAULDRON = BLOCKS.register("cauldron",
             () -> new WildscapesCauldronBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
@@ -169,6 +183,14 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .lightLevel(state -> state.getValue(WildscapesCauldronBlock.BOILING) ? 3 : 0)));
 
+    private static BlockBehaviour.Properties plankProps() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_BROWN)
+                .strength(2.0F, 3.0F)
+                .sound(SoundType.WOOD)
+                .ignitedByLava();
+    }
+
     private static BlockBehaviour.Properties logProps() {
         return BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_BROWN)
@@ -177,14 +199,12 @@ public final class WildscapesBlocks {
                 .ignitedByLava();
     }
 
-    /** Registers a block and a matching simple {@code BlockItem} under the same name. */
     static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
         WildscapesItems.ITEMS.registerSimpleBlockItem(name, block);
         return block;
     }
 
-    /** As {@link #register(String, Supplier)}, for blocks needing a non-default item. */
     private static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier,
             Function<T, ? extends BlockItem> itemFactory) {
         DeferredBlock<T> block = BLOCKS.register(name, supplier);
@@ -193,8 +213,6 @@ public final class WildscapesBlocks {
     }
 
     public static void register(IEventBus bus) {
-        // Loads MudBrickBlocks so its static initialiser adds the dyed set to BLOCKS
-        // before the registry event fires.
         MudBrickBlocks.init();
         BLOCKS.register(bus);
     }

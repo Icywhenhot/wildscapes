@@ -1,0 +1,23 @@
+{
+  "anvil_cost": 4,
+  "description": {
+    "translate": "enchantment.wildscapes.elasticity"
+  },
+  "effects": {},
+  "max_cost": {
+    "base": 45,
+    "per_level_above_first": 20
+  },
+  "max_level": 2,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 20
+  },
+  "primary_items": "wildscapes:mirelash",
+  "slots": [
+    "mainhand",
+    "offhand"
+  ],
+  "supported_items": "wildscapes:mirelash",
+  "weight": 3
+}

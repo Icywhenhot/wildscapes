@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "minecraft:slime_ball"
+    },
+    "T": {
+      "item": "wildscapes:abomination_tongue"
+    }
+  },
+  "pattern": [
+    "IS ",
+    "ST ",
+    "  C"
+  ],
+  "result": {
+    "count": 1,
+    "id": "wildscapes:mirelash"
+  }
+}

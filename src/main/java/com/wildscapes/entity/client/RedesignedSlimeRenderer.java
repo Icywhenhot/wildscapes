@@ -14,16 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Slime;
 
-/**
- * Replaces vanilla's slime renderer everywhere. Vanilla bakes one 1-block slime and
- * multiplies it by {@link Slime#getSize()}; the redesign ships a separately modelled and
- * textured slime for each of the three natural sizes, so this picks the closest one and
- * only scales for off-size slimes (the ones commands and datapacks can make).
- *
- * <p>The squish-on-landing wobble is vanilla's, reproduced verbatim.
- */
 public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime>> {
-    /** Slime sizes the three redesigned models were drawn at: small, medium, big. */
     static final int[] MODELLED_SIZES = {1, 2, 4};
 
     private static final ResourceLocation[] TEXTURES = {
@@ -43,7 +34,6 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         this.addLayer(new RedesignedSlimeOuterLayer(this, context.getModelSet()));
     }
 
-    /** Which of the three redesigned models a slime of this size should use. */
     static int modelIndex(Slime slime) {
         int size = slime.getSize();
         if (size <= 1) {
@@ -58,9 +48,6 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         this.shadowRadius = 0.25F * entity.getSize();
         this.model = this.innerModels[modelIndex(entity)];
 
-        // Merging slimes fade out as they shrink into each other, and the one they turn
-        // into fades in. Wrapping the buffer dims every layer, the outer shell included,
-        // without having to reimplement the vanilla render path.
         float alpha = SlimeMerging.mergeAlpha(entity);
         MultiBufferSource sink = alpha < 1.0F ? new FadingBufferSource(buffer, alpha) : buffer;
         super.render(entity, entityYaw, partialTicks, poseStack, sink, packedLight);
@@ -68,13 +55,11 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
 
     @Override
     protected RenderType getRenderType(Slime entity, boolean bodyVisible, boolean translucent, boolean glowing) {
-        // The inner body is a cutout normally, and cutouts cannot be faded.
         return SlimeMerging.mergeAlpha(entity) < 1.0F
                 ? RenderType.entityTranslucent(this.getTextureLocation(entity))
                 : super.getRenderType(entity, bodyVisible, translucent, glowing);
     }
 
-    /** Passes every buffer through {@link FadingConsumer}. */
     private record FadingBufferSource(MultiBufferSource delegate, float alpha) implements MultiBufferSource {
         @Override
         public VertexConsumer getBuffer(RenderType renderType) {
@@ -82,7 +67,6 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         }
     }
 
-    /** Forwards vertices untouched apart from scaling their alpha. */
     private record FadingConsumer(VertexConsumer delegate, float alpha) implements VertexConsumer {
         @Override
         public VertexConsumer addVertex(float x, float y, float z) {
@@ -128,8 +112,7 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         float size = livingEntity.getSize();
         float squish = Mth.lerp(partialTickTime, livingEntity.oSquish, livingEntity.squish) / (size * 0.5F + 1.0F);
         float stretch = 1.0F / (squish + 1.0F);
-        // The model is already the right size for its tier, so only the leftover ratio
-        // needs scaling — 1.0 for the three natural sizes.
+
         float ratio = size / MODELLED_SIZES[modelIndex(livingEntity)];
         poseStack.scale(stretch * ratio, 1.0F / stretch * ratio, stretch * ratio);
     }

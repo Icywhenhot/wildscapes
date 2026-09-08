@@ -4,6 +4,8 @@ import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.WildscapesEntities;
 
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -14,21 +16,22 @@ public final class WildscapesItems {
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Wildscapes.MODID);
 
-    // Colors are white so the spawn-egg tint (applied to the generated model's tintindex-0
-    // layer) is a no-op — the custom abomination_spawn_egg sprite renders at its true colors
-    // rather than the vanilla two-tone egg.
     public static final DeferredItem<Item> ABOMINATION_SPAWN_EGG = ITEMS.register("abomination_spawn_egg",
             () -> new DeferredSpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
-    // Dropped by regular vanilla frogs on death (see Wildscapes#onLivingDrops).
     public static final DeferredItem<Item> FROG_LEGS = ITEMS.register("frog_legs",
             () -> new Item(new Item.Properties()));
 
-    // Stirs a boiling cauldron to mix in an ingredient; wears out after 10 stirs.
     public static final DeferredItem<Item> LADLE = ITEMS.register("ladle",
             () -> new Item(new Item.Properties().durability(10)));
 
-    // Scooped from a finished magic-soup cauldron; carries its effects in a SoupContents component.
+    public static final DeferredItem<Item> ABOMINATION_TONGUE = ITEMS.register("abomination_tongue",
+            () -> new Item(new Item.Properties()));
+
+    public static final DeferredItem<MirelashItem> MIRELASH = ITEMS.register("mirelash",
+            () -> new MirelashItem(new Item.Properties().durability(64)
+                    .attributes(SwordItem.createAttributes(Tiers.IRON, 3, -2.4F))));
+
     public static final DeferredItem<MagicSoupItem> MAGIC_SOUP = ITEMS.register("magic_soup",
             () -> new MagicSoupItem(new Item.Properties()));
 

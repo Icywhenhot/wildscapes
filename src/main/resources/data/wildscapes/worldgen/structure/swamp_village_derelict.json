@@ -1,0 +1,172 @@
+{
+  "type": "wildscapes:swamp_village",
+  "biomes": "#wildscapes:swamp_variant_biomes",
+  "step": "surface_structures",
+  "terrain_adaptation": "none",
+  "start_pool": "wildscapes:village/swamp/town_centers",
+  "size": 10,
+  "start_height": {
+    "absolute": 64
+  },
+  "max_distance_from_center": 128,
+  "min_open_water": 0.45,
+  "open_water_radius": 32,
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "piece",
+      "spawns": []
+    }
+  },
+  "requirements": [
+    {
+      "min": 4,
+      "pieces": [
+        "wildscapes:village/swamp/generichouse1",
+        "wildscapes:village/swamp/generichouse10",
+        "wildscapes:village/swamp/generichouse11",
+        "wildscapes:village/swamp/generichouse2",
+        "wildscapes:village/swamp/generichouse3",
+        "wildscapes:village/swamp/generichouse4",
+        "wildscapes:village/swamp/generichouse5",
+        "wildscapes:village/swamp/generichouse6",
+        "wildscapes:village/swamp/generichouse8",
+        "wildscapes:village/swamp/generichouse9"
+      ]
+    },
+    {
+      "min": 1,
+      "pieces": [
+        "wildscapes:village/swamp/animalpen2",
+        "wildscapes:village/swamp/animalpen3"
+      ]
+    },
+    {
+      "min": 4,
+      "pieces": [
+        "wildscapes:village/swamp/armorerhouse",
+        "wildscapes:village/swamp/butcherhouse",
+        "wildscapes:village/swamp/butcherhouse2",
+        "wildscapes:village/swamp/cartogopherhouse",
+        "wildscapes:village/swamp/clerichouse",
+        "wildscapes:village/swamp/clerichouse2",
+        "wildscapes:village/swamp/farm1",
+        "wildscapes:village/swamp/farm2",
+        "wildscapes:village/swamp/fishermanhouse",
+        "wildscapes:village/swamp/fletcherhouse",
+        "wildscapes:village/swamp/leatherworkerhouse",
+        "wildscapes:village/swamp/leatherworkerstation",
+        "wildscapes:village/swamp/librarianhouse",
+        "wildscapes:village/swamp/librarianhouse2",
+        "wildscapes:village/swamp/masonhouse",
+        "wildscapes:village/swamp/sheperdhouse",
+        "wildscapes:village/swamp/toolsmithhouse",
+        "wildscapes:village/swamp/weaponsmithhouse"
+      ]
+    }
+  ],
+  "pool_aliases": [
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/animals",
+      "target": "wildscapes:village/swamp/derelict/animals"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/corrals",
+      "target": "wildscapes:village/swamp/derelict/corrals"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/decor",
+      "target": "wildscapes:village/swamp/derelict/decor"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/docks",
+      "target": "wildscapes:village/swamp/derelict/docks"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/houses",
+      "target": "wildscapes:village/swamp/derelict/houses"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/lights",
+      "target": "wildscapes:village/swamp/derelict/lights"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/street_ends",
+      "target": "wildscapes:village/swamp/derelict/street_ends"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/street_features",
+      "target": "wildscapes:village/swamp/derelict/street_features"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/street_spacers",
+      "target": "wildscapes:village/swamp/derelict/street_spacers"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/streets",
+      "target": "wildscapes:village/swamp/derelict/streets"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/town_centers",
+      "target": "wildscapes:village/swamp/derelict/town_centers"
+    },
+    {
+      "type": "minecraft:direct",
+      "alias": "wildscapes:village/swamp/villagers",
+      "target": "wildscapes:village/swamp/derelict/villagers"
+    }
+  ],
+  "derelict_start_height": {
+    "absolute": 62
+  },
+  "derelict_requirements": [
+    {
+      "min": 3,
+      "pieces": [
+        "wildscapes:village/swamp/generichouse1",
+        "wildscapes:village/swamp/generichouse10",
+        "wildscapes:village/swamp/generichouse11",
+        "wildscapes:village/swamp/generichouse2",
+        "wildscapes:village/swamp/generichouse3",
+        "wildscapes:village/swamp/generichouse4",
+        "wildscapes:village/swamp/generichouse5",
+        "wildscapes:village/swamp/generichouse6",
+        "wildscapes:village/swamp/generichouse8",
+        "wildscapes:village/swamp/generichouse9"
+      ]
+    },
+    {
+      "min": 2,
+      "pieces": [
+        "wildscapes:village/swamp/armorerhouse",
+        "wildscapes:village/swamp/butcherhouse",
+        "wildscapes:village/swamp/butcherhouse2",
+        "wildscapes:village/swamp/cartogopherhouse",
+        "wildscapes:village/swamp/clerichouse",
+        "wildscapes:village/swamp/clerichouse2",
+        "wildscapes:village/swamp/farm1",
+        "wildscapes:village/swamp/farm2",
+        "wildscapes:village/swamp/fishermanhouse",
+        "wildscapes:village/swamp/fletcherhouse",
+        "wildscapes:village/swamp/leatherworkerhouse",
+        "wildscapes:village/swamp/leatherworkerstation",
+        "wildscapes:village/swamp/librarianhouse",
+        "wildscapes:village/swamp/librarianhouse2",
+        "wildscapes:village/swamp/masonhouse",
+        "wildscapes:village/swamp/sheperdhouse",
+        "wildscapes:village/swamp/toolsmithhouse",
+        "wildscapes:village/swamp/weaponsmithhouse"
+      ]
+    }
+  ]
+}

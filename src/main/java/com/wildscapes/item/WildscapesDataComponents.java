@@ -8,11 +8,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-/**
- * Custom {@link DataComponentType}s for the mod. Currently just {@link #SOUP_CONTENTS},
- * which stores the effect list of a magic soup on both the item and, mid-brew, on the
- * cauldron block entity.
- */
 public final class WildscapesDataComponents {
     private WildscapesDataComponents() {}
 

@@ -16,19 +16,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-/**
- * A bowl of magic soup scooped from a boiling cauldron. It is eaten almost instantly and,
- * on top of a little hunger, grants every effect the soup was brewed with — but each effect
- * is short-lived (see {@link com.wildscapes.block.CauldronSoups}). The effects ride along in
- * a {@link SoupContents} component, so soups with different effects never stack together.
- *
- * <p>Eating another bowl of an effect you already have deepens it instead of just refreshing it,
- * but only as far as vanilla itself goes: a second bowl of strength gets you Strength II, while
- * night vision, which has no stronger version in the game, stays at level I.
- */
 public class MagicSoupItem extends Item {
-
-    /** Eats in ~0.4 s — faster than any vanilla food. */
     private static final float EAT_SECONDS = 0.4F;
 
     public MagicSoupItem(Properties properties) {
@@ -41,8 +29,7 @@ public class MagicSoupItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         SoupContents soup = stack.get(WildscapesDataComponents.SOUP_CONTENTS.get());
-        // super applies hunger/saturation and converts the bowl back; grab the effects first
-        // because the stack it returns may be the empty-handed bowl.
+
         ItemStack result = super.finishUsingItem(stack, level, entity);
         if (!level.isClientSide && soup != null) {
             for (MobEffectInstance effect : soup.effects()) {
@@ -52,18 +39,11 @@ public class MagicSoupItem extends Item {
         return result;
     }
 
-    /**
-     * The instance to apply for {@code added} given what the eater already has running. Eating
-     * the same effect again bumps it a level — as far as vanilla has a level for it, so Strength
-     * stops at II and Night Vision stays at I — and never shortens what is left; instantaneous
-     * effects (healing, harming) just fire as brewed.
-     */
     private static MobEffectInstance stackOnto(MobEffectInstance current, MobEffectInstance added) {
         if (current == null || added.getEffect().value().isInstantenous()) {
             return new MobEffectInstance(added);
         }
-        // Capped at the soup's ceiling, but never below what is already running — a stronger
-        // effect from elsewhere (Slowness IV, say) must not be watered down by a bowl of soup.
+
         int amplifier = Math.max(current.getAmplifier(),
                 Math.min(current.getAmplifier() + added.getAmplifier() + 1,
                         CauldronSoups.maxAmplifier(added.getEffect())));

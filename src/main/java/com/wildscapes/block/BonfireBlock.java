@@ -1,32 +1,31 @@
 package com.wildscapes.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/**
- * A decorative bonfire. The flames are an animated texture rather than a moving model,
- * so this is a plain block — the collision box is only the log cage, and the fire planes
- * rising out of it are not solid.
- *
- * <p>Standing in it burns you exactly as a campfire does: same damage source, same rate,
- * same one point of damage. A bonfire is always alight, so unlike a campfire there is no
- * lit state to check.
- */
 public class BonfireBlock extends Block {
-    private static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 13.0D, 14.0D);
+    private static final VoxelShape SHAPE = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 15.0D, 15.0D);
+    private static final int SMOKE_SCAN_RANGE = 5;
 
-    /** Matches {@code Blocks.CAMPFIRE}'s fire damage. */
-    private static final float FIRE_DAMAGE = 1.0F;
+    private final float damage;
 
-    public BonfireBlock(Properties properties) {
+    public BonfireBlock(float damage, Properties properties) {
         super(properties);
+        this.damage = damage;
     }
 
     @Override
@@ -37,9 +36,52 @@ public class BonfireBlock extends Block {
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity instanceof LivingEntity) {
-            entity.hurt(level.damageSources().campfire(), FIRE_DAMAGE);
+            entity.hurt(level.damageSources().campfire(), damage);
         }
 
         super.entityInside(state, level, pos, entity);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (random.nextInt(10) == 0) {
+            level.playLocalSound(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                    SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS,
+                    0.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.6F, false);
+        }
+
+        if (random.nextInt(5) == 0) {
+            boolean signal = isSmokeyPos(level, pos);
+            for (int i = 0; i < random.nextInt(1) + 1; i++) {
+                makeParticles(level, pos, signal);
+            }
+        }
+    }
+
+    private static void makeParticles(Level level, BlockPos pos, boolean signal) {
+        RandomSource random = level.getRandom();
+        SimpleParticleType particle = signal ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
+        level.addAlwaysVisibleParticle(particle, true,
+                pos.getX() + 0.5 + random.nextDouble() / 3.0 * (random.nextBoolean() ? 1 : -1),
+                pos.getY() + random.nextDouble() + random.nextDouble(),
+                pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (random.nextBoolean() ? 1 : -1),
+                0.0, 0.07, 0.0);
+        if (random.nextInt(4) == 0) {
+            makeParticles(level, pos, signal);
+        }
+    }
+
+    private static boolean isSmokeyPos(Level level, BlockPos pos) {
+        for (int i = 1; i <= SMOKE_SCAN_RANGE; i++) {
+            BlockPos below = pos.below(i);
+            BlockState state = level.getBlockState(below);
+            if (state.is(Blocks.HAY_BLOCK)) {
+                return true;
+            }
+            if (Shapes.faceShapeOccludes(Shapes.empty(), state.getCollisionShape(level, below))) {
+                return false;
+            }
+        }
+        return false;
     }
 }

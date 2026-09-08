@@ -13,14 +13,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-/** Bone meal on a moss carpet should visibly hurry the drape along rather than doing nothing. */
 @GameTestHolder("wildscapes")
 @PrefixGameTestTemplate(false)
 public class MossCarpetTests {
-
     private static final String PLATFORM = "gametest/tree_platform";
 
-    /** A lone block standing proud of the floor, so the carpet on it has open air on all sides. */
     private static final BlockPos PILLAR = new BlockPos(12, 2, 12);
     private static final BlockPos CARPET = new BlockPos(12, 3, 12);
 
@@ -47,7 +44,6 @@ public class MossCarpetTests {
         });
     }
 
-    /** Bone meal on a plain vanilla carpet should hand it over to the draping one first. */
     @GameTest(template = PLATFORM)
     public static void vanillaCarpetIsHandedOver(GameTestHelper helper) {
         helper.setBlock(PILLAR, Blocks.STONE);

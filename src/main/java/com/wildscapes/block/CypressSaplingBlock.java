@@ -19,11 +19,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 
-/**
- * A cypress sapling that can be planted straight into water, the way a mangrove
- * propagule can, so the trees can be replanted in the shallows they grow out of.
- * It also takes root on mud and clay, not just dirt.
- */
 public class CypressSaplingBlock extends SaplingBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 

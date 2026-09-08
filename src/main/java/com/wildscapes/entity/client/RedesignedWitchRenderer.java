@@ -11,11 +11,6 @@ import net.minecraft.client.renderer.entity.layers.WitchItemLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Witch;
 
-/**
- * Replaces vanilla's witch renderer everywhere — witches always get the redesign,
- * whatever biome they turned up in. Vanilla's {@link WitchModel} still does the
- * animating; only the geometry and texture change.
- */
 public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch>> {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");

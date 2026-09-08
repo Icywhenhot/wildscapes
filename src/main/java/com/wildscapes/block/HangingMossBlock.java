@@ -21,15 +21,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/**
- * The frayed end of a moss curtain, hanging a block below the carpet that grew it.
- *
- * <p>It exists only because a block model stops one block past its own edge, and a full curtain
- * is longer than that — everything above this is drawn by the {@link DrapingMossCarpetBlock}
- * itself. One of these can carry the tails of up to four different carpets, one per face, and it
- * checks on its own that each still belongs to a carpet that is there and still fully grown,
- * tidying itself away when the last one goes.
- */
 public class HangingMossBlock extends Block {
     public static final MapCodec<HangingMossBlock> CODEC = simpleCodec(HangingMossBlock::new);
 
@@ -41,7 +32,6 @@ public class HangingMossBlock extends Block {
     private static final Map<Direction, BooleanProperty> BY_DIRECTION = ImmutableMap.of(
             Direction.NORTH, NORTH, Direction.EAST, EAST, Direction.SOUTH, SOUTH, Direction.WEST, WEST);
 
-    /** The tail covers the top 10 pixels of the block, hugging whichever face it hangs on. */
     private static final Map<Direction, VoxelShape> SHAPES = ImmutableMap.of(
             Direction.NORTH, box(0.0, 6.0, 0.0, 16.0, 16.0, 1.0),
             Direction.EAST, box(15.0, 6.0, 0.0, 16.0, 16.0, 16.0),
@@ -61,7 +51,6 @@ public class HangingMossBlock extends Block {
         return BY_DIRECTION.get(direction);
     }
 
-    /** Takes one face's moss away, and the block with it once nothing is left hanging. */
     public static void removeFace(Level level, BlockPos pos, BlockState state, Direction face) {
         BlockState without = state.setValue(faceFacing(face), false);
         if (isBare(without)) {
@@ -101,11 +90,6 @@ public class HangingMossBlock extends Block {
         return true;
     }
 
-    /**
-     * Nothing tells a tail when the carpet two blocks above it changes its mind, so it looks for
-     * itself now and then. That makes the tidy-up lazy rather than instant, which is fine for
-     * something that took minutes to grow in the first place.
-     */
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         BlockState kept = state;
@@ -124,11 +108,6 @@ public class HangingMossBlock extends Block {
         }
     }
 
-    /**
-     * Whether a fully grown carpet is still hanging moss on this face — either straight above,
-     * when the tail is in the column under the carpet, or above the block this face points at,
-     * when it is hanging beside a wall.
-     */
     private static boolean hasCarpet(LevelReader level, BlockPos pos, Direction face) {
         return isDraping(level, pos.above(2), face)
                 || isDraping(level, pos.relative(face).above(2), face.getOpposite());
@@ -140,7 +119,6 @@ public class HangingMossBlock extends Block {
                 && state.getValue(DrapingMossCarpetBlock.sideFacing(side)) == DrapingMossCarpetBlock.Drape.LONG;
     }
 
-    /** Nothing to pick: this is part of the carpet above, not a block anyone placed. */
     @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         return ItemStack.EMPTY;

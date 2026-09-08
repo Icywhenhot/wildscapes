@@ -13,10 +13,6 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.monster.Slime;
 
-/**
- * The translucent outer shell, as vanilla's {@code SlimeOuterLayer} does it, but holding
- * one shell per redesigned size instead of a single scaled one.
- */
 public class RedesignedSlimeOuterLayer extends RenderLayer<Slime, SlimeModel<Slime>> {
     private final SlimeModel<Slime>[] outerModels;
 

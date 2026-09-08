@@ -8,16 +8,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 
-/**
- * The reaction an ingredient stirs up when it hits the brew: a puff that steams straight up out
- * of the pot, thinning through its four sprite frames as it goes.
- *
- * <p>It always rises, whatever velocity it is spawned with. The boiling pot is deep — at low
- * water the surface sits well below the rim — so a puff that arced back down like a splash
- * would spend its whole life hidden behind the walls.
- */
 public class IngredientSteamParticle extends TextureSheetParticle {
-
     private final SpriteSet sprites;
 
     protected IngredientSteamParticle(ClientLevel level, double x, double y, double z,

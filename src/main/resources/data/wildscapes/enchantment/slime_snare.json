@@ -1,0 +1,23 @@
+{
+  "anvil_cost": 6,
+  "description": {
+    "translate": "enchantment.wildscapes.slime_snare"
+  },
+  "effects": {},
+  "max_cost": {
+    "base": 60,
+    "per_level_above_first": 0
+  },
+  "max_level": 1,
+  "min_cost": {
+    "base": 25,
+    "per_level_above_first": 0
+  },
+  "primary_items": "wildscapes:mirelash",
+  "slots": [
+    "mainhand",
+    "offhand"
+  ],
+  "supported_items": "wildscapes:mirelash",
+  "weight": 1
+}

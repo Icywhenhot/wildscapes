@@ -20,14 +20,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-/**
- * Draws the dynamic part of a boiling/enhanced cauldron that the baked block model can't: the
- * coloured liquid surface (plain or dyed water, a stored potion's colour, or the bubbling
- * concoction — churning while it is being stirred) and the ingredient bobbing inside while it
- * waits for a stir.
- */
 public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity> {
-
     private static final Material WATER = surface(ResourceLocation.withDefaultNamespace("block/water_still"));
     private static final Material CONCOCTION = surface(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/concoction"));
     private static final Material JUMBLE = surface(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/jumble_concoction"));
@@ -48,8 +41,6 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
             return;
         }
 
-        // The boiling model is a full-block pot whose brew sits high, just under the open rim;
-        // the cold state uses the vanilla cauldron shell, whose water sits lower and inset.
         boolean boiling = be.getBlockState().getValue(WildscapesCauldronBlock.BOILING);
         float y = CauldronBlockEntity.surfaceHeight(boiling, fill);
         renderSurface(be, pose, buffer, packedLight, y, boiling);
@@ -63,14 +54,12 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
         TextureAtlasSprite sprite = material.sprite();
         VertexConsumer vc = buffer.getBuffer(RenderType.translucent());
 
-        // Brew textures are drawn as-is; water/potion is tinted to its colour.
         int color = brew ? 0xFFFFFF : be.getSurfaceColor();
         float r = ((color >> 16) & 0xFF) / 255.0F;
         float g = ((color >> 8) & 0xFF) / 255.0F;
         float b = (color & 0xFF) / 255.0F;
         float a = brew ? 1.0F : 0.9F;
 
-        // Fill the open rim when boiling; stay inside the vanilla walls when cold.
         float min = boiling ? 0.0625F : 0.1875F;
         float max = 1.0F - min;
         float u0 = sprite.getU0();
@@ -112,7 +101,6 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
         float spin = time * 2.0F;
 
         if (be.isMixing()) {
-            // Once stirred, the ingredient sinks under the surface over ~1.25 s, then is gone.
             long start = be.getClientMixStart();
             float elapsed = start < 0 ? 0.0F : time - start;
             float t = Math.min(Math.max(elapsed / 25.0F, 0.0F), 1.0F);

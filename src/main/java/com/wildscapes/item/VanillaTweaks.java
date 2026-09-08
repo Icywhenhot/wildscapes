@@ -12,16 +12,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 
-/**
- * Global tweaks to vanilla consumables to match the cauldron feature: drinkable potions stack in
- * eights (splash, lingering and tipped arrows are deliberately left alone), and every stew stacks
- * the same way and is eaten almost instantly — like the mod's own magic soups.
- */
 @EventBusSubscriber(modid = Wildscapes.MODID, bus = EventBusSubscriber.Bus.MOD)
 public final class VanillaTweaks {
     private VanillaTweaks() {}
 
-    /** ~0.4 s, matching {@link MagicSoupItem}. */
     private static final float FAST_EAT_SECONDS = 0.4F;
 
     private static final List<Item> STEWS =

@@ -11,11 +11,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 
-/**
- * A pillar (log/wood) block that can be stripped with an axe into another block,
- * preserving its axis. NeoForge routes axe-stripping through
- * {@link #getToolModifiedState(BlockState, UseOnContext, ItemAbility, boolean)}.
- */
 public class StrippableLogBlock extends RotatedPillarBlock {
     private final Supplier<? extends Block> stripped;
 
