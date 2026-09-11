@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.item.MirelashItem;
+import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -12,6 +13,8 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -100,6 +103,10 @@ public final class MirelashHook extends ThrowableProjectile {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
+        if (!level().isClientSide) {
+            level().playSound(null, hit.getLocation().x, hit.getLocation().y, hit.getLocation().z,
+                    WildscapesSounds.MIRELASH_IMPACT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        }
         if (entityData.get(ATTACK)) {
             discard();
             return;
@@ -142,7 +149,11 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     private void landAttack(Player player, LivingEntity target) {
-        target.hurt(level().damageSources().playerAttack(player), 6.0F);
+        float distance = Mth.clamp(player.distanceTo(target), 0.0F, (float) MirelashItem.ATTACK_RANGE);
+        float damage = Mth.lerp(distance / (float) MirelashItem.ATTACK_RANGE, 9.0F, 6.0F);
+        target.hurt(level().damageSources().playerAttack(player), damage);
+        level().playSound(null, target.getX(), target.getY(0.5), target.getZ(), WildscapesSounds.MIRELASH_HIT.get(),
+                SoundSource.PLAYERS, 1.0F, 1.0F);
         if (entityData.get(SLIME_SNARE)) {
             target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND, 80, 0, false, true, false));
             ServerLevel level = (ServerLevel) level();

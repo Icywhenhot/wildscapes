@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.MirelashHook;
+import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -59,8 +60,8 @@ public final class MirelashItem extends Item {
             serverLevel.addFreshEntity(hook);
             player.getPersistentData().putUUID(HOOK_KEY, hook.getUUID());
             stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SLIME_SQUISH_SMALL,
-                    SoundSource.PLAYERS, 0.7F, 0.9F + level.random.nextFloat() * 0.3F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW.get(),
+                    SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         player.awardStat(Stats.ITEM_USED.get(this));
         return InteractionResultHolder.sidedSuccess(stack, false);
@@ -122,15 +123,17 @@ public final class MirelashItem extends Item {
     public static boolean launchAttack(Player player, LivingEntity target) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof MirelashItem) || player.getAttackStrengthScale(0.5F) < 0.9F
+                || player.getCooldowns().isOnCooldown(stack.getItem())
                 || findAttackTarget(player.level(), player) != target) {
             return false;
         }
         if (player.level() instanceof ServerLevel level) {
             level.addFreshEntity(new MirelashHook(level, player, stack, target));
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SLIME_SQUISH_SMALL,
-                    SoundSource.PLAYERS, 0.8F, 0.85F + level.random.nextFloat() * 0.25F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW.get(),
+                    SoundSource.PLAYERS, 1.0F, 1.0F);
             player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+            player.getCooldowns().addCooldown(stack.getItem(), 40);
             player.resetAttackStrengthTicker();
         }
         return true;

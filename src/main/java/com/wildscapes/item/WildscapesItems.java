@@ -32,6 +32,9 @@ public final class WildscapesItems {
             () -> new MirelashItem(new Item.Properties().durability(64)
                     .attributes(SwordItem.createAttributes(Tiers.IRON, 3, -2.4F))));
 
+    public static final DeferredItem<Item> ILLUSIONIST_NECKLACE = ITEMS.register("illusionist_necklace",
+            () -> new Item(new Item.Properties().durability(432)));
+
     public static final DeferredItem<MagicSoupItem> MAGIC_SOUP = ITEMS.register("magic_soup",
             () -> new MagicSoupItem(new Item.Properties()));
 

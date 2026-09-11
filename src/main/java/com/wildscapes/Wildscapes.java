@@ -10,6 +10,7 @@ import com.wildscapes.block.MudBrickDyeing;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.effect.MirageSync;
+import com.wildscapes.effect.Intangibility;
 import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.effect.WildscapesPotions;
 import com.wildscapes.entity.AbominationEntity;
@@ -98,6 +99,7 @@ public class Wildscapes {
                         output.accept(WildscapesItems.MAGIC_SOUP.get());
                         output.accept(WildscapesItems.ABOMINATION_TONGUE.get());
                         output.accept(WildscapesItems.MIRELASH.get());
+                        output.accept(WildscapesItems.ILLUSIONIST_NECKLACE.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
                     }).build());
 
@@ -128,6 +130,9 @@ public class Wildscapes {
         NeoForge.EVENT_BUS.addListener(WitchGoals::onEntityTick);
         NeoForge.EVENT_BUS.addListener(MirageSync::onEntityTick);
         NeoForge.EVENT_BUS.addListener(MirageSync::onStartTracking);
+        NeoForge.EVENT_BUS.addListener(Intangibility::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(Intangibility::onMobTick);
+        NeoForge.EVENT_BUS.addListener(Intangibility::onDamage);
         NeoForge.EVENT_BUS.addListener(MirelashItem::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(MudBrickDyeing::onRightClick);
         NeoForge.EVENT_BUS.addListener(SlimeMerging::onEntityTick);
@@ -142,6 +147,11 @@ public class Wildscapes {
 
     private void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
+        if (entity.getType() == EntityType.ILLUSIONER) {
+            ItemStack stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get());
+            event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack));
+            return;
+        }
         if (entity.getType() != EntityType.FROG) {
             return;
         }

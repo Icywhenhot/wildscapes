@@ -7,6 +7,7 @@ import com.wildscapes.entity.client.CauldronRenderer;
 import com.wildscapes.entity.client.MirageLayer;
 import com.wildscapes.entity.client.MirelashHookRenderer;
 import com.wildscapes.entity.client.MirelashModels;
+import com.wildscapes.entity.client.SlimeBubbleLayer;
 import com.wildscapes.entity.client.RedesignedIllusionerModel;
 import com.wildscapes.entity.client.RedesignedIllusionerRenderer;
 import com.wildscapes.entity.client.RedesignedSlimeModels;
@@ -79,6 +80,7 @@ public final class WildscapesClient {
         event.registerLayerDefinition(WildscapesModelLayers.SLIME_LARGE_OUTER, RedesignedSlimeModels::createLargeOuterLayer);
         event.registerLayerDefinition(WildscapesModelLayers.MIRELASH_HOOK, MirelashModels::createHookLayer);
         event.registerLayerDefinition(WildscapesModelLayers.MIRELASH_SEGMENT, MirelashModels::createSegmentLayer);
+        event.registerLayerDefinition(WildscapesModelLayers.SLIME_BUBBLE, MirelashModels::createSlimeBubbleLayer);
     }
 
     @SubscribeEvent
@@ -102,6 +104,7 @@ public final class WildscapesClient {
             EntityRenderer<?> renderer = event.getRenderer(type);
             if (renderer instanceof LivingEntityRenderer living) {
                 living.addLayer(new MirageLayer(living));
+                living.addLayer(new SlimeBubbleLayer(living, event.getContext().getModelSet()));
             }
         }
     }

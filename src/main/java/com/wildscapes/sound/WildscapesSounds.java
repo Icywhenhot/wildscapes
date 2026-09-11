@@ -37,6 +37,10 @@ public final class WildscapesSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_MIX            = register("cauldron.mix");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_SOUP_DONE      = register("cauldron.soup_done");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> MIRELASH_THROW          = register("mirelash.throw");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MIRELASH_HIT            = register("mirelash.hit");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MIRELASH_IMPACT         = register("mirelash.impact");
+
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(

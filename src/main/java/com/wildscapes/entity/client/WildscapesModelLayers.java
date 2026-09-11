@@ -20,6 +20,7 @@ public final class WildscapesModelLayers {
     public static final ModelLayerLocation SLIME_LARGE_OUTER = create("slime_large", "outer");
     public static final ModelLayerLocation MIRELASH_HOOK = create("mirelash_hook");
     public static final ModelLayerLocation MIRELASH_SEGMENT = create("mirelash_segment");
+    public static final ModelLayerLocation SLIME_BUBBLE = create("slime_bubble");
 
     private static ModelLayerLocation create(String name) {
         return create(name, "main");

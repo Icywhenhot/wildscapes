@@ -21,6 +21,9 @@ public final class WildscapesEffects {
     public static final DeferredHolder<MobEffect, MobEffect> SLIMEBOUND = EFFECTS.register("slimebound",
             SlimeboundEffect::new);
 
+    public static final DeferredHolder<MobEffect, MobEffect> INTANGIBILITY = EFFECTS.register("intangibility",
+            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x7795C4) {});
+
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);
     }

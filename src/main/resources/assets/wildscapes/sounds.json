@@ -132,5 +132,26 @@
     "sounds": [
       "wildscapes:cauldron/soup_done"
     ]
+  },
+  "mirelash.throw": {
+    "category": "player",
+    "subtitle": "subtitles.wildscapes.mirelash.throw",
+    "sounds": [
+      "wildscapes:mirelash/throw"
+    ]
+  },
+  "mirelash.hit": {
+    "category": "player",
+    "subtitle": "subtitles.wildscapes.mirelash.hit",
+    "sounds": [
+      "wildscapes:mirelash/hit"
+    ]
+  },
+  "mirelash.impact": {
+    "category": "player",
+    "subtitle": "subtitles.wildscapes.mirelash.impact",
+    "sounds": [
+      "wildscapes:mirelash/impact"
+    ]
   }
 }

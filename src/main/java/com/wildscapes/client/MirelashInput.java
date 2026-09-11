@@ -21,6 +21,7 @@ public final class MirelashInput {
         Minecraft minecraft = Minecraft.getInstance();
         if (!event.isAttack() || minecraft.player == null || minecraft.screen != null
                 || !(minecraft.player.getMainHandItem().getItem() instanceof MirelashItem)
+                || minecraft.player.getCooldowns().isOnCooldown(minecraft.player.getMainHandItem().getItem())
                 || minecraft.player.getAttackStrengthScale(0.5F) < 0.9F) {
             return;
         }

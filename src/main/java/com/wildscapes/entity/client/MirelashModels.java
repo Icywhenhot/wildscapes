@@ -26,4 +26,18 @@ public final class MirelashModels {
                 PartPose.ZERO);
         return LayerDefinition.create(mesh, 32, 32);
     }
+
+    public static LayerDefinition createSlimeBubbleLayer() {
+        MeshDefinition mesh = new MeshDefinition();
+        mesh.getRoot().addOrReplaceChild("bubble",
+                CubeListBuilder.create()
+                        .texOffs(96, 32).addBox(-16F, -16F, -16F, 32F, 32F, 0F)
+                        .texOffs(96, 0).addBox(-16F, -16F, -16F, 0F, 32F, 32F)
+                        .texOffs(96, 32).addBox(-16F, -16F, 16F, 32F, 32F, 0F)
+                        .texOffs(96, 0).addBox(16F, -16F, -16F, 0F, 32F, 32F)
+                        .texOffs(-32, 0).addBox(-16F, 16F, -16F, 32F, 0F, 32F)
+                        .texOffs(32, 0).addBox(-16F, -16F, -16F, 32F, 0F, 32F),
+                PartPose.ZERO);
+        return LayerDefinition.create(mesh, 256, 128);
+    }
 }
