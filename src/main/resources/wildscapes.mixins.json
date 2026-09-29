@@ -13,7 +13,9 @@
   ],
   "client": [
     "client.LocalPlayerMixin",
-    "client.LivingEntityRendererMixin"
+    "client.LivingEntityRendererMixin",
+    "client.ScreenEffectRendererMixin",
+    "client.GameRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

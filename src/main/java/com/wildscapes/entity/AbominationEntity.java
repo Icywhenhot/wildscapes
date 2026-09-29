@@ -1,23 +1,27 @@
 package com.wildscapes.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
+import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -31,10 +35,13 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -69,18 +76,34 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private static final EntityDataAccessor<Integer> TONGUE_TARGET =
             SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.INT);
 
-    private static final int PRE_JUMP_LAUNCH = 24;
+    private static final EntityDataAccessor<Integer> TONGUE_TICKS =
+            SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.INT);
+
+    private static final EntityDataAccessor<CompoundTag> TONGUE_PATH =
+            SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.COMPOUND_TAG);
+
+    private static final int PRE_JUMP_LAUNCH = 17;
+    private static final float PREJUMP_TURN = 18.0F;
     private static final double JUMP_G = 0.09D;
-    private static final double LEAP_H_MAX = 1.2D;
-    private static final int T_MIN = 12, T_MAX = 26;
+    private static final double LEAP_H_MAX = 0.95D;
+    private static final int T_MIN = 14, T_MAX = 30;
     private static final int INTERMEDIATE_TICKS = 13;
     private static final int REFERENCE_AIR = 20;
+    private static final double LEAP_RANGE = 16.0D;
+    private static final float POUNCE_DAMAGE = 12.0F;
+    private static final int ARC_STEP = 3;
+    private static final int ARC_MAX = 8;
 
-    private static final int TONGUE_GRAB_TICK = 19;
-    private static final int TONGUE_REEL_END = 23;
-    private static final int TONGUE_END_TICK = 25;
-    private static final double TONGUE_HOLD_RADIUS = 1.0D;
-    private static final double TONGUE_REEL_SPEED = 2.5D;
+    private static final int TONGUE_SHOOT = 14;
+    private static final int TONGUE_GRAB = 21;
+    private static final int TONGUE_HOLD_END = 41;
+    private static final int TONGUE_END = 47;
+    private static final double TONGUE_RANGE = 18.0D;
+    private static final double TONGUE_FAR = 12.0D;
+    private static final float CHIP_DAMAGE = 2.0F;
+    private static final float MOUTH_HOLD = 0.08F;
+    private static final double MOUTH_HEIGHT = 1.5D;
+    private static final double MOUTH_FORWARD = 0.75D;
 
     private static final Holder<MobEffect>[] RESIDUE_EFFECTS = residueEffects();
 
@@ -96,7 +119,8 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private int jumpTicks = -1;
     private int jumpFlightTime;
     private double jumpVX, jumpVY0, jumpVZ;
-    private int tongueTicks = -1;
+    private boolean pounceLanded;
+    private final List<Vec3> arc = new ArrayList<>();
     private int croakCooldown = 100;
     private int leapCooldown = 40;
     private int tongueCooldown = 60;
@@ -123,6 +147,8 @@ public class AbominationEntity extends Monster implements GeoEntity {
         builder.define(JUMP_STATE, 0);
         builder.define(JUMP_SPEED, 1.0F);
         builder.define(TONGUE_TARGET, -1);
+        builder.define(TONGUE_TICKS, -1);
+        builder.define(TONGUE_PATH, new CompoundTag());
     }
 
     public int getTongueTargetId() {
@@ -131,6 +157,10 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     private void setTongueTarget(int id) {
         this.entityData.set(TONGUE_TARGET, id);
+    }
+
+    public int getTongueTicks() {
+        return this.entityData.get(TONGUE_TICKS);
     }
 
     private int getJumpState() {
@@ -149,12 +179,55 @@ public class AbominationEntity extends Monster implements GeoEntity {
         this.entityData.set(JUMP_SPEED, speed);
     }
 
+    public Vec3 mouthPos(float partialTick) {
+        double x = Mth.lerp(partialTick, this.xo, this.getX());
+        double y = Mth.lerp(partialTick, this.yo, this.getY());
+        double z = Mth.lerp(partialTick, this.zo, this.getZ());
+        float yaw = Mth.rotLerp(partialTick, this.yBodyRotO, this.yBodyRot) * Mth.DEG_TO_RAD;
+        return new Vec3(x - Mth.sin(yaw) * MOUTH_FORWARD, y + MOUTH_HEIGHT, z + Mth.cos(yaw) * MOUTH_FORWARD);
+    }
+
+    public List<Vec3> tonguePath() {
+        int[] v = this.entityData.get(TONGUE_PATH).getIntArray("p");
+        if (v.length < 6) {
+            return List.of();
+        }
+        List<Vec3> out = new ArrayList<>(v.length / 3);
+        for (int i = 0; i < v.length; i += 3) {
+            out.add(new Vec3(v[i] / 16.0D, v[i + 1] / 16.0D, v[i + 2] / 16.0D));
+        }
+        return out;
+    }
+
+    public boolean isGrasping() {
+        int ticks = getTongueTicks();
+        return ticks >= TONGUE_GRAB && ticks < TONGUE_END;
+    }
+
+    public float tongueReach(float partialTick) {
+        int ticks = getTongueTicks();
+        if (ticks < 0) {
+            return 0.0F;
+        }
+        float t = ticks + partialTick;
+        if (t <= TONGUE_SHOOT) {
+            return 0.0F;
+        }
+        if (t < TONGUE_GRAB) {
+            return (t - TONGUE_SHOOT) / (TONGUE_GRAB - TONGUE_SHOOT);
+        }
+        if (t < TONGUE_HOLD_END) {
+            return Mth.lerp((t - TONGUE_GRAB) / (TONGUE_HOLD_END - TONGUE_GRAB), 1.0F, MOUTH_HOLD);
+        }
+        return Mth.lerp(Math.min(1.0F, (t - TONGUE_HOLD_END) / (TONGUE_END - TONGUE_HOLD_END)), MOUTH_HOLD, 0.0F);
+    }
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0D, true));
         this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 10.0F));
+        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 16.0F));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(0, new HurtByTargetGoal(this));
@@ -178,23 +251,16 @@ public class AbominationEntity extends Monster implements GeoEntity {
             return;
         }
 
-        if (this.isInWaterOrBubble()) {
-            if (this.jumpTicks >= 0 || this.getJumpState() != ST_NONE) {
-                this.setNoGravity(false);
-                this.jumpTicks = -1;
-                this.setJumpState(ST_NONE);
-            }
-            this.tongueTicks = -1;
-            setTongueTarget(-1);
-            escapeWater();
-            return;
+        boolean wet = this.isInWaterOrBubble();
+        if (wet && this.getJumpState() != ST_NONE) {
+            endLeap();
         }
 
         if (this.getJumpState() != ST_NONE) {
             tickLeap();
             return;
         }
-        if (this.tongueTicks >= 0) {
+        if (getTongueTicks() >= 0) {
             tickTongue();
             return;
         }
@@ -203,37 +269,74 @@ public class AbominationEntity extends Monster implements GeoEntity {
         if (this.tongueCooldown > 0) this.tongueCooldown--;
 
         LivingEntity target = this.getTarget();
-        if (target != null) {
-            this.getLookControl().setLookAt(target);
-            double dx = target.getX() - this.getX();
-            double dz = target.getZ() - this.getZ();
-            double dist = Math.sqrt(dx * dx + dz * dz);
-            boolean los = this.getSensing().hasLineOfSight(target);
-            boolean targetInWater = target.isInWaterOrBubble();
-
-            if (targetInWater) {
-                if (los && this.tongueCooldown <= 0 && dist <= 12.0D) {
-                    startTongue();
-                    this.tongueCooldown = 80 + this.random.nextInt(40);
-                }
-            } else if (los && this.tongueCooldown <= 0 && dist <= 10.0D) {
-                startTongue();
-                this.tongueCooldown = 80 + this.random.nextInt(40);
-            } else if (los && this.leapCooldown <= 0 && dist > 10.0D && this.onGround()) {
-                startLeap();
-                this.leapCooldown = 100 + this.random.nextInt(60);
+        if (target == null) {
+            if (wet) {
+                escapeWater();
+            } else if (this.getDeltaMovement().horizontalDistanceSqr() < 1.0E-4 && --this.croakCooldown <= 0) {
+                triggerAnim("special", "croak");
+                this.croakCooldown = 200 + this.random.nextInt(100);
             }
-        } else if (this.getDeltaMovement().horizontalDistanceSqr() < 1.0E-4 && --this.croakCooldown <= 0) {
-            triggerAnim("special", "croak");
-            this.croakCooldown = 200 + this.random.nextInt(100);
+            return;
         }
+
+        this.getLookControl().setLookAt(target);
+        double dx = target.getX() - this.getX();
+        double dz = target.getZ() - this.getZ();
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        boolean los = this.getSensing().hasLineOfSight(target);
+
+        if (los && this.tongueCooldown <= 0 && wantsTongue(target, dist)) {
+            startTongue(target);
+            return;
+        }
+        if (!wet && los && this.leapCooldown <= 0 && this.onGround() && dist <= LEAP_RANGE) {
+            startLeap();
+            this.leapCooldown = 80 + this.random.nextInt(40);
+        } else if (wet) {
+            escapeWater();
+        }
+    }
+
+    private boolean wantsTongue(LivingEntity target, double dist) {
+        if (dist > TONGUE_RANGE) {
+            return false;
+        }
+        if (target.isInWaterOrBubble() || dist > TONGUE_FAR || this.isInWaterOrBubble()) {
+            return true;
+        }
+        return baitable(target);
+    }
+
+    private boolean baitable(LivingEntity target) {
+        List<ResidueCloud> clouds = this.level().getEntitiesOfClass(ResidueCloud.class,
+                this.getBoundingBox().inflate(10.0D));
+        if (clouds.isEmpty()) {
+            return false;
+        }
+        for (ResidueCloud cloud : clouds) {
+            double r = cloud.getRadius();
+            if (target.distanceToSqr(cloud.getX(), target.getY(), cloud.getZ()) <= r * r) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void startLeap() {
         this.setJumpState(ST_PREJUMP);
         this.setJumpSpeed(1.0F);
         this.jumpTicks = 0;
+        this.pounceLanded = false;
+        this.arc.clear();
         this.getNavigation().stop();
+    }
+
+    private void endLeap() {
+        this.setNoGravity(false);
+        this.jumpTicks = -1;
+        this.setJumpState(ST_NONE);
+        this.setJumpSpeed(1.0F);
+        this.arc.clear();
     }
 
     private void tickLeap() {
@@ -243,7 +346,9 @@ public class AbominationEntity extends Monster implements GeoEntity {
         }
 
         if (this.getJumpState() == ST_PREJUMP) {
+            this.getNavigation().stop();
             this.setDeltaMovement(0.0D, this.getDeltaMovement().y, 0.0D);
+            faceTarget(target);
             if (++this.jumpTicks >= PRE_JUMP_LAUNCH) {
                 launch(target);
                 this.jumpTicks = 0;
@@ -264,15 +369,41 @@ public class AbominationEntity extends Monster implements GeoEntity {
             this.setJumpState(phase);
         }
 
+        if (this.jumpTicks % ARC_STEP == 0 && this.arc.size() < ARC_MAX) {
+            this.arc.add(this.position());
+        }
+        slam(target);
+
         this.jumpTicks++;
         boolean pastApex = this.jumpTicks > ascentTicks + 1;
         if ((this.onGround() && pastApex) || this.jumpTicks > this.jumpFlightTime + 12) {
-            this.setNoGravity(false);
             spawnResidue();
-            this.jumpTicks = -1;
-            this.setJumpState(ST_NONE);
-            this.setJumpSpeed(1.0F);
+            endLeap();
         }
+    }
+
+    private void faceTarget(@Nullable LivingEntity target) {
+        if (target == null) {
+            return;
+        }
+        double dx = target.getX() - this.getX();
+        double dz = target.getZ() - this.getZ();
+        float want = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F;
+        this.setYRot(Mth.approachDegrees(this.getYRot(), want, PREJUMP_TURN));
+        this.yBodyRot = this.getYRot();
+        this.yHeadRot = this.getYRot();
+    }
+
+    private void slam(@Nullable LivingEntity target) {
+        if (this.pounceLanded || target == null
+                || !this.getBoundingBox().inflate(0.25D).intersects(target.getBoundingBox())) {
+            return;
+        }
+        this.pounceLanded = true;
+        target.hurt(this.damageSources().mobAttack(this), POUNCE_DAMAGE);
+        Vec3 push = new Vec3(this.jumpVX, 0.0D, this.jumpVZ).normalize().scale(0.6D);
+        target.push(push.x, 0.35D, push.z);
+        target.hurtMarked = true;
     }
 
     private void launch(@Nullable LivingEntity target) {
@@ -290,7 +421,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         }
         double dist = Math.sqrt(dx * dx + dz * dz);
 
-        int t = Mth.clamp((int) Math.round(dist * 0.9D), T_MIN, T_MAX);
+        int t = Mth.clamp((int) Math.round(dist * 1.15D), T_MIN, T_MAX);
         this.jumpFlightTime = t;
         this.jumpVY0 = JUMP_G * t / 2.0D;
         double speed = Math.min(dist / t, LEAP_H_MAX);
@@ -299,6 +430,11 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
         this.setJumpSpeed((float) Mth.clamp((double) REFERENCE_AIR / t, 1.0D, 2.5D));
         this.setDeltaMovement(this.jumpVX, this.jumpVY0, this.jumpVZ);
+
+        if (this.level() instanceof ServerLevel server) {
+            server.sendParticles(WildscapesParticles.RESIDUE_SWIRL.get(), this.getX(), this.getY() + 0.4D, this.getZ(),
+                    24, 0.7D, 0.3D, 0.7D, 0.06D);
+        }
     }
 
     private void homeHorizontal(@Nullable LivingEntity target) {
@@ -316,55 +452,113 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     private void spawnResidue() {
         Holder<MobEffect> effect = RESIDUE_EFFECTS[this.random.nextInt(RESIDUE_EFFECTS.length)];
-        AreaEffectCloud cloud = new AreaEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
+        for (Vec3 sample : this.arc) {
+            BlockPos ground = groundUnder(sample);
+            if (ground != null) {
+                cloud(ground.getX() + 0.5D, ground.getY() + 1.0D, ground.getZ() + 0.5D, 2.2F, 140, effect);
+            }
+        }
+        cloud(this.getX(), this.getY(), this.getZ(), 6.0F, 200, effect);
+
+        if (this.level() instanceof ServerLevel server) {
+            server.sendParticles(WildscapesParticles.RESIDUE_SPLAT.get(), this.getX(), this.getY() + 0.15D, this.getZ(),
+                    30, 1.4D, 0.1D, 1.4D, 0.12D);
+        }
+        this.arc.clear();
+    }
+
+    private void cloud(double x, double y, double z, float radius, int duration, Holder<MobEffect> effect) {
+        ResidueCloud cloud = new ResidueCloud(this.level(), x, y, z);
         cloud.setOwner(this);
-        cloud.setParticle(ParticleTypes.WITCH);
-        cloud.setRadius(6.0F);
-        cloud.setDuration(200);
+        cloud.setParticle(WildscapesParticles.RESIDUE_WISP.get());
+        cloud.setRadius(radius);
+        cloud.setDuration(duration);
         cloud.setWaitTime(10);
         cloud.setRadiusOnUse(-0.5F);
-        cloud.setRadiusPerTick(-cloud.getRadius() / cloud.getDuration());
+        cloud.setRadiusPerTick(-radius / duration);
         cloud.addEffect(new MobEffectInstance(effect, 120, 0));
         this.level().addFreshEntity(cloud);
     }
 
-    private void startTongue() {
-        this.tongueTicks = 0;
-        LivingEntity target = this.getTarget();
-        setTongueTarget(target != null ? target.getId() : -1);
+    @Nullable
+    private BlockPos groundUnder(Vec3 from) {
+        Vec3 to = from.subtract(0.0D, 6.0D, 0.0D);
+        HitResult hit = this.level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
+                CollisionContext.empty()));
+        return hit.getType() == HitResult.Type.MISS ? null : BlockPos.containing(hit.getLocation()).below();
+    }
+
+    private void startTongue(LivingEntity target) {
+        List<Vec3> path = TonguePath.find(this.level(), mouthPos(1.0F), target.getBoundingBox().getCenter());
+        if (path == null) {
+            this.tongueCooldown = 30;
+            return;
+        }
+        storePath(path);
+        this.entityData.set(TONGUE_TICKS, 0);
+        setTongueTarget(target.getId());
+        this.tongueCooldown = 120 + this.random.nextInt(60);
         this.getNavigation().stop();
     }
 
+    private void storePath(List<Vec3> path) {
+        int[] v = new int[path.size() * 3];
+        for (int i = 0; i < path.size(); i++) {
+            Vec3 p = path.get(i);
+            v[i * 3] = (int) Math.round(p.x * 16.0D);
+            v[i * 3 + 1] = (int) Math.round(p.y * 16.0D);
+            v[i * 3 + 2] = (int) Math.round(p.z * 16.0D);
+        }
+        CompoundTag tag = new CompoundTag();
+        tag.putIntArray("p", v);
+        this.entityData.set(TONGUE_PATH, tag);
+    }
+
+    private void endTongue() {
+        this.entityData.set(TONGUE_TICKS, -1);
+        this.entityData.set(TONGUE_PATH, new CompoundTag());
+        setTongueTarget(-1);
+    }
+
     private void tickTongue() {
+        this.getNavigation().stop();
         this.setDeltaMovement(0.0D, this.getDeltaMovement().y, 0.0D);
-        LivingEntity target = this.getTarget();
-        if (target != null) {
-            this.getLookControl().setLookAt(target);
+
+        int ticks = getTongueTicks();
+        if (!(this.level().getEntity(getTongueTargetId()) instanceof LivingEntity target) || !target.isAlive()) {
+            endTongue();
+            return;
         }
-        if (target != null && this.tongueTicks >= TONGUE_GRAB_TICK && this.tongueTicks <= TONGUE_REEL_END) {
-            reelTarget(target, this.tongueTicks == TONGUE_GRAB_TICK);
+
+        this.getLookControl().setLookAt(target);
+        if (ticks >= TONGUE_GRAB && ticks < TONGUE_END) {
+            haul(target, ticks);
         }
-        this.tongueTicks++;
-        if (this.tongueTicks >= TONGUE_END_TICK) {
-            this.tongueTicks = -1;
-            setTongueTarget(-1);
+
+        this.entityData.set(TONGUE_TICKS, ticks + 1);
+        if (ticks + 1 >= TONGUE_END) {
+            endTongue();
         }
     }
 
-    private void reelTarget(LivingEntity target, boolean firstTick) {
-        double dx = this.getX() - target.getX();
-        double dz = this.getZ() - target.getZ();
-        double dist = Math.sqrt(dx * dx + dz * dz);
-        double vy = firstTick && target.onGround() ? 0.3D : target.getDeltaMovement().y;
-        double overshoot = dist - TONGUE_HOLD_RADIUS;
-        if (overshoot > 0.05D && dist > 1.0E-4) {
-            double step = Math.min(overshoot, TONGUE_REEL_SPEED);
-            target.setDeltaMovement(dx / dist * step, vy, dz / dist * step);
-        } else {
-            target.setDeltaMovement(0.0D, vy, 0.0D);
+    private void haul(LivingEntity target, int ticks) {
+        List<Vec3> path = tonguePath();
+        if (path.size() < 2) {
+            return;
         }
+        Vec3 want = TonguePath.pointAt(path, Math.max(MOUTH_HOLD, tongueReach(1.0F)));
+        Vec3 delta = want.subtract(target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D));
+        target.setDeltaMovement(delta.scale(0.8D));
         target.hurtMarked = true;
         target.hasImpulse = true;
+        target.fallDistance = 0.0F;
+
+        if (ticks == TONGUE_GRAB) {
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, TONGUE_END - TONGUE_GRAB, 6,
+                    false, false, false));
+        } else if (ticks == TONGUE_GRAB + 1 || ticks == TONGUE_HOLD_END - 1) {
+            target.hurt(this.damageSources().mobAttack(this), CHIP_DAMAGE);
+        }
     }
 
     private void escapeWater() {
@@ -452,7 +646,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
             }
             return PlayState.CONTINUE;
         }
-        if (this.getTongueTargetId() >= 0) {
+        if (getTongueTicks() >= 0) {
             state.setAnimation(THOUNGE);
             return PlayState.CONTINUE;
         }

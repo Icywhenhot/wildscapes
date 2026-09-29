@@ -9,6 +9,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -117,6 +118,22 @@ public final class IntangibilityTests {
                 "wall blocked the intangible player at " + player.getX() + " from " + x);
         helper.assertTrue(player.getY() == y,
                 "intangible player fell through the floor to " + player.getY() + " from " + y);
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void necklaceMakesPlayerInvisible(GameTestHelper helper) {
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
+        player.setShiftKeyDown(true);
+
+        Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+
+        helper.assertTrue(player.isInvisible(), "active necklace did not make player invisible");
+        helper.assertTrue(!player.hasEffect(MobEffects.INVISIBILITY), "necklace added a visible potion effect");
+        player.setShiftKeyDown(false);
+        Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+        helper.assertTrue(!player.isInvisible(), "player stayed invisible after releasing the necklace");
         helper.succeed();
     }
 }

@@ -142,7 +142,7 @@ public class SwampVillageStructure extends Structure {
 
     private static final Pattern PIECE_ID = Pattern.compile("[a-z0-9_.-]+:[a-z0-9_./-]+");
 
-    private static List<String> idsIn(StructurePiecesBuilder pieces) {
+    static List<String> idsIn(StructurePiecesBuilder pieces) {
         List<String> ids = new ArrayList<>();
         for (StructurePiece piece : pieces.build().pieces()) {
             if (!(piece instanceof PoolElementStructurePiece pooled)) {

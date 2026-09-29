@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "wildscapes:witch_camp",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 34,
+    "separation": 8,
+    "salt": 1307744291,
+    "exclusion_zone": {
+      "other_set": "wildscapes:swamp_village",
+      "chunk_count": 4
+    }
+  }
+}

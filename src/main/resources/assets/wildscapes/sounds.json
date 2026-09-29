@@ -153,5 +153,12 @@
     "sounds": [
       "wildscapes:mirelash/impact"
     ]
+  },
+  "necklace.activation": {
+    "category": "player",
+    "subtitle": "subtitles.wildscapes.necklace.activation",
+    "sounds": [
+      "wildscapes:necklace/activation"
+    ]
   }
 }

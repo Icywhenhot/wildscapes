@@ -21,6 +21,15 @@ public final class WildscapesParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> INGREDIENT_STEAM =
             PARTICLE_TYPES.register("ingredient_steam", () -> new SimpleParticleType(false));
 
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RESIDUE_SPLAT =
+            PARTICLE_TYPES.register("residue_splat", () -> new SimpleParticleType(true));
+
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RESIDUE_WISP =
+            PARTICLE_TYPES.register("residue_wisp", () -> new SimpleParticleType(false));
+
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RESIDUE_SWIRL =
+            PARTICLE_TYPES.register("residue_swirl", () -> new SimpleParticleType(false));
+
     public static void register(IEventBus bus) {
         PARTICLE_TYPES.register(bus);
     }

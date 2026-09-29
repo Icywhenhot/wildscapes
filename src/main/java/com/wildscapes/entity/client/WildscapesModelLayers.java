@@ -21,6 +21,9 @@ public final class WildscapesModelLayers {
     public static final ModelLayerLocation MIRELASH_HOOK = create("mirelash_hook");
     public static final ModelLayerLocation MIRELASH_SEGMENT = create("mirelash_segment");
     public static final ModelLayerLocation SLIME_BUBBLE = create("slime_bubble");
+    public static final ModelLayerLocation TONGUE_SEGMENT = create("tongue_segment");
+    public static final ModelLayerLocation TONGUE_TIP = create("tongue_tip");
+    public static final ModelLayerLocation ABOMINATION_GRASP = create("abomination_grasp");
 
     private static ModelLayerLocation create(String name) {
         return create(name, "main");

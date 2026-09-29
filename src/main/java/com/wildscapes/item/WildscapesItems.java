@@ -3,6 +3,7 @@ package com.wildscapes.item;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.WildscapesEntities;
 
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
@@ -18,6 +19,9 @@ public final class WildscapesItems {
 
     public static final DeferredItem<Item> ABOMINATION_SPAWN_EGG = ITEMS.register("abomination_spawn_egg",
             () -> new DeferredSpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+
+    public static final DeferredItem<Item> ILLUSIONER_SPAWN_EGG = ITEMS.register("illusioner_spawn_egg",
+            () -> new DeferredSpawnEggItem(() -> EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
     public static final DeferredItem<Item> FROG_LEGS = ITEMS.register("frog_legs",
             () -> new Item(new Item.Properties()));

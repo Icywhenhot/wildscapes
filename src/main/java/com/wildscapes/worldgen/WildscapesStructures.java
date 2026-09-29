@@ -4,6 +4,7 @@ import com.wildscapes.Wildscapes;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.StructureType;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -21,6 +22,15 @@ public final class WildscapesStructures {
     public static final DeferredHolder<StructureType<?>, StructureType<SwampVillageStructure>> SWAMP_VILLAGE =
             STRUCTURE_TYPES.register("swamp_village", () -> () -> SwampVillageStructure.CODEC);
 
+    public static final DeferredHolder<StructureType<?>, StructureType<WitchCampStructure>> WITCH_CAMP =
+            STRUCTURE_TYPES.register("witch_camp", () -> () -> WitchCampStructure.CODEC);
+
+    public static final DeferredRegister<StructurePieceType> PIECES =
+            DeferredRegister.create(Registries.STRUCTURE_PIECE, Wildscapes.MODID);
+
+    public static final DeferredHolder<StructurePieceType, StructurePieceType> BURIED_PIECE =
+            PIECES.register("buried_jigsaw", () -> BuriedPiece::new);
+
     public static final DeferredHolder<StructureProcessorType<?>, StructureProcessorType<StiltProcessor>> STILTS =
             PROCESSORS.register("stilts", () -> () -> StiltProcessor.CODEC);
 
@@ -35,6 +45,7 @@ public final class WildscapesStructures {
 
     public static void register(IEventBus bus) {
         STRUCTURE_TYPES.register(bus);
+        PIECES.register(bus);
         PROCESSORS.register(bus);
     }
 }

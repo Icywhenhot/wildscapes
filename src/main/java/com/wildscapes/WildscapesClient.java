@@ -2,6 +2,7 @@ package com.wildscapes;
 
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.WildscapesEntities;
+import com.wildscapes.entity.client.AbominationModels;
 import com.wildscapes.entity.client.AbominationRenderer;
 import com.wildscapes.entity.client.CauldronRenderer;
 import com.wildscapes.entity.client.MirageLayer;
@@ -18,19 +19,23 @@ import com.wildscapes.entity.client.SwampIllagerModels;
 import com.wildscapes.entity.client.SwampPillagerRenderer;
 import com.wildscapes.entity.client.SwampVindicatorRenderer;
 import com.wildscapes.entity.client.WildscapesModelLayers;
+import com.wildscapes.effect.Intangibility;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.particle.client.BrewBubbleParticle;
+import com.wildscapes.particle.client.ResidueParticle;
 import com.wildscapes.particle.client.IngredientSteamParticle;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -39,6 +44,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -52,6 +58,11 @@ public final class WildscapesClient {
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "active"),
                     (stack, level, holder, seed) -> level != null && holder != null
                             && MirelashItem.isHookOut(level, holder) ? 1F : 0F);
+            ItemProperties.register(WildscapesItems.ILLUSIONIST_NECKLACE.get(),
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "active"),
+                    (stack, level, holder, seed) -> holder instanceof Player player
+                            && (player.getMainHandItem() == stack || player.getOffhandItem() == stack)
+                            && Intangibility.isActive(player) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"),
                     (stack, level, holder, seed) -> hasStoredEnchantment(stack, MirelashItem.ELASTICITY) ? 1F : 0F);
@@ -64,6 +75,12 @@ public final class WildscapesClient {
     private static boolean hasStoredEnchantment(ItemStack stack, ResourceKey<Enchantment> key) {
         var enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
         return enchantments != null && enchantments.keySet().stream().anyMatch(enchantment -> enchantment.is(key));
+    }
+
+    @SubscribeEvent
+    static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+        event.register((stack, layer) -> 0xFFFFFFFF, WildscapesItems.ILLUSIONER_SPAWN_EGG.get(),
+                Items.WITCH_SPAWN_EGG);
     }
 
     @SubscribeEvent
@@ -81,12 +98,16 @@ public final class WildscapesClient {
         event.registerLayerDefinition(WildscapesModelLayers.MIRELASH_HOOK, MirelashModels::createHookLayer);
         event.registerLayerDefinition(WildscapesModelLayers.MIRELASH_SEGMENT, MirelashModels::createSegmentLayer);
         event.registerLayerDefinition(WildscapesModelLayers.SLIME_BUBBLE, MirelashModels::createSlimeBubbleLayer);
+        event.registerLayerDefinition(WildscapesModelLayers.TONGUE_SEGMENT, AbominationModels::createTongueSegment);
+        event.registerLayerDefinition(WildscapesModelLayers.TONGUE_TIP, AbominationModels::createTongueTip);
+        event.registerLayerDefinition(WildscapesModelLayers.ABOMINATION_GRASP, AbominationModels::createGrasp);
     }
 
     @SubscribeEvent
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(WildscapesEntities.ABOMINATION.get(), AbominationRenderer::new);
         event.registerEntityRenderer(WildscapesEntities.MIRELASH_HOOK.get(), MirelashHookRenderer::new);
+        event.registerEntityRenderer(WildscapesEntities.RESIDUE_CLOUD.get(), NoopRenderer::new);
 
         event.registerEntityRenderer(EntityType.PILLAGER, SwampPillagerRenderer::new);
         event.registerEntityRenderer(EntityType.VINDICATOR, SwampVindicatorRenderer::new);
@@ -113,5 +134,11 @@ public final class WildscapesClient {
     static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(WildscapesParticles.BREW_BUBBLE.get(), BrewBubbleParticle.Provider::new);
         event.registerSpriteSet(WildscapesParticles.INGREDIENT_STEAM.get(), IngredientSteamParticle.Provider::new);
+        event.registerSpriteSet(WildscapesParticles.RESIDUE_SPLAT.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 11, 2.4F, 0.82F, 0.02F));
+        event.registerSpriteSet(WildscapesParticles.RESIDUE_WISP.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 18, 0.9F, 0.95F, 0.01F));
+        event.registerSpriteSet(WildscapesParticles.RESIDUE_SWIRL.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 14, 1.3F, 0.93F, 0.02F));
     }
 }

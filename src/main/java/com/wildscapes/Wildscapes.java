@@ -38,9 +38,12 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.neoforged.bus.api.IEventBus;
@@ -101,6 +104,33 @@ public class Wildscapes {
                         output.accept(WildscapesItems.MIRELASH.get());
                         output.accept(WildscapesItems.ILLUSIONIST_NECKLACE.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
+                        output.accept(WildscapesItems.ILLUSIONER_SPAWN_EGG.get());
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.LONG_MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.LONG_MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.LONG_MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.LONG_MIRAGE));
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.LONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.LONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.LONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.LONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.STRONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.STRONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.STRONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.STRONG_RESISTANCE));
+                        output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
+                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
+                                        .getOrThrow(MirelashItem.ELASTICITY), 1)));
+                        output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
+                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
+                                        .getOrThrow(MirelashItem.SLIME_SNARE), 1)));
                     }).build());
 
     public Wildscapes(IEventBus modEventBus) {

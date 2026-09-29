@@ -28,6 +28,13 @@ public final class WildscapesEntities {
                     .updateInterval(1)
                     .build("mirelash_hook"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<ResidueCloud>> RESIDUE_CLOUD =
+            ENTITY_TYPES.register("residue_cloud", () -> EntityType.Builder.<ResidueCloud>of(ResidueCloud::new, MobCategory.MISC)
+                    .sized(6.0F, 0.5F)
+                    .clientTrackingRange(10)
+                    .updateInterval(10)
+                    .build("residue_cloud"));
+
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);
     }

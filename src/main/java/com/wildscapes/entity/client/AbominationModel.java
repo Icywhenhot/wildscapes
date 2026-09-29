@@ -5,17 +5,36 @@ import com.wildscapes.entity.AbominationEntity;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.model.data.EntityModelData;
 
 public class AbominationModel extends GeoModel<AbominationEntity> {
-    private static final double MOUTH_HEIGHT = 1.5D;
-    private static final double TONGUE_REST_LEN = 1.75D;
-    private static final float TONGUE_MAX_SCALE = 8.0F;
-    private static final float PITCH_SIGN = 1.0F;
+    private static final int FRAME_TICKS = 3;
+    private static final ResourceLocation[] FRAMES = strip("abomination_", 16);
+    private static final ResourceLocation[] GLOW = strip("abomination_glow_", 16);
+    private static final int CYCLE = FRAMES.length * FRAME_TICKS;
+
+    private static ResourceLocation[] strip(String prefix, int count) {
+        ResourceLocation[] out = new ResourceLocation[count];
+        for (int i = 0; i < count; i++) {
+            out[i] = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+                    "textures/entity/" + prefix + i + ".png");
+        }
+        return out;
+    }
+
+    private static int phase(AbominationEntity animatable) {
+        int t = (animatable.tickCount + animatable.getId() * FRAME_TICKS) % CYCLE;
+        return t < 0 ? t + CYCLE : t;
+    }
+
+    public static ResourceLocation glowFrame(AbominationEntity animatable) {
+        return GLOW[phase(animatable) * GLOW.length / CYCLE];
+    }
 
     @Override
     public ResourceLocation getModelResource(AbominationEntity animatable) {
@@ -24,7 +43,7 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
 
     @Override
     public ResourceLocation getTextureResource(AbominationEntity animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/abomination.png");
+        return FRAMES[phase(animatable) / FRAME_TICKS];
     }
 
     @Override
@@ -36,36 +55,16 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
     public void setCustomAnimations(AbominationEntity animatable, long instanceId, AnimationState<AbominationEntity> state) {
         super.setCustomAnimations(animatable, instanceId, state);
 
-        int targetId = animatable.getTongueTargetId();
-        if (targetId < 0) {
-            return;
+        GeoBone head = getAnimationProcessor().getBone("head");
+        EntityModelData data = state.getData(DataTickets.ENTITY_MODEL_DATA);
+        if (head != null && data != null) {
+            head.setRotX(head.getRotX() + data.headPitch() * Mth.DEG_TO_RAD);
+            head.setRotY(head.getRotY() + data.netHeadYaw() * Mth.DEG_TO_RAD);
         }
+
         GeoBone tongue = getAnimationProcessor().getBone("tongue");
-        if (tongue == null) {
-            return;
+        if (tongue != null) {
+            tongue.setHidden(animatable.getTongueTicks() >= 0);
         }
-        Entity target = animatable.level().getEntity(targetId);
-        if (target == null) {
-            return;
-        }
-
-        double mouthY = animatable.getY() + MOUTH_HEIGHT;
-        double dx = target.getX() - animatable.getX();
-        double dz = target.getZ() - animatable.getZ();
-        double horiz = Math.sqrt(dx * dx + dz * dz);
-        double aimY = target.getY() + target.getBbHeight() * 0.5D;
-        double dist = Math.sqrt(horiz * horiz + (aimY - mouthY) * (aimY - mouthY));
-
-        float scaleZ = (float) Mth.clamp(dist / TONGUE_REST_LEN, 0.2D, TONGUE_MAX_SCALE);
-        tongue.setScaleX(1.0F);
-        tongue.setScaleZ(scaleZ);
-
-        float pitch = (float) Math.atan2(mouthY - aimY, horiz);
-        tongue.setRotX(pitch * PITCH_SIGN);
-        tongue.setRotY(0.0F);
-        tongue.setRotZ(0.0F);
-        tongue.setPosX(0.0F);
-        tongue.setPosY(0.0F);
-        tongue.setPosZ(0.0F);
     }
 }

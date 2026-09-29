@@ -40,6 +40,7 @@ public final class WildscapesSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MIRELASH_THROW          = register("mirelash.throw");
     public static final DeferredHolder<SoundEvent, SoundEvent> MIRELASH_HIT            = register("mirelash.hit");
     public static final DeferredHolder<SoundEvent, SoundEvent> MIRELASH_IMPACT         = register("mirelash.impact");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NECKLACE_ACTIVATION     = register("necklace.activation");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name,
