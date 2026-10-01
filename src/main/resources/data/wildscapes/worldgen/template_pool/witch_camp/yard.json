@@ -5,6 +5,51 @@
       "weight": 1,
       "element": {
         "element_type": "minecraft:single_pool_element",
+        "location": "wildscapes:witch_camp/animalpen",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "wildscapes:witch_camp/animalpen2",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "wildscapes:witch_camp/animalpen3",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "wildscapes:witch_camp/animalpen4",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "wildscapes:witch_camp/cookingpot",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
         "location": "wildscapes:witch_camp/shootingrange",
         "projection": "rigid",
         "processors": "minecraft:empty"
@@ -23,7 +68,7 @@
       "weight": 1,
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "wildscapes:witch_camp/shootingrange3",
+        "location": "wildscapes:witch_camp/decor1",
         "projection": "rigid",
         "processors": "minecraft:empty"
       }
@@ -32,7 +77,7 @@
       "weight": 1,
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "wildscapes:witch_camp/shootingrange4",
+        "location": "wildscapes:witch_camp/decor2",
         "projection": "rigid",
         "processors": "minecraft:empty"
       }
@@ -41,7 +86,7 @@
       "weight": 1,
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "wildscapes:witch_camp/shootingrange5",
+        "location": "wildscapes:witch_camp/decor3",
         "projection": "rigid",
         "processors": "minecraft:empty"
       }
@@ -50,7 +95,7 @@
       "weight": 1,
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "wildscapes:witch_camp/shootingrange6",
+        "location": "wildscapes:witch_camp/decor4",
         "projection": "rigid",
         "processors": "minecraft:empty"
       }
@@ -59,22 +104,13 @@
       "weight": 1,
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "wildscapes:witch_camp/shootingrange7",
+        "location": "wildscapes:witch_camp/decor5",
         "projection": "rigid",
         "processors": "minecraft:empty"
       }
     },
     {
-      "weight": 1,
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "wildscapes:witch_camp/shootingrange8",
-        "projection": "rigid",
-        "processors": "minecraft:empty"
-      }
-    },
-    {
-      "weight": 8,
+      "weight": 6,
       "element": {
         "element_type": "minecraft:empty_pool_element"
       }
