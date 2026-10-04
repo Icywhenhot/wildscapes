@@ -6,15 +6,18 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
 
 public class ResidueParticle extends TextureSheetParticle {
     private final SpriteSet sprites;
+    private final int frames;
 
     protected ResidueParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
             SpriteSet sprites, int life, float size, float drag, float lift) {
         super(level, x, y, z);
         this.sprites = sprites;
+        this.frames = count(sprites);
         this.xd = xd;
         this.yd = yd + lift;
         this.zd = zd;
@@ -23,7 +26,28 @@ public class ResidueParticle extends TextureSheetParticle {
         this.hasPhysics = false;
         this.lifetime = life + this.random.nextInt(Math.max(1, life / 2));
         this.quadSize *= size * (0.8F + this.random.nextFloat() * 0.4F);
-        setSpriteFromAge(sprites);
+        frame();
+    }
+
+    private static int count(SpriteSet sprites) {
+        int n = 1;
+        TextureAtlasSprite last = sprites.get(0, 64);
+        for (int i = 1; i <= 64; i++) {
+            TextureAtlasSprite s = sprites.get(i, 64);
+            if (s != last) {
+                n++;
+                last = s;
+            }
+        }
+        return n;
+    }
+
+    private void frame() {
+        if (frames < 2) {
+            setSprite(sprites.get(0, 1));
+            return;
+        }
+        setSprite(sprites.get(Math.min(age * frames / lifetime, frames - 1), frames - 1));
     }
 
     @Override
@@ -34,7 +58,7 @@ public class ResidueParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         super.tick();
-        setSpriteFromAge(sprites);
+        frame();
     }
 
     public static class Provider implements ParticleProvider<SimpleParticleType> {
