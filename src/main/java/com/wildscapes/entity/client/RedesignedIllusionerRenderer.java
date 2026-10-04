@@ -5,6 +5,7 @@ import java.util.WeakHashMap;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.Incursion;
 
 import net.minecraft.client.model.IllagerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -21,6 +22,8 @@ import net.minecraft.world.phys.Vec3;
 public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
+    private static final ResourceLocation EMPOWERED =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
 
     private final Map<Illusioner, Trail> trails = new WeakHashMap<>();
 
@@ -40,7 +43,7 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
 
     @Override
     public ResourceLocation getTextureLocation(Illusioner entity) {
-        return TEXTURE;
+        return Incursion.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 
     @Override

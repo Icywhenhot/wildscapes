@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "phase=inactive": {
+      "model": "wildscapes:block/cauldron_of_souls_inactive"
+    },
+    "phase=active": {
+      "model": "wildscapes:block/cauldron_of_souls_active"
+    },
+    "phase=rewards": {
+      "model": "wildscapes:block/cauldron_of_souls_rewards"
+    }
+  }
+}

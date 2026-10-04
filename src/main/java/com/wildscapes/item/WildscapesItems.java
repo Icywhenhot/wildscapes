@@ -39,6 +39,9 @@ public final class WildscapesItems {
     public static final DeferredItem<Item> ILLUSIONIST_NECKLACE = ITEMS.register("illusionist_necklace",
             () -> new Item(new Item.Properties().durability(432)));
 
+    public static final DeferredItem<IncendiaryBottleItem> INCENDIARY_BOTTLE = ITEMS.register("incendiary_bottle",
+            () -> new IncendiaryBottleItem(new Item.Properties().stacksTo(16)));
+
     public static final DeferredItem<MagicSoupItem> MAGIC_SOUP = ITEMS.register("magic_soup",
             () -> new MagicSoupItem(new Item.Properties()));
 

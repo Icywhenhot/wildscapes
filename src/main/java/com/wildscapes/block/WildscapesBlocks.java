@@ -166,13 +166,34 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .ignitedByLava()));
 
-    public static final DeferredBlock<Block> WITCH_CAULDRON = register("witch_cauldron",
-            () -> new Block(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.METAL)
-                    .strength(2.0F)
-                    .sound(SoundType.METAL)
-                    .lightLevel(state -> 3)
-                    .noOcclusion()));
+    public static final DeferredBlock<CauldronOfSoulsBlock> CAULDRON_OF_SOULS = register("cauldron_of_souls",
+            () -> new CauldronOfSoulsBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .strength(50.0F)
+                    .sound(SoundType.TRIAL_SPAWNER)
+                    .lightLevel(state -> state.getValue(CauldronOfSoulsBlock.PHASE) == CauldronOfSoulsBlock.Phase.INACTIVE ? 3 : 10)
+                    .noOcclusion()
+                    .noLootTable()));
+
+    public static final DeferredBlock<SummoningBonfireBlock> SUMMONING_BONFIRE = register("summoning_bonfire",
+            () -> new SummoningBonfireBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .strength(50.0F)
+                    .sound(SoundType.TRIAL_SPAWNER)
+                    .lightLevel(state -> state.getValue(SummoningBonfireBlock.LIT) ? 12 : 0)
+                    .noOcclusion()
+                    .noLootTable()));
+
+    public static final DeferredBlock<IncursionFireBlock> INCURSION_FIRE = BLOCKS.register("incursion_fire",
+            () -> new IncursionFireBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_PURPLE)
+                    .replaceable()
+                    .noCollission()
+                    .instabreak()
+                    .lightLevel(state -> 12)
+                    .sound(SoundType.WOOL)
+                    .pushReaction(PushReaction.DESTROY)
+                    .noLootTable()));
 
     public static final DeferredBlock<WildscapesCauldronBlock> CAULDRON = BLOCKS.register("cauldron",
             () -> new WildscapesCauldronBlock(BlockBehaviour.Properties.of()

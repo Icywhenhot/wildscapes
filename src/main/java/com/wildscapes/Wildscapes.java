@@ -15,6 +15,7 @@ import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.effect.WildscapesPotions;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.IllusionerGoals;
+import com.wildscapes.entity.Incursion;
 import com.wildscapes.entity.SlimeMerging;
 import com.wildscapes.entity.SwampSpawns;
 import com.wildscapes.entity.SwampVariants;
@@ -88,7 +89,8 @@ public class Wildscapes {
                         output.accept(WildscapesBlocks.SHORT_RUSHES.get());
                         output.accept(WildscapesBlocks.BONFIRE.get());
                         output.accept(WildscapesBlocks.SOUL_BONFIRE.get());
-                        output.accept(WildscapesBlocks.WITCH_CAULDRON.get());
+                        output.accept(WildscapesBlocks.CAULDRON_OF_SOULS.get());
+                        output.accept(WildscapesBlocks.SUMMONING_BONFIRE.get());
                         output.accept(MudBrickBlocks.CHISELED_MUD_BRICKS.get());
                         for (DyeColor color : DyeColor.values()) {
                             output.accept(MudBrickBlocks.BRICKS.get(color).get());
@@ -103,6 +105,7 @@ public class Wildscapes {
                         output.accept(WildscapesItems.ABOMINATION_TONGUE.get());
                         output.accept(WildscapesItems.MIRELASH.get());
                         output.accept(WildscapesItems.ILLUSIONIST_NECKLACE.get());
+                        output.accept(WildscapesItems.INCENDIARY_BOTTLE.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
                         output.accept(WildscapesItems.ILLUSIONER_SPAWN_EGG.get());
                         output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.MIRAGE));
@@ -125,6 +128,17 @@ public class Wildscapes {
                         output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.STRONG_RESISTANCE));
                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.STRONG_RESISTANCE));
                         output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.STRONG_RESISTANCE));
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.STRONG_GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.STRONG_GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.STRONG_GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.STRONG_GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.INCENDIARY));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.INCENDIARY));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.INCENDIARY));
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
                                         .getOrThrow(MirelashItem.ELASTICITY), 1)));
@@ -142,6 +156,7 @@ public class Wildscapes {
         WildscapesEffects.register(modEventBus);
         WildscapesPotions.register(modEventBus);
         SwampVariants.register(modEventBus);
+        Incursion.register(modEventBus);
         WildscapesSounds.register(modEventBus);
         WildscapesParticles.register(modEventBus);
         WildscapesFeatures.register(modEventBus);

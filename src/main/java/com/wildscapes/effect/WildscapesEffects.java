@@ -24,6 +24,11 @@ public final class WildscapesEffects {
     public static final DeferredHolder<MobEffect, MobEffect> INTANGIBILITY = EFFECTS.register("intangibility",
             () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x7795C4) {});
 
+    public static final DeferredHolder<MobEffect, MobEffect> GNASHING = EFFECTS.register("gnashing", GnashingEffect::new);
+
+    public static final DeferredHolder<MobEffect, MobEffect> INCENDIARY = EFFECTS.register("incendiary",
+            IncendiaryEffect::new);
+
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);
     }

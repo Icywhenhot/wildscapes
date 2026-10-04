@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "wildscapes:block/summoning_bonfire"
+    },
+    "lit=false": {
+      "model": "wildscapes:block/summoning_bonfire_off"
+    }
+  }
+}

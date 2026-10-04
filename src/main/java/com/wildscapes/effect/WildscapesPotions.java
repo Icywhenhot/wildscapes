@@ -31,6 +31,15 @@ public final class WildscapesPotions {
     public static final DeferredHolder<Potion, Potion> STRONG_RESISTANCE = POTIONS.register("strong_resistance",
             () -> new Potion("resistance", new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 1)));
 
+    public static final DeferredHolder<Potion, Potion> GNASHING = POTIONS.register("gnashing",
+            () -> new Potion(new MobEffectInstance(WildscapesEffects.GNASHING, 900)));
+
+    public static final DeferredHolder<Potion, Potion> STRONG_GNASHING = POTIONS.register("strong_gnashing",
+            () -> new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING, 640, 1)));
+
+    public static final DeferredHolder<Potion, Potion> INCENDIARY = POTIONS.register("incendiary",
+            () -> new Potion(new MobEffectInstance(WildscapesEffects.INCENDIARY, 1)));
+
     public static void register(IEventBus bus) {
         POTIONS.register(bus);
     }

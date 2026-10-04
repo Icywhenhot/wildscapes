@@ -1,7 +1,8 @@
 {
   "replace": false,
   "values": [
-    "wildscapes:witch_cauldron",
+    "wildscapes:cauldron_of_souls",
+    "wildscapes:summoning_bonfire",
     "wildscapes:cauldron",
     "#wildscapes:mud_brick_blocks"
   ]

@@ -5,6 +5,7 @@ import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.client.AbominationModels;
 import com.wildscapes.entity.client.AbominationRenderer;
 import com.wildscapes.entity.client.CauldronRenderer;
+import com.wildscapes.entity.client.EmpoweredEvokerRenderer;
 import com.wildscapes.entity.client.MirageLayer;
 import com.wildscapes.entity.client.MirelashHookRenderer;
 import com.wildscapes.entity.client.MirelashModels;
@@ -26,10 +27,12 @@ import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.particle.client.BrewBubbleParticle;
 import com.wildscapes.particle.client.ResidueParticle;
 import com.wildscapes.particle.client.IngredientSteamParticle;
+import com.wildscapes.particle.client.SoulTrailParticle;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
@@ -108,11 +111,13 @@ public final class WildscapesClient {
         event.registerEntityRenderer(WildscapesEntities.ABOMINATION.get(), AbominationRenderer::new);
         event.registerEntityRenderer(WildscapesEntities.MIRELASH_HOOK.get(), MirelashHookRenderer::new);
         event.registerEntityRenderer(WildscapesEntities.RESIDUE_CLOUD.get(), NoopRenderer::new);
+        event.registerEntityRenderer(WildscapesEntities.INCENDIARY_BOTTLE.get(), ThrownItemRenderer::new);
 
         event.registerEntityRenderer(EntityType.PILLAGER, SwampPillagerRenderer::new);
         event.registerEntityRenderer(EntityType.VINDICATOR, SwampVindicatorRenderer::new);
         event.registerEntityRenderer(EntityType.ILLUSIONER, RedesignedIllusionerRenderer::new);
         event.registerEntityRenderer(EntityType.WITCH, RedesignedWitchRenderer::new);
+        event.registerEntityRenderer(EntityType.EVOKER, EmpoweredEvokerRenderer::new);
         event.registerEntityRenderer(EntityType.SLIME, RedesignedSlimeRenderer::new);
 
         event.registerBlockEntityRenderer(WildscapesBlockEntities.CAULDRON.get(), CauldronRenderer::new);
@@ -140,5 +145,30 @@ public final class WildscapesClient {
                 sprites -> new ResidueParticle.Provider(sprites, 18, 0.9F, 0.95F, 0.01F));
         event.registerSpriteSet(WildscapesParticles.RESIDUE_SWIRL.get(),
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.3F, 0.93F, 0.02F));
+        event.registerSpriteSet(WildscapesParticles.SOUL_TRAIL.get(), SoulTrailParticle.Provider::new);
+        event.registerSpriteSet(WildscapesParticles.INCURSION_SPARK.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 16, 0.5F, 0.92F, 0.01F));
+        event.registerSpriteSet(WildscapesParticles.EMPOWERED_WISP.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 14, 1.1F, 0.94F, 0.0F));
+        event.registerSpriteSet(WildscapesParticles.EMPOWERED_RING.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 14, 1.2F, 0.94F, 0.0F));
+        event.registerSpriteSet(WildscapesParticles.EMPOWERED_SOUL.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 16, 0.9F, 0.94F, 0.01F));
+        event.registerSpriteSet(WildscapesParticles.SOUL_MOTE.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 20, 0.35F, 0.9F, 0.01F));
+        event.registerSpriteSet(WildscapesParticles.LOST_SOUL.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 14, 1.4F, 0.9F, 0.02F));
+        event.registerSpriteSet(WildscapesParticles.BONFIRE_EMBER.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 18, 0.3F, 0.96F, 0.0F));
+        event.registerSpriteSet(WildscapesParticles.CAULDRON_SWIRL.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 16, 1.2F, 0.95F, 0.01F));
+        event.registerSpriteSet(WildscapesParticles.CAULDRON_REWARD.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 14, 1.5F, 0.9F, 0.02F));
+        event.registerSpriteSet(WildscapesParticles.SUMMON_WRAITH.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 16, 1.8F, 0.92F, 0.02F));
+        event.registerSpriteSet(WildscapesParticles.SUMMON_RISE.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 16, 1.6F, 0.9F, 0.03F));
+        event.registerSpriteSet(WildscapesParticles.SUMMON_MOTE.get(),
+                sprites -> new ResidueParticle.Provider(sprites, 18, 0.35F, 0.92F, 0.02F));
     }
 }

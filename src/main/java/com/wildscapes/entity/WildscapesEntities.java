@@ -35,6 +35,13 @@ public final class WildscapesEntities {
                     .updateInterval(10)
                     .build("residue_cloud"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<IncendiaryBottle>> INCENDIARY_BOTTLE =
+            ENTITY_TYPES.register("incendiary_bottle", () -> EntityType.Builder.<IncendiaryBottle>of(IncendiaryBottle::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .clientTrackingRange(4)
+                    .updateInterval(10)
+                    .build("incendiary_bottle"));
+
     public static void register(IEventBus bus) {
         ENTITY_TYPES.register(bus);
     }

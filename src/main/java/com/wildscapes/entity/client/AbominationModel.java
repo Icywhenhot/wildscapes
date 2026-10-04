@@ -2,6 +2,7 @@ package com.wildscapes.entity.client;
 
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.AbominationEntity;
+import com.wildscapes.entity.Incursion;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -16,6 +17,8 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
     private static final int FRAME_TICKS = 3;
     private static final ResourceLocation[] FRAMES = strip("abomination_", 16);
     private static final ResourceLocation[] GLOW = strip("abomination_glow_", 16);
+    private static final ResourceLocation[] EMPOWERED = strip("abomination_empowered_", 10);
+    private static final ResourceLocation[] EMPOWERED_GLOW = strip("abomination_empowered_glow_", 10);
     private static final int CYCLE = FRAMES.length * FRAME_TICKS;
 
     private static ResourceLocation[] strip(String prefix, int count) {
@@ -33,7 +36,8 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
     }
 
     public static ResourceLocation glowFrame(AbominationEntity animatable) {
-        return GLOW[phase(animatable) * GLOW.length / CYCLE];
+        ResourceLocation[] glow = Incursion.isEmpowered(animatable) ? EMPOWERED_GLOW : GLOW;
+        return glow[phase(animatable) * glow.length / CYCLE];
     }
 
     @Override
@@ -43,6 +47,9 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
 
     @Override
     public ResourceLocation getTextureResource(AbominationEntity animatable) {
+        if (Incursion.isEmpowered(animatable)) {
+            return EMPOWERED[phase(animatable) * EMPOWERED.length / CYCLE];
+        }
         return FRAMES[phase(animatable) / FRAME_TICKS];
     }
 

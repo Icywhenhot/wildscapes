@@ -2,6 +2,7 @@ package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.Incursion;
 import com.wildscapes.entity.SwampVariants;
 
 import net.minecraft.client.model.IllagerModel;
@@ -18,6 +19,8 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
             ResourceLocation.withDefaultNamespace("textures/entity/illager/pillager.png");
     private static final ResourceLocation SWAMP =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_swamp.png");
+    private static final ResourceLocation EMPOWERED =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_empowered.png");
 
     private final IllagerModel<Pillager> vanillaModel;
     private final IllagerModel<Pillager> swampModel;
@@ -32,12 +35,15 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
     @Override
     public void render(Pillager entity, float entityYaw, float partialTicks, PoseStack poseStack,
             MultiBufferSource buffer, int packedLight) {
-        this.model = SwampVariants.isSwampBorn(entity) ? this.swampModel : this.vanillaModel;
+        this.model = SwampVariants.isSwampBorn(entity) || Incursion.isEmpowered(entity) ? this.swampModel : this.vanillaModel;
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
     @Override
     public ResourceLocation getTextureLocation(Pillager entity) {
+        if (Incursion.isEmpowered(entity)) {
+            return EMPOWERED;
+        }
         return SwampVariants.isSwampBorn(entity) ? SWAMP : VANILLA;
     }
 }

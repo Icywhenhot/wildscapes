@@ -160,5 +160,44 @@
     "sounds": [
       "wildscapes:necklace/activation"
     ]
+  },
+  "cauldron_of_souls.hum": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.cauldron_of_souls.hum",
+    "sounds": [
+      { "name": "wildscapes:incursion/hum", "attenuation_distance": 12 }
+    ]
+  },
+  "cauldron_of_souls.activate": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.cauldron_of_souls.activate",
+    "sounds": [
+      "wildscapes:incursion/activate"
+    ]
+  },
+  "cauldron_of_souls.reward": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.cauldron_of_souls.reward",
+    "sounds": [
+      "wildscapes:incursion/reward_1",
+      "wildscapes:incursion/reward_2"
+    ]
+  },
+  "incursion.empowered_death": {
+    "category": "hostile",
+    "subtitle": "subtitles.wildscapes.incursion.empowered_death",
+    "sounds": [
+      "wildscapes:incursion/empowered_death"
+    ]
+  },
+  "summoning_bonfire.ignite": {
+    "category": "block",
+    "subtitle": "subtitles.wildscapes.summoning_bonfire.ignite",
+    "sounds": [
+      "wildscapes:incursion/ignite_1",
+      "wildscapes:incursion/ignite_2",
+      "wildscapes:incursion/ignite_3",
+      "wildscapes:incursion/ignite_4"
+    ]
   }
 }

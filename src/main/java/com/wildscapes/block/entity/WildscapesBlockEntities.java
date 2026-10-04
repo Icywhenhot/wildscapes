@@ -20,6 +20,11 @@ public final class WildscapesBlockEntities {
                     .of(CauldronBlockEntity::new, WildscapesBlocks.CAULDRON.get())
                     .build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CauldronOfSoulsBlockEntity>> CAULDRON_OF_SOULS =
+            BLOCK_ENTITIES.register("cauldron_of_souls", () -> BlockEntityType.Builder
+                    .of(CauldronOfSoulsBlockEntity::new, WildscapesBlocks.CAULDRON_OF_SOULS.get())
+                    .build(null));
+
     public static void register(IEventBus bus) {
         BLOCK_ENTITIES.register(bus);
     }

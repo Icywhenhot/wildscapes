@@ -2,6 +2,7 @@ package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.Incursion;
 
 import net.minecraft.client.model.WitchModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,6 +15,8 @@ import net.minecraft.world.entity.monster.Witch;
 public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch>> {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
+    private static final ResourceLocation EMPOWERED =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
 
     public RedesignedWitchRenderer(EntityRendererProvider.Context context) {
         super(context, new WitchModel<>(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
@@ -29,7 +32,7 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch
 
     @Override
     public ResourceLocation getTextureLocation(Witch entity) {
-        return TEXTURE;
+        return Incursion.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 
     @Override

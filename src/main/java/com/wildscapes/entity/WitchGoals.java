@@ -127,6 +127,6 @@ public final class WitchGoals {
             return false;
         }
         var state = witch.level().getBlockState(pos);
-        return state.getBlock() instanceof AbstractCauldronBlock || state.is(WildscapesBlocks.WITCH_CAULDRON.get());
+        return state.getBlock() instanceof AbstractCauldronBlock || state.is(WildscapesBlocks.CAULDRON_OF_SOULS.get());
     }
 }
