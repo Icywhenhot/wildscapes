@@ -2,7 +2,7 @@ package com.wildscapes.effect;
 
 import javax.annotation.Nullable;
 
-import com.wildscapes.block.IncursionFireBlock;
+import com.wildscapes.block.IncendiaryFireBlock;
 
 import net.minecraft.world.effect.InstantenousMobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -17,7 +17,7 @@ public class IncendiaryEffect extends InstantenousMobEffect {
     @Override
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (!entity.level().isClientSide) {
-            IncursionFireBlock.spread(entity.level(), entity.position());
+            IncendiaryFireBlock.spread(entity.level(), entity.position());
         }
         return true;
     }

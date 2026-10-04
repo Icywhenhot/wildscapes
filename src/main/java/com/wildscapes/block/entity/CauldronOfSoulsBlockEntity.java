@@ -16,8 +16,9 @@ import javax.annotation.Nullable;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.block.CauldronOfSoulsBlock;
 import com.wildscapes.block.SummoningBonfireBlock;
+import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.entity.AbominationEntity;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.particle.SoulTrailOptions;
 import com.wildscapes.particle.WildscapesParticles;
@@ -123,6 +124,26 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         super(WildscapesBlockEntities.CAULDRON_OF_SOULS.get(), pos, state);
     }
 
+    @Nullable
+    public static CauldronOfSoulsBlockEntity harvesting(ServerLevel level, LivingEntity dead) {
+        EntityType<?> type = dead.getType();
+        if (type != EntityType.PILLAGER && type != EntityType.VINDICATOR && type != EntityType.WITCH
+                && type != EntityType.EVOKER && type != EntityType.ILLUSIONER && type != WildscapesEntities.ABOMINATION.get()) {
+            return null;
+        }
+        Set<BlockPos> here = LOADED.get(level.dimension());
+        if (here == null) {
+            return null;
+        }
+        for (BlockPos pos : here) {
+            if (dead.distanceToSqr(Vec3.atCenterOf(pos)) <= RADIUS * RADIUS
+                    && level.getBlockEntity(pos) instanceof CauldronOfSoulsBlockEntity be && be.stage == Stage.RAID) {
+                return be;
+            }
+        }
+        return null;
+    }
+
     public static void tryStart(ServerLevel level, Player player) {
         Set<BlockPos> here = LOADED.get(level.dimension());
         if (here == null || player.isSpectator()) {
@@ -183,7 +204,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         }
         Vec3 c = center();
         level.playSound(null, worldPosition, WildscapesSounds.CAULDRON_OF_SOULS_ACTIVATE.get(), SoundSource.BLOCKS, 6.0F, 1.0F);
-        level.sendParticles(WildscapesParticles.INCURSION_SPARK.get(), c.x, c.y + 0.6, c.z, 30, 0.5, 0.6, 0.5, 0.08);
+        level.sendParticles(WildscapesParticles.SOUL_HARVEST_SPARK.get(), c.x, c.y + 0.6, c.z, 30, 0.5, 0.6, 0.5, 0.08);
 
         bar = newBar();
         bar.setProgress(0.0F);
@@ -208,7 +229,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     private ServerBossEvent newBar() {
-        return new ServerBossEvent(Component.translatable("event.wildscapes.incursion"),
+        return new ServerBossEvent(Component.translatable("event.wildscapes.soul_harvest"),
                 BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
     }
 
@@ -281,7 +302,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             filled += worth.removeFloat(i);
             Vec3 c = center();
             level.sendParticles(WildscapesParticles.CAULDRON_SWIRL.get(), c.x, c.y + 0.8, c.z, 8, 0.3, 0.2, 0.3, 0.04);
-            level.sendParticles(WildscapesParticles.INCURSION_SPARK.get(), c.x, c.y + 0.8, c.z, 12, 0.4, 0.3, 0.4, 0.06);
+            level.sendParticles(WildscapesParticles.SOUL_HARVEST_SPARK.get(), c.x, c.y + 0.8, c.z, 12, 0.4, 0.3, 0.4, 0.06);
             level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 2.0F, 0.8F);
             setChanged();
         }
@@ -362,9 +383,9 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         mob.moveTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, level.random.nextFloat() * 360.0F, 0.0F);
         EventHooks.finalizeMobSpawn(mob, level, level.getCurrentDifficultyAt(spot), MobSpawnType.EVENT, null);
         mob.setPersistenceRequired();
-        mob.setData(Incursion.ORIGIN, worldPosition);
+        mob.setData(SoulHarvest.ORIGIN, worldPosition);
         if (sinceEmpowered >= 3 || level.random.nextFloat() < 0.15F) {
-            Incursion.empower(mob);
+            SoulHarvest.empower(mob);
             sinceEmpowered = 0;
         } else {
             sinceEmpowered++;
@@ -440,7 +461,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         if (!(level instanceof ServerLevel server)) {
             return;
         }
-        boolean empowered = Incursion.isEmpowered(dead);
+        boolean empowered = SoulHarvest.isEmpowered(dead);
         if (empowered) {
             server.playSound(null, dead.blockPosition(), WildscapesSounds.EMPOWERED_DEATH.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
         }
@@ -450,7 +471,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             return;
         }
         Vec3 to = center().add(0.0, 0.7, 0.0);
-        int travel = Mth.clamp((int) (dead.position().distanceTo(to) * 1.5), 15, 60);
+        int travel = 10 + Mth.clamp((int) (dead.position().distanceTo(to) * 1.65), 17, 66);
         server.sendParticles(new SoulTrailOptions(to, travel), dead.getX(), dead.getY(0.5), dead.getZ(),
                 empowered ? 10 : 4, 0.3, 0.4, 0.3, 0.0);
         server.sendParticles(WildscapesParticles.SOUL_MOTE.get(), dead.getX(), dead.getY(0.5), dead.getZ(),
@@ -471,7 +492,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         lit.clear();
         stage = Stage.REWARDING;
         setPhase(CauldronOfSoulsBlock.Phase.REWARDS);
-        bar.setName(Component.translatable("event.wildscapes.incursion.victory"));
+        bar.setName(Component.translatable("event.wildscapes.soul_harvest.victory"));
         bar.setProgress(1.0F);
         barLinger = BAR_LINGER;
 
@@ -525,7 +546,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         omen = 0;
         setPhase(CauldronOfSoulsBlock.Phase.INACTIVE);
         if (bar != null) {
-            bar.setName(Component.translatable("event.wildscapes.incursion.defeat"));
+            bar.setName(Component.translatable("event.wildscapes.soul_harvest.defeat"));
             barLinger = BAR_LINGER;
         }
         setChanged();
@@ -547,6 +568,9 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     private void vanish(ServerLevel level) {
+        for (ServerPlayer p : near(level)) {
+            p.removeEffect(WildscapesEffects.SOUL_HARVEST);
+        }
         for (UUID id : mobs) {
             Entity e = level.getEntity(id);
             if (e != null) {
@@ -570,6 +594,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         for (ServerPlayer p : near) {
             participants.add(p.getUUID());
             bar.addPlayer(p);
+            p.addEffect(new MobEffectInstance(WildscapesEffects.SOUL_HARVEST, 60, 0, true, false, true));
         }
         for (ServerPlayer p : new ArrayList<>(bar.getPlayers())) {
             if (!near.contains(p)) {

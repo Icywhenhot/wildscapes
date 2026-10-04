@@ -45,7 +45,7 @@ public final class WildscapesSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_OF_SOULS_HUM      = register("cauldron_of_souls.hum");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_OF_SOULS_ACTIVATE = register("cauldron_of_souls.activate");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAULDRON_OF_SOULS_REWARD   = register("cauldron_of_souls.reward");
-    public static final DeferredHolder<SoundEvent, SoundEvent> EMPOWERED_DEATH            = register("incursion.empowered_death");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EMPOWERED_DEATH            = register("soul_harvest.empowered_death");
     public static final DeferredHolder<SoundEvent, SoundEvent> SUMMONING_BONFIRE_IGNITE   = register("summoning_bonfire.ignite");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {

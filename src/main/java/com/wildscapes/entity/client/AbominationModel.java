@@ -2,7 +2,7 @@ package com.wildscapes.entity.client;
 
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.AbominationEntity;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -36,7 +36,7 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
     }
 
     public static ResourceLocation glowFrame(AbominationEntity animatable) {
-        ResourceLocation[] glow = Incursion.isEmpowered(animatable) ? EMPOWERED_GLOW : GLOW;
+        ResourceLocation[] glow = SoulHarvest.isEmpowered(animatable) ? EMPOWERED_GLOW : GLOW;
         return glow[phase(animatable) * glow.length / CYCLE];
     }
 
@@ -47,7 +47,7 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
 
     @Override
     public ResourceLocation getTextureResource(AbominationEntity animatable) {
-        if (Incursion.isEmpowered(animatable)) {
+        if (SoulHarvest.isEmpowered(animatable)) {
             return EMPOWERED[phase(animatable) * EMPOWERED.length / CYCLE];
         }
         return FRAMES[phase(animatable) / FRAME_TICKS];

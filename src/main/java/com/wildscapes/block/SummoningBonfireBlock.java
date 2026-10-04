@@ -42,7 +42,7 @@ public class SummoningBonfireBlock extends Block {
         if (lit) {
             level.playSound(null, pos, WildscapesSounds.SUMMONING_BONFIRE_IGNITE.get(), SoundSource.BLOCKS, 1.0F,
                     0.9F + level.random.nextFloat() * 0.2F);
-            level.sendParticles(WildscapesParticles.INCURSION_SPARK.get(), x, y, z, 14, 0.35, 0.4, 0.35, 0.06);
+            level.sendParticles(WildscapesParticles.SOUL_HARVEST_SPARK.get(), x, y, z, 14, 0.35, 0.4, 0.35, 0.06);
             level.sendParticles(WildscapesParticles.BONFIRE_EMBER.get(), x, y, z, 10, 0.3, 0.2, 0.3, 0.08);
         } else {
             level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 1.4F);
@@ -79,7 +79,7 @@ public class SummoningBonfireBlock extends Block {
                     pos.getZ() + 0.3 + random.nextDouble() * 0.4, 0.0, 0.04 + random.nextDouble() * 0.03, 0.0);
         }
         if (random.nextInt(4) == 0) {
-            level.addParticle(WildscapesParticles.INCURSION_SPARK.get(),
+            level.addParticle(WildscapesParticles.SOUL_HARVEST_SPARK.get(),
                     pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble() * 0.8,
                     pos.getZ() + random.nextDouble(), 0.0, 0.02, 0.0);
         }

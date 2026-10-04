@@ -1,13 +1,13 @@
 package com.wildscapes.gametest;
 
 import com.wildscapes.block.CauldronOfSoulsBlock;
-import com.wildscapes.block.IncursionFireBlock;
+import com.wildscapes.block.IncendiaryFireBlock;
 import com.wildscapes.block.SummoningBonfireBlock;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.entity.AbominationEntity;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -19,6 +19,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.EvokerFangs;
 import net.minecraft.world.level.block.Blocks;
@@ -29,13 +30,13 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder("wildscapes")
 @PrefixGameTestTemplate(false)
-public final class IncursionTests {
+public final class SoulHarvestTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
-    private IncursionTests() {}
+    private SoulHarvestTests() {}
 
     @SuppressWarnings("removal")
-    @GameTest(template = PLATFORM, timeoutTicks = 4000, batch = "incursion")
+    @GameTest(template = PLATFORM, timeoutTicks = 4000, batch = "soul_harvest")
     public static void omenStartsItAndSoulsFinishIt(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos cauldron = new BlockPos(12, 2, 12);
@@ -53,6 +54,7 @@ public final class IncursionTests {
         helper.runAfterDelay(2, () -> {
             CauldronOfSoulsBlockEntity.tryStart(level, player);
             helper.assertFalse(player.hasEffect(MobEffects.BAD_OMEN), "the cauldron did not take the omen");
+            helper.assertTrue(player.hasEffect(WildscapesEffects.SOUL_HARVEST), "no soul_harvest icon while it runs");
             helper.assertBlockProperty(cauldron, CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE);
             for (BlockPos f : fires) {
                 helper.assertBlockProperty(f, SummoningBonfireBlock.LIT, true);
@@ -63,7 +65,7 @@ public final class IncursionTests {
         boolean[] paid = {false};
         int[] abominations = {0};
         helper.onEachTick(() -> {
-            for (Mob mob : level.getEntitiesOfClass(Mob.class, area, m -> m.hasData(Incursion.ORIGIN) && m.isAlive())) {
+            for (Mob mob : level.getEntitiesOfClass(Mob.class, area, m -> m.hasData(SoulHarvest.ORIGIN) && m.isAlive())) {
                 if (mob instanceof AbominationEntity) {
                     abominations[0]++;
                 }
@@ -76,8 +78,9 @@ public final class IncursionTests {
                     return;
                 }
                 helper.assertTrue(level.getEntitiesOfClass(ItemEntity.class, area, i -> i.distanceToSqr(Vec3.atCenterOf(helper.absolutePos(cauldron))) > 36).isEmpty(),
-                        "an incursion mob dropped loot");
+                        "an soul_harvest mob dropped loot");
                 helper.assertTrue(abominations[0] == 1, "expected exactly one abomination, got " + abominations[0]);
+                helper.assertFalse(player.hasEffect(WildscapesEffects.SOUL_HARVEST), "soul_harvest icon outlived the raid");
                 paid[0] = true;
                 return;
             }
@@ -87,6 +90,35 @@ public final class IncursionTests {
             player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, 2000, 0));
             CauldronOfSoulsBlockEntity.tryStart(level, player);
             helper.assertBlockProperty(cauldron, CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE);
+            helper.setBlock(cauldron, Blocks.AIR.defaultBlockState());
+            level.getServer().getPlayerList().remove(player);
+            helper.succeed();
+        });
+    }
+
+    @SuppressWarnings("removal")
+    @GameTest(template = PLATFORM, timeoutTicks = 1200, batch = "soul_harvest_locals")
+    public static void campMobsFeedTheBar(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos cauldron = new BlockPos(12, 2, 12);
+        helper.setBlock(cauldron, WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState());
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        Vec3 stand = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(12, 2, 8)));
+        player.teleportTo(level, stand.x, stand.y, stand.z, 0.0F, 0.0F);
+        player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, 2000, 0));
+        helper.runAfterDelay(2, () -> CauldronOfSoulsBlockEntity.tryStart(level, player));
+
+        helper.runAfterDelay(320, () -> {
+            for (int i = 0; i < 10; i++) {
+                Vindicator local = helper.spawn(EntityType.VINDICATOR, new BlockPos(6 + i, 2, 18));
+                local.hurt(level.damageSources().playerAttack(player), 10000.0F);
+            }
+        });
+        helper.onEachTick(() -> {
+            if (helper.getTick() < 320
+                    || helper.getBlockState(cauldron).getValue(CauldronOfSoulsBlock.PHASE) != CauldronOfSoulsBlock.Phase.REWARDS) {
+                return;
+            }
             helper.setBlock(cauldron, Blocks.AIR.defaultBlockState());
             level.getServer().getPlayerList().remove(player);
             helper.succeed();
@@ -106,10 +138,10 @@ public final class IncursionTests {
     @GameTest(template = PLATFORM, timeoutTicks = 100)
     public static void incendiaryFireSparesMobs(GameTestHelper helper) {
         BlockPos mid = new BlockPos(10, 2, 10);
-        IncursionFireBlock.spread(helper.getLevel(), Vec3.atBottomCenterOf(helper.absolutePos(mid)));
+        IncendiaryFireBlock.spread(helper.getLevel(), Vec3.atBottomCenterOf(helper.absolutePos(mid)));
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                helper.assertBlockPresent(WildscapesBlocks.INCURSION_FIRE.get(), mid.offset(dx, 0, dz));
+                helper.assertBlockPresent(WildscapesBlocks.INCENDIARY_FIRE.get(), mid.offset(dx, 0, dz));
             }
         }
         Pig pig = helper.spawn(EntityType.PIG, mid);

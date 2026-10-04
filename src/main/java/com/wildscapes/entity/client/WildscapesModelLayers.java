@@ -9,7 +9,7 @@ public final class WildscapesModelLayers {
     private WildscapesModelLayers() {}
 
     public static final ModelLayerLocation PILLAGER_SWAMP = create("pillager_swamp");
-    public static final ModelLayerLocation VINDICATOR_SWAMP = create("vindicator_swamp");
+    public static final ModelLayerLocation VINDICATOR = create("vindicator");
     public static final ModelLayerLocation ILLUSIONER = create("illusioner");
     public static final ModelLayerLocation WITCH = create("witch");
     public static final ModelLayerLocation SLIME_SMALL = create("slime_small");

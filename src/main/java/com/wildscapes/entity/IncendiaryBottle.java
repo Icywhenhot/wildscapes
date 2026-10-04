@@ -1,6 +1,6 @@
 package com.wildscapes.entity;
 
-import com.wildscapes.block.IncursionFireBlock;
+import com.wildscapes.block.IncendiaryFireBlock;
 import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.sounds.SoundEvents;
@@ -44,7 +44,7 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
         }
         level().levelEvent(LevelEvent.PARTICLES_SPELL_POTION_SPLASH, blockPosition(), 0xB23FD6);
         level().playSound(null, getX(), getY(), getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.NEUTRAL, 0.8F, 1.1F);
-        IncursionFireBlock.spread(level(), result.getLocation());
+        IncendiaryFireBlock.spread(level(), result.getLocation());
         discard();
     }
 }

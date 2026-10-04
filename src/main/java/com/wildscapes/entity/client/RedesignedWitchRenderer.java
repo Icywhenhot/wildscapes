@@ -2,7 +2,7 @@ package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.client.model.WitchModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -32,7 +32,7 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch
 
     @Override
     public ResourceLocation getTextureLocation(Witch entity) {
-        return Incursion.isEmpowered(entity) ? EMPOWERED : TEXTURE;
+        return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 
     @Override

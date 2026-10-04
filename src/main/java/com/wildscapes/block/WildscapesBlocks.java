@@ -184,8 +184,8 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .noLootTable()));
 
-    public static final DeferredBlock<IncursionFireBlock> INCURSION_FIRE = BLOCKS.register("incursion_fire",
-            () -> new IncursionFireBlock(BlockBehaviour.Properties.of()
+    public static final DeferredBlock<IncendiaryFireBlock> INCENDIARY_FIRE = BLOCKS.register("incendiary_fire",
+            () -> new IncendiaryFireBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
                     .replaceable()
                     .noCollission()

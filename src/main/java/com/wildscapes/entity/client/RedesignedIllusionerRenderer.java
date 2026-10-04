@@ -5,7 +5,7 @@ import java.util.WeakHashMap;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.client.model.IllagerModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -43,7 +43,7 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
 
     @Override
     public ResourceLocation getTextureLocation(Illusioner entity) {
-        return Incursion.isEmpowered(entity) ? EMPOWERED : TEXTURE;
+        return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 
     @Override

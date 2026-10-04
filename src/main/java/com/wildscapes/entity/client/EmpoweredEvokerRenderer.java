@@ -1,7 +1,7 @@
 package com.wildscapes.entity.client;
 
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EvokerRenderer;
@@ -18,6 +18,6 @@ public class EmpoweredEvokerRenderer extends EvokerRenderer<Evoker> {
 
     @Override
     public ResourceLocation getTextureLocation(Evoker entity) {
-        return Incursion.isEmpowered(entity) ? EMPOWERED : super.getTextureLocation(entity);
+        return SoulHarvest.isEmpowered(entity) ? EMPOWERED : super.getTextureLocation(entity);
     }
 }

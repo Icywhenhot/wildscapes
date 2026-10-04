@@ -15,7 +15,7 @@ import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.effect.WildscapesPotions;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.IllusionerGoals;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 import com.wildscapes.entity.SlimeMerging;
 import com.wildscapes.entity.SwampSpawns;
 import com.wildscapes.entity.SwampVariants;
@@ -156,7 +156,7 @@ public class Wildscapes {
         WildscapesEffects.register(modEventBus);
         WildscapesPotions.register(modEventBus);
         SwampVariants.register(modEventBus);
-        Incursion.register(modEventBus);
+        SoulHarvest.register(modEventBus);
         WildscapesSounds.register(modEventBus);
         WildscapesParticles.register(modEventBus);
         WildscapesFeatures.register(modEventBus);

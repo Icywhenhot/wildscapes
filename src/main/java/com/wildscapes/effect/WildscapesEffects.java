@@ -29,6 +29,9 @@ public final class WildscapesEffects {
     public static final DeferredHolder<MobEffect, MobEffect> INCENDIARY = EFFECTS.register("incendiary",
             IncendiaryEffect::new);
 
+    public static final DeferredHolder<MobEffect, MobEffect> SOUL_HARVEST = EFFECTS.register("soul_harvest",
+            () -> new MobEffect(MobEffectCategory.NEUTRAL, 0xC2336F) {});
+
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);
     }

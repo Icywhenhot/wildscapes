@@ -2,7 +2,7 @@ package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 import com.wildscapes.entity.SwampVariants;
 
 import net.minecraft.client.model.IllagerModel;
@@ -35,13 +35,13 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
     @Override
     public void render(Pillager entity, float entityYaw, float partialTicks, PoseStack poseStack,
             MultiBufferSource buffer, int packedLight) {
-        this.model = SwampVariants.isSwampBorn(entity) || Incursion.isEmpowered(entity) ? this.swampModel : this.vanillaModel;
+        this.model = SwampVariants.isSwampBorn(entity) || SoulHarvest.isEmpowered(entity) ? this.swampModel : this.vanillaModel;
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
     @Override
     public ResourceLocation getTextureLocation(Pillager entity) {
-        if (Incursion.isEmpowered(entity)) {
+        if (SoulHarvest.isEmpowered(entity)) {
             return EMPOWERED;
         }
         return SwampVariants.isSwampBorn(entity) ? SWAMP : VANILLA;

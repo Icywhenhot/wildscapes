@@ -33,8 +33,8 @@ public final class WildscapesParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RESIDUE_SWIRL =
             PARTICLE_TYPES.register("residue_swirl", () -> new SimpleParticleType(false));
 
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> INCURSION_SPARK =
-            PARTICLE_TYPES.register("incursion_spark", () -> new SimpleParticleType(false));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SOUL_HARVEST_SPARK =
+            PARTICLE_TYPES.register("soul_harvest_spark", () -> new SimpleParticleType(false));
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> EMPOWERED_WISP =
             PARTICLE_TYPES.register("empowered_wisp", () -> new SimpleParticleType(false));

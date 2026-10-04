@@ -33,8 +33,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
-public final class Incursion {
-    private Incursion() {}
+public final class SoulHarvest {
+    private SoulHarvest() {}
 
     private static final ResourceLocation HEALTH_BOOST =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
@@ -49,7 +49,7 @@ public final class Incursion {
                     .build());
 
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<BlockPos>> ORIGIN =
-            ATTACHMENT_TYPES.register("incursion_origin", () -> AttachmentType.builder(() -> BlockPos.ZERO)
+            ATTACHMENT_TYPES.register("soul_harvest_origin", () -> AttachmentType.builder(() -> BlockPos.ZERO)
                     .serialize(BlockPos.CODEC)
                     .build());
 
@@ -82,7 +82,14 @@ public final class Incursion {
     @SubscribeEvent
     static void onDeath(LivingDeathEvent event) {
         LivingEntity dead = event.getEntity();
-        if (!(dead.level() instanceof ServerLevel level) || !dead.hasData(ORIGIN)) {
+        if (!(dead.level() instanceof ServerLevel level)) {
+            return;
+        }
+        if (!dead.hasData(ORIGIN)) {
+            CauldronOfSoulsBlockEntity running = CauldronOfSoulsBlockEntity.harvesting(level, dead);
+            if (running != null) {
+                running.onMobDeath(dead, event.getSource());
+            }
             return;
         }
         if (level.getBlockEntity(dead.getData(ORIGIN)) instanceof CauldronOfSoulsBlockEntity cauldron) {

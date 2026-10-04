@@ -89,7 +89,7 @@ public final class WildscapesClient {
     @SubscribeEvent
     static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(WildscapesModelLayers.PILLAGER_SWAMP, SwampIllagerModels::createPillagerLayer);
-        event.registerLayerDefinition(WildscapesModelLayers.VINDICATOR_SWAMP, SwampIllagerModels::createVindicatorLayer);
+        event.registerLayerDefinition(WildscapesModelLayers.VINDICATOR, SwampIllagerModels::createVindicatorLayer);
         event.registerLayerDefinition(WildscapesModelLayers.ILLUSIONER, RedesignedIllusionerModel::createBodyLayer);
         event.registerLayerDefinition(WildscapesModelLayers.WITCH, RedesignedWitchModel::createBodyLayer);
         event.registerLayerDefinition(WildscapesModelLayers.SLIME_SMALL, RedesignedSlimeModels::createSmallInnerLayer);
@@ -146,7 +146,7 @@ public final class WildscapesClient {
         event.registerSpriteSet(WildscapesParticles.RESIDUE_SWIRL.get(),
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.3F, 0.93F, 0.02F));
         event.registerSpriteSet(WildscapesParticles.SOUL_TRAIL.get(), SoulTrailParticle.Provider::new);
-        event.registerSpriteSet(WildscapesParticles.INCURSION_SPARK.get(),
+        event.registerSpriteSet(WildscapesParticles.SOUL_HARVEST_SPARK.get(),
                 sprites -> new ResidueParticle.Provider(sprites, 16, 0.5F, 0.92F, 0.01F));
         event.registerSpriteSet(WildscapesParticles.EMPOWERED_WISP.get(),
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.1F, 0.94F, 0.0F));

@@ -17,16 +17,16 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class IncursionFireBlock extends BaseFireBlock {
-    public static final MapCodec<IncursionFireBlock> CODEC = simpleCodec(IncursionFireBlock::new);
+public class IncendiaryFireBlock extends BaseFireBlock {
+    public static final MapCodec<IncendiaryFireBlock> CODEC = simpleCodec(IncendiaryFireBlock::new);
 
-    public IncursionFireBlock(Properties properties) {
+    public IncendiaryFireBlock(Properties properties) {
         super(properties, 1.0F);
     }
 
     public static void spread(Level level, Vec3 at) {
         BlockPos center = BlockPos.containing(at);
-        BlockState fire = WildscapesBlocks.INCURSION_FIRE.get().defaultBlockState();
+        BlockState fire = WildscapesBlocks.INCENDIARY_FIRE.get().defaultBlockState();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy : new int[] {0, 1, -1}) {

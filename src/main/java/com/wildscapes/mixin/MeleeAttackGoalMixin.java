@@ -1,6 +1,6 @@
 package com.wildscapes.mixin;
 
-import com.wildscapes.entity.Incursion;
+import com.wildscapes.entity.SoulHarvest;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import org.spongepowered.asm.mixin.Final;
@@ -21,7 +21,7 @@ public abstract class MeleeAttackGoalMixin {
 
     @Inject(method = "resetAttackCooldown", at = @At("TAIL"))
     private void empoweredSwing(CallbackInfo ci) {
-        if (Incursion.isEmpowered(mob)) {
+        if (SoulHarvest.isEmpowered(mob)) {
             ticksUntilNextAttack = ticksUntilNextAttack * 4 / 5;
         }
     }
