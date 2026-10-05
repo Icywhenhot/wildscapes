@@ -4,6 +4,7 @@ import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.client.AbominationModels;
 import com.wildscapes.entity.client.AbominationRenderer;
+import com.wildscapes.entity.client.CauldronOfSoulsRenderer;
 import com.wildscapes.entity.client.CauldronRenderer;
 import com.wildscapes.entity.client.EmpoweredEvokerRenderer;
 import com.wildscapes.entity.client.MirageLayer;
@@ -121,6 +122,7 @@ public final class WildscapesClient {
         event.registerEntityRenderer(EntityType.SLIME, RedesignedSlimeRenderer::new);
 
         event.registerBlockEntityRenderer(WildscapesBlockEntities.CAULDRON.get(), CauldronRenderer::new);
+        event.registerBlockEntityRenderer(WildscapesBlockEntities.CAULDRON_OF_SOULS.get(), CauldronOfSoulsRenderer::new);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

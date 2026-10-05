@@ -119,6 +119,9 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     private ServerBossEvent bar;
     private int barLinger;
     private boolean humming;
+    private float lid;
+    private float lidO;
+    private boolean lidSet;
 
     public CauldronOfSoulsBlockEntity(BlockPos pos, BlockState state) {
         super(WildscapesBlockEntities.CAULDRON_OF_SOULS.get(), pos, state);
@@ -165,10 +168,28 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     public static void clientTick(Level level, BlockPos pos, BlockState state, CauldronOfSoulsBlockEntity be) {
+        float target = switch (state.getValue(CauldronOfSoulsBlock.PHASE)) {
+            case INACTIVE -> 0.0F;
+            case ACTIVE -> 45.0F;
+            case REWARDS -> 67.5F;
+        };
+        be.lidO = be.lid;
+        if (!be.lidSet) {
+            be.lid = be.lidO = target;
+            be.lidSet = true;
+        } else if (Math.abs(target - be.lid) < 0.3F) {
+            be.lid = target;
+        } else {
+            be.lid += (target - be.lid) * 0.15F;
+        }
         if (!be.humming) {
             be.humming = true;
             com.wildscapes.entity.client.SoulCauldronHum.start(be);
         }
+    }
+
+    public float lidAngle(float partialTick) {
+        return Mth.lerp(partialTick, lidO, lid);
     }
 
     public void stopHumming() {

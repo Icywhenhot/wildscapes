@@ -8,7 +8,6 @@
     "floor": "wildscapes:block/cauldron_of_souls_floor",
     "front": "wildscapes:block/cauldron_of_souls_front",
     "front_lit": "wildscapes:block/cauldron_of_souls_front_lit",
-    "lid": "wildscapes:block/cauldron_of_souls_lid",
     "side": "wildscapes:block/cauldron_of_souls_side",
     "top": "wildscapes:block/cauldron_of_souls_top"
   },
@@ -68,25 +67,6 @@
         "down": {
           "uv": [0, 0, 16, 16],
           "texture": "#floor"
-        }
-      }
-    },
-    {
-      "from": [1, 18, 1],
-      "to": [15, 18, 15],
-      "rotation": {
-        "angle": -45,
-        "axis": "z",
-        "origin": [15, 18, 8]
-      },
-      "faces": {
-        "up": {
-          "uv": [1, 1, 15, 15],
-          "texture": "#lid"
-        },
-        "down": {
-          "uv": [1, 1, 15, 15],
-          "texture": "#lid"
         }
       }
     },
