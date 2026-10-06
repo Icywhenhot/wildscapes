@@ -30,6 +30,7 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
         this.vanillaModel = this.model;
         this.swampModel = new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.PILLAGER_SWAMP));
         this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
+        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/pillager_empowered_glow"));
     }
 
     @Override

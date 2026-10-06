@@ -35,6 +35,7 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
                 }
             }
         });
+        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/vindicator_empowered_glow"));
     }
 
     @Override

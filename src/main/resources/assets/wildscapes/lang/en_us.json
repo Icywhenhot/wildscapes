@@ -172,5 +172,10 @@
   "block.wildscapes.chiseled_black_mud_bricks": "Chiseled Black Mud Bricks",
   "block.wildscapes.black_mud_brick_stairs": "Black Mud Brick Stairs",
   "block.wildscapes.black_mud_brick_slab": "Black Mud Brick Slab",
-  "block.wildscapes.black_mud_brick_wall": "Black Mud Brick Wall"
+  "block.wildscapes.black_mud_brick_wall": "Black Mud Brick Wall",
+  "enchantment.wildscapes.multi_jump": "Multi Jump",
+  "enchantment.wildscapes.empowered_jump": "Empowered Jump",
+  "subtitles.wildscapes.empowered_jump.charge": "Jump charges",
+  "subtitles.wildscapes.empowered_jump.launch": "Empowered jump launches",
+  "subtitles.wildscapes.empowered_jump.ready": "Jump fully charged"
 }

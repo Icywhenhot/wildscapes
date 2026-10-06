@@ -15,6 +15,18 @@
         "wildscapes:slime_snare": 1.0
       },
       "model": "wildscapes:item/slime_snare_book"
+    },
+    {
+      "predicate": {
+        "wildscapes:multi_jump": 1.0
+      },
+      "model": "wildscapes:item/multi_jump_book"
+    },
+    {
+      "predicate": {
+        "wildscapes:empowered_jump": 1.0
+      },
+      "model": "wildscapes:item/empowered_jump_book"
     }
   ]
 }

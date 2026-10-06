@@ -18,6 +18,9 @@ public final class WildscapesParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
             DeferredRegister.create(Registries.PARTICLE_TYPE, Wildscapes.MODID);
 
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MULTI_JUMP =
+            PARTICLE_TYPES.register("multi_jump", () -> new SimpleParticleType(true));
+
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BREW_BUBBLE =
             PARTICLE_TYPES.register("brew_bubble", () -> new SimpleParticleType(false));
 

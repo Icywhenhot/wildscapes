@@ -14,6 +14,7 @@ public class EmpoweredEvokerRenderer extends EvokerRenderer<Evoker> {
 
     public EmpoweredEvokerRenderer(EntityRendererProvider.Context context) {
         super(context);
+        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/evoker_empowered_glow"));
     }
 
     @Override

@@ -21,6 +21,7 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch
     public RedesignedWitchRenderer(EntityRendererProvider.Context context) {
         super(context, new WitchModel<>(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
         this.addLayer(new WitchItemLayer<>(this, context.getItemInHandRenderer()));
+        this.addLayer(new EmpoweredGlowLayer<>(this, "witch_empowered_glow"));
     }
 
     @Override

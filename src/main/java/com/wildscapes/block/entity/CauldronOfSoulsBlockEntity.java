@@ -74,6 +74,11 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     public static final ResourceKey<LootTable> REWARDS = ResourceKey.create(Registries.LOOT_TABLE,
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/cauldron_of_souls"));
 
+    private static final ResourceKey<LootTable> LOW_REWARDS = ResourceKey.create(Registries.LOOT_TABLE,
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/soul_harvest_low"));
+    private static final ResourceKey<LootTable> HIGH_REWARDS = ResourceKey.create(Registries.LOOT_TABLE,
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/soul_harvest_high"));
+
     private static final Map<ResourceKey<Level>, Set<BlockPos>> LOADED = new HashMap<>();
 
     private static final int RADIUS = 48;
@@ -530,6 +535,10 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
                     .create(LootContextParamSets.VAULT);
             for (int i = 0; i < rolls; i++) {
                 table.getRandomItems(params).forEach(loot::add);
+            }
+            if (omen <= 2 || omen >= 4) {
+                level.getServer().reloadableRegistries().getLootTable(omen <= 2 ? LOW_REWARDS : HIGH_REWARDS)
+                        .getRandomItems(params).forEach(loot::add);
             }
         }
         ejectIn = 30;

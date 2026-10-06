@@ -16,6 +16,7 @@ import com.wildscapes.effect.WildscapesPotions;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.IllusionerGoals;
 import com.wildscapes.entity.SoulHarvest;
+import com.wildscapes.entity.JumpEnchantments;
 import com.wildscapes.entity.SlimeMerging;
 import com.wildscapes.entity.SwampSpawns;
 import com.wildscapes.entity.SwampVariants;
@@ -26,6 +27,7 @@ import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.network.MirelashAttackPayload;
+import com.wildscapes.network.JumpPayload;
 import com.wildscapes.sound.WildscapesSounds;
 import com.wildscapes.worldgen.WildscapesFeatures;
 import com.wildscapes.worldgen.WildscapesPlacementModifiers;
@@ -145,6 +147,14 @@ public class Wildscapes {
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
                                         .getOrThrow(MirelashItem.SLIME_SNARE), 1)));
+                        for (int i = 1; i <= 2; i++) {
+                            output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
+                                    parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
+                                            .getOrThrow(JumpEnchantments.MULTI_JUMP), i)));
+                        }
+                        output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
+                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
+                                        .getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
                     }).build());
 
     public Wildscapes(IEventBus modEventBus) {
@@ -167,6 +177,7 @@ public class Wildscapes {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::registerEntityAttributes);
         modEventBus.addListener(MirelashAttackPayload::register);
+        modEventBus.addListener(JumpPayload::register);
         NeoForge.EVENT_BUS.addListener(this::registerBrewingRecipes);
 
         NeoForge.EVENT_BUS.addListener(this::onLivingDrops);

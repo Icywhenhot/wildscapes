@@ -2,6 +2,7 @@ package com.wildscapes;
 
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.WildscapesEntities;
+import com.wildscapes.entity.JumpEnchantments;
 import com.wildscapes.entity.client.AbominationModels;
 import com.wildscapes.entity.client.AbominationRenderer;
 import com.wildscapes.entity.client.CauldronOfSoulsRenderer;
@@ -29,6 +30,7 @@ import com.wildscapes.particle.client.BrewBubbleParticle;
 import com.wildscapes.particle.client.ResidueParticle;
 import com.wildscapes.particle.client.IngredientSteamParticle;
 import com.wildscapes.particle.client.SoulTrailParticle;
+import com.wildscapes.particle.client.MultiJumpParticle;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -73,6 +75,12 @@ public final class WildscapesClient {
             ItemProperties.register(Items.ENCHANTED_BOOK,
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"),
                     (stack, level, holder, seed) -> hasStoredEnchantment(stack, MirelashItem.SLIME_SNARE) ? 1F : 0F);
+            ItemProperties.register(Items.ENCHANTED_BOOK,
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"),
+                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, JumpEnchantments.MULTI_JUMP) ? 1F : 0F);
+            ItemProperties.register(Items.ENCHANTED_BOOK,
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"),
+                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, JumpEnchantments.EMPOWERED_JUMP) ? 1F : 0F);
         });
     }
 
@@ -148,6 +156,7 @@ public final class WildscapesClient {
         event.registerSpriteSet(WildscapesParticles.RESIDUE_SWIRL.get(),
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.3F, 0.93F, 0.02F));
         event.registerSpriteSet(WildscapesParticles.SOUL_TRAIL.get(), SoulTrailParticle.Provider::new);
+        event.registerSpriteSet(WildscapesParticles.MULTI_JUMP.get(), MultiJumpParticle.Provider::new);
         event.registerSpriteSet(WildscapesParticles.SOUL_HARVEST_SPARK.get(),
                 sprites -> new ResidueParticle.Provider(sprites, 16, 0.5F, 0.92F, 0.01F));
         event.registerSpriteSet(WildscapesParticles.EMPOWERED_WISP.get(),

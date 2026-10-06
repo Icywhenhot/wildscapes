@@ -199,5 +199,29 @@
       "wildscapes:soul_harvest/ignite_3",
       "wildscapes:soul_harvest/ignite_4"
     ]
+  },
+  "empowered_jump.charge": {
+    "subtitle": "subtitles.wildscapes.empowered_jump.charge",
+    "sounds": [
+      {
+        "name": "wildscapes:empowered_jump/charge"
+      }
+    ]
+  },
+  "empowered_jump.launch": {
+    "subtitle": "subtitles.wildscapes.empowered_jump.launch",
+    "sounds": [
+      {
+        "name": "wildscapes:empowered_jump/launch"
+      }
+    ]
+  },
+  "empowered_jump.ready": {
+    "subtitle": "subtitles.wildscapes.empowered_jump.ready",
+    "sounds": [
+      {
+        "name": "wildscapes:empowered_jump/ready"
+      }
+    ]
   }
 }

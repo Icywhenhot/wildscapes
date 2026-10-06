@@ -283,6 +283,19 @@
               }
             }
           ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_book",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_enchantments",
+              "enchantments": {
+                "wildscapes:multi_jump": 1
+              }
+            }
+          ]
         }
       ]
     }

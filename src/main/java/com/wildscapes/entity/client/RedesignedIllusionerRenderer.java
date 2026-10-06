@@ -39,6 +39,7 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
             }
         });
         this.model.getHat().visible = true;
+        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/illusioner_empowered_glow"));
     }
 
     @Override

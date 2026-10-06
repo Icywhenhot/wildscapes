@@ -48,6 +48,10 @@ public final class WildscapesSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> EMPOWERED_DEATH            = register("soul_harvest.empowered_death");
     public static final DeferredHolder<SoundEvent, SoundEvent> SUMMONING_BONFIRE_IGNITE   = register("summoning_bonfire.ignite");
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> EMPOWERED_JUMP_CHARGE = register("empowered_jump.charge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EMPOWERED_JUMP_LAUNCH = register("empowered_jump.launch");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EMPOWERED_JUMP_READY = register("empowered_jump.ready");
+
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return SOUND_EVENTS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(
