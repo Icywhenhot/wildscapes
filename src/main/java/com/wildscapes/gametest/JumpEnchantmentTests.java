@@ -36,33 +36,33 @@ public final class JumpEnchantmentTests {
         boots.enchant(enchantment, 1);
         player.setItemSlot(EquipmentSlot.FEET, boots);
         player.setOnGround(true);
-        helper.assertFalse(JumpEnchantments.jump(player, false), "air jump worked on the ground");
+        helper.assertFalse(JumpEnchantments.jump(player), "air jump worked on the ground");
         player.setOnGround(false);
         player.setDeltaMovement(0.1, -0.8, 0.2);
         player.fallDistance = 12.0F;
-        helper.assertTrue(JumpEnchantments.jump(player, false), "level one could not jump while falling");
+        helper.assertTrue(JumpEnchantments.jump(player), "level one could not jump while falling");
         helper.assertTrue(player.getDeltaMovement().y > 0.0 && player.fallDistance == 0.0F,
                 "air jump did not stop the fall");
-        helper.assertFalse(JumpEnchantments.jump(player, false), "level one allowed a second air jump");
+        helper.assertFalse(JumpEnchantments.jump(player), "level one allowed a second air jump");
         player.setOnGround(true);
         JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
         boots.enchant(enchantment, 2);
         player.setOnGround(false);
-        helper.assertTrue(JumpEnchantments.jump(player, false), "landing did not restore air jumps");
-        helper.assertTrue(JumpEnchantments.jump(player, false), "level two did not allow two air jumps");
-        helper.assertFalse(JumpEnchantments.jump(player, false), "level two allowed a third air jump");
+        helper.assertTrue(JumpEnchantments.jump(player), "landing did not restore air jumps");
+        helper.assertTrue(JumpEnchantments.jump(player), "level two did not allow two air jumps");
+        helper.assertFalse(JumpEnchantments.jump(player), "level two allowed a third air jump");
         player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
         player.setOnGround(true);
         JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
         player.setOnGround(false);
-        helper.assertFalse(JumpEnchantments.jump(player, false), "air jump worked without enchanted boots");
+        helper.assertFalse(JumpEnchantments.jump(player), "air jump worked without enchanted boots");
         helper.assertTrue(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_BOOTS)), "boots rejected multi jump");
         helper.assertFalse(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_LEGGINGS)), "leggings accepted multi jump");
         helper.succeed();
     }
 
     @GameTest(template = PLATFORM, batch = "jump_enchantments")
-    public static void poweredJumpChargesFromThreeToTenSeconds(GameTestHelper helper) {
+    public static void poweredJumpChargesForTheLengthOfItsSound(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         var enchantment = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT)
                 .getHolderOrThrow(JumpEnchantments.EMPOWERED_JUMP);
@@ -71,43 +71,51 @@ public final class JumpEnchantmentTests {
         player.setItemSlot(EquipmentSlot.LEGS, leggings);
         player.setOnGround(true);
         player.setShiftKeyDown(true);
-        for (int i = 0; i < 59; i++) {
-            JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
-        }
-        helper.assertFalse(JumpEnchantments.jump(player, true), "powered jump launched before three seconds");
-        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        charge(player, 59);
+        helper.assertFalse(release(player), "powered jump launched before three seconds");
+        charge(player, 60);
         player.setDeltaMovement(0.4, 0.0, -0.3);
-        helper.assertTrue(JumpEnchantments.jump(player, true), "powered jump did not launch at three seconds");
+        helper.assertTrue(release(player), "powered jump did not launch at three seconds");
         double low = player.getDeltaMovement().y;
         helper.assertTrue(low > 0.42 && player.getDeltaMovement().x == 0.0 && player.getDeltaMovement().z == 0.0,
                 "powered jump did not launch straight up");
-        helper.assertFalse(JumpEnchantments.jump(player, true), "powered jump reused its charge in midair");
+        player.setShiftKeyDown(true);
+        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        helper.assertFalse(release(player), "powered jump reused its charge in midair");
         player.setOnGround(true);
-        for (int i = 0; i < 200; i++) {
-            JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
-        }
-        helper.assertTrue(JumpEnchantments.jump(player, true), "full charge did not launch");
+        charge(player, JumpEnchantments.FULL_CHARGE);
+        helper.assertTrue(release(player), "full charge did not launch");
         double full = player.getDeltaMovement().y;
         helper.assertTrue(full > low, "charging longer did not increase jump height");
         player.setOnGround(true);
-        for (int i = 0; i < 240; i++) {
-            JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
-        }
-        helper.assertTrue(JumpEnchantments.jump(player, true), "overcharged jump did not launch");
-        helper.assertTrue(player.getDeltaMovement().y == full, "charge kept growing beyond ten seconds");
+        charge(player, 240);
+        helper.assertTrue(release(player), "overcharged jump did not launch");
+        helper.assertTrue(player.getDeltaMovement().y == full, "charge kept growing after the sound ended");
         player.setOnGround(true);
-        for (int i = 0; i < 60; i++) {
-            JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
-        }
-        player.setShiftKeyDown(false);
+        charge(player, 60);
+        player.setOnGround(false);
         JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
-        player.setShiftKeyDown(true);
-        helper.assertFalse(JumpEnchantments.jump(player, true), "uncrouching kept a stored charge");
+        player.setOnGround(true);
+        helper.assertFalse(release(player), "leaving the ground kept a stored charge");
         helper.assertTrue(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_LEGGINGS)), "leggings rejected empowered jump");
         helper.assertFalse(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_BOOTS)), "boots accepted empowered jump");
         player.setItemSlot(EquipmentSlot.LEGS, ItemStack.EMPTY);
         helper.assertFalse(JumpEnchantments.canCharge(player), "charge worked without enchanted leggings");
         helper.succeed();
+    }
+
+    private static void charge(ServerPlayer player, int ticks) {
+        player.setShiftKeyDown(true);
+        for (int i = 0; i < ticks; i++) {
+            JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        }
+    }
+
+    private static boolean release(ServerPlayer player) {
+        player.setDeltaMovement(player.getDeltaMovement().multiply(1.0, 0.0, 1.0));
+        player.setShiftKeyDown(false);
+        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        return player.getDeltaMovement().y > 0.0;
     }
 
     @GameTest(template = PLATFORM, batch = "jump_enchantments")

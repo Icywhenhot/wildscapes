@@ -40,12 +40,9 @@ public final class JumpInput {
         }
         if (charging) {
             input.jumping = false;
-            if (pressed) {
-                PacketDistributor.sendToServer(new JumpPayload(true));
-            }
         } else if (pressed && !player.onGround() && MirelashItem.enchantmentLevel(player.level(),
                 player.getItemBySlot(EquipmentSlot.FEET), JumpEnchantments.MULTI_JUMP) > 0) {
-            PacketDistributor.sendToServer(new JumpPayload(false));
+            PacketDistributor.sendToServer(JumpPayload.INSTANCE);
         }
     }
 }

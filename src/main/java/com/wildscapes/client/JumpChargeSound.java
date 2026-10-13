@@ -10,12 +10,11 @@ import net.minecraft.sounds.SoundSource;
 
 public final class JumpChargeSound extends AbstractTickableSoundInstance {
     private final LocalPlayer player;
-    private int ticks;
 
     public JumpChargeSound(LocalPlayer player) {
         super(WildscapesSounds.EMPOWERED_JUMP_CHARGE.get(), SoundSource.PLAYERS, player.getRandom());
         this.player = player;
-        looping = true;
+        looping = false;
         delay = 0;
         volume = 0.8F;
         x = player.getX();
@@ -27,7 +26,7 @@ public final class JumpChargeSound extends AbstractTickableSoundInstance {
     public void tick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != player || mc.screen != null || !player.input.shiftKeyDown
-                || !JumpEnchantments.canCharge(player) || ++ticks >= 200) {
+                || !JumpEnchantments.canCharge(player)) {
             stop();
             return;
         }
