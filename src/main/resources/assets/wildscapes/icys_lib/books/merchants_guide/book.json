@@ -1,0 +1,82 @@
+{
+  "canvas": [213, 128],
+  "bleed": [0, 0, 3, 0],
+  "textures": "wildscapes:textures/gui/merchants_guide/",
+  "text": { "scale": 0.5, "color": "#3A2714", "shadow": false },
+  "layers": [
+    { "type": "image", "texture": "book" },
+
+    { "type": "image", "texture": "title", "when": { "tab": ["", "traits", "items", "mobs"] } },
+    { "type": "image", "texture": "separator", "when": { "tab": ["", "traits", "items", "mobs"] } },
+    { "type": "image", "texture": "biome_buttons", "when": { "tab": ["", "traits", "items", "mobs"] } },
+    {
+      "type": "choice", "key": "biome", "default": "swamp", "draw": "selected",
+      "sound": "minecraft:item.book.page_turn",
+      "when": { "tab": ["", "traits", "items", "mobs"] },
+      "options": {
+        "swamp": "biome_swamp_selected",
+        "desert": "biome_desert_selected",
+        "jungle": "biome_jungle_selected",
+        "mesa": "biome_mesa_selected",
+        "unknown_1": "biome_unknown_1_selected",
+        "unknown_2": "biome_unknown_2_selected",
+        "unknown_3": "biome_unknown_3_selected"
+      }
+    },
+    {
+      "type": "image", "texture": "art_${biome}", "fallback": "art_wip",
+      "when": { "tab": ["", "traits", "items", "mobs"] }
+    },
+    {
+      "type": "text", "area": [37, 27, 57, 27], "align": "center", "valign": "middle",
+      "text": "wildscapes.guide.biome.${biome}", "fallback": "wildscapes.guide.biome.unknown",
+      "when": { "tab": ["", "traits", "items", "mobs"] }
+    },
+
+    {
+      "type": "list", "key": "structure", "category": "structures", "where": { "biome": "${biome}" },
+      "at": [18, 14], "step": [0, 20], "max": 3,
+      "frame": "list_frame", "selected": "list_frame_selected",
+      "icon": { "at": [5, 5], "size": 8 },
+      "label": {
+        "sprite": "structure_label", "at": [18, 4],
+        "text": "wildscapes.guide.structure.${structure}", "area": [5, 1, 45, 9], "color": "#E6DCC0"
+      },
+      "sound": "minecraft:item.book.page_turn",
+      "when": { "tab": "structures" }
+    },
+    {
+      "type": "text", "area": [18, 75, 64, 24], "valign": "middle",
+      "text": "wildscapes.guide.structure.${structure}.text", "fallback": "wildscapes.guide.structure.none",
+      "when": { "tab": "structures" }
+    },
+    {
+      "type": "text", "area": [106, 8, 78, 5], "align": "center",
+      "text": "wildscapes.guide.loot",
+      "when": { "tab": "structures" }
+    },
+    {
+      "type": "items", "area": [106, 14, 78, 38], "cell": 9, "size": 8,
+      "category": "structures", "entry": "${structure}", "field": "loot",
+      "when": { "tab": "structures" }
+    },
+    {
+      "type": "text", "area": [106, 54, 39, 44],
+      "text": "wildscapes.guide.structure.${structure}.anecdote", "fallback": "wildscapes.guide.blank",
+      "when": { "tab": "structures" }
+    },
+    { "type": "image", "texture": "photo_${structure}", "when": { "tab": "structures" } },
+    { "type": "image", "texture": "banner_${biome}", "when": { "tab": "structures" } },
+
+    {
+      "type": "choice", "key": "tab", "toggle": true, "draw": "all", "lift": [3, 0],
+      "options": {
+        "traits": "tab_traits",
+        "items": "tab_items",
+        "structures": "tab_structures",
+        "mobs": "tab_mobs"
+      }
+    },
+    { "type": "button", "texture": "close", "action": "close" }
+  ]
+}

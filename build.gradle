@@ -36,6 +36,11 @@ repositories {
             includeGroup("com.eliotlash.mclib")
         }
     }
+    mavenLocal {
+        content {
+            includeGroup("icy.lib")
+        }
+    }
 }
 
 base {
@@ -128,6 +133,7 @@ configurations {
 dependencies {
     // GeckoLib — animation library for modded entities/blocks/items
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    implementation "icy.lib:icys_lib-neoforge-${minecraft_version}:${icys_lib_version}"
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -164,6 +170,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
+            icys_lib_version       : icys_lib_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

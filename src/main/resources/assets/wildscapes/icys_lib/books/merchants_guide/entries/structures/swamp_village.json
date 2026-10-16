@@ -1,0 +1,18 @@
+{
+  "biome": "swamp",
+  "sort": 0,
+  "icon": {
+    "item": "wildscapes:cypress_planks"
+  },
+  "loot": [
+    "wildscapes:incendiary_bottle",
+    "wildscapes:cypress_log",
+    "wildscapes:cypress_sapling",
+    "minecraft:lily_pad",
+    "minecraft:brown_mushroom",
+    "minecraft:red_mushroom",
+    "minecraft:bundle",
+    "minecraft:cod_bucket",
+    "minecraft:salmon_bucket"
+  ]
+}

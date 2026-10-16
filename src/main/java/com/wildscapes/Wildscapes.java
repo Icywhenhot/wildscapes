@@ -52,10 +52,12 @@ import net.minecraft.world.level.block.FireBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.village.WandererTradesEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -107,6 +109,7 @@ public class Wildscapes {
                         output.accept(WildscapesItems.ABOMINATION_TONGUE.get());
                         output.accept(WildscapesItems.MIRELASH.get());
                         output.accept(WildscapesItems.ILLUSIONIST_NECKLACE.get());
+                        output.accept(WildscapesItems.MERCHANTS_GUIDE.get());
                         output.accept(WildscapesItems.INCENDIARY_BOTTLE.get());
                         output.accept(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE.get());
                         output.accept(WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE.get());
@@ -189,6 +192,7 @@ public class Wildscapes {
         NeoForge.EVENT_BUS.addListener(this::registerBrewingRecipes);
 
         NeoForge.EVENT_BUS.addListener(this::onLivingDrops);
+        NeoForge.EVENT_BUS.addListener(this::onWandererTrades);
         NeoForge.EVENT_BUS.addListener(IllusionerGoals::onJoinLevel);
         NeoForge.EVENT_BUS.addListener(WitchGoals::onJoinLevel);
         NeoForge.EVENT_BUS.addListener(WitchGoals::onEntityTick);
@@ -222,6 +226,10 @@ public class Wildscapes {
         int count = 1 + entity.getRandom().nextInt(2);
         ItemStack stack = new ItemStack(WildscapesItems.FROG_LEGS.get(), count);
         event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack));
+    }
+
+    private void onWandererTrades(WandererTradesEvent event) {
+        event.getRareTrades().add(new BasicItemListing(8, new ItemStack(WildscapesItems.MERCHANTS_GUIDE.get()), 1, 1, 0.05f));
     }
 
     private void registerEntityAttributes(EntityAttributeCreationEvent event) {

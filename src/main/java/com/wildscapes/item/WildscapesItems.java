@@ -3,6 +3,8 @@ package com.wildscapes.item;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.WildscapesEntities;
 
+import icy.lib.GuideBookItem;
+
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BannerPatternItem;
@@ -65,6 +67,10 @@ public final class WildscapesItems {
 
     public static final DeferredItem<MagicSoupItem> MAGIC_SOUP = ITEMS.register("magic_soup",
             () -> new MagicSoupItem(new Item.Properties()));
+
+    public static final DeferredItem<GuideBookItem> MERCHANTS_GUIDE = ITEMS.register("merchants_guide",
+            () -> new GuideBookItem(new Item.Properties(),
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "merchants_guide")));
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

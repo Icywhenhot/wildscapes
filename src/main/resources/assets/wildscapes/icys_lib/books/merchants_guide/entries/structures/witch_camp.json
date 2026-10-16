@@ -1,0 +1,41 @@
+{
+  "biome": "swamp",
+  "sort": 2,
+  "icon": {
+    "item": "minecraft:cauldron"
+  },
+  "loot": [
+    "minecraft:emerald",
+    "minecraft:suspicious_stew",
+    "minecraft:potion",
+    "minecraft:splash_potion",
+    "minecraft:ominous_bottle",
+    "minecraft:glass_bottle",
+    "minecraft:pufferfish_bucket",
+    "minecraft:milk_bucket",
+    "wildscapes:magic_soup",
+    "minecraft:wild_armor_trim_smithing_template",
+    "minecraft:skull_banner_pattern",
+    "minecraft:enchanted_book",
+    "minecraft:bowl",
+    "minecraft:rabbit_stew",
+    "minecraft:rabbit_hide",
+    "minecraft:cod",
+    "minecraft:cooked_cod",
+    "minecraft:salmon",
+    "minecraft:cooked_salmon",
+    "minecraft:spider_eye",
+    "minecraft:fermented_spider_eye",
+    "minecraft:rotten_flesh",
+    "minecraft:sugar",
+    "minecraft:fishing_rod",
+    "minecraft:redstone",
+    "minecraft:gunpowder",
+    "minecraft:red_mushroom",
+    "minecraft:string",
+    "minecraft:coal",
+    "minecraft:poisonous_potato",
+    "minecraft:egg",
+    "wildscapes:incendiary_bottle"
+  ]
+}
