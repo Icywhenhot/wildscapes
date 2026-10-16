@@ -89,6 +89,8 @@ public final class JumpEnchantments {
         }
         player.jumpFromGround();
         data.putInt(USED, used + 1);
+        player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
+                WildscapesSounds.MULTI_JUMP.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         player.serverLevel().sendParticles(WildscapesParticles.MULTI_JUMP.get(), player.getX(),
                 player.getY() + 0.02, player.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
         push(player);

@@ -5,6 +5,11 @@ import com.wildscapes.entity.WildscapesEntities;
 
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BannerPatternItem;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.SmithingTemplateItem;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.neoforged.bus.api.IEventBus;
@@ -16,6 +21,22 @@ public final class WildscapesItems {
     private WildscapesItems() {}
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Wildscapes.MODID);
+
+    public static final DeferredItem<BannerPatternItem> SLIME_BANNER_PATTERN = ITEMS.register("slime_banner_pattern",
+            () -> new BannerPatternItem(TagKey.create(Registries.BANNER_PATTERN,
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "pattern_item/slime")), new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<BannerPatternItem> SPIRIT_BANNER_PATTERN = ITEMS.register("spirit_banner_pattern",
+            () -> new BannerPatternItem(TagKey.create(Registries.BANNER_PATTERN,
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "pattern_item/spirit")), new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<SmithingTemplateItem> SPELL_ARMOR_TRIM_SMITHING_TEMPLATE = ITEMS.register(
+            "spell_armor_trim_smithing_template", () -> SmithingTemplateItem.createArmorTrimTemplate(
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "spell")));
+
+    public static final DeferredItem<SmithingTemplateItem> VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE = ITEMS.register(
+            "viscose_armor_trim_smithing_template", () -> SmithingTemplateItem.createArmorTrimTemplate(
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "viscose")));
 
     public static final DeferredItem<Item> ABOMINATION_SPAWN_EGG = ITEMS.register("abomination_spawn_egg",
             () -> new DeferredSpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));

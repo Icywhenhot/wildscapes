@@ -2,7 +2,7 @@
   "parent": "minecraft:block/template_fire_side_alt",
   "render_type": "minecraft:cutout",
   "textures": {
-    "particle": "minecraft:block/fire_1",
-    "fire": "minecraft:block/fire_1"
+    "particle": "wildscapes:block/incendiary_fire",
+    "fire": "wildscapes:block/incendiary_fire"
   }
 }

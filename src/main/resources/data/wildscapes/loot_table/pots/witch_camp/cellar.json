@@ -279,6 +279,21 @@
           "type": "minecraft:item",
           "name": "minecraft:skull_banner_pattern",
           "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "wildscapes:gameplay/gnashing",
+          "weight": 1305
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:incendiary_bottle",
+          "weight": 348
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "wildscapes:gameplay/armor_trims",
+          "weight": 36
         }
       ]
     }

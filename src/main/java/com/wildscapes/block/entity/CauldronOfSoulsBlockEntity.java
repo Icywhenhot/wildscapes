@@ -18,6 +18,7 @@ import com.wildscapes.block.CauldronOfSoulsBlock;
 import com.wildscapes.block.SummoningBonfireBlock;
 import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.entity.AbominationEntity;
+import com.wildscapes.entity.IncendiaryBottle;
 import com.wildscapes.entity.SoulHarvest;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.particle.SoulTrailOptions;
@@ -343,6 +344,16 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             pending += worth.getFloat(i);
         }
         boolean full = pending >= 0.999F;
+        if (timer % (180 - omen * 20) == 40) {
+            Player player = nearest(level, center());
+            if (player != null) {
+                Vec3 c = center().add(0, 0.7, 0);
+                IncendiaryBottle bottle = new IncendiaryBottle(level, c.x, c.y, c.z);
+                bottle.haunt(worldPosition, player);
+                level.addFreshEntity(bottle);
+                level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5F, 1.3F);
+            }
+        }
         if (!paused && (mobs.size() >= CAP || full)) {
             paused = true;
             lit.forEach(b -> SummoningBonfireBlock.setLit(level, b, false));
@@ -598,6 +609,8 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     private void vanish(ServerLevel level) {
+        level.getEntitiesOfClass(IncendiaryBottle.class, new AABB(worldPosition).inflate(RADIUS + 16),
+                b -> b.cameFrom(worldPosition)).forEach(Entity::discard);
         for (ServerPlayer p : near(level)) {
             p.removeEffect(WildscapesEffects.SOUL_HARVEST);
         }

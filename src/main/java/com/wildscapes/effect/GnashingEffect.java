@@ -11,7 +11,7 @@ public class GnashingEffect extends MobEffect {
     private static final int WARNING = 20;
 
     public GnashingEffect() {
-        super(MobEffectCategory.HARMFUL, 0x9C3C77);
+        super(MobEffectCategory.HARMFUL, 0x354F2A);
     }
 
     private static int every(int amplifier) {

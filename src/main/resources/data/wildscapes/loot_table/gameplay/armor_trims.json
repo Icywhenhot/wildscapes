@@ -1,0 +1,18 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:spell_armor_trim_smithing_template"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:viscose_armor_trim_smithing_template"
+        }
+      ]
+    }
+  ],
+  "random_sequence": "wildscapes:gameplay/armor_trims"
+}

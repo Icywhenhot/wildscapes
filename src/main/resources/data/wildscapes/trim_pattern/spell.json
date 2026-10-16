@@ -1,0 +1,7 @@
+{
+  "asset_id": "wildscapes:spell",
+  "template_item": "wildscapes:spell_armor_trim_smithing_template",
+  "description": {
+    "translate": "trim_pattern.wildscapes.spell"
+  }
+}

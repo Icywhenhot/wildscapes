@@ -223,5 +223,13 @@
         "name": "wildscapes:empowered_jump/ready"
       }
     ]
-  }
+  },
+    "multi_jump": {
+      "subtitle": "subtitles.wildscapes.multi_jump",
+      "sounds": [
+        {
+          "name": "wildscapes:multi_jump/jump"
+        }
+      ]
+    }
 }

@@ -1,5 +1,8 @@
 package com.wildscapes.gametest;
 
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
 import com.wildscapes.block.CauldronOfSoulsBlock;
 import com.wildscapes.block.IncendiaryFireBlock;
 import com.wildscapes.block.SummoningBonfireBlock;
@@ -7,9 +10,13 @@ import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.entity.AbominationEntity;
+import com.wildscapes.entity.IncendiaryBottle;
 import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
@@ -27,6 +34,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import io.netty.channel.embedded.EmbeddedChannel;
 
 @GameTestHolder("wildscapes")
 @PrefixGameTestTemplate(false)
@@ -135,6 +143,64 @@ public final class SoulHarvestTests {
                 "no fangs rose under the pig"));
     }
 
+    @GameTest(template = PLATFORM, timeoutTicks = 600, batch = "incendiary")
+    public static void cauldronBottlesRiseAndHuntPlayers(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos pos = new BlockPos(12, 2, 12);
+        BlockPos at = helper.absolutePos(pos);
+        helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState());
+        ServerPlayer player = survivalPlayer(helper);
+        Vec3 stand = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(12, 2, 6)));
+        player.teleportTo(level, stand.x, stand.y, stand.z, 0, 0);
+        player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, 2000));
+        helper.runAfterDelay(2, () -> CauldronOfSoulsBlockEntity.tryStart(level, player));
+        boolean[] rose = {false};
+        AABB area = new AABB(at).inflate(20);
+        helper.onEachTick(() -> {
+            for (Mob mob : level.getEntitiesOfClass(Mob.class, area)) {
+                mob.setNoAi(true);
+            }
+            for (IncendiaryBottle bottle : level.getEntitiesOfClass(IncendiaryBottle.class, area, b -> b.cameFrom(at))) {
+                if (bottle.getY() > at.getY() + 2.0) {
+                    rose[0] = true;
+                }
+            }
+            if (!player.isOnFire()) {
+                return;
+            }
+            helper.assertTrue(rose[0], "the bottle did not float above the cauldron before attacking");
+            helper.assertTrue(player.getHealth() < player.getMaxHealth(), "the bottle did not hurt the player");
+            helper.assertTrue(!level.getBlockStates(player.getBoundingBox().inflate(2))
+                    .filter(s -> s.is(WildscapesBlocks.INCENDIARY_FIRE.get())).toList().isEmpty(), "impact left no incendiary fire");
+            helper.setBlock(pos, Blocks.AIR.defaultBlockState());
+            level.getServer().getPlayerList().remove(player);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = PLATFORM, timeoutTicks = 60, batch = "incendiary")
+    public static void breakingTheCauldronRemovesItsBottles(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        BlockPos pos = new BlockPos(12, 2, 12);
+        BlockPos at = helper.absolutePos(pos);
+        helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState()
+                .setValue(CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE));
+        ServerPlayer player = survivalPlayer(helper);
+        player.teleportTo(level, at.getX() + 6, at.getY(), at.getZ(), 0, 0);
+        IncendiaryBottle bottle = new IncendiaryBottle(level, at.getX() + 0.5, at.getY() + 1.2, at.getZ() + 0.5);
+        bottle.haunt(at, player);
+        level.addFreshEntity(bottle);
+        helper.runAfterDelay(15, () -> {
+            helper.assertTrue(bottle.isAlive() && bottle.getY() > at.getY() + 1.6, "bottle did not float");
+            helper.setBlock(pos, Blocks.AIR.defaultBlockState());
+        });
+        helper.runAfterDelay(17, () -> {
+            helper.assertTrue(bottle.isRemoved(), "bottle survived its cauldron");
+            level.getServer().getPlayerList().remove(player);
+            helper.succeed();
+        });
+    }
+
     @GameTest(template = PLATFORM, timeoutTicks = 100)
     public static void incendiaryFireSparesMobs(GameTestHelper helper) {
         BlockPos mid = new BlockPos(10, 2, 10);
@@ -150,5 +216,16 @@ public final class SoulHarvestTests {
             helper.assertTrue(pig.getHealth() == pig.getMaxHealth() && !pig.isOnFire(), "the fire burned a pig");
             helper.succeed();
         });
+    }
+
+    private static ServerPlayer survivalPlayer(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        var cookie = CommonListenerCookie.createInitial(new GameProfile(UUID.randomUUID(), "bottle-test-player"), false);
+        ServerPlayer player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation());
+        Connection connection = new Connection(PacketFlow.SERVERBOUND);
+        new EmbeddedChannel(connection);
+        level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        return player;
     }
 }

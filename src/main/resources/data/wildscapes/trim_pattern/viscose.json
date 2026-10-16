@@ -1,0 +1,7 @@
+{
+  "asset_id": "wildscapes:viscose",
+  "template_item": "wildscapes:viscose_armor_trim_smithing_template",
+  "description": {
+    "translate": "trim_pattern.wildscapes.viscose"
+  }
+}

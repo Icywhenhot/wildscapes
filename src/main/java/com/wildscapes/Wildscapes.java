@@ -108,6 +108,10 @@ public class Wildscapes {
                         output.accept(WildscapesItems.MIRELASH.get());
                         output.accept(WildscapesItems.ILLUSIONIST_NECKLACE.get());
                         output.accept(WildscapesItems.INCENDIARY_BOTTLE.get());
+                        output.accept(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE.get());
+                        output.accept(WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE.get());
+                        output.accept(WildscapesItems.SLIME_BANNER_PATTERN.get());
+                        output.accept(WildscapesItems.SPIRIT_BANNER_PATTERN.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
                         output.accept(WildscapesItems.ILLUSIONER_SPAWN_EGG.get());
                         output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.MIRAGE));
@@ -134,6 +138,10 @@ public class Wildscapes {
                         output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.GNASHING));
                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.GNASHING));
                         output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.LONG_GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.LONG_GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.LONG_GNASHING));
+                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.LONG_GNASHING));
                         output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.STRONG_GNASHING));
                         output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.STRONG_GNASHING));
                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.STRONG_GNASHING));
@@ -221,6 +229,8 @@ public class Wildscapes {
     }
 
     private void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
+        event.getBuilder().addMix(WildscapesPotions.GNASHING, Items.REDSTONE, WildscapesPotions.LONG_GNASHING);
+        event.getBuilder().addMix(WildscapesPotions.GNASHING, Items.GLOWSTONE_DUST, WildscapesPotions.STRONG_GNASHING);
         event.getBuilder().addMix(Potions.AWKWARD, Items.ENDER_PEARL, WildscapesPotions.MIRAGE);
         event.getBuilder().addMix(WildscapesPotions.MIRAGE, Items.REDSTONE, WildscapesPotions.LONG_MIRAGE);
         event.getBuilder().addMix(Potions.AWKWARD, Items.TURTLE_EGG, WildscapesPotions.RESISTANCE);

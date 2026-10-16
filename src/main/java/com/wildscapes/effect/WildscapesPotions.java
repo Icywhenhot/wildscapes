@@ -34,6 +34,9 @@ public final class WildscapesPotions {
     public static final DeferredHolder<Potion, Potion> GNASHING = POTIONS.register("gnashing",
             () -> new Potion(new MobEffectInstance(WildscapesEffects.GNASHING, 900)));
 
+    public static final DeferredHolder<Potion, Potion> LONG_GNASHING = POTIONS.register("long_gnashing",
+            () -> new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING, 1800)));
+
     public static final DeferredHolder<Potion, Potion> STRONG_GNASHING = POTIONS.register("strong_gnashing",
             () -> new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING, 640, 1)));
 
