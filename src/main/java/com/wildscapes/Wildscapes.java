@@ -25,6 +25,7 @@ import com.wildscapes.entity.WitchGoals;
 import com.wildscapes.item.WildscapesDataComponents;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WildscapesItems;
+import com.wildscapes.item.WitchCampMap;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.network.MirelashAttackPayload;
 import com.wildscapes.network.JumpPayload;
@@ -172,6 +173,7 @@ public class Wildscapes {
         WildscapesBlocks.register(modEventBus);
         WildscapesBlockEntities.register(modEventBus);
         WildscapesItems.register(modEventBus);
+        WitchCampMap.register(modEventBus);
         WildscapesDataComponents.register(modEventBus);
         WildscapesEntities.register(modEventBus);
         WildscapesEffects.register(modEventBus);
@@ -193,6 +195,7 @@ public class Wildscapes {
 
         NeoForge.EVENT_BUS.addListener(this::onLivingDrops);
         NeoForge.EVENT_BUS.addListener(this::onWandererTrades);
+        NeoForge.EVENT_BUS.addListener(WitchCampMap::onVillagerTrades);
         NeoForge.EVENT_BUS.addListener(IllusionerGoals::onJoinLevel);
         NeoForge.EVENT_BUS.addListener(WitchGoals::onJoinLevel);
         NeoForge.EVENT_BUS.addListener(WitchGoals::onEntityTick);

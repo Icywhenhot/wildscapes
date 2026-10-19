@@ -25,6 +25,7 @@ import com.wildscapes.entity.client.WildscapesModelLayers;
 import com.wildscapes.effect.Intangibility;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WildscapesItems;
+import com.wildscapes.item.WitchCampMap;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.particle.client.BrewBubbleParticle;
 import com.wildscapes.particle.client.ResidueParticle;
@@ -60,6 +61,9 @@ public final class WildscapesClient {
     @SubscribeEvent
     static void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            ItemProperties.register(Items.FILLED_MAP,
+                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"),
+                    (stack, level, holder, seed) -> WitchCampMap.isWitchCampMap(stack) ? 1F : 0F);
             ItemProperties.register(WildscapesItems.MIRELASH.get(),
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "active"),
                     (stack, level, holder, seed) -> level != null && holder != null

@@ -5,7 +5,7 @@
     { "type": "minecraft:in_square" },
     { "type": "minecraft:heightmap", "heightmap": "OCEAN_FLOOR_WG" },
     { "type": "minecraft:surface_water_depth_filter", "max_water_depth": 1 },
-    { "type": "wildscapes:shore_density", "max_distance": 6 },
+    { "type": "wildscapes:shore_density", "max_distance": 6, "include_land": true },
     { "type": "minecraft:biome" }
   ]
 }
