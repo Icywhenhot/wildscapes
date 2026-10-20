@@ -1,0 +1,8 @@
+{
+  "biome": "swamp",
+  "sort": 2,
+  "drops": [
+    "minecraft:bone",
+    "minecraft:arrow"
+  ]
+}

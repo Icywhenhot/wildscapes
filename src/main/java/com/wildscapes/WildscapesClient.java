@@ -12,6 +12,8 @@ import com.wildscapes.entity.client.MirageLayer;
 import com.wildscapes.entity.client.MirelashHookRenderer;
 import com.wildscapes.entity.client.MirelashModels;
 import com.wildscapes.entity.client.SlimeBubbleLayer;
+import com.wildscapes.entity.client.RedesignedBoggedModel;
+import com.wildscapes.entity.client.RedesignedBoggedRenderer;
 import com.wildscapes.entity.client.RedesignedIllusionerModel;
 import com.wildscapes.entity.client.RedesignedIllusionerRenderer;
 import com.wildscapes.entity.client.RedesignedSlimeModels;
@@ -105,6 +107,7 @@ public final class WildscapesClient {
         event.registerLayerDefinition(WildscapesModelLayers.VINDICATOR, SwampIllagerModels::createVindicatorLayer);
         event.registerLayerDefinition(WildscapesModelLayers.ILLUSIONER, RedesignedIllusionerModel::createBodyLayer);
         event.registerLayerDefinition(WildscapesModelLayers.WITCH, RedesignedWitchModel::createBodyLayer);
+        event.registerLayerDefinition(WildscapesModelLayers.BOGGED, RedesignedBoggedModel::createBodyLayer);
         event.registerLayerDefinition(WildscapesModelLayers.SLIME_SMALL, RedesignedSlimeModels::createSmallInnerLayer);
         event.registerLayerDefinition(WildscapesModelLayers.SLIME_SMALL_OUTER, RedesignedSlimeModels::createSmallOuterLayer);
         event.registerLayerDefinition(WildscapesModelLayers.SLIME_MEDIUM, RedesignedSlimeModels::createMediumInnerLayer);
@@ -130,6 +133,7 @@ public final class WildscapesClient {
         event.registerEntityRenderer(EntityType.VINDICATOR, SwampVindicatorRenderer::new);
         event.registerEntityRenderer(EntityType.ILLUSIONER, RedesignedIllusionerRenderer::new);
         event.registerEntityRenderer(EntityType.WITCH, RedesignedWitchRenderer::new);
+        event.registerEntityRenderer(EntityType.BOGGED, RedesignedBoggedRenderer::new);
         event.registerEntityRenderer(EntityType.EVOKER, EmpoweredEvokerRenderer::new);
         event.registerEntityRenderer(EntityType.SLIME, RedesignedSlimeRenderer::new);
 

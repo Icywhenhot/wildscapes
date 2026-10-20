@@ -1,9 +1,6 @@
 {
   "biome": "swamp",
-  "sort": 0,
-  "icon": {
-    "item": "wildscapes:cypress_planks"
-  },
+  "sort": 1,
   "loot": [
     "wildscapes:incendiary_bottle",
     "wildscapes:cypress_log",

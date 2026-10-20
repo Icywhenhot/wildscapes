@@ -1,0 +1,10 @@
+{
+  "biome": "swamp",
+  "sort": 5,
+  "drops": [
+    "minecraft:rotten_flesh",
+    "minecraft:copper_ingot",
+    "minecraft:trident",
+    "minecraft:nautilus_shell"
+  ]
+}

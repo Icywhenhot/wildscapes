@@ -3,16 +3,25 @@
   "bleed": [0, 0, 3, 0],
   "textures": "wildscapes:textures/gui/merchants_guide/",
   "text": { "scale": 0.5, "color": "#3A2714", "shadow": false },
+  "bend": {
+    "top": [
+      [18, 5.5], [22, 4.4], [26, 3.4], [30, 2.7], [34, 2.1], [38, 1.6], [42, 1.0], [46, 0.4], [50, 0],
+      [66, 0], [70, 0.2], [74, 0.4], [78, 0.7], [82, 1.2], [86, 1.9], [90, 3.2],
+      [110, 3.8], [114, 2.5], [118, 1.5], [122, 0.8], [126, 0.3], [130, 0],
+      [158, 0], [162, 0.3], [166, 0.9], [170, 1.7], [174, 2.9], [178, 4.1], [182, 5.3], [186, 6.3]
+    ],
+    "fade": [10, 101]
+  },
   "layers": [
     { "type": "image", "texture": "book" },
 
-    { "type": "image", "texture": "title", "when": { "tab": ["", "traits", "items", "mobs"] } },
-    { "type": "image", "texture": "separator", "when": { "tab": ["", "traits", "items", "mobs"] } },
-    { "type": "image", "texture": "biome_buttons", "when": { "tab": ["", "traits", "items", "mobs"] } },
+    { "type": "image", "texture": "title", "when": { "tab": ["", "traits"] } },
+    { "type": "image", "texture": "separator", "when": { "tab": ["", "traits"] } },
+    { "type": "image", "texture": "biome_buttons", "when": { "tab": ["", "traits"] } },
     {
       "type": "choice", "key": "biome", "default": "swamp", "draw": "selected",
       "sound": "minecraft:item.book.page_turn",
-      "when": { "tab": ["", "traits", "items", "mobs"] },
+      "when": { "tab": ["", "traits"] },
       "options": {
         "swamp": "biome_swamp_selected",
         "desert": "biome_desert_selected",
@@ -25,51 +34,105 @@
     },
     {
       "type": "image", "texture": "art_${biome}", "fallback": "art_wip",
-      "when": { "tab": ["", "traits", "items", "mobs"] }
+      "when": { "tab": ["", "traits"] }
     },
     {
-      "type": "text", "area": [37, 27, 57, 27], "align": "center", "valign": "middle",
+      "type": "text", "area": [22, 27, 65, 27], "align": "center", "valign": "middle",
       "text": "wildscapes.guide.biome.${biome}", "fallback": "wildscapes.guide.biome.unknown",
-      "when": { "tab": ["", "traits", "items", "mobs"] }
+      "when": { "tab": ["", "traits"] }
     },
 
+    { "type": "image", "texture": "structures_${biome}", "when": { "tab": "structures" } },
     {
-      "type": "list", "key": "structure", "category": "structures", "where": { "biome": "${biome}" },
-      "at": [18, 14], "step": [0, 20], "max": 3,
-      "frame": "list_frame", "selected": "list_frame_selected",
-      "icon": { "at": [5, 5], "size": 8 },
-      "label": {
-        "sprite": "structure_label", "at": [18, 4],
-        "text": "wildscapes.guide.structure.${structure}", "area": [5, 1, 45, 9], "color": "#E6DCC0"
-      },
+      "type": "choice", "key": "structure", "draw": "selected",
+      "category": "structures", "where": { "biome": "${biome}" }, "option": "structure_${biome}_${structure}_selected",
       "sound": "minecraft:item.book.page_turn",
       "when": { "tab": "structures" }
     },
+    { "type": "image", "texture": "structure_${biome}_${structure}_label", "when": { "tab": "structures" } },
     {
-      "type": "text", "area": [18, 75, 64, 24], "valign": "middle",
+      "type": "text", "on": "structure_${biome}_${structure}_label", "area": [5, 1, 39, 9],
+      "align": "center", "valign": "middle", "color": "#E6DCC0", "bend": false,
+      "text": "wildscapes.guide.structure.${structure}",
+      "when": { "tab": "structures" }
+    },
+    { "type": "image", "texture": "structure_panel", "when": { "tab": "structures" } },
+    {
+      "type": "text", "area": [25, 72, 62, 29], "align": "center", "valign": "middle", "bend": false,
       "text": "wildscapes.guide.structure.${structure}.text", "fallback": "wildscapes.guide.structure.none",
       "when": { "tab": "structures" }
     },
     {
-      "type": "text", "area": [106, 8, 78, 5], "align": "center",
-      "text": "wildscapes.guide.loot",
-      "when": { "tab": "structures" }
-    },
-    {
-      "type": "items", "area": [106, 14, 78, 38], "cell": 9, "size": 8,
-      "category": "structures", "entry": "${structure}", "field": "loot",
-      "when": { "tab": "structures" }
-    },
-    {
-      "type": "text", "area": [106, 54, 39, 44],
+      "type": "text", "area": [114, 12, 66, 36], "align": "center", "valign": "middle",
       "text": "wildscapes.guide.structure.${structure}.anecdote", "fallback": "wildscapes.guide.blank",
       "when": { "tab": "structures" }
     },
-    { "type": "image", "texture": "photo_${structure}", "when": { "tab": "structures" } },
-    { "type": "image", "texture": "banner_${biome}", "when": { "tab": "structures" } },
+    {
+      "type": "text", "area": [114, 52, 26, 37], "align": "center", "valign": "middle",
+      "text": "wildscapes.guide.structure.${structure}.anticipation", "fallback": "wildscapes.guide.blank",
+      "when": { "tab": "structures" }
+    },
+    { "type": "image", "texture": "anticipation_${structure}", "when": { "tab": "structures" } },
 
     {
-      "type": "choice", "key": "tab", "toggle": true, "draw": "all", "lift": [3, 0],
+      "type": "list", "key": "item", "category": "items",
+      "at": [28, 19], "step": [18, 18], "columns": 3, "max": 9,
+      "frame": { "texture": "item_slot", "region": [0, 0, 18, 19] },
+      "selected": { "texture": "item_slot_selected", "region": [0, 0, 18, 19] },
+      "icon": { "at": [3, 3], "size": 12 },
+      "sound": "minecraft:item.book.page_turn",
+      "when": { "tab": "items" }
+    },
+    { "type": "image", "texture": "item_name", "at": [24, 78], "when": { "tab": "items" } },
+    {
+      "type": "text", "area": [29, 79, 45, 10], "align": "center", "valign": "middle", "color": "#E6DCC0", "bend": false,
+      "text": "item.wildscapes.${item}",
+      "when": { "tab": "items" }
+    },
+    {
+      "type": "text", "area": [114, 12, 66, 21], "align": "center", "valign": "middle",
+      "text": "wildscapes.guide.item.${item}.anecdote", "fallback": "wildscapes.guide.blank",
+      "when": { "tab": "items" }
+    },
+    {
+      "type": "recipe", "category": "items", "entry": "${item}",
+      "art": "recipe_grid", "at": [121, 40], "cell": 9, "size": 8, "result": [169, 49],
+      "when": { "tab": "items" }
+    },
+
+    { "type": "image", "texture": "mobs_${biome}", "when": { "tab": "mobs" } },
+    {
+      "type": "choice", "key": "mob", "draw": "selected",
+      "category": "mobs", "where": { "biome": "${biome}" }, "option": "mob_${biome}_${mob}_selected",
+      "sound": "minecraft:item.book.page_turn",
+      "when": { "tab": "mobs" }
+    },
+    {
+      "type": "text", "area": [33, 81, 45, 10], "align": "center", "valign": "middle", "color": "#E6DCC0", "bend": false,
+      "text": "wildscapes.guide.mob.${mob}", "fallback": "wildscapes.guide.blank",
+      "when": { "tab": "mobs" }
+    },
+    {
+      "type": "text", "area": [114, 12, 66, 34], "align": "center", "valign": "middle",
+      "text": "wildscapes.guide.mob.${mob}.anecdote", "fallback": "wildscapes.guide.mob.none",
+      "when": { "tab": "mobs" }
+    },
+    {
+      "type": "text", "area": [114, 48, 18, 5], "align": "center",
+      "text": "wildscapes.guide.drops",
+      "when": { "tab": "mobs" }
+    },
+    {
+      "type": "items", "area": [114, 54, 18, 36], "cell": 9, "size": 8, "align": "center",
+      "category": "mobs", "entry": "${mob}", "field": "drops",
+      "when": { "tab": "mobs" }
+    },
+    { "type": "image", "texture": "mob_${biome}_${mob}", "when": { "tab": "mobs" } },
+
+    { "type": "image", "texture": "banner_${biome}", "when": { "tab": ["structures", "mobs", "items"] } },
+
+    {
+      "type": "choice", "key": "tab", "toggle": true, "draw": "all", "lift": [5, 0],
       "options": {
         "traits": "tab_traits",
         "items": "tab_items",
@@ -77,6 +140,7 @@
         "mobs": "tab_mobs"
       }
     },
+    { "type": "image", "texture": "page_edge" },
     { "type": "button", "texture": "close", "action": "close" }
   ]
 }

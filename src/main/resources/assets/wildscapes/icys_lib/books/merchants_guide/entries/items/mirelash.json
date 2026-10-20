@@ -1,0 +1,17 @@
+{
+  "sort": 2,
+  "icon": {
+    "item": "wildscapes:mirelash"
+  },
+  "recipe": [
+    "minecraft:iron_ingot",
+    "minecraft:slime_ball",
+    "",
+    "minecraft:slime_ball",
+    "wildscapes:abomination_tongue",
+    "",
+    "",
+    "",
+    "minecraft:copper_ingot"
+  ]
+}

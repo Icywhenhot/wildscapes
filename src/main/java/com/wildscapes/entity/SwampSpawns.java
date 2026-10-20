@@ -9,6 +9,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.monster.Bogged;
 import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.monster.Monster;
@@ -29,10 +30,17 @@ public final class SwampSpawns {
     private static final int DAY_SLIME_RARITY = 100;
 
     public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(EntityType.BOGGED, SwampSpawns::nightSwampBogged,
+                RegisterSpawnPlacementsEvent.Operation.AND);
         event.register(EntityType.DROWNED, SwampSpawns::swampDrowned,
                 RegisterSpawnPlacementsEvent.Operation.OR);
         event.register(EntityType.SLIME, SwampSpawns::daylightSwampSlime,
                 RegisterSpawnPlacementsEvent.Operation.OR);
+    }
+
+    private static boolean nightSwampBogged(EntityType<Bogged> type, ServerLevelAccessor level,
+            MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        return spawnType != MobSpawnType.NATURAL || !isSwamp(level, pos) || level.getLevel().isNight();
     }
 
     private static boolean swampDrowned(EntityType<Drowned> type, ServerLevelAccessor level,
@@ -44,7 +52,7 @@ public final class SwampSpawns {
             return false;
         }
 
-        if (!level.getFluidState(pos).is(FluidTags.WATER) || !level.getFluidState(pos.below()).is(FluidTags.WATER)) {
+        if (!level.getFluidState(pos).is(FluidTags.WATER)) {
             return false;
         }
         return Monster.isDarkEnoughToSpawn(level, pos, random) && random.nextInt(DROWNED_RARITY) == 0;

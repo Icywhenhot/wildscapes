@@ -12,6 +12,7 @@ public final class WildscapesModelLayers {
     public static final ModelLayerLocation VINDICATOR = create("vindicator");
     public static final ModelLayerLocation ILLUSIONER = create("illusioner");
     public static final ModelLayerLocation WITCH = create("witch");
+    public static final ModelLayerLocation BOGGED = create("bogged");
     public static final ModelLayerLocation SLIME_SMALL = create("slime_small");
     public static final ModelLayerLocation SLIME_SMALL_OUTER = create("slime_small", "outer");
     public static final ModelLayerLocation SLIME_MEDIUM = create("slime_medium");

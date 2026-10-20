@@ -1,9 +1,6 @@
 {
   "biome": "swamp",
   "sort": 2,
-  "icon": {
-    "item": "minecraft:cauldron"
-  },
   "loot": [
     "minecraft:emerald",
     "minecraft:suspicious_stew",

@@ -1,0 +1,13 @@
+{
+  "biome": "swamp",
+  "sort": 7,
+  "drops": [
+    "minecraft:glass_bottle",
+    "minecraft:glowstone_dust",
+    "minecraft:gunpowder",
+    "minecraft:redstone",
+    "minecraft:spider_eye",
+    "minecraft:sugar",
+    "minecraft:stick"
+  ]
+}
