@@ -11,21 +11,30 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PlaceOnWaterBlockItem;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.CeilingHangingSignBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.StandingSignBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WallHangingSignBlock;
+import net.minecraft.world.level.block.WallSignBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -33,6 +42,9 @@ public final class WildscapesBlocks {
     private WildscapesBlocks() {}
 
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Wildscapes.MODID);
+
+    public static final BlockSetType CYPRESS_SET = BlockSetType.register(new BlockSetType("wildscapes:cypress"));
+    public static final WoodType CYPRESS_TYPE = WoodType.register(new WoodType("wildscapes:cypress", CYPRESS_SET));
 
     public static final DeferredBlock<RotatedPillarBlock> STRIPPED_CYPRESS_LOG = register("stripped_cypress_log",
             () -> new RotatedPillarBlock(logProps()));
@@ -101,6 +113,34 @@ public final class WildscapesBlocks {
 
     public static final DeferredBlock<SlabBlock> CYPRESS_SLAB = register("cypress_slab",
             () -> new SlabBlock(plankProps()));
+
+    public static final DeferredBlock<ButtonBlock> CYPRESS_BUTTON = register("cypress_button",
+            () -> new ButtonBlock(CYPRESS_SET, 30, BlockBehaviour.Properties.of()
+                    .noCollission()
+                    .strength(0.5F)
+                    .pushReaction(PushReaction.DESTROY)));
+
+    public static final DeferredBlock<PressurePlateBlock> CYPRESS_PRESSURE_PLATE = register("cypress_pressure_plate",
+            () -> new PressurePlateBlock(CYPRESS_SET, BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BROWN)
+                    .forceSolidOn()
+                    .instrument(NoteBlockInstrument.BASS)
+                    .noCollission()
+                    .strength(0.5F)
+                    .ignitedByLava()
+                    .pushReaction(PushReaction.DESTROY)));
+
+    public static final DeferredBlock<StandingSignBlock> CYPRESS_SIGN = BLOCKS.register("cypress_sign",
+            () -> new StandingSignBlock(CYPRESS_TYPE, signProps()));
+
+    public static final DeferredBlock<WallSignBlock> CYPRESS_WALL_SIGN = BLOCKS.register("cypress_wall_sign",
+            () -> new WallSignBlock(CYPRESS_TYPE, signProps()));
+
+    public static final DeferredBlock<CeilingHangingSignBlock> CYPRESS_HANGING_SIGN = BLOCKS.register(
+            "cypress_hanging_sign", () -> new CeilingHangingSignBlock(CYPRESS_TYPE, signProps()));
+
+    public static final DeferredBlock<WallHangingSignBlock> CYPRESS_WALL_HANGING_SIGN = BLOCKS.register(
+            "cypress_wall_hanging_sign", () -> new WallHangingSignBlock(CYPRESS_TYPE, signProps()));
 
     public static final DeferredBlock<DuckweedBlock> DUCKWEED = register("duckweed",
             () -> new DuckweedBlock(BlockBehaviour.Properties.of()
@@ -187,7 +227,7 @@ public final class WildscapesBlocks {
     public static final DeferredBlock<CauldronOfSoulsBlock> CAULDRON_OF_SOULS = register("cauldron_of_souls",
             () -> new CauldronOfSoulsBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
-                    .strength(50.0F)
+                    .strength(-1.0F, 3600000.0F)
                     .sound(SoundType.TRIAL_SPAWNER)
                     .lightLevel(state -> state.getValue(CauldronOfSoulsBlock.PHASE) == CauldronOfSoulsBlock.Phase.INACTIVE ? 3 : 10)
                     .noOcclusion()
@@ -196,7 +236,7 @@ public final class WildscapesBlocks {
     public static final DeferredBlock<SummoningBonfireBlock> SUMMONING_BONFIRE = register("summoning_bonfire",
             () -> new SummoningBonfireBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
-                    .strength(50.0F)
+                    .strength(-1.0F, 3600000.0F)
                     .sound(SoundType.TRIAL_SPAWNER)
                     .lightLevel(state -> state.getValue(SummoningBonfireBlock.LIT) ? 12 : 0)
                     .noOcclusion()
@@ -230,6 +270,16 @@ public final class WildscapesBlocks {
                 .ignitedByLava();
     }
 
+    private static BlockBehaviour.Properties signProps() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.COLOR_BROWN)
+                .forceSolidOn()
+                .instrument(NoteBlockInstrument.BASS)
+                .noCollission()
+                .strength(1.0F)
+                .ignitedByLava();
+    }
+
     private static BlockBehaviour.Properties logProps() {
         return BlockBehaviour.Properties.of()
                 .mapColor(MapColor.COLOR_BROWN)
@@ -254,5 +304,11 @@ public final class WildscapesBlocks {
     public static void register(IEventBus bus) {
         MudBrickBlocks.init();
         BLOCKS.register(bus);
+        bus.addListener(WildscapesBlocks::addSignBlocks);
+    }
+
+    private static void addSignBlocks(BlockEntityTypeAddBlocksEvent event) {
+        event.modify(BlockEntityType.SIGN, CYPRESS_SIGN.get(), CYPRESS_WALL_SIGN.get());
+        event.modify(BlockEntityType.HANGING_SIGN, CYPRESS_HANGING_SIGN.get(), CYPRESS_WALL_HANGING_SIGN.get());
     }
 }

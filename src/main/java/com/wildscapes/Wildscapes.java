@@ -22,6 +22,7 @@ import com.wildscapes.entity.SwampSpawns;
 import com.wildscapes.entity.SwampVariants;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.WitchGoals;
+import com.wildscapes.item.CypressBoat;
 import com.wildscapes.item.WildscapesDataComponents;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WildscapesItems;
@@ -34,6 +35,7 @@ import com.wildscapes.worldgen.WildscapesFeatures;
 import com.wildscapes.worldgen.WildscapesPlacementModifiers;
 import com.wildscapes.worldgen.WildscapesStructures;
 
+import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
@@ -49,6 +51,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -89,6 +92,12 @@ public class Wildscapes {
                         output.accept(WildscapesBlocks.CYPRESS_SAPLING.get());
                         output.accept(WildscapesBlocks.CYPRESS_DOOR.get());
                         output.accept(WildscapesBlocks.CYPRESS_TRAPDOOR.get());
+                        output.accept(WildscapesBlocks.CYPRESS_PRESSURE_PLATE.get());
+                        output.accept(WildscapesBlocks.CYPRESS_BUTTON.get());
+                        output.accept(WildscapesItems.CYPRESS_SIGN.get());
+                        output.accept(WildscapesItems.CYPRESS_HANGING_SIGN.get());
+                        output.accept(WildscapesItems.CYPRESS_BOAT.get());
+                        output.accept(WildscapesItems.CYPRESS_CHEST_BOAT.get());
                         output.accept(WildscapesBlocks.DUCKWEED.get());
                         output.accept(WildscapesBlocks.RUSHES.get());
                         output.accept(WildscapesBlocks.SHORT_RUSHES.get());
@@ -234,7 +243,7 @@ public class Wildscapes {
     }
 
     private void onWandererTrades(WandererTradesEvent event) {
-        event.getRareTrades().add(new BasicItemListing(8, new ItemStack(WildscapesItems.MERCHANTS_GUIDE.get()), 1, 1, 0.05f));
+        event.getGenericTrades().add(new BasicItemListing(8, new ItemStack(WildscapesItems.MERCHANTS_GUIDE.get()), 1, 1, 0.05f));
     }
 
     private void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -255,6 +264,10 @@ public class Wildscapes {
     private void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             MudBrickDyeing.buildLookup();
+            DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_BOAT.get(),
+                    new BoatDispenseItemBehavior(CypressBoat.TYPE.getValue()));
+            DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_CHEST_BOAT.get(),
+                    new BoatDispenseItemBehavior(CypressBoat.TYPE.getValue(), true));
 
             FireBlock fire = (FireBlock) Blocks.FIRE;
             fire.setFlammable(WildscapesBlocks.CYPRESS_LOG.get(), 5, 5);
@@ -262,6 +275,10 @@ public class Wildscapes {
             fire.setFlammable(WildscapesBlocks.CYPRESS_WOOD.get(), 5, 5);
             fire.setFlammable(WildscapesBlocks.STRIPPED_CYPRESS_WOOD.get(), 5, 5);
             fire.setFlammable(WildscapesBlocks.CYPRESS_PLANKS.get(), 5, 20);
+            fire.setFlammable(WildscapesBlocks.CYPRESS_STAIRS.get(), 5, 20);
+            fire.setFlammable(WildscapesBlocks.CYPRESS_SLAB.get(), 5, 20);
+            fire.setFlammable(WildscapesBlocks.CYPRESS_FENCE.get(), 5, 20);
+            fire.setFlammable(WildscapesBlocks.CYPRESS_FENCE_GATE.get(), 5, 20);
             fire.setFlammable(WildscapesBlocks.CYPRESS_LEAVES.get(), 30, 60);
         });
     }

@@ -84,7 +84,7 @@ public final class MirelashItem extends Item {
 
     @Override
     public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
-        return enchantment.is(Enchantments.UNBREAKING) || enchantment.is(ELASTICITY) || enchantment.is(SLIME_SNARE);
+        return enchantment.is(Enchantments.UNBREAKING) || enchantment.is(Enchantments.MENDING) || enchantment.is(ELASTICITY) || enchantment.is(SLIME_SNARE);
     }
 
     public static int enchantmentLevel(Level level, ItemStack stack, ResourceKey<Enchantment> key) {

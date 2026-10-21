@@ -1,5 +1,6 @@
 package com.wildscapes;
 
+import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.JumpEnchantments;
@@ -35,6 +36,7 @@ import com.wildscapes.particle.client.IngredientSteamParticle;
 import com.wildscapes.particle.client.SoulTrailParticle;
 import com.wildscapes.particle.client.MultiJumpParticle;
 
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
@@ -63,6 +65,7 @@ public final class WildscapesClient {
     @SubscribeEvent
     static void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
+            Sheets.addWoodType(WildscapesBlocks.CYPRESS_TYPE);
             ItemProperties.register(Items.FILLED_MAP,
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"),
                     (stack, level, holder, seed) -> WitchCampMap.isWitchCampMap(stack) ? 1F : 0F);

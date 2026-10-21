@@ -1,6 +1,7 @@
 package com.wildscapes.item;
 
 import com.wildscapes.Wildscapes;
+import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.entity.WildscapesEntities;
 
 import icy.lib.GuideBookItem;
@@ -8,6 +9,9 @@ import icy.lib.GuideBookItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BannerPatternItem;
+import net.minecraft.world.item.BoatItem;
+import net.minecraft.world.item.HangingSignItem;
+import net.minecraft.world.item.SignItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.SmithingTemplateItem;
@@ -45,6 +49,20 @@ public final class WildscapesItems {
 
     public static final DeferredItem<Item> ILLUSIONER_SPAWN_EGG = ITEMS.register("illusioner_spawn_egg",
             () -> new DeferredSpawnEggItem(() -> EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+
+    public static final DeferredItem<SignItem> CYPRESS_SIGN = ITEMS.register("cypress_sign",
+            () -> new SignItem(new Item.Properties().stacksTo(16),
+                    WildscapesBlocks.CYPRESS_SIGN.get(), WildscapesBlocks.CYPRESS_WALL_SIGN.get()));
+
+    public static final DeferredItem<HangingSignItem> CYPRESS_HANGING_SIGN = ITEMS.register("cypress_hanging_sign",
+            () -> new HangingSignItem(WildscapesBlocks.CYPRESS_HANGING_SIGN.get(),
+                    WildscapesBlocks.CYPRESS_WALL_HANGING_SIGN.get(), new Item.Properties().stacksTo(16)));
+
+    public static final DeferredItem<BoatItem> CYPRESS_BOAT = ITEMS.register("cypress_boat",
+            () -> new BoatItem(false, CypressBoat.TYPE.getValue(), new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<BoatItem> CYPRESS_CHEST_BOAT = ITEMS.register("cypress_chest_boat",
+            () -> new BoatItem(true, CypressBoat.TYPE.getValue(), new Item.Properties().stacksTo(1)));
 
     public static final DeferredItem<Item> FROG_LEGS = ITEMS.register("frog_legs",
             () -> new Item(new Item.Properties()));

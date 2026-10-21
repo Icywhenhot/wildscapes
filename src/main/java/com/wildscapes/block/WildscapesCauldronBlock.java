@@ -30,6 +30,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -335,6 +336,11 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
     @Override
     protected VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
         return Shapes.block();
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+        return new ItemStack(Items.CAULDRON);
     }
 
     @Override

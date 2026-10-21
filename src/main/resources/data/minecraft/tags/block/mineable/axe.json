@@ -10,6 +10,12 @@
     "wildscapes:cypress_fence",
     "wildscapes:cypress_fence_gate",
     "wildscapes:cypress_stairs",
-    "wildscapes:cypress_slab"
+    "wildscapes:cypress_slab",
+    "wildscapes:cypress_button",
+    "wildscapes:cypress_pressure_plate",
+    "wildscapes:cypress_sign",
+    "wildscapes:cypress_wall_sign",
+    "wildscapes:cypress_hanging_sign",
+    "wildscapes:cypress_wall_hanging_sign"
   ]
 }
