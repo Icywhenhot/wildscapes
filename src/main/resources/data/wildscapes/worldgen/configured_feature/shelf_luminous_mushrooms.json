@@ -1,0 +1,14 @@
+{
+  "type": "wildscapes:shelf_mushroom",
+  "config": {
+    "to_place": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "wildscapes:shelf_luminous_mushroom",
+        "Properties": {
+          "facing": "north"
+        }
+      }
+    }
+  }
+}

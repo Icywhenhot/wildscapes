@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "wildscapes:block/shelf_luminous_mushroom",
+    "layer1": "wildscapes:block/shelf_luminous_mushroom_em"
+  },
+  "loader": "neoforge:item_layers",
+  "render_types": {
+    "minecraft:cutout": [
+      0,
+      1
+    ]
+  },
+  "neoforge_data": {
+    "layers": {
+      "1": {
+        "block_light": 15,
+        "sky_light": 15,
+        "ambient_occlusion": false
+      }
+    }
+  }
+}

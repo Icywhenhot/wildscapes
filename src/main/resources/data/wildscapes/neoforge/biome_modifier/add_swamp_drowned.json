@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_spawns",
-  "biomes": "#c:is_swamp",
+  "biomes": "minecraft:swamp",
   "spawners": [
     {
       "type": "minecraft:drowned",

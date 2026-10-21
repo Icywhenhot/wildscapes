@@ -1,0 +1,102 @@
+{
+  "render_type": "minecraft:cutout",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "#shelf",
+    "shelf": "wildscapes:block/shelf_luminous_mushroom",
+    "emissive": "wildscapes:block/shelf_luminous_mushroom_em"
+  },
+  "elements": [
+    {
+      "from": [
+        8,
+        3,
+        6
+      ],
+      "to": [
+        8,
+        13,
+        16
+      ],
+      "shade": false,
+      "faces": {
+        "east": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#shelf"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#shelf"
+        }
+      }
+    },
+    {
+      "from": [
+        8.01,
+        3,
+        6
+      ],
+      "to": [
+        8.01,
+        13,
+        16
+      ],
+      "shade": false,
+      "faces": {
+        "east": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#emissive"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15,
+        "ambient_occlusion": false
+      }
+    },
+    {
+      "from": [
+        7.99,
+        3,
+        6
+      ],
+      "to": [
+        7.99,
+        13,
+        16
+      ],
+      "shade": false,
+      "faces": {
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#emissive"
+        }
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15,
+        "ambient_occlusion": false
+      }
+    }
+  ]
+}

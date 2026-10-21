@@ -92,6 +92,8 @@ public class Wildscapes {
                         output.accept(WildscapesBlocks.DUCKWEED.get());
                         output.accept(WildscapesBlocks.RUSHES.get());
                         output.accept(WildscapesBlocks.SHORT_RUSHES.get());
+                        output.accept(WildscapesBlocks.LUMINOUS_MUSHROOM.get());
+                        output.accept(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get());
                         output.accept(WildscapesBlocks.BONFIRE.get());
                         output.accept(WildscapesBlocks.SOUL_BONFIRE.get());
                         output.accept(WildscapesBlocks.CAULDRON_OF_SOULS.get());

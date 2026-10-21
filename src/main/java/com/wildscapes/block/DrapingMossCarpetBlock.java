@@ -12,6 +12,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
@@ -178,7 +179,20 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
         return tail.equals(pos.below(2)) ? side : side.getOpposite();
     }
 
-    private static void growTail(Level level, BlockPos pos, Direction side) {
+    public static void placeGrown(LevelAccessor level, BlockPos pos) {
+        BlockState state = WildscapesBlocks.MOSS_CARPET.get().defaultBlockState();
+        for (Direction side : BY_DIRECTION.keySet()) {
+            state = state.setValue(sideFacing(side), allowedDrape(level, pos, side));
+        }
+        level.setBlock(pos, state, Block.UPDATE_CLIENTS);
+        for (Direction side : BY_DIRECTION.keySet()) {
+            if (state.getValue(sideFacing(side)) == Drape.LONG) {
+                growTail(level, pos, side);
+            }
+        }
+    }
+
+    private static void growTail(LevelAccessor level, BlockPos pos, Direction side) {
         BlockPos tail = tailPos(level, pos, side);
         if (tail == null) {
             return;

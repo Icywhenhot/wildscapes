@@ -76,26 +76,31 @@
 
     {
       "type": "list", "key": "item", "category": "items",
-      "at": [28, 19], "step": [18, 18], "columns": 3, "max": 9,
+      "at": [27, 24], "step": [14, 15], "columns": 4, "max": 12, "scale": 0.75,
       "frame": { "texture": "item_slot", "region": [0, 0, 18, 19] },
       "selected": { "texture": "item_slot_selected", "region": [0, 0, 18, 19] },
       "icon": { "at": [3, 3], "size": 12 },
       "sound": "minecraft:item.book.page_turn",
       "when": { "tab": "items" }
     },
-    { "type": "image", "texture": "item_name", "at": [24, 78], "when": { "tab": "items" } },
+    { "type": "image", "texture": "item_name", "at": [24, 72], "when": { "tab": "items" } },
     {
-      "type": "text", "area": [29, 79, 45, 10], "align": "center", "valign": "middle", "color": "#E6DCC0", "bend": false,
-      "text": "item.wildscapes.${item}",
+      "type": "text", "area": [29, 73, 45, 10], "align": "center", "valign": "middle", "color": "#E6DCC0", "bend": false,
+      "text": "wildscapes.guide.item.${item}", "fallback": "item.wildscapes.${item}",
       "when": { "tab": "items" }
     },
     {
       "type": "text", "area": [114, 12, 66, 21], "align": "center", "valign": "middle",
       "text": "wildscapes.guide.item.${item}.anecdote", "fallback": "wildscapes.guide.blank",
-      "when": { "tab": "items" }
+      "when": { "tab": "items", "recipe": "yes" }
     },
     {
-      "type": "recipe", "category": "items", "entry": "${item}",
+      "type": "text", "area": [114, 12, 66, 77], "align": "center", "valign": "middle",
+      "text": "wildscapes.guide.item.${item}.anecdote", "fallback": "wildscapes.guide.blank",
+      "when": { "tab": "items", "recipe": "" }
+    },
+    {
+      "type": "recipe", "key": "recipe", "category": "items", "entry": "${item}",
       "art": "recipe_grid", "at": [121, 40], "cell": 9, "size": 8, "result": [169, 49],
       "when": { "tab": "items" }
     },

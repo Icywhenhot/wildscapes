@@ -1,0 +1,51 @@
+{
+  "sort": 11,
+  "icon": {
+    "item": [
+      "wildscapes:white_mud_bricks",
+      "wildscapes:orange_mud_bricks",
+      "wildscapes:magenta_mud_bricks",
+      "wildscapes:light_blue_mud_bricks",
+      "wildscapes:yellow_mud_bricks",
+      "wildscapes:lime_mud_bricks",
+      "wildscapes:pink_mud_bricks",
+      "wildscapes:gray_mud_bricks",
+      "wildscapes:light_gray_mud_bricks",
+      "wildscapes:cyan_mud_bricks",
+      "wildscapes:purple_mud_bricks",
+      "wildscapes:blue_mud_bricks",
+      "wildscapes:brown_mud_bricks",
+      "wildscapes:green_mud_bricks",
+      "wildscapes:red_mud_bricks",
+      "wildscapes:black_mud_bricks"
+    ]
+  },
+  "recipe": [
+    "minecraft:mud_bricks",
+    [
+      "minecraft:white_dye",
+      "minecraft:orange_dye",
+      "minecraft:magenta_dye",
+      "minecraft:light_blue_dye",
+      "minecraft:yellow_dye",
+      "minecraft:lime_dye",
+      "minecraft:pink_dye",
+      "minecraft:gray_dye",
+      "minecraft:light_gray_dye",
+      "minecraft:cyan_dye",
+      "minecraft:purple_dye",
+      "minecraft:blue_dye",
+      "minecraft:brown_dye",
+      "minecraft:green_dye",
+      "minecraft:red_dye",
+      "minecraft:black_dye"
+    ],
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ]
+}

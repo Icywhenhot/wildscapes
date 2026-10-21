@@ -2,6 +2,8 @@ package com.wildscapes.gametest;
 
 import java.util.Optional;
 
+import com.wildscapes.block.DrapingMossCarpetBlock;
+import com.wildscapes.block.HangingMossBlock;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.worldgen.TemplateTreeConfiguration;
 import com.wildscapes.worldgen.WildscapesFeatures;
@@ -12,6 +14,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -144,6 +147,73 @@ public class TreePlacementTests {
                 TemplateTreeConfiguration.Ground.WATER, 0, 5);
         helper.assertTrue(placed, "a water tree refused three blocks of water, inside its cap");
         helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void mossCoversSomeOfTheTreeTops(GameTestHelper helper) {
+        helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree1",
+                TemplateTreeConfiguration.Ground.LAND, -1), "the tree refused to place");
+
+        int tops = 0;
+        int mossy = 0;
+        for (int x = 0; x < 24; x++) {
+            for (int y = 0; y < 20; y++) {
+                for (int z = 0; z < 24; z++) {
+                    BlockPos pos = new BlockPos(x, y, z);
+                    BlockState state = helper.getBlockState(pos);
+                    if (state.is(Blocks.MOSS_CARPET)) {
+                        throw new AssertionError("a plain moss carpet at " + pos + " never got its drapes");
+                    }
+                    if (!state.is(BlockTags.LOGS) && !state.is(BlockTags.LEAVES)) {
+                        continue;
+                    }
+                    BlockState above = helper.getBlockState(pos.above());
+                    if (above.is(WildscapesBlocks.MOSS_CARPET.get())) {
+                        tops++;
+                        mossy++;
+                    } else if (above.isAir()) {
+                        tops++;
+                    }
+                }
+            }
+        }
+        float share = mossy / (float) tops;
+        helper.assertTrue(mossy > 0, "no moss grew on the tree");
+        helper.assertTrue(share > 0.1F && share < 0.6F, "moss covers " + mossy + " of " + tops + " open tops");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void hangingMossAlwaysHasACarpetHoldingIt(GameTestHelper helper) {
+        helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree2",
+                TemplateTreeConfiguration.Ground.LAND, -1), "the tree refused to place");
+
+        for (int x = 0; x < 24; x++) {
+            for (int y = 0; y < 20; y++) {
+                for (int z = 0; z < 24; z++) {
+                    BlockPos pos = new BlockPos(x, y, z);
+                    BlockState state = helper.getBlockState(pos);
+                    if (!(state.getBlock() instanceof HangingMossBlock)) {
+                        continue;
+                    }
+                    for (Direction face : Direction.Plane.HORIZONTAL) {
+                        if (state.getValue(HangingMossBlock.faceFacing(face))
+                                && !draping(helper, pos.above(2), face)
+                                && !draping(helper, pos.relative(face).above(2), face.getOpposite())) {
+                            throw new AssertionError("hanging moss at " + pos + " facing " + face
+                                    + " has no carpet draping over it");
+                        }
+                    }
+                }
+            }
+        }
+        helper.succeed();
+    }
+
+    private static boolean draping(GameTestHelper helper, BlockPos pos, Direction side) {
+        BlockState state = helper.getBlockState(pos);
+        return state.getBlock() instanceof DrapingMossCarpetBlock
+                && state.getValue(DrapingMossCarpetBlock.sideFacing(side)) == DrapingMossCarpetBlock.Drape.LONG;
     }
 
     private static void flood(GameTestHelper helper, BlockPos bed, int depth) {

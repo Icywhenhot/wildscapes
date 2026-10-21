@@ -130,6 +130,24 @@ public final class WildscapesBlocks {
                     .offsetType(BlockBehaviour.OffsetType.XZ)
                     .pushReaction(PushReaction.DESTROY)));
 
+    public static final DeferredBlock<LuminousMushroomBlock> LUMINOUS_MUSHROOM = register("luminous_mushroom",
+            () -> new LuminousMushroomBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_YELLOW)
+                    .noCollission()
+                    .instabreak()
+                    .sound(SoundType.GRASS)
+                    .lightLevel(state -> 7)
+                    .pushReaction(PushReaction.DESTROY)));
+
+    public static final DeferredBlock<ShelfMushroomBlock> SHELF_LUMINOUS_MUSHROOM = register("shelf_luminous_mushroom",
+            () -> new ShelfMushroomBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_YELLOW)
+                    .noCollission()
+                    .instabreak()
+                    .sound(SoundType.GRASS)
+                    .lightLevel(state -> 7)
+                    .pushReaction(PushReaction.DESTROY)));
+
     public static final DeferredBlock<DrapingMossCarpetBlock> MOSS_CARPET = BLOCKS.register("moss_carpet",
             () -> new DrapingMossCarpetBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)

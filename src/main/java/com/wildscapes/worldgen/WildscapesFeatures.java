@@ -26,6 +26,9 @@ public final class WildscapesFeatures {
             FEATURES.register("waterlogged_double_plant",
                     () -> new WaterloggedDoublePlantFeature(SimpleBlockConfiguration.CODEC));
 
+    public static final DeferredHolder<Feature<?>, ShelfMushroomFeature> SHELF_MUSHROOM =
+            FEATURES.register("shelf_mushroom", () -> new ShelfMushroomFeature(SimpleBlockConfiguration.CODEC));
+
     public static void register(IEventBus bus) {
         FEATURES.register(bus);
     }

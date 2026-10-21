@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "wildscapes:block/shelf_luminous_mushroom",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "wildscapes:block/shelf_luminous_mushroom",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "wildscapes:block/shelf_luminous_mushroom",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "wildscapes:block/shelf_luminous_mushroom",
+      "y": 270
+    }
+  }
+}

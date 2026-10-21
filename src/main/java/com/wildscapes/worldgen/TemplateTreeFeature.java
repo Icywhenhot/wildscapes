@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.block.DrapingMossCarpetBlock;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.worldgen.TemplateTreeConfiguration.Ground;
 
@@ -26,6 +27,7 @@ import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
@@ -109,7 +111,28 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
             return false;
         }
         repairVines(level, template, settings, corner);
+        growMoss(level, template.getBoundingBox(settings, corner), random);
         return true;
+    }
+
+    private static final float MOSS_CHANCE = 0.25F;
+
+    private static void growMoss(WorldGenLevel level, BoundingBox box, RandomSource random) {
+        for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(),
+                box.maxX(), box.maxY(), box.maxZ())) {
+            BlockState state = level.getBlockState(pos);
+            if (state.is(Blocks.MOSS_CARPET)) {
+                DrapingMossCarpetBlock.placeGrown(level, pos);
+                continue;
+            }
+            if (!state.is(BlockTags.LOGS) && !state.is(BlockTags.LEAVES)) {
+                continue;
+            }
+            BlockPos top = pos.above();
+            if (level.getBlockState(top).isAir() && random.nextFloat() < MOSS_CHANCE) {
+                DrapingMossCarpetBlock.placeGrown(level, top);
+            }
+        }
     }
 
     private static void repairVines(WorldGenLevel level, StructureTemplate template,

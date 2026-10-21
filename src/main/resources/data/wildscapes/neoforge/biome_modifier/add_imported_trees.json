@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
-  "biomes": "#c:is_swamp",
+  "biomes": "minecraft:swamp",
   "features": [
     "wildscapes:swamp_trees_land_swamp",
     "wildscapes:swamp_trees_water_swamp",
