@@ -49,6 +49,7 @@
       "sound": "minecraft:item.book.page_turn",
       "when": { "tab": "structures" }
     },
+    { "type": "image", "texture": "art_wip", "when": { "tab": "structures", "structure": "" } },
     { "type": "image", "texture": "structure_${biome}_${structure}_label", "when": { "tab": "structures" } },
     {
       "type": "text", "on": "structure_${biome}_${structure}_label", "area": [5, 1, 39, 9],
@@ -56,11 +57,11 @@
       "text": "wildscapes.guide.structure.${structure}",
       "when": { "tab": "structures" }
     },
-    { "type": "image", "texture": "structure_panel", "when": { "tab": "structures" } },
+    { "type": "image", "texture": "structure_panel", "when": { "tab": "structures" }, "unless": { "structure": "" } },
     {
       "type": "text", "area": [25, 72, 62, 29], "align": "center", "valign": "middle", "bend": false,
       "text": "wildscapes.guide.structure.${structure}.text", "fallback": "wildscapes.guide.structure.none",
-      "when": { "tab": "structures" }
+      "when": { "tab": "structures" }, "unless": { "structure": "" }
     },
     {
       "type": "text", "area": [114, 12, 66, 36], "align": "center", "valign": "middle",
@@ -112,6 +113,7 @@
       "sound": "minecraft:item.book.page_turn",
       "when": { "tab": "mobs" }
     },
+    { "type": "image", "texture": "art_wip", "when": { "tab": "mobs", "mob": "" } },
     {
       "type": "text", "area": [33, 81, 45, 10], "align": "center", "valign": "middle", "color": "#E6DCC0", "bend": false,
       "text": "wildscapes.guide.mob.${mob}", "fallback": "wildscapes.guide.blank",
@@ -120,17 +122,17 @@
     {
       "type": "text", "area": [114, 12, 66, 34], "align": "center", "valign": "middle",
       "text": "wildscapes.guide.mob.${mob}.anecdote", "fallback": "wildscapes.guide.mob.none",
-      "when": { "tab": "mobs" }
+      "when": { "tab": "mobs" }, "unless": { "mob": "" }
     },
     {
       "type": "text", "area": [114, 48, 18, 5], "align": "center",
       "text": "wildscapes.guide.drops",
-      "when": { "tab": "mobs" }
+      "when": { "tab": "mobs" }, "unless": { "mob": "" }
     },
     {
       "type": "items", "area": [114, 54, 18, 36], "cell": 9, "size": 8, "align": "center",
       "category": "mobs", "entry": "${mob}", "field": "drops",
-      "when": { "tab": "mobs" }
+      "when": { "tab": "mobs" }, "unless": { "mob": "" }
     },
     { "type": "image", "texture": "mob_${biome}_${mob}", "when": { "tab": "mobs" } },
 
