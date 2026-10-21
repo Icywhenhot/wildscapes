@@ -7,6 +7,7 @@ import com.wildscapes.entity.WildscapesEntities;
 import icy.lib.GuideBookItem;
 
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BannerPatternItem;
 import net.minecraft.world.item.BoatItem;
@@ -66,6 +67,12 @@ public final class WildscapesItems {
 
     public static final DeferredItem<Item> FROG_LEGS = ITEMS.register("frog_legs",
             () -> new Item(new Item.Properties()));
+
+    public static final DeferredItem<Item> COOKED_FROG_LEGS = ITEMS.register("cooked_frog_legs",
+            () -> new Item(new Item.Properties().food(new FoodProperties.Builder()
+                    .nutrition(5)
+                    .saturationModifier(0.6F)
+                    .build())));
 
     public static final DeferredItem<Item> LADLE = ITEMS.register("ladle",
             () -> new Item(new Item.Properties().durability(10)));

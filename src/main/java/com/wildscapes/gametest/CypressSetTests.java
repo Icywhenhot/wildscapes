@@ -7,6 +7,7 @@ import com.wildscapes.item.CypressBoat;
 import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -16,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
@@ -36,7 +38,20 @@ public final class CypressSetTests {
         raidBlocksAreUnbreakable(helper);
         mirelashTakesMending(helper);
         swampPlantsCompost(helper);
+        frogLegsCook(helper);
         helper.succeed();
+    }
+
+    private static void frogLegsCook(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var input = new SingleRecipeInput(new ItemStack(WildscapesItems.FROG_LEGS.get()));
+        for (var type : List.of(RecipeType.SMELTING, RecipeType.SMOKING, RecipeType.CAMPFIRE_COOKING)) {
+            var recipe = level.getRecipeManager().getRecipeFor(type, input, level);
+            helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, level.registryAccess())
+                    .is(WildscapesItems.COOKED_FROG_LEGS.get()), "frog legs do not cook in " + type);
+        }
+        helper.assertTrue(new ItemStack(WildscapesItems.COOKED_FROG_LEGS.get()).has(DataComponents.FOOD),
+                "cooked frog legs are not edible");
     }
 
     private static void signsHoldSignBlockEntities(GameTestHelper helper) {

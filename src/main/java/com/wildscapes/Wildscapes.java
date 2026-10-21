@@ -116,6 +116,7 @@ public class Wildscapes {
                             output.accept(MudBrickBlocks.WALLS.get(color).get());
                         }
                         output.accept(WildscapesItems.FROG_LEGS.get());
+                        output.accept(WildscapesItems.COOKED_FROG_LEGS.get());
                         output.accept(WildscapesItems.LADLE.get());
                         output.accept(WildscapesItems.MAGIC_SOUP.get());
                         output.accept(WildscapesItems.ABOMINATION_TONGUE.get());
