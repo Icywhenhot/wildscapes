@@ -2,6 +2,7 @@ package com.wildscapes.block;
 
 import javax.annotation.Nullable;
 
+import com.wildscapes.WildscapesAdvancements;
 import com.wildscapes.block.entity.CauldronBlockEntity;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.item.WildscapesItems;
@@ -120,6 +121,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
         if (item == Items.BOWL && be.hasFinishedSoup() && !be.isMixing() && be.getPendingIngredient().isEmpty()) {
             return act(level, () -> {
                 player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, be.scoopSoup()));
+                WildscapesAdvancements.award(player, "cooking_is_my_passion");
                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             });
         }

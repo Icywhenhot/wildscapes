@@ -1,5 +1,6 @@
 package com.wildscapes.effect;
 
+import com.wildscapes.WildscapesAdvancements;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.sound.WildscapesSounds;
 
@@ -78,6 +79,7 @@ public final class Intangibility {
                     data.putBoolean(INVISIBLE_KEY, true);
                 }
                 if (!wasActive) {
+                    WildscapesAdvancements.award(player, "now_you_see_me_now_you_dont");
                     level.playSound(null, player.getX(), player.getY(), player.getZ(),
                             WildscapesSounds.NECKLACE_ACTIVATION.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                 }

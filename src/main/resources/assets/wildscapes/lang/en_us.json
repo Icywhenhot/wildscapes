@@ -270,5 +270,11 @@
   "block.wildscapes.banner.spirit.green": "Green Spirit",
   "block.wildscapes.banner.spirit.red": "Red Spirit",
   "block.wildscapes.banner.spirit.black": "Black Spirit",
-  "subtitles.wildscapes.multi_jump": "Air jump"
+  "subtitles.wildscapes.multi_jump": "Air jump",
+  "advancements.wildscapes.cooking_is_my_passion.title": "Cooking is my passion",
+  "advancements.wildscapes.cooking_is_my_passion.description": "Cook and collect a bowl of magic soup from a cauldron",
+  "advancements.wildscapes.its_time_to_harvest.title": "It's time to harvest",
+  "advancements.wildscapes.its_time_to_harvest.description": "Activate Soul Harvest for the first time",
+  "advancements.wildscapes.now_you_see_me_now_you_dont.title": "Now you see me, now you don't",
+  "advancements.wildscapes.now_you_see_me_now_you_dont.description": "Use the illusionist's necklace for the first time"
 }

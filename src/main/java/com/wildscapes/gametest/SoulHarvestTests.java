@@ -16,6 +16,7 @@ import com.wildscapes.entity.SoulHarvest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -63,6 +64,10 @@ public final class SoulHarvestTests {
             CauldronOfSoulsBlockEntity.tryStart(level, player);
             helper.assertFalse(player.hasEffect(MobEffects.BAD_OMEN), "the cauldron did not take the omen");
             helper.assertTrue(player.hasEffect(WildscapesEffects.SOUL_HARVEST), "no soul_harvest icon while it runs");
+            var advancement = level.getServer().getAdvancements()
+                    .get(ResourceLocation.fromNamespaceAndPath("wildscapes", "its_time_to_harvest"));
+            helper.assertTrue(player.getAdvancements().getOrStartProgress(advancement).isDone(),
+                    "starting soul harvest did not award advancement");
             helper.assertBlockProperty(cauldron, CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE);
             for (BlockPos f : fires) {
                 helper.assertBlockProperty(f, SummoningBonfireBlock.LIT, true);

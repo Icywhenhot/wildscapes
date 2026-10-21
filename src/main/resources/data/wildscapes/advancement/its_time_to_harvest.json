@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:adventure/root",
+  "display": {
+    "icon": {
+      "id": "wildscapes:cauldron_of_souls"
+    },
+    "title": {
+      "translate": "advancements.wildscapes.its_time_to_harvest.title"
+    },
+    "description": {
+      "translate": "advancements.wildscapes.its_time_to_harvest.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "trigger": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

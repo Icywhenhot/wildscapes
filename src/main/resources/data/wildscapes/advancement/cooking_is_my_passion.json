@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:husbandry/root",
+  "display": {
+    "icon": {
+      "id": "wildscapes:magic_soup"
+    },
+    "title": {
+      "translate": "advancements.wildscapes.cooking_is_my_passion.title"
+    },
+    "description": {
+      "translate": "advancements.wildscapes.cooking_is_my_passion.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "trigger": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

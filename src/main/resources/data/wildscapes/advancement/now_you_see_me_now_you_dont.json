@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:adventure/root",
+  "display": {
+    "icon": {
+      "id": "wildscapes:illusionist_necklace"
+    },
+    "title": {
+      "translate": "advancements.wildscapes.now_you_see_me_now_you_dont.title"
+    },
+    "description": {
+      "translate": "advancements.wildscapes.now_you_see_me_now_you_dont.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "trigger": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

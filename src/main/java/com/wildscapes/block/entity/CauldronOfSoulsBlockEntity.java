@@ -14,6 +14,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.wildscapes.Wildscapes;
+import com.wildscapes.WildscapesAdvancements;
 import com.wildscapes.block.CauldronOfSoulsBlock;
 import com.wildscapes.block.SummoningBonfireBlock;
 import com.wildscapes.effect.WildscapesEffects;
@@ -237,6 +238,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         bar.setProgress(0.0F);
         barLinger = 0;
         updatePlayers(level);
+        WildscapesAdvancements.award(player, "its_time_to_harvest");
         setChanged();
     }
 
