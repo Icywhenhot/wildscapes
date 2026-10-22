@@ -7,6 +7,8 @@ import com.wildscapes.Wildscapes;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.worldgen.WildscapesTreeGrowers;
 
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PlaceOnWaterBlockItem;
@@ -177,9 +179,11 @@ public final class WildscapesBlocks {
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .lightLevel(state -> 7)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.DESTROY)),
+            block -> new StandingAndWallBlockItem(block, WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get(),
+                    new Item.Properties(), Direction.DOWN));
 
-    public static final DeferredBlock<ShelfMushroomBlock> SHELF_LUMINOUS_MUSHROOM = register("shelf_luminous_mushroom",
+    public static final DeferredBlock<ShelfMushroomBlock> SHELF_LUMINOUS_MUSHROOM = BLOCKS.register("shelf_luminous_mushroom",
             () -> new ShelfMushroomBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_YELLOW)
                     .noCollission()

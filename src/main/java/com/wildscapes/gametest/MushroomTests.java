@@ -8,6 +8,13 @@ import com.wildscapes.worldgen.WildscapesFeatures;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -28,6 +35,47 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 @GameTestHolder("wildscapes")
 @PrefixGameTestTemplate(false)
 public class MushroomTests {
+    @GameTest(template = "gametest/tree_platform")
+    public static void pavShroomsShareAnItemAndDropByHand(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var ground = WildscapesBlocks.LUMINOUS_MUSHROOM.get();
+        var shelf = WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get();
+        var item = ground.asItem();
+        helper.assertTrue(shelf.asItem() == item, "log mushroom has a separate item");
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item, 8));
+        BlockPos soil = new BlockPos(5, 2, 5);
+        helper.setBlock(soil, Blocks.MUD);
+        helper.setBlock(soil.above(), Blocks.AIR);
+        BlockPos absolute = helper.absolutePos(soil);
+        var hit = new BlockHitResult(Vec3.atCenterOf(absolute).add(0, 0.5, 0), Direction.UP, absolute, false);
+        var context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, player.getMainHandItem(), hit);
+        helper.assertTrue(((BlockItem) item).place(context).consumesAction(), "ground placement failed");
+        helper.assertBlockPresent(ground, soil.above());
+        BlockPos trunk = new BlockPos(10, 4, 10);
+        helper.setBlock(trunk, Blocks.OAK_LOG);
+        for (Direction face : Direction.Plane.HORIZONTAL) {
+            BlockPos pos = trunk.relative(face);
+            helper.setBlock(pos, Blocks.AIR);
+            absolute = helper.absolutePos(trunk);
+            hit = new BlockHitResult(Vec3.atCenterOf(absolute).relative(face, 0.5), face, absolute, false);
+            context = new BlockPlaceContext(player, InteractionHand.MAIN_HAND, player.getMainHandItem(), hit);
+            helper.assertTrue(((BlockItem) item).place(context).consumesAction(), "log placement failed on " + face);
+            helper.assertBlockPresent(shelf, pos);
+            helper.assertTrue(helper.getBlockState(pos).getValue(ShelfMushroomBlock.FACING) == face,
+                    "log mushroom faces the wrong way");
+        }
+        for (BlockPos pos : java.util.List.of(soil.above(), trunk.north())) {
+            var state = helper.getBlockState(pos);
+            var drops = Block.getDrops(state, level, helper.absolutePos(pos), null, player, ItemStack.EMPTY);
+            helper.assertTrue(!state.requiresCorrectToolForDrops() && state.getDestroySpeed(level, helper.absolutePos(pos)) == 0,
+                    "mushroom requires a tool or is not instant to break");
+            helper.assertTrue(drops.size() == 1 && drops.getFirst().is(item) && drops.getFirst().getCount() == 1,
+                    "bare-hand harvest did not drop one pav shroom");
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = "gametest/tree_platform")
     public static void pavShroomsHealWithinThreeBlocks(GameTestHelper helper) {
         var player = helper.makeMockServerPlayerInLevel();

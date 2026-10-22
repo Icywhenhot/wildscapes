@@ -102,7 +102,6 @@ public class Wildscapes {
                         output.accept(WildscapesBlocks.RUSHES.get());
                         output.accept(WildscapesBlocks.SHORT_RUSHES.get());
                         output.accept(WildscapesBlocks.LUMINOUS_MUSHROOM.get());
-                        output.accept(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get());
                         output.accept(WildscapesBlocks.BONFIRE.get());
                         output.accept(WildscapesBlocks.SOUL_BONFIRE.get());
                         output.accept(WildscapesBlocks.CAULDRON_OF_SOULS.get());
@@ -116,7 +115,7 @@ public class Wildscapes {
                             output.accept(MudBrickBlocks.WALLS.get(color).get());
                         }
                         output.accept(WildscapesItems.FROG_LEGS.get());
-                        output.accept(WildscapesItems.COOKED_FROG_LEGS.get());
+                        output.accept(WildscapesItems.FROG_LEG_STEW.get());
                         output.accept(WildscapesItems.LADLE.get());
                         output.accept(WildscapesItems.MAGIC_SOUP.get());
                         output.accept(WildscapesItems.ABOMINATION_TONGUE.get());

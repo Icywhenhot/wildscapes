@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "food",
+  "ingredients": [
+    {
+      "item": "wildscapes:luminous_mushroom"
+    },
+    {
+      "item": "wildscapes:frog_legs"
+    },
+    {
+      "item": "minecraft:carrot"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:bowl"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:frog_leg_stew",
+    "count": 1
+  }
+}

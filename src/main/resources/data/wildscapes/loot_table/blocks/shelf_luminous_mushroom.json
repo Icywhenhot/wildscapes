@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "wildscapes:shelf_luminous_mushroom"
+          "name": "wildscapes:luminous_mushroom"
         }
       ],
       "conditions": [

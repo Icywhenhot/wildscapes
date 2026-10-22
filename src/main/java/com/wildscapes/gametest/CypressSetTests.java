@@ -7,12 +7,13 @@ import com.wildscapes.item.CypressBoat;
 import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -38,20 +39,31 @@ public final class CypressSetTests {
         raidBlocksAreUnbreakable(helper);
         mirelashTakesMending(helper);
         swampPlantsCompost(helper);
-        frogLegsCook(helper);
+        frogLegStew(helper);
         helper.succeed();
     }
 
-    private static void frogLegsCook(GameTestHelper helper) {
+    private static void frogLegStew(GameTestHelper helper) {
         var level = helper.getLevel();
-        var input = new SingleRecipeInput(new ItemStack(WildscapesItems.FROG_LEGS.get()));
+        var input = CraftingInput.of(3, 2, List.of(new ItemStack(Items.POTATO),
+                new ItemStack(WildscapesItems.FROG_LEGS.get()), new ItemStack(Items.BOWL),
+                new ItemStack(WildscapesBlocks.LUMINOUS_MUSHROOM.get()), ItemStack.EMPTY, new ItemStack(Items.CARROT)));
+        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
+        helper.assertTrue(recipe.isPresent(), "frog leg stew recipe missing");
+        var stew = recipe.get().value().assemble(input, level.registryAccess());
+        helper.assertTrue(stew.is(WildscapesItems.FROG_LEG_STEW.get()), "wrong stew recipe result");
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.getFoodData().setFoodLevel(10);
+        var bowl = stew.finishUsingItem(level, player);
+        helper.assertTrue(bowl.is(Items.BOWL), "stew did not return a bowl");
+        var effect = player.getEffect(MobEffects.JUMP);
+        helper.assertTrue(effect != null && effect.getAmplifier() == 1 && effect.getDuration() == 400,
+                "stew did not give jump boost ii for 20 seconds");
+        var legs = new SingleRecipeInput(new ItemStack(WildscapesItems.FROG_LEGS.get()));
         for (var type : List.of(RecipeType.SMELTING, RecipeType.SMOKING, RecipeType.CAMPFIRE_COOKING)) {
-            var recipe = level.getRecipeManager().getRecipeFor(type, input, level);
-            helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, level.registryAccess())
-                    .is(WildscapesItems.COOKED_FROG_LEGS.get()), "frog legs do not cook in " + type);
+            helper.assertTrue(level.getRecipeManager().getRecipeFor(type, legs, level).isEmpty(),
+                    "frog legs still cook in " + type);
         }
-        helper.assertTrue(new ItemStack(WildscapesItems.COOKED_FROG_LEGS.get()).has(DataComponents.FOOD),
-                "cooked frog legs are not edible");
     }
 
     private static void signsHoldSignBlockEntities(GameTestHelper helper) {

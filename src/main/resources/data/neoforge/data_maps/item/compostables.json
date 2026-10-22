@@ -6,7 +6,6 @@
     "wildscapes:duckweed": { "chance": 0.3 },
     "wildscapes:short_rushes": { "chance": 0.3 },
     "wildscapes:rushes": { "chance": 0.5 },
-    "wildscapes:luminous_mushroom": { "chance": 0.65 },
-    "wildscapes:shelf_luminous_mushroom": { "chance": 0.65 }
+    "wildscapes:luminous_mushroom": { "chance": 0.65 }
   }
 }
