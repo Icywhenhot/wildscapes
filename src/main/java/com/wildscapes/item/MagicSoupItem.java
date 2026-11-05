@@ -28,7 +28,7 @@ public class MagicSoupItem extends Item {
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        SoupContents soup = stack.get(WildscapesDataComponents.SOUP_CONTENTS.get());
+        SoupContents soup = stack.get(WildscapesDataComponents.SOUP_CONTENTS);
 
         ItemStack result = super.finishUsingItem(stack, level, entity);
         if (!level.isClientSide && soup != null) {
@@ -54,7 +54,7 @@ public class MagicSoupItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        SoupContents soup = stack.get(WildscapesDataComponents.SOUP_CONTENTS.get());
+        SoupContents soup = stack.get(WildscapesDataComponents.SOUP_CONTENTS);
         if (soup == null || soup.isEmpty()) {
             tooltip.add(Component.translatable("item.wildscapes.magic_soup.empty").withStyle(ChatFormatting.GRAY));
             return;

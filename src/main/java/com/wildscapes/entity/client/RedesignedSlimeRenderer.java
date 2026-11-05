@@ -10,14 +10,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Slime;
 
 public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime>> {
     static final int[] MODELLED_SIZES = {1, 2, 4};
 
-    private static final ResourceLocation[] TEXTURES = {
+    private static final Identifier[] TEXTURES = {
             texture("slime_small"), texture("slime_medium"), texture("slime_large"),
     };
 
@@ -118,11 +118,11 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Slime entity) {
+    public Identifier getTextureLocation(Slime entity) {
         return TEXTURES[modelIndex(entity)];
     }
 
-    private static ResourceLocation texture(String name) {
-        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/slime/" + name + ".png");
+    private static Identifier texture(String name) {
+        return Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/slime/" + name + ".png");
     }
 }

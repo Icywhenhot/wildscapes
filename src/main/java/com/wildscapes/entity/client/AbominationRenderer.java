@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,11 +27,11 @@ import org.joml.Quaternionf;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
-    private static final ResourceLocation SEGMENT = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final Identifier SEGMENT = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
             "textures/entity/tongue_segment.png");
-    private static final ResourceLocation TIP = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final Identifier TIP = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
             "textures/entity/tongue_tip.png");
-    private static final ResourceLocation GRASP = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final Identifier GRASP = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
             "textures/entity/abomination_grasp.png");
     private static final double SEG = 0.5D;
 

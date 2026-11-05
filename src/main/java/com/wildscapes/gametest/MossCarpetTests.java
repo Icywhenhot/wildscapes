@@ -24,12 +24,12 @@ public class MossCarpetTests {
     @GameTest(template = PLATFORM)
     public static void bonemealGrowsADrape(GameTestHelper helper) {
         helper.setBlock(PILLAR, Blocks.STONE);
-        helper.setBlock(CARPET, WildscapesBlocks.MOSS_CARPET.get().defaultBlockState());
+        helper.setBlock(CARPET, WildscapesBlocks.MOSS_CARPET.defaultBlockState());
 
         BlockState bare = helper.getBlockState(CARPET);
         helper.assertTrue(sidesGrown(bare) == 0, "the carpet did not start bare");
 
-        DrapingMossCarpetBlock carpet = WildscapesBlocks.MOSS_CARPET.get();
+        DrapingMossCarpetBlock carpet = WildscapesBlocks.MOSS_CARPET;
         helper.assertTrue(
                 carpet.isValidBonemealTarget(helper.getLevel(), helper.absolutePos(CARPET), bare),
                 "a bare carpet with open air all round it refused bone meal");
@@ -62,7 +62,7 @@ public class MossCarpetTests {
                                 net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CARPET)),
                                 Direction.UP, helper.absolutePos(CARPET), false)));
 
-        helper.succeedWhen(() -> helper.assertBlockPresent(WildscapesBlocks.MOSS_CARPET.get(), CARPET));
+        helper.succeedWhen(() -> helper.assertBlockPresent(WildscapesBlocks.MOSS_CARPET, CARPET));
     }
 
     private static int sidesGrown(BlockState carpet) {

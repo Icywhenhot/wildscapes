@@ -9,7 +9,7 @@ import com.wildscapes.sound.WildscapesSounds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.sounds.SoundEvents;
@@ -34,9 +34,9 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public final class MirelashItem extends Item {
     public static final ResourceKey<Enchantment> ELASTICITY = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"));
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"));
     public static final ResourceKey<Enchantment> SLIME_SNARE = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"));
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"));
     private static final String HOOK_KEY = "wildscapes:mirelash_hook";
     public static final double ATTACK_RANGE = 10.0;
 
@@ -60,7 +60,7 @@ public final class MirelashItem extends Item {
             serverLevel.addFreshEntity(hook);
             player.getPersistentData().putUUID(HOOK_KEY, hook.getUUID());
             stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW.get(),
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW,
                     SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         player.awardStat(Stats.ITEM_USED.get(this));
@@ -130,7 +130,7 @@ public final class MirelashItem extends Item {
         if (player.level() instanceof ServerLevel level) {
             level.addFreshEntity(new MirelashHook(level, player, stack, target));
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW.get(),
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW,
                     SoundSource.PLAYERS, 1.0F, 1.0F);
             player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
             player.getCooldowns().addCooldown(stack.getItem(), 40);

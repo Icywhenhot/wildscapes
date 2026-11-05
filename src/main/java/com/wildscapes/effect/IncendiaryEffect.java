@@ -1,6 +1,6 @@
 package com.wildscapes.effect;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.wildscapes.block.IncendiaryFireBlock;
 

@@ -9,7 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -38,7 +38,7 @@ public final class ArmorTrimTests {
             var template = templates.get(i).get();
             String name = i == 0 ? "spell" : "viscose";
             var pattern = ResourceKey.create(Registries.TRIM_PATTERN,
-                    ResourceLocation.fromNamespaceAndPath("wildscapes", name));
+                    Identifier.fromNamespaceAndPath("wildscapes", name));
             for (var armor : List.of(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS)) {
                 for (var material : List.of(Items.QUARTZ, Items.IRON_INGOT, Items.GOLD_INGOT, Items.DIAMOND,
                         Items.NETHERITE_INGOT, Items.REDSTONE, Items.COPPER_INGOT, Items.EMERALD, Items.LAPIS_LAZULI, Items.AMETHYST_SHARD)) {
@@ -75,7 +75,7 @@ public final class ArmorTrimTests {
             var params = new LootParams.Builder(helper.getLevel())
                     .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
                     .create(harvest ? LootContextParamSets.VAULT : LootContextParamSets.CHEST);
-            var key = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("wildscapes", path));
+            var key = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("wildscapes", path));
             LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(key);
             int spell = 0;
             int viscose = 0;

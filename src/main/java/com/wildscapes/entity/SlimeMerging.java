@@ -8,7 +8,7 @@ import com.wildscapes.Wildscapes;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -28,8 +28,8 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 public final class SlimeMerging {
     private SlimeMerging() {}
 
-    public static final ResourceLocation MERGE_MODIFIER_ID =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "merging");
+    public static final Identifier MERGE_MODIFIER_ID =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "merging");
 
     public static final double MAX_SHRINK = 0.9375;
 

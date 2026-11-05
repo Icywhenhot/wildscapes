@@ -3,7 +3,7 @@ package com.wildscapes.entity.client;
 import com.wildscapes.Wildscapes;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class WildscapesModelLayers {
     private WildscapesModelLayers() {}
@@ -31,6 +31,6 @@ public final class WildscapesModelLayers {
     }
 
     private static ModelLayerLocation create(String name, String layer) {
-        return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, name), layer);
+        return new ModelLayerLocation(Identifier.fromNamespaceAndPath(Wildscapes.MODID, name), layer);
     }
 }

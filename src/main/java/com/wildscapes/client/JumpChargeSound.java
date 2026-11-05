@@ -12,7 +12,7 @@ public final class JumpChargeSound extends AbstractTickableSoundInstance {
     private final LocalPlayer player;
 
     public JumpChargeSound(LocalPlayer player) {
-        super(WildscapesSounds.EMPOWERED_JUMP_CHARGE.get(), SoundSource.PLAYERS, player.getRandom());
+        super(WildscapesSounds.EMPOWERED_JUMP_CHARGE, SoundSource.PLAYERS, player.getRandom());
         this.player = player;
         looping = false;
         delay = 0;

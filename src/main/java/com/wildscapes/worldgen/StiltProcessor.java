@@ -29,7 +29,7 @@ public class StiltProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.STILTS.get();
+        return WildscapesStructures.STILTS;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class StiltProcessor extends StructureProcessor {
             }
         }
 
-        BlockState post = WildscapesBlocks.CYPRESS_LOG.get().defaultBlockState()
+        BlockState post = WildscapesBlocks.CYPRESS_LOG.defaultBlockState()
                 .setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
 
         for (StructureTemplate.StructureBlockInfo info : lowest.values()) {
@@ -71,7 +71,7 @@ public class StiltProcessor extends StructureProcessor {
     }
 
     private static boolean isPost(BlockState state) {
-        return state.is(WildscapesBlocks.CYPRESS_LOG.get())
+        return state.is(WildscapesBlocks.CYPRESS_LOG)
                 && state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y;
     }
 

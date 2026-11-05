@@ -12,13 +12,13 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.AABB;
 
 public class CauldronOfSoulsRenderer implements BlockEntityRenderer<CauldronOfSoulsBlockEntity> {
     private static final Material LID = new Material(InventoryMenu.BLOCK_ATLAS,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/cauldron_of_souls_lid"));
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/cauldron_of_souls_lid"));
 
     public CauldronOfSoulsRenderer(BlockEntityRendererProvider.Context context) {}
 

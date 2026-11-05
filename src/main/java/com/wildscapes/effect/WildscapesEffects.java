@@ -2,37 +2,27 @@ package com.wildscapes.effect;
 
 import com.wildscapes.Wildscapes;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class WildscapesEffects {
     private WildscapesEffects() {}
 
-    public static final DeferredRegister<MobEffect> EFFECTS =
-            DeferredRegister.create(Registries.MOB_EFFECT, Wildscapes.MODID);
+    public static final Holder.Reference<MobEffect> MIRAGE = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Wildscapes.id("mirage"), new MobEffect(MobEffectCategory.BENEFICIAL, 0x6E5FCD) {});
 
-    public static final DeferredHolder<MobEffect, MobEffect> MIRAGE = EFFECTS.register("mirage",
-            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x6E5FCD) {});
+    public static final Holder.Reference<MobEffect> SLIMEBOUND = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Wildscapes.id("slimebound"), new SlimeboundEffect());
 
-    public static final DeferredHolder<MobEffect, MobEffect> SLIMEBOUND = EFFECTS.register("slimebound",
-            SlimeboundEffect::new);
+    public static final Holder.Reference<MobEffect> INTANGIBILITY = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Wildscapes.id("intangibility"), new MobEffect(MobEffectCategory.BENEFICIAL, 0x7795C4) {});
 
-    public static final DeferredHolder<MobEffect, MobEffect> INTANGIBILITY = EFFECTS.register("intangibility",
-            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x7795C4) {});
+    public static final Holder.Reference<MobEffect> GNASHING = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Wildscapes.id("gnashing"), new GnashingEffect());
 
-    public static final DeferredHolder<MobEffect, MobEffect> GNASHING = EFFECTS.register("gnashing", GnashingEffect::new);
+    public static final Holder.Reference<MobEffect> INCENDIARY = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Wildscapes.id("incendiary"), new IncendiaryEffect());
 
-    public static final DeferredHolder<MobEffect, MobEffect> INCENDIARY = EFFECTS.register("incendiary",
-            IncendiaryEffect::new);
+    public static final Holder.Reference<MobEffect> SOUL_HARVEST = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Wildscapes.id("soul_harvest"), new MobEffect(MobEffectCategory.NEUTRAL, 0xC2336F) {});
 
-    public static final DeferredHolder<MobEffect, MobEffect> SOUL_HARVEST = EFFECTS.register("soul_harvest",
-            () -> new MobEffect(MobEffectCategory.NEUTRAL, 0xC2336F) {});
-
-    public static void register(IEventBus bus) {
-        EFFECTS.register(bus);
-    }
+    public static void register() {}
 }

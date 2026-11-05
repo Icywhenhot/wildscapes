@@ -28,7 +28,7 @@ public class ConnectProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.CONNECT.get();
+        return WildscapesStructures.CONNECT;
     }
 
     @Override

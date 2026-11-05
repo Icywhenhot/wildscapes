@@ -11,16 +11,16 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Pillager;
 
 public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
-    private static final ResourceLocation VANILLA =
-            ResourceLocation.withDefaultNamespace("textures/entity/illager/pillager.png");
-    private static final ResourceLocation SWAMP =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_swamp.png");
-    private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_empowered.png");
+    private static final Identifier VANILLA =
+            Identifier.withDefaultNamespace("textures/entity/illager/pillager.png");
+    private static final Identifier SWAMP =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_swamp.png");
+    private static final Identifier EMPOWERED =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_empowered.png");
 
     private final IllagerModel<Pillager> vanillaModel;
     private final IllagerModel<Pillager> swampModel;
@@ -41,7 +41,7 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Pillager entity) {
+    public Identifier getTextureLocation(Pillager entity) {
         if (SoulHarvest.isEmpowered(entity)) {
             return EMPOWERED;
         }

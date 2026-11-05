@@ -166,6 +166,6 @@ public class WitchCampStructure extends Structure {
 
     @Override
     public StructureType<?> type() {
-        return WildscapesStructures.WITCH_CAMP.get();
+        return WildscapesStructures.WITCH_CAMP;
     }
 }

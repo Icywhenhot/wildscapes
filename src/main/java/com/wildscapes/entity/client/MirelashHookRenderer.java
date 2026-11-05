@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
@@ -24,9 +24,9 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
 public final class MirelashHookRenderer extends EntityRenderer<MirelashHook> {
-    private static final ResourceLocation HOOK_TEXTURE = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final Identifier HOOK_TEXTURE = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
             "textures/entity/mirelash_hook.png");
-    private static final ResourceLocation SEGMENT_TEXTURE = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final Identifier SEGMENT_TEXTURE = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
             "textures/entity/mirelash_segment.png");
     private static final float SEGMENT_LENGTH = 0.5F;
     private final ModelPart hookModel;
@@ -124,7 +124,7 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(MirelashHook hook) {
+    public Identifier getTextureLocation(MirelashHook hook) {
         return HOOK_TEXTURE;
     }
 }

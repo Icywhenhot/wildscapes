@@ -15,17 +15,17 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity> {
-    private static final Material WATER = surface(ResourceLocation.withDefaultNamespace("block/water_still"));
-    private static final Material CONCOCTION = surface(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/concoction"));
-    private static final Material JUMBLE = surface(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/jumble_concoction"));
+    private static final Material WATER = surface(Identifier.withDefaultNamespace("block/water_still"));
+    private static final Material CONCOCTION = surface(Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/concoction"));
+    private static final Material JUMBLE = surface(Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/jumble_concoction"));
 
-    private static Material surface(ResourceLocation texture) {
+    private static Material surface(Identifier texture) {
         return new Material(InventoryMenu.BLOCK_ATLAS, texture);
     }
 

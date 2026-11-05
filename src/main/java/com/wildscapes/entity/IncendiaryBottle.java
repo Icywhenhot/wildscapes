@@ -2,7 +2,7 @@ package com.wildscapes.entity;
 
 import java.util.UUID;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.wildscapes.block.CauldronOfSoulsBlock;
 import com.wildscapes.block.IncendiaryFireBlock;
@@ -38,11 +38,11 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
     }
 
     public IncendiaryBottle(Level level, LivingEntity thrower) {
-        super(WildscapesEntities.INCENDIARY_BOTTLE.get(), thrower, level);
+        super(WildscapesEntities.INCENDIARY_BOTTLE, thrower, level);
     }
 
     public IncendiaryBottle(Level level, double x, double y, double z) {
-        super(WildscapesEntities.INCENDIARY_BOTTLE.get(), x, y, z, level);
+        super(WildscapesEntities.INCENDIARY_BOTTLE, x, y, z, level);
     }
 
     public void haunt(BlockPos pos, Player player) {

@@ -96,7 +96,7 @@ public final class CauldronSwap {
     }
 
     private static void toOurBlock(Level level, BlockPos pos, boolean boiling, Consumer<CauldronBlockEntity> init) {
-        level.setBlock(pos, WildscapesBlocks.CAULDRON.get().defaultBlockState()
+        level.setBlock(pos, WildscapesBlocks.CAULDRON.defaultBlockState()
                 .setValue(WildscapesCauldronBlock.BOILING, boiling), Block.UPDATE_ALL);
         if (level.getBlockEntity(pos) instanceof CauldronBlockEntity be) {
             init.accept(be);

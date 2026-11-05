@@ -46,7 +46,7 @@ public class ClearProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.CLEAR.get();
+        return WildscapesStructures.CLEAR;
     }
 
     @Override

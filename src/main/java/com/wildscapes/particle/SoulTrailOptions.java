@@ -26,6 +26,6 @@ public record SoulTrailOptions(Vec3 target, int duration) implements ParticleOpt
 
     @Override
     public ParticleType<?> getType() {
-        return WildscapesParticles.SOUL_TRAIL.get();
+        return WildscapesParticles.SOUL_TRAIL;
     }
 }

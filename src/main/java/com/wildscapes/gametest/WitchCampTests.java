@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
@@ -83,7 +83,7 @@ public class WitchCampTests {
         helper.assertTrue(abominations == 1, abominations + " abominations guarding the centre");
         helper.assertTrue(vindicators >= 2 && witches >= 2,
                 vindicators + " vindicators and " + witches + " witches, the centre alone needs 2 of each");
-        helper.assertTrue(level.getEntities(WildscapesEntities.ABOMINATION.get(), AABB.of(start.getBoundingBox()),
+        helper.assertTrue(level.getEntities(WildscapesEntities.ABOMINATION, AABB.of(start.getBoundingBox()),
                 e -> e.isPersistenceRequired()).size() == 1, "the abomination did not turn up, or will despawn");
         helper.assertTrue(!shafts.isEmpty(), "no dungeon entrance at all");
         helper.assertTrue(shafts.size() <= hideouts, shafts.size() + " shafts for " + hideouts + " trapdoors");
@@ -125,7 +125,7 @@ public class WitchCampTests {
 
     private static StructureStart generate(ServerLevel level, ChunkPos chunk) {
         Structure camp = level.registryAccess().registryOrThrow(Registries.STRUCTURE)
-                .get(ResourceLocation.fromNamespaceAndPath("wildscapes", "witch_camp"));
+                .get(Identifier.fromNamespaceAndPath("wildscapes", "witch_camp"));
         ChunkGenerator generator = level.getChunkSource().getGenerator();
         return camp.generate(level.registryAccess(), generator, generator.getBiomeSource(),
                 level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(),

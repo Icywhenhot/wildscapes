@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Illusioner;
 
@@ -20,7 +20,7 @@ public class EmpoweredGlowLayer<T extends LivingEntity, M extends EntityModel<T>
 
     public EmpoweredGlowLayer(RenderLayerParent<T, M> renderer, String texture) {
         super(renderer);
-        glow = RenderType.entityTranslucentEmissive(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+        glow = RenderType.entityTranslucentEmissive(Identifier.fromNamespaceAndPath(Wildscapes.MODID,
                 "textures/entity/" + texture + ".png"));
     }
 

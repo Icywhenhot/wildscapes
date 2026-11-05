@@ -23,7 +23,7 @@ public class BuriedPiece extends PoolElementStructurePiece implements PieceBeard
 
     @Override
     public StructurePieceType getType() {
-        return WildscapesStructures.BURIED_PIECE.get();
+        return WildscapesStructures.BURIED_PIECE;
     }
 
     @Override

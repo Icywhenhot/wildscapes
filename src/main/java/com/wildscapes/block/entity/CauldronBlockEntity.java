@@ -3,7 +3,7 @@ package com.wildscapes.block.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.wildscapes.block.CauldronSoups;
 import com.wildscapes.block.WildscapesCauldronBlock;
@@ -66,7 +66,7 @@ public class CauldronBlockEntity extends BlockEntity {
     private boolean clientBoilSoundActive;
 
     public CauldronBlockEntity(BlockPos pos, BlockState state) {
-        super(WildscapesBlockEntities.CAULDRON.get(), pos, state);
+        super(WildscapesBlockEntities.CAULDRON, pos, state);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, CauldronBlockEntity be) {
@@ -75,7 +75,7 @@ public class CauldronBlockEntity extends BlockEntity {
         if (heat != boilingState) {
             level.setBlock(pos, state.setValue(WildscapesCauldronBlock.BOILING, heat), Block.UPDATE_ALL);
             if (heat) {
-                level.playSound(null, pos, WildscapesSounds.CAULDRON_BOIL_START.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
+                level.playSound(null, pos, WildscapesSounds.CAULDRON_BOIL_START, SoundSource.BLOCKS, 0.8F, 1.0F);
             } else {
                 be.onHeatLost((ServerLevel) level, pos);
             }
@@ -128,7 +128,7 @@ public class CauldronBlockEntity extends BlockEntity {
             double z = pos.getZ() + 0.25 + random.nextDouble() * 0.5;
             if (brewing) {
                 if (random.nextBoolean()) {
-                    level.addParticle(WildscapesParticles.BREW_BUBBLE.get(), x, surface, z,
+                    level.addParticle(WildscapesParticles.BREW_BUBBLE, x, surface, z,
                             0.0, 0.06 + random.nextDouble() * 0.04, 0.0);
                 }
             } else {
@@ -139,7 +139,7 @@ public class CauldronBlockEntity extends BlockEntity {
         if (!be.pendingIngredient.isEmpty() && random.nextInt(3) == 0) {
             double x = pos.getX() + 0.35 + random.nextDouble() * 0.3;
             double z = pos.getZ() + 0.35 + random.nextDouble() * 0.3;
-            level.addParticle(WildscapesParticles.INGREDIENT_STEAM.get(), x, surface + 0.05, z,
+            level.addParticle(WildscapesParticles.INGREDIENT_STEAM, x, surface + 0.05, z,
                     0.0, 0.04 + random.nextDouble() * 0.04, 0.0);
         }
 
@@ -162,7 +162,7 @@ public class CauldronBlockEntity extends BlockEntity {
             }
         }
         pendingIngredient = ItemStack.EMPTY;
-        level.playSound(null, pos, WildscapesSounds.CAULDRON_SOUP_DONE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.playSound(null, pos, WildscapesSounds.CAULDRON_SOUP_DONE, SoundSource.BLOCKS, 1.0F, 1.0F);
         level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                 pos.getX() + 0.5, pos.getY() + getSurfaceHeight() + 0.05, pos.getZ() + 0.5,
                 12, 0.3, 0.2, 0.3, 0.0);
@@ -264,7 +264,7 @@ public class CauldronBlockEntity extends BlockEntity {
 
     public ItemStack scoopSoup() {
         ItemStack bowl = new ItemStack(WildscapesItems.MAGIC_SOUP.get());
-        bowl.set(WildscapesDataComponents.SOUP_CONTENTS.get(), new SoupContents(List.copyOf(soupEffects)));
+        bowl.set(WildscapesDataComponents.SOUP_CONTENTS, new SoupContents(List.copyOf(soupEffects)));
         if (--fillLevel <= 0) {
             reset();
         }
@@ -455,7 +455,7 @@ public class CauldronBlockEntity extends BlockEntity {
                 : PotionContents.EMPTY;
         pendingIngredient = tag.contains("Pending")
                 ? new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM
-                        .get(net.minecraft.resources.ResourceLocation.parse(tag.getString("Pending"))))
+                        .get(net.minecraft.resources.Identifier.parse(tag.getString("Pending"))))
                 : ItemStack.EMPTY;
         soupEffects.clear();
         if (tag.contains("Effects")) {

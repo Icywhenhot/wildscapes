@@ -8,7 +8,7 @@ import com.wildscapes.effect.WildscapesPotions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -31,7 +31,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 public final class WitchGoals {
     private static final String CHECKED = "wildscapes:cauldron_checked";
     private static final String HOME = "wildscapes:cauldron_home";
-    private static final ResourceLocation DRINKING_SPEED = ResourceLocation.withDefaultNamespace("drinking");
+    private static final Identifier DRINKING_SPEED = Identifier.withDefaultNamespace("drinking");
 
     private WitchGoals() {}
 
@@ -127,6 +127,6 @@ public final class WitchGoals {
             return false;
         }
         var state = witch.level().getBlockState(pos);
-        return state.getBlock() instanceof AbstractCauldronBlock || state.is(WildscapesBlocks.CAULDRON_OF_SOULS.get());
+        return state.getBlock() instanceof AbstractCauldronBlock || state.is(WildscapesBlocks.CAULDRON_OF_SOULS);
     }
 }

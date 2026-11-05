@@ -81,7 +81,7 @@ public final class Intangibility {
                 if (!wasActive) {
                     WildscapesAdvancements.award(player, "now_you_see_me_now_you_dont");
                     level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                            WildscapesSounds.NECKLACE_ACTIVATION.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                            WildscapesSounds.NECKLACE_ACTIVATION, SoundSource.PLAYERS, 1.0F, 1.0F);
                 }
                 if (player.tickCount % 5 == 0) {
                     level.sendParticles(ParticleTypes.LARGE_SMOKE, player.getX(), player.getY() + 0.6,

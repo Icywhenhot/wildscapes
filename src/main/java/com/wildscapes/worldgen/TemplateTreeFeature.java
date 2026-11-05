@@ -12,7 +12,7 @@ import com.wildscapes.worldgen.TemplateTreeConfiguration.Ground;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
@@ -43,12 +43,12 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
 
     private static List<ProcessorRule> buildRules() {
         List<ProcessorRule> rules = new java.util.ArrayList<>();
-        addPillar(rules, Blocks.DARK_OAK_LOG, WildscapesBlocks.CYPRESS_LOG.get());
-        addPillar(rules, Blocks.DARK_OAK_WOOD, WildscapesBlocks.CYPRESS_WOOD.get());
-        addPillar(rules, Blocks.STRIPPED_DARK_OAK_LOG, WildscapesBlocks.STRIPPED_CYPRESS_LOG.get());
-        addPillar(rules, Blocks.STRIPPED_DARK_OAK_WOOD, WildscapesBlocks.STRIPPED_CYPRESS_WOOD.get());
+        addPillar(rules, Blocks.DARK_OAK_LOG, WildscapesBlocks.CYPRESS_LOG);
+        addPillar(rules, Blocks.DARK_OAK_WOOD, WildscapesBlocks.CYPRESS_WOOD);
+        addPillar(rules, Blocks.STRIPPED_DARK_OAK_LOG, WildscapesBlocks.STRIPPED_CYPRESS_LOG);
+        addPillar(rules, Blocks.STRIPPED_DARK_OAK_WOOD, WildscapesBlocks.STRIPPED_CYPRESS_WOOD);
 
-        BlockState leaves = WildscapesBlocks.CYPRESS_LEAVES.get().defaultBlockState()
+        BlockState leaves = WildscapesBlocks.CYPRESS_LEAVES.defaultBlockState()
                 .setValue(LeavesBlock.PERSISTENT, true)
                 .setValue(LeavesBlock.DISTANCE, 1);
         rules.add(new ProcessorRule(new BlockMatchTest(Blocks.MANGROVE_LEAVES), AlwaysTrueTest.INSTANCE, leaves));
@@ -71,7 +71,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
 
     @Override
     public boolean place(FeaturePlaceContext<TemplateTreeConfiguration> context) {
-        List<ResourceLocation> templates = context.config().templates();
+        List<Identifier> templates = context.config().templates();
         if (templates.isEmpty()) {
             return false;
         }
@@ -84,7 +84,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         }
 
         StructureTemplateManager manager = level.getLevel().getStructureManager();
-        ResourceLocation id = templates.get(random.nextInt(templates.size()));
+        Identifier id = templates.get(random.nextInt(templates.size()));
         Optional<StructureTemplate> found = manager.get(id);
         if (found.isEmpty()) {
             Wildscapes.LOGGER.warn("Tree structure {} is missing; expected it in data/{}/structure/{}.nbt",
@@ -245,7 +245,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         for (Block part : SOLID_PARTS) {
             for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(corner, settings, part, true)) {
                 BlockState existing = level.getBlockState(info.pos());
-                if (existing.is(BlockTags.LOGS) || existing.is(WildscapesBlocks.CYPRESS_LEAVES.get())) {
+                if (existing.is(BlockTags.LOGS) || existing.is(WildscapesBlocks.CYPRESS_LEAVES)) {
                     return false;
                 }
             }
@@ -260,7 +260,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         int sumZ = 0;
         int lowest = Integer.MAX_VALUE;
         for (Block trunk : new Block[] { Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_WOOD,
-                WildscapesBlocks.CYPRESS_LOG.get(), WildscapesBlocks.CYPRESS_WOOD.get() }) {
+                WildscapesBlocks.CYPRESS_LOG, WildscapesBlocks.CYPRESS_WOOD }) {
             for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(BlockPos.ZERO, raw, trunk, false)) {
                 BlockPos pos = info.pos();
                 if (pos.getY() > lowest) {

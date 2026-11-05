@@ -16,8 +16,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.BlockHitResult;
 
 public final class MudBrickDyeing {
     private MudBrickDyeing() {}
@@ -27,44 +28,45 @@ public final class MudBrickDyeing {
     public static void buildLookup() {
         FAMILIES.clear();
         addFamily(Blocks.MUD_BRICKS, MudBrickBlocks.BRICKS);
-        addFamily(MudBrickBlocks.CHISELED_MUD_BRICKS.get(), MudBrickBlocks.CHISELED);
+        addFamily(MudBrickBlocks.CHISELED_MUD_BRICKS, MudBrickBlocks.CHISELED);
         addFamily(Blocks.MUD_BRICK_STAIRS, MudBrickBlocks.STAIRS);
         addFamily(Blocks.MUD_BRICK_SLAB, MudBrickBlocks.SLABS);
         addFamily(Blocks.MUD_BRICK_WALL, MudBrickBlocks.WALLS);
     }
 
-    private static void addFamily(Block undyed, Map<DyeColor, ? extends DeferredBlock<? extends Block>> dyed) {
+    private static void addFamily(Block undyed, Map<DyeColor, ? extends Block> dyed) {
         Map<DyeColor, Block> byColor = new EnumMap<>(DyeColor.class);
-        dyed.forEach((color, block) -> byColor.put(color, block.get()));
+        byColor.putAll(dyed);
 
         FAMILIES.put(undyed, byColor);
         byColor.values().forEach(block -> FAMILIES.put(block, byColor));
     }
 
-    public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        ItemStack stack = event.getItemStack();
+    public static InteractionResult onRightClick(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+        if (player.isSpectator()) {
+            return InteractionResult.PASS;
+        }
+        ItemStack stack = player.getItemInHand(hand);
         if (!(stack.getItem() instanceof DyeItem dye)) {
-            return;
+            return InteractionResult.PASS;
         }
 
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
+        BlockPos pos = hit.getBlockPos();
         BlockState dyed = recolour(level.getBlockState(pos), dye.getDyeColor());
         if (dyed == null) {
-            return;
+            return InteractionResult.PASS;
         }
 
-        event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide));
-        if (level.isClientSide) {
-            return;
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
         }
 
         level.setBlockAndUpdate(pos, dyed);
         level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-        if (!event.getEntity().getAbilities().instabuild) {
+        if (!player.getAbilities().instabuild) {
             stack.shrink(1);
         }
+        return InteractionResult.SUCCESS;
     }
 
     private static BlockState recolour(BlockState state, DyeColor color) {

@@ -8,7 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -35,9 +35,9 @@ public final class GnashingTests {
                         "gnashing form lost its green tint");
             }
         }
-        helper.assertTrue(WildscapesPotions.LONG_GNASHING.get().getEffects().getFirst().getDuration()
-                > WildscapesPotions.GNASHING.get().getEffects().getFirst().getDuration(), "long gnashing did not last longer");
-        helper.assertTrue(WildscapesPotions.STRONG_GNASHING.get().getEffects().getFirst().getAmplifier() == 1,
+        helper.assertTrue(WildscapesPotions.LONG_GNASHING.value().getEffects().getFirst().getDuration()
+                > WildscapesPotions.GNASHING.value().getEffects().getFirst().getDuration(), "long gnashing did not last longer");
+        helper.assertTrue(WildscapesPotions.STRONG_GNASHING.value().getEffects().getFirst().getAmplifier() == 1,
                 "strong gnashing did not reach level two");
         helper.succeed();
     }
@@ -53,7 +53,7 @@ public final class GnashingTests {
                     .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
                     .create(path.startsWith("gameplay/") ? LootContextParamSets.VAULT : LootContextParamSets.CHEST);
             ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
-                    ResourceLocation.fromNamespaceAndPath("wildscapes", path));
+                    Identifier.fromNamespaceAndPath("wildscapes", path));
             LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(key);
             int found = 0;
             int splashes = 0;
@@ -71,9 +71,9 @@ public final class GnashingTests {
                         continue;
                     }
                     var potion = contents.potion().get();
-                    if (!potion.is(WildscapesPotions.GNASHING.getKey())
-                            && !potion.is(WildscapesPotions.LONG_GNASHING.getKey())
-                            && !potion.is(WildscapesPotions.STRONG_GNASHING.getKey())) {
+                    if (!potion.is(WildscapesPotions.GNASHING.key())
+                            && !potion.is(WildscapesPotions.LONG_GNASHING.key())
+                            && !potion.is(WildscapesPotions.STRONG_GNASHING.key())) {
                         continue;
                     }
                     helper.assertTrue(stack.is(Items.SPLASH_POTION) || stack.is(Items.TIPPED_ARROW),

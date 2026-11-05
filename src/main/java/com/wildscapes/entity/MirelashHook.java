@@ -47,7 +47,7 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     public MirelashHook(Level level, Player owner, ItemStack stack) {
-        super(WildscapesEntities.MIRELASH_HOOK.get(), owner, level);
+        super(WildscapesEntities.MIRELASH_HOOK, owner, level);
         int elasticity = MirelashItem.enchantmentLevel(level, stack, MirelashItem.ELASTICITY);
         entityData.set(MAX_RANGE, 30.0F * (elasticity + 1));
         entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
@@ -55,7 +55,7 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     public MirelashHook(Level level, Player owner, ItemStack stack, LivingEntity target) {
-        super(WildscapesEntities.MIRELASH_HOOK.get(), owner, level);
+        super(WildscapesEntities.MIRELASH_HOOK, owner, level);
         entityData.set(MAX_RANGE, (float) MirelashItem.ATTACK_RANGE);
         entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
         entityData.set(ATTACK, true);
@@ -105,7 +105,7 @@ public final class MirelashHook extends ThrowableProjectile {
         super.onHitBlock(hit);
         if (!level().isClientSide) {
             level().playSound(null, hit.getLocation().x, hit.getLocation().y, hit.getLocation().z,
-                    WildscapesSounds.MIRELASH_IMPACT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                    WildscapesSounds.MIRELASH_IMPACT, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         if (entityData.get(ATTACK)) {
             discard();
@@ -152,7 +152,7 @@ public final class MirelashHook extends ThrowableProjectile {
         float distance = Mth.clamp(player.distanceTo(target), 0.0F, (float) MirelashItem.ATTACK_RANGE);
         float damage = Mth.lerp(distance / (float) MirelashItem.ATTACK_RANGE, 9.0F, 6.0F);
         target.hurt(level().damageSources().playerAttack(player), damage);
-        level().playSound(null, target.getX(), target.getY(0.5), target.getZ(), WildscapesSounds.MIRELASH_HIT.get(),
+        level().playSound(null, target.getX(), target.getY(0.5), target.getZ(), WildscapesSounds.MIRELASH_HIT,
                 SoundSource.PLAYERS, 1.0F, 1.0F);
         if (entityData.get(SLIME_SNARE)) {
             target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND, 80, 0, false, true, false));

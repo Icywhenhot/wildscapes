@@ -16,7 +16,7 @@ import com.wildscapes.entity.SoulHarvest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -50,9 +50,9 @@ public final class SoulHarvestTests {
         ServerLevel level = helper.getLevel();
         BlockPos cauldron = new BlockPos(12, 2, 12);
         BlockPos[] fires = {new BlockPos(4, 2, 4), new BlockPos(19, 2, 19), new BlockPos(4, 2, 19)};
-        helper.setBlock(cauldron, WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState());
+        helper.setBlock(cauldron, WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState());
         for (BlockPos f : fires) {
-            helper.setBlock(f, WildscapesBlocks.SUMMONING_BONFIRE.get().defaultBlockState());
+            helper.setBlock(f, WildscapesBlocks.SUMMONING_BONFIRE.defaultBlockState());
         }
 
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -65,7 +65,7 @@ public final class SoulHarvestTests {
             helper.assertFalse(player.hasEffect(MobEffects.BAD_OMEN), "the cauldron did not take the omen");
             helper.assertTrue(player.hasEffect(WildscapesEffects.SOUL_HARVEST), "no soul_harvest icon while it runs");
             var advancement = level.getServer().getAdvancements()
-                    .get(ResourceLocation.fromNamespaceAndPath("wildscapes", "its_time_to_harvest"));
+                    .get(Identifier.fromNamespaceAndPath("wildscapes", "its_time_to_harvest"));
             helper.assertTrue(player.getAdvancements().getOrStartProgress(advancement).isDone(),
                     "starting soul harvest did not award advancement");
             helper.assertBlockProperty(cauldron, CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE);
@@ -114,7 +114,7 @@ public final class SoulHarvestTests {
     public static void campMobsFeedTheBar(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos cauldron = new BlockPos(12, 2, 12);
-        helper.setBlock(cauldron, WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState());
+        helper.setBlock(cauldron, WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState());
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Vec3 stand = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(12, 2, 8)));
         player.teleportTo(level, stand.x, stand.y, stand.z, 0.0F, 0.0F);
@@ -153,7 +153,7 @@ public final class SoulHarvestTests {
         ServerLevel level = helper.getLevel();
         BlockPos pos = new BlockPos(12, 2, 12);
         BlockPos at = helper.absolutePos(pos);
-        helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState());
+        helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState());
         ServerPlayer player = survivalPlayer(helper);
         Vec3 stand = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(12, 2, 6)));
         player.teleportTo(level, stand.x, stand.y, stand.z, 0, 0);
@@ -176,7 +176,7 @@ public final class SoulHarvestTests {
             helper.assertTrue(rose[0], "the bottle did not float above the cauldron before attacking");
             helper.assertTrue(player.getHealth() < player.getMaxHealth(), "the bottle did not hurt the player");
             helper.assertTrue(!level.getBlockStates(player.getBoundingBox().inflate(2))
-                    .filter(s -> s.is(WildscapesBlocks.INCENDIARY_FIRE.get())).toList().isEmpty(), "impact left no incendiary fire");
+                    .filter(s -> s.is(WildscapesBlocks.INCENDIARY_FIRE)).toList().isEmpty(), "impact left no incendiary fire");
             helper.setBlock(pos, Blocks.AIR.defaultBlockState());
             level.getServer().getPlayerList().remove(player);
             helper.succeed();
@@ -188,7 +188,7 @@ public final class SoulHarvestTests {
         ServerLevel level = helper.getLevel();
         BlockPos pos = new BlockPos(12, 2, 12);
         BlockPos at = helper.absolutePos(pos);
-        helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState()
+        helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState()
                 .setValue(CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE));
         ServerPlayer player = survivalPlayer(helper);
         player.teleportTo(level, at.getX() + 6, at.getY(), at.getZ(), 0, 0);
@@ -212,7 +212,7 @@ public final class SoulHarvestTests {
         IncendiaryFireBlock.spread(helper.getLevel(), Vec3.atBottomCenterOf(helper.absolutePos(mid)));
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                helper.assertBlockPresent(WildscapesBlocks.INCENDIARY_FIRE.get(), mid.offset(dx, 0, dz));
+                helper.assertBlockPresent(WildscapesBlocks.INCENDIARY_FIRE, mid.offset(dx, 0, dz));
             }
         }
         Pig pig = helper.spawn(EntityType.PIG, mid);

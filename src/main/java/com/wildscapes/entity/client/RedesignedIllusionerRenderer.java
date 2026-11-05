@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Illusioner;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -20,10 +20,10 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
-    private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
-    private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
+    private static final Identifier EMPOWERED =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
 
     private final Map<Illusioner, Trail> trails = new WeakHashMap<>();
 
@@ -43,7 +43,7 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Illusioner entity) {
+    public Identifier getTextureLocation(Illusioner entity) {
         return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 

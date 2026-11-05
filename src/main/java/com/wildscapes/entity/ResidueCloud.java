@@ -13,7 +13,7 @@ public class ResidueCloud extends AreaEffectCloud {
     }
 
     public ResidueCloud(Level level, double x, double y, double z) {
-        this(WildscapesEntities.RESIDUE_CLOUD.get(), level);
+        this(WildscapesEntities.RESIDUE_CLOUD, level);
         setPos(x, y, z);
     }
 
@@ -28,7 +28,7 @@ public class ResidueCloud extends AreaEffectCloud {
         for (int i = 0; i < n; i++) {
             float a = random.nextFloat() * Mth.TWO_PI;
             float d = Mth.sqrt(random.nextFloat()) * r;
-            level().addAlwaysVisibleParticle(WildscapesParticles.RESIDUE_SWIRL.get(),
+            level().addAlwaysVisibleParticle(WildscapesParticles.RESIDUE_SWIRL,
                     getX() + Mth.cos(a) * d, getY() + 0.1, getZ() + Mth.sin(a) * d,
                     (0.5 - random.nextDouble()) * 0.02, 0.015, (0.5 - random.nextDouble()) * 0.02);
         }

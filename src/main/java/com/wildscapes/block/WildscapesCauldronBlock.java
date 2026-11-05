@@ -1,6 +1,6 @@
 package com.wildscapes.block;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.wildscapes.WildscapesAdvancements;
 import com.wildscapes.block.entity.CauldronBlockEntity;
@@ -100,14 +100,14 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             return act(level, () -> {
                 be.startSoupBase();
 
-                sfx(level, pos, be, WildscapesSounds.CAULDRON_ADD_INGREDIENT.get(), stack, true);
+                sfx(level, pos, be, WildscapesSounds.CAULDRON_ADD_INGREDIENT, stack, true);
                 consume(player, stack);
             });
         }
         if (be.canAcceptIngredient(stack)) {
             return act(level, () -> {
                 be.addIngredient(stack);
-                sfx(level, pos, be, WildscapesSounds.CAULDRON_ADD_INGREDIENT.get(), stack, false);
+                sfx(level, pos, be, WildscapesSounds.CAULDRON_ADD_INGREDIENT, stack, false);
                 consume(player, stack);
             });
         }
@@ -116,7 +116,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
                 be.startMixing();
                 stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND
                         ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-                level.playSound(null, pos, WildscapesSounds.CAULDRON_MIX.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.playSound(null, pos, WildscapesSounds.CAULDRON_MIX, SoundSource.BLOCKS, 1.0F, 1.0F);
             });
         }
         if (item == Items.BOWL && be.hasFinishedSoup() && !be.isMixing() && be.getPendingIngredient().isEmpty()) {
@@ -262,9 +262,9 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             server.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, ingredient),
                     x, y, z, 8, 0.2, 0.1, 0.2, 0.05);
             if (base) {
-                server.sendParticles(WildscapesParticles.BREW_BUBBLE.get(), x, y, z, 10, 0.22, 0.02, 0.22, 0.02);
+                server.sendParticles(WildscapesParticles.BREW_BUBBLE, x, y, z, 10, 0.22, 0.02, 0.22, 0.02);
             } else {
-                server.sendParticles(WildscapesParticles.INGREDIENT_STEAM.get(), x, y, z, 12, 0.18, 0.02, 0.18, 0.06);
+                server.sendParticles(WildscapesParticles.INGREDIENT_STEAM, x, y, z, 12, 0.18, 0.02, 0.18, 0.06);
             }
         }
     }
@@ -312,7 +312,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return ticker(type, WildscapesBlockEntities.CAULDRON.get(),
+        return ticker(type, WildscapesBlockEntities.CAULDRON,
                 level.isClientSide ? CauldronBlockEntity::clientTick : CauldronBlockEntity::serverTick);
     }
 

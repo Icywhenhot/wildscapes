@@ -182,7 +182,7 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
     }
 
     public static void placeGrown(LevelAccessor level, BlockPos pos) {
-        BlockState state = WildscapesBlocks.MOSS_CARPET.get().defaultBlockState();
+        BlockState state = WildscapesBlocks.MOSS_CARPET.defaultBlockState();
         for (Direction side : BY_DIRECTION.keySet()) {
             state = state.setValue(sideFacing(side), allowedDrape(level, pos, side));
         }
@@ -202,7 +202,7 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
         BlockState existing = level.getBlockState(tail);
         BlockState base = existing.getBlock() instanceof HangingMossBlock
                 ? existing
-                : WildscapesBlocks.HANGING_MOSS.get().defaultBlockState();
+                : WildscapesBlocks.HANGING_MOSS.defaultBlockState();
         level.setBlock(tail, base.setValue(HangingMossBlock.faceFacing(tailFace(tail, pos, side)), true),
                 Block.UPDATE_ALL);
     }

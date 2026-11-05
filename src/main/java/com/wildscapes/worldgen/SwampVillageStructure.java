@@ -212,6 +212,6 @@ public class SwampVillageStructure extends Structure {
 
     @Override
     public StructureType<?> type() {
-        return WildscapesStructures.SWAMP_VILLAGE.get();
+        return WildscapesStructures.SWAMP_VILLAGE;
     }
 }

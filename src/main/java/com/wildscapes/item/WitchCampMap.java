@@ -4,7 +4,7 @@ import com.wildscapes.Wildscapes;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
@@ -25,10 +25,10 @@ public final class WitchCampMap {
 
     public static final DeferredHolder<MapDecorationType, MapDecorationType> WITCH_CAMP =
             DECORATIONS.register("witch_camp", () -> new MapDecorationType(
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"), true, -1, true, false));
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"), true, -1, true, false));
 
     public static final TagKey<Structure> DESTINATION = TagKey.create(Registries.STRUCTURE,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "on_witch_camp_maps"));
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "on_witch_camp_maps"));
 
     public static void register(IEventBus bus) {
         DECORATIONS.register(bus);

@@ -5,11 +5,11 @@ import java.util.List;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
-public record TemplateTreeConfiguration(List<ResourceLocation> templates, Ground ground, int yOffset,
+public record TemplateTreeConfiguration(List<Identifier> templates, Ground ground, int yOffset,
         int maxWaterDepth) implements FeatureConfiguration {
     public enum Ground implements StringRepresentable {
         LAND("land"),
@@ -32,7 +32,7 @@ public record TemplateTreeConfiguration(List<ResourceLocation> templates, Ground
 
     public static final Codec<TemplateTreeConfiguration> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                    ResourceLocation.CODEC.listOf().fieldOf("templates")
+                    Identifier.CODEC.listOf().fieldOf("templates")
                             .forGetter(TemplateTreeConfiguration::templates),
                     Ground.CODEC.optionalFieldOf("ground", Ground.LAND)
                             .forGetter(TemplateTreeConfiguration::ground),

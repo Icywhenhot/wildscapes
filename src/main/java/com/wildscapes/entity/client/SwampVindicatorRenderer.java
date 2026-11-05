@@ -10,16 +10,16 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Vindicator;
 
 public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
-    private static final ResourceLocation DEFAULT =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator.png");
-    private static final ResourceLocation SWAMP =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_swamp.png");
-    private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_empowered.png");
+    private static final Identifier DEFAULT =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator.png");
+    private static final Identifier SWAMP =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_swamp.png");
+    private static final Identifier EMPOWERED =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_empowered.png");
 
     public SwampVindicatorRenderer(EntityRendererProvider.Context context) {
         super(context, new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.VINDICATOR)), 0.5F);
@@ -39,7 +39,7 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Vindicator entity) {
+    public Identifier getTextureLocation(Vindicator entity) {
         if (SoulHarvest.isEmpowered(entity)) {
             return EMPOWERED;
         }

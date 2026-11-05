@@ -462,7 +462,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         this.setDeltaMovement(this.jumpVX, this.jumpVY0, this.jumpVZ);
 
         if (this.level() instanceof ServerLevel server) {
-            server.sendParticles(WildscapesParticles.RESIDUE_SWIRL.get(), this.getX(), this.getY() + 0.4D, this.getZ(),
+            server.sendParticles(WildscapesParticles.RESIDUE_SWIRL, this.getX(), this.getY() + 0.4D, this.getZ(),
                     24, 0.7D, 0.3D, 0.7D, 0.06D);
         }
     }
@@ -491,7 +491,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         cloud(this.getX(), this.getY(), this.getZ(), 6.0F, 200, effect);
 
         if (this.level() instanceof ServerLevel server) {
-            server.sendParticles(WildscapesParticles.RESIDUE_SPLAT.get(), this.getX(), this.getY() + 0.15D, this.getZ(),
+            server.sendParticles(WildscapesParticles.RESIDUE_SPLAT, this.getX(), this.getY() + 0.15D, this.getZ(),
                     30, 1.4D, 0.1D, 1.4D, 0.12D);
         }
         this.arc.clear();
@@ -500,7 +500,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private void cloud(double x, double y, double z, float radius, int duration, Holder<MobEffect> effect) {
         ResidueCloud cloud = new ResidueCloud(this.level(), x, y, z);
         cloud.setOwner(this);
-        cloud.setParticle(WildscapesParticles.RESIDUE_WISP.get());
+        cloud.setParticle(WildscapesParticles.RESIDUE_WISP);
         cloud.setRadius(radius);
         cloud.setDuration(duration);
         cloud.setWaitTime(10);
@@ -637,17 +637,17 @@ public class AbominationEntity extends Monster implements GeoEntity {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return WildscapesSounds.ABOMINATION_AMBIENT.get();
+        return WildscapesSounds.ABOMINATION_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return WildscapesSounds.ABOMINATION_HURT.get();
+        return WildscapesSounds.ABOMINATION_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return WildscapesSounds.ABOMINATION_DEATH.get();
+        return WildscapesSounds.ABOMINATION_DEATH;
     }
 
     @Override

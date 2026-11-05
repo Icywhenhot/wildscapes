@@ -6,7 +6,7 @@ import com.wildscapes.Wildscapes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,10 +15,10 @@ import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class SoulHarvestBossBar {
-    private static final ResourceLocation FRAME =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/gui/soul_harvest.png");
-    private static final ResourceLocation FILL =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/gui/soul_harvest_fill.png");
+    private static final Identifier FRAME =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/gui/soul_harvest.png");
+    private static final Identifier FILL =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/gui/soul_harvest_fill.png");
 
     private SoulHarvestBossBar() {}
 

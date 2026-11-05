@@ -26,7 +26,7 @@ public class IncendiaryFireBlock extends BaseFireBlock {
 
     public static void spread(Level level, Vec3 at) {
         BlockPos center = BlockPos.containing(at);
-        BlockState fire = WildscapesBlocks.INCENDIARY_FIRE.get().defaultBlockState();
+        BlockState fire = WildscapesBlocks.INCENDIARY_FIRE.defaultBlockState();
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 for (int dy : new int[] {0, 1, -1}) {

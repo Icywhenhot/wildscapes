@@ -24,7 +24,7 @@ public final class PavShrooms {
                 player.blockPosition().offset(3, 3, 3))) {
             if (pos.distToCenterSqr(player.position()) > 9.0 || !player.level().hasChunkAt(pos)) continue;
             var state = player.level().getBlockState(pos);
-            if (state.is(WildscapesBlocks.LUMINOUS_MUSHROOM.get()) || state.is(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get())) {
+            if (state.is(WildscapesBlocks.LUMINOUS_MUSHROOM) || state.is(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM)) {
                 player.heal(0.5F);
                 return;
             }

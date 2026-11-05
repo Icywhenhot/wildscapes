@@ -8,7 +8,7 @@ import com.wildscapes.sound.WildscapesSounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -22,9 +22,9 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class JumpEnchantments {
     public static final ResourceKey<Enchantment> MULTI_JUMP = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"));
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"));
     public static final ResourceKey<Enchantment> EMPOWERED_JUMP = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"));
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"));
     private static final String USED = "wildscapes:air_jumps";
     public static final int FULL_CHARGE = 181;
     private static final String CHARGE = "wildscapes:jump_charge";
@@ -63,7 +63,7 @@ public final class JumpEnchantments {
             data.putInt(CHARGE, ++charge);
             if (charge == FULL_CHARGE) {
                 player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
-                        WildscapesSounds.EMPOWERED_JUMP_READY.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                        WildscapesSounds.EMPOWERED_JUMP_READY, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
         }
     }
@@ -72,7 +72,7 @@ public final class JumpEnchantments {
         double boost = Mth.clamp((charge - 60) / (double) (FULL_CHARGE - 60), 0.0, 1.0);
         player.setDeltaMovement(0.0, 0.9 + boost * 1.1, 0.0);
         player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
-                WildscapesSounds.EMPOWERED_JUMP_LAUNCH.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                WildscapesSounds.EMPOWERED_JUMP_LAUNCH, SoundSource.PLAYERS, 1.0F, 1.0F);
         push(player);
     }
 
@@ -90,8 +90,8 @@ public final class JumpEnchantments {
         player.jumpFromGround();
         data.putInt(USED, used + 1);
         player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
-                WildscapesSounds.MULTI_JUMP.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-        player.serverLevel().sendParticles(WildscapesParticles.MULTI_JUMP.get(), player.getX(),
+                WildscapesSounds.MULTI_JUMP, SoundSource.PLAYERS, 1.0F, 1.0F);
+        player.serverLevel().sendParticles(WildscapesParticles.MULTI_JUMP, player.getX(),
                 player.getY() + 0.02, player.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
         push(player);
         return true;

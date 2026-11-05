@@ -31,6 +31,7 @@ import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.network.MirelashAttackPayload;
 import com.wildscapes.network.JumpPayload;
 import com.wildscapes.sound.WildscapesSounds;
+import com.wildscapes.worldgen.SwampBiomes;
 import com.wildscapes.worldgen.WildscapesFeatures;
 import com.wildscapes.worldgen.WildscapesPlacementModifiers;
 import com.wildscapes.worldgen.WildscapesStructures;
@@ -38,6 +39,7 @@ import com.wildscapes.worldgen.WildscapesStructures;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -50,15 +52,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.FireBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.registry.FabricPotionBrewingBuilder;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
+import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.village.WandererTradesEvent;
@@ -77,42 +80,42 @@ public class Wildscapes {
             CREATIVE_MODE_TABS.register("wildscapes", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.wildscapes"))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-                    .icon(() -> WildscapesBlocks.CYPRESS_SAPLING.get().asItem().getDefaultInstance())
+                    .icon(() -> WildscapesBlocks.CYPRESS_SAPLING.asItem().getDefaultInstance())
                     .displayItems((parameters, output) -> {
-                        output.accept(WildscapesBlocks.CYPRESS_LOG.get());
-                        output.accept(WildscapesBlocks.STRIPPED_CYPRESS_LOG.get());
-                        output.accept(WildscapesBlocks.CYPRESS_WOOD.get());
-                        output.accept(WildscapesBlocks.STRIPPED_CYPRESS_WOOD.get());
-                        output.accept(WildscapesBlocks.CYPRESS_PLANKS.get());
-                        output.accept(WildscapesBlocks.CYPRESS_STAIRS.get());
-                        output.accept(WildscapesBlocks.CYPRESS_SLAB.get());
-                        output.accept(WildscapesBlocks.CYPRESS_FENCE.get());
-                        output.accept(WildscapesBlocks.CYPRESS_FENCE_GATE.get());
-                        output.accept(WildscapesBlocks.CYPRESS_LEAVES.get());
-                        output.accept(WildscapesBlocks.CYPRESS_SAPLING.get());
-                        output.accept(WildscapesBlocks.CYPRESS_DOOR.get());
-                        output.accept(WildscapesBlocks.CYPRESS_TRAPDOOR.get());
-                        output.accept(WildscapesBlocks.CYPRESS_PRESSURE_PLATE.get());
-                        output.accept(WildscapesBlocks.CYPRESS_BUTTON.get());
+                        output.accept(WildscapesBlocks.CYPRESS_LOG);
+                        output.accept(WildscapesBlocks.STRIPPED_CYPRESS_LOG);
+                        output.accept(WildscapesBlocks.CYPRESS_WOOD);
+                        output.accept(WildscapesBlocks.STRIPPED_CYPRESS_WOOD);
+                        output.accept(WildscapesBlocks.CYPRESS_PLANKS);
+                        output.accept(WildscapesBlocks.CYPRESS_STAIRS);
+                        output.accept(WildscapesBlocks.CYPRESS_SLAB);
+                        output.accept(WildscapesBlocks.CYPRESS_FENCE);
+                        output.accept(WildscapesBlocks.CYPRESS_FENCE_GATE);
+                        output.accept(WildscapesBlocks.CYPRESS_LEAVES);
+                        output.accept(WildscapesBlocks.CYPRESS_SAPLING);
+                        output.accept(WildscapesBlocks.CYPRESS_DOOR);
+                        output.accept(WildscapesBlocks.CYPRESS_TRAPDOOR);
+                        output.accept(WildscapesBlocks.CYPRESS_PRESSURE_PLATE);
+                        output.accept(WildscapesBlocks.CYPRESS_BUTTON);
                         output.accept(WildscapesItems.CYPRESS_SIGN.get());
                         output.accept(WildscapesItems.CYPRESS_HANGING_SIGN.get());
                         output.accept(WildscapesItems.CYPRESS_BOAT.get());
                         output.accept(WildscapesItems.CYPRESS_CHEST_BOAT.get());
-                        output.accept(WildscapesBlocks.DUCKWEED.get());
-                        output.accept(WildscapesBlocks.RUSHES.get());
-                        output.accept(WildscapesBlocks.SHORT_RUSHES.get());
-                        output.accept(WildscapesBlocks.LUMINOUS_MUSHROOM.get());
-                        output.accept(WildscapesBlocks.BONFIRE.get());
-                        output.accept(WildscapesBlocks.SOUL_BONFIRE.get());
-                        output.accept(WildscapesBlocks.CAULDRON_OF_SOULS.get());
-                        output.accept(WildscapesBlocks.SUMMONING_BONFIRE.get());
-                        output.accept(MudBrickBlocks.CHISELED_MUD_BRICKS.get());
+                        output.accept(WildscapesBlocks.DUCKWEED);
+                        output.accept(WildscapesBlocks.RUSHES);
+                        output.accept(WildscapesBlocks.SHORT_RUSHES);
+                        output.accept(WildscapesBlocks.LUMINOUS_MUSHROOM);
+                        output.accept(WildscapesBlocks.BONFIRE);
+                        output.accept(WildscapesBlocks.SOUL_BONFIRE);
+                        output.accept(WildscapesBlocks.CAULDRON_OF_SOULS);
+                        output.accept(WildscapesBlocks.SUMMONING_BONFIRE);
+                        output.accept(MudBrickBlocks.CHISELED_MUD_BRICKS);
                         for (DyeColor color : DyeColor.values()) {
-                            output.accept(MudBrickBlocks.BRICKS.get(color).get());
-                            output.accept(MudBrickBlocks.CHISELED.get(color).get());
-                            output.accept(MudBrickBlocks.STAIRS.get(color).get());
-                            output.accept(MudBrickBlocks.SLABS.get(color).get());
-                            output.accept(MudBrickBlocks.WALLS.get(color).get());
+                            output.accept(MudBrickBlocks.BRICKS.get(color));
+                            output.accept(MudBrickBlocks.CHISELED.get(color));
+                            output.accept(MudBrickBlocks.STAIRS.get(color));
+                            output.accept(MudBrickBlocks.SLABS.get(color));
+                            output.accept(MudBrickBlocks.WALLS.get(color));
                         }
                         output.accept(WildscapesItems.FROG_LEGS.get());
                         output.accept(WildscapesItems.FROG_LEG_STEW.get());
@@ -180,29 +183,34 @@ public class Wildscapes {
                                         .getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
                     }).build());
 
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
+    }
+
     public Wildscapes(IEventBus modEventBus) {
-        WildscapesBlocks.register(modEventBus);
-        WildscapesBlockEntities.register(modEventBus);
+        WildscapesBlocks.register();
+        WildscapesBlockEntities.register();
         WildscapesItems.register(modEventBus);
         WitchCampMap.register(modEventBus);
-        WildscapesDataComponents.register(modEventBus);
-        WildscapesEntities.register(modEventBus);
-        WildscapesEffects.register(modEventBus);
-        WildscapesPotions.register(modEventBus);
+        WildscapesDataComponents.register();
+        WildscapesEntities.register();
+        WildscapesEffects.register();
+        WildscapesPotions.register();
         SwampVariants.register(modEventBus);
         SoulHarvest.register(modEventBus);
-        WildscapesSounds.register(modEventBus);
-        WildscapesParticles.register(modEventBus);
-        WildscapesFeatures.register(modEventBus);
-        WildscapesPlacementModifiers.register(modEventBus);
-        WildscapesStructures.register(modEventBus);
+        WildscapesSounds.register();
+        WildscapesParticles.register();
+        WildscapesFeatures.register();
+        WildscapesPlacementModifiers.register();
+        WildscapesStructures.register();
+        SwampBiomes.register();
         CREATIVE_MODE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::registerEntityAttributes);
-        modEventBus.addListener(MirelashAttackPayload::register);
-        modEventBus.addListener(JumpPayload::register);
-        NeoForge.EVENT_BUS.addListener(this::registerBrewingRecipes);
+        MirelashAttackPayload.register();
+        JumpPayload.register();
+        FabricPotionBrewingBuilder.BUILD.register(this::registerBrewingRecipes);
 
         NeoForge.EVENT_BUS.addListener(this::onLivingDrops);
         NeoForge.EVENT_BUS.addListener(this::onWandererTrades);
@@ -216,7 +224,7 @@ public class Wildscapes {
         NeoForge.EVENT_BUS.addListener(Intangibility::onMobTick);
         NeoForge.EVENT_BUS.addListener(Intangibility::onDamage);
         NeoForge.EVENT_BUS.addListener(MirelashItem::onPlayerTick);
-        NeoForge.EVENT_BUS.addListener(MudBrickDyeing::onRightClick);
+        UseBlockCallback.EVENT.register(MudBrickDyeing::onRightClick);
         NeoForge.EVENT_BUS.addListener(SlimeMerging::onEntityTick);
         NeoForge.EVENT_BUS.addListener(CauldronSwap::onRightClick);
         NeoForge.EVENT_BUS.addListener(CauldronSwap::onPlace);
@@ -247,17 +255,17 @@ public class Wildscapes {
     }
 
     private void registerEntityAttributes(EntityAttributeCreationEvent event) {
-        event.put(WildscapesEntities.ABOMINATION.get(), AbominationEntity.createAttributes().build());
+        event.put(WildscapesEntities.ABOMINATION, AbominationEntity.createAttributes().build());
     }
 
-    private void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
-        event.getBuilder().addMix(WildscapesPotions.GNASHING, Items.REDSTONE, WildscapesPotions.LONG_GNASHING);
-        event.getBuilder().addMix(WildscapesPotions.GNASHING, Items.GLOWSTONE_DUST, WildscapesPotions.STRONG_GNASHING);
-        event.getBuilder().addMix(Potions.AWKWARD, Items.ENDER_PEARL, WildscapesPotions.MIRAGE);
-        event.getBuilder().addMix(WildscapesPotions.MIRAGE, Items.REDSTONE, WildscapesPotions.LONG_MIRAGE);
-        event.getBuilder().addMix(Potions.AWKWARD, Items.TURTLE_EGG, WildscapesPotions.RESISTANCE);
-        event.getBuilder().addMix(WildscapesPotions.RESISTANCE, Items.REDSTONE, WildscapesPotions.LONG_RESISTANCE);
-        event.getBuilder().addMix(WildscapesPotions.RESISTANCE, Items.GLOWSTONE_DUST,
+    private void registerBrewingRecipes(PotionBrewing.Builder builder) {
+        builder.addMix(WildscapesPotions.GNASHING, Items.REDSTONE, WildscapesPotions.LONG_GNASHING);
+        builder.addMix(WildscapesPotions.GNASHING, Items.GLOWSTONE_DUST, WildscapesPotions.STRONG_GNASHING);
+        builder.addMix(Potions.AWKWARD, Items.ENDER_PEARL, WildscapesPotions.MIRAGE);
+        builder.addMix(WildscapesPotions.MIRAGE, Items.REDSTONE, WildscapesPotions.LONG_MIRAGE);
+        builder.addMix(Potions.AWKWARD, Items.TURTLE_EGG, WildscapesPotions.RESISTANCE);
+        builder.addMix(WildscapesPotions.RESISTANCE, Items.REDSTONE, WildscapesPotions.LONG_RESISTANCE);
+        builder.addMix(WildscapesPotions.RESISTANCE, Items.GLOWSTONE_DUST,
                 WildscapesPotions.STRONG_RESISTANCE);
     }
 
@@ -269,17 +277,17 @@ public class Wildscapes {
             DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_CHEST_BOAT.get(),
                     new BoatDispenseItemBehavior(CypressBoat.TYPE.getValue(), true));
 
-            FireBlock fire = (FireBlock) Blocks.FIRE;
-            fire.setFlammable(WildscapesBlocks.CYPRESS_LOG.get(), 5, 5);
-            fire.setFlammable(WildscapesBlocks.STRIPPED_CYPRESS_LOG.get(), 5, 5);
-            fire.setFlammable(WildscapesBlocks.CYPRESS_WOOD.get(), 5, 5);
-            fire.setFlammable(WildscapesBlocks.STRIPPED_CYPRESS_WOOD.get(), 5, 5);
-            fire.setFlammable(WildscapesBlocks.CYPRESS_PLANKS.get(), 5, 20);
-            fire.setFlammable(WildscapesBlocks.CYPRESS_STAIRS.get(), 5, 20);
-            fire.setFlammable(WildscapesBlocks.CYPRESS_SLAB.get(), 5, 20);
-            fire.setFlammable(WildscapesBlocks.CYPRESS_FENCE.get(), 5, 20);
-            fire.setFlammable(WildscapesBlocks.CYPRESS_FENCE_GATE.get(), 5, 20);
-            fire.setFlammable(WildscapesBlocks.CYPRESS_LEAVES.get(), 30, 60);
+            FlammableBlockRegistry fire = FlammableBlockRegistry.getDefaultInstance();
+            fire.add(WildscapesBlocks.CYPRESS_LOG, 5, 5);
+            fire.add(WildscapesBlocks.STRIPPED_CYPRESS_LOG, 5, 5);
+            fire.add(WildscapesBlocks.CYPRESS_WOOD, 5, 5);
+            fire.add(WildscapesBlocks.STRIPPED_CYPRESS_WOOD, 5, 5);
+            fire.add(WildscapesBlocks.CYPRESS_PLANKS, 5, 20);
+            fire.add(WildscapesBlocks.CYPRESS_STAIRS, 5, 20);
+            fire.add(WildscapesBlocks.CYPRESS_SLAB, 5, 20);
+            fire.add(WildscapesBlocks.CYPRESS_FENCE, 5, 20);
+            fire.add(WildscapesBlocks.CYPRESS_FENCE_GATE, 5, 20);
+            fire.add(WildscapesBlocks.CYPRESS_LEAVES, 30, 60);
         });
     }
 }

@@ -11,7 +11,7 @@ public final class SoulCauldronHum extends AbstractTickableSoundInstance {
     private final CauldronOfSoulsBlockEntity cauldron;
 
     private SoulCauldronHum(CauldronOfSoulsBlockEntity cauldron) {
-        super(WildscapesSounds.CAULDRON_OF_SOULS_HUM.get(), SoundSource.BLOCKS, cauldron.getLevel().getRandom());
+        super(WildscapesSounds.CAULDRON_OF_SOULS_HUM, SoundSource.BLOCKS, cauldron.getLevel().getRandom());
         this.cauldron = cauldron;
         this.looping = true;
         this.delay = 0;

@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +38,7 @@ public final class AdvancementTests {
         BlockPos pos = new BlockPos(5, 3, 5);
         BlockPos at = helper.absolutePos(pos);
         helper.setBlock(pos.below(), Blocks.CAMPFIRE.defaultBlockState());
-        helper.setBlock(pos, WildscapesBlocks.CAULDRON.get().defaultBlockState()
+        helper.setBlock(pos, WildscapesBlocks.CAULDRON.defaultBlockState()
                 .setValue(WildscapesCauldronBlock.BOILING, true));
         var be = (CauldronBlockEntity) level.getBlockEntity(at);
         be.setPlainWater(3);
@@ -79,7 +79,7 @@ public final class AdvancementTests {
     }
 
     private static boolean earned(ServerPlayer player, String path) {
-        var advancement = player.server.getAdvancements().get(ResourceLocation.fromNamespaceAndPath("wildscapes", path));
+        var advancement = player.server.getAdvancements().get(Identifier.fromNamespaceAndPath("wildscapes", path));
         return player.getAdvancements().getOrStartProgress(advancement).isDone();
     }
 }

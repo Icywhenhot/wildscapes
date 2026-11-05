@@ -19,7 +19,7 @@ public final class MossCarpetSwap {
         }
         BlockPos pos = event.getPos();
         if (level.getBlockState(pos).is(Blocks.MOSS_CARPET)) {
-            level.setBlock(pos, WildscapesBlocks.MOSS_CARPET.get().defaultBlockState(), Block.UPDATE_ALL);
+            level.setBlock(pos, WildscapesBlocks.MOSS_CARPET.defaultBlockState(), Block.UPDATE_ALL);
         }
     }
 
@@ -31,7 +31,7 @@ public final class MossCarpetSwap {
             return;
         }
         BlockPos pos = event.getPos();
-        BlockState draping = WildscapesBlocks.MOSS_CARPET.get().defaultBlockState();
+        BlockState draping = WildscapesBlocks.MOSS_CARPET.defaultBlockState();
 
         level.setBlock(pos, draping, Block.UPDATE_ALL);
     }

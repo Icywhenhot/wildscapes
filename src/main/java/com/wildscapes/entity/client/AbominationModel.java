@@ -4,7 +4,7 @@ import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.SoulHarvest;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import software.bernie.geckolib.animation.AnimationState;
@@ -15,16 +15,16 @@ import software.bernie.geckolib.model.data.EntityModelData;
 
 public class AbominationModel extends GeoModel<AbominationEntity> {
     private static final int FRAME_TICKS = 3;
-    private static final ResourceLocation[] FRAMES = strip("abomination_", 10);
-    private static final ResourceLocation[] GLOW = strip("abomination_glow_", 10);
-    private static final ResourceLocation[] EMPOWERED = strip("abomination_empowered_", 10);
-    private static final ResourceLocation[] EMPOWERED_GLOW = strip("abomination_empowered_glow_", 10);
+    private static final Identifier[] FRAMES = strip("abomination_", 10);
+    private static final Identifier[] GLOW = strip("abomination_glow_", 10);
+    private static final Identifier[] EMPOWERED = strip("abomination_empowered_", 10);
+    private static final Identifier[] EMPOWERED_GLOW = strip("abomination_empowered_glow_", 10);
     private static final int CYCLE = FRAMES.length * FRAME_TICKS;
 
-    private static ResourceLocation[] strip(String prefix, int count) {
-        ResourceLocation[] out = new ResourceLocation[count];
+    private static Identifier[] strip(String prefix, int count) {
+        Identifier[] out = new Identifier[count];
         for (int i = 0; i < count; i++) {
-            out[i] = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+            out[i] = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
                     "textures/entity/" + prefix + i + ".png");
         }
         return out;
@@ -35,18 +35,18 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
         return t < 0 ? t + CYCLE : t;
     }
 
-    public static ResourceLocation glowFrame(AbominationEntity animatable) {
-        ResourceLocation[] glow = SoulHarvest.isEmpowered(animatable) ? EMPOWERED_GLOW : GLOW;
+    public static Identifier glowFrame(AbominationEntity animatable) {
+        Identifier[] glow = SoulHarvest.isEmpowered(animatable) ? EMPOWERED_GLOW : GLOW;
         return glow[phase(animatable) * glow.length / CYCLE];
     }
 
     @Override
-    public ResourceLocation getModelResource(AbominationEntity animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "geo/abomination.geo.json");
+    public Identifier getModelResource(AbominationEntity animatable) {
+        return Identifier.fromNamespaceAndPath(Wildscapes.MODID, "geo/abomination.geo.json");
     }
 
     @Override
-    public ResourceLocation getTextureResource(AbominationEntity animatable) {
+    public Identifier getTextureResource(AbominationEntity animatable) {
         if (SoulHarvest.isEmpowered(animatable)) {
             return EMPOWERED[phase(animatable) * EMPOWERED.length / CYCLE];
         }
@@ -54,8 +54,8 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
     }
 
     @Override
-    public ResourceLocation getAnimationResource(AbominationEntity animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "animations/abomination.animation.json");
+    public Identifier getAnimationResource(AbominationEntity animatable) {
+        return Identifier.fromNamespaceAndPath(Wildscapes.MODID, "animations/abomination.animation.json");
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.wildscapes.block;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
@@ -53,7 +53,7 @@ public class CauldronOfSoulsBlock extends Block implements EntityBlock {
         if (state.getValue(PHASE) == Phase.INACTIVE || random.nextInt(4) != 0) {
             return;
         }
-        level.addParticle(WildscapesParticles.CAULDRON_SWIRL.get(),
+        level.addParticle(WildscapesParticles.CAULDRON_SWIRL,
                 pos.getX() + 0.25 + random.nextDouble() * 0.5, pos.getY() + 1.05, pos.getZ() + 0.25 + random.nextDouble() * 0.5,
                 0.0, 0.03 + random.nextDouble() * 0.02, 0.0);
     }
@@ -68,7 +68,7 @@ public class CauldronOfSoulsBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (type != WildscapesBlockEntities.CAULDRON_OF_SOULS.get()) {
+        if (type != WildscapesBlockEntities.CAULDRON_OF_SOULS) {
             return null;
         }
         BlockEntityTicker<CauldronOfSoulsBlockEntity> ticker = level.isClientSide

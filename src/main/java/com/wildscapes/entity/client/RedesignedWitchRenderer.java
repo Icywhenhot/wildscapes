@@ -9,14 +9,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.WitchItemLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Witch;
 
 public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch>> {
-    private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
-    private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
+    private static final Identifier TEXTURE =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
+    private static final Identifier EMPOWERED =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
 
     public RedesignedWitchRenderer(EntityRendererProvider.Context context) {
         super(context, new WitchModel<>(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
@@ -32,7 +32,7 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Witch entity) {
+    public Identifier getTextureLocation(Witch entity) {
         return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 

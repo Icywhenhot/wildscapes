@@ -76,13 +76,13 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
             }
         }
 
-        BlockState log = WildscapesBlocks.CYPRESS_LOG.get().defaultBlockState()
+        BlockState log = WildscapesBlocks.CYPRESS_LOG.defaultBlockState()
                 .setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
         for (int[] c : tLogs) {
             placeLog(level, transform(origin, c, rotation, mirror), log);
         }
 
-        BlockState leaf = WildscapesBlocks.CYPRESS_LEAVES.get().defaultBlockState()
+        BlockState leaf = WildscapesBlocks.CYPRESS_LEAVES.defaultBlockState()
                 .setValue(LeavesBlock.PERSISTENT, true)
                 .setValue(LeavesBlock.DISTANCE, 1);
         for (int[] c : tLeaves) {
@@ -161,12 +161,12 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
     }
 
     private static boolean occupied(BlockState state) {
-        return state.is(BlockTags.LOGS) || state.is(WildscapesBlocks.CYPRESS_LEAVES.get());
+        return state.is(BlockTags.LOGS) || state.is(WildscapesBlocks.CYPRESS_LEAVES);
     }
 
     private static boolean isTreeBlock(BlockState state) {
-        return state.is(WildscapesBlocks.CYPRESS_LOG.get())
-                || state.is(WildscapesBlocks.CYPRESS_LEAVES.get());
+        return state.is(WildscapesBlocks.CYPRESS_LOG)
+                || state.is(WildscapesBlocks.CYPRESS_LEAVES);
     }
 
     private static boolean canReplace(WorldGenLevel level, BlockPos pos) {

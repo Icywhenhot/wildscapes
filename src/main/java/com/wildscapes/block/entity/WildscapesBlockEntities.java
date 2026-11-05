@@ -1,31 +1,26 @@
 package com.wildscapes.block.entity;
 
 import com.wildscapes.Wildscapes;
+
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.minecraft.core.Registry;
 import com.wildscapes.block.WildscapesBlocks;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class WildscapesBlockEntities {
     private WildscapesBlockEntities() {}
 
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Wildscapes.MODID);
+    public static final BlockEntityType<CauldronBlockEntity> CAULDRON =
+            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Wildscapes.id("cauldron"), FabricBlockEntityTypeBuilder
+                    .create(CauldronBlockEntity::new, WildscapesBlocks.CAULDRON)
+                    .build());
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CauldronBlockEntity>> CAULDRON =
-            BLOCK_ENTITIES.register("cauldron", () -> BlockEntityType.Builder
-                    .of(CauldronBlockEntity::new, WildscapesBlocks.CAULDRON.get())
-                    .build(null));
+    public static final BlockEntityType<CauldronOfSoulsBlockEntity> CAULDRON_OF_SOULS =
+            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Wildscapes.id("cauldron_of_souls"), FabricBlockEntityTypeBuilder
+                    .create(CauldronOfSoulsBlockEntity::new, WildscapesBlocks.CAULDRON_OF_SOULS)
+                    .build());
 
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CauldronOfSoulsBlockEntity>> CAULDRON_OF_SOULS =
-            BLOCK_ENTITIES.register("cauldron_of_souls", () -> BlockEntityType.Builder
-                    .of(CauldronOfSoulsBlockEntity::new, WildscapesBlocks.CAULDRON_OF_SOULS.get())
-                    .build(null));
-
-    public static void register(IEventBus bus) {
-        BLOCK_ENTITIES.register(bus);
-    }
+    public static void register() {}
 }

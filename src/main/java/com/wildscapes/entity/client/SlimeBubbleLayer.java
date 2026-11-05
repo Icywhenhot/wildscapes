@@ -12,12 +12,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public final class SlimeBubbleLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
             "textures/entity/slime_bubble.png");
     private final ModelPart bubble;
 

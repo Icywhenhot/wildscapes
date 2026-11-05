@@ -10,7 +10,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
@@ -29,7 +29,7 @@ public final class WitchCampMapTests {
     public static void mapKeepsItsDestinationWhenSavedAndCopied(GameTestHelper helper) {
         var level = helper.getLevel();
         var camp = level.registryAccess().registryOrThrow(Registries.STRUCTURE).getHolderOrThrow(
-                ResourceKey.create(Registries.STRUCTURE, ResourceLocation.parse("wildscapes:witch_camp")));
+                ResourceKey.create(Registries.STRUCTURE, Identifier.parse("wildscapes:witch_camp")));
         helper.assertTrue(camp.is(WitchCampMap.DESTINATION), "witch camp missing from map destinations");
         ItemStack map = MapItem.create(level, 0, 0, (byte) 2, true, true);
         helper.assertTrue(!WitchCampMap.isWitchCampMap(map), "ordinary map has witch camp icon");

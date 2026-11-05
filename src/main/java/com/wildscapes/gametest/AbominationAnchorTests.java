@@ -41,7 +41,7 @@ public final class AbominationAnchorTests {
         CompoundTag saved = mob.saveWithoutId(new CompoundTag());
         mob.discard();
 
-        AbominationEntity loaded = WildscapesEntities.ABOMINATION.get().create(helper.getLevel());
+        AbominationEntity loaded = WildscapesEntities.ABOMINATION.create(helper.getLevel());
         loaded.load(saved);
         helper.assertTrue(anchor.equals(loaded.getRestrictCenter())
                 && loaded.getRestrictRadius() == AbominationEntity.ANCHOR_RADIUS,
@@ -50,7 +50,7 @@ public final class AbominationAnchorTests {
     }
 
     private static AbominationEntity spawnAt(ServerLevel level, BlockPos pos) {
-        AbominationEntity mob = WildscapesEntities.ABOMINATION.get().create(level);
+        AbominationEntity mob = WildscapesEntities.ABOMINATION.create(level);
         mob.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
         level.addFreshEntity(mob);

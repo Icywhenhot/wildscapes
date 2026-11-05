@@ -43,7 +43,7 @@ public class OvergrowthProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.OVERGROWTH.get();
+        return WildscapesStructures.OVERGROWTH;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class OvergrowthProcessor extends StructureProcessor {
     private BlockState grow(Map<BlockPos, BlockState> standing, BlockPos at, RandomSource random,
             Rotation rotation, Mirror mirror) {
         if (holds(standing.get(at.below())) && random.nextFloat() < moss) {
-            return WildscapesBlocks.MOSS_CARPET.get().defaultBlockState();
+            return WildscapesBlocks.MOSS_CARPET.defaultBlockState();
         }
         if (random.nextFloat() >= vines) {
             return null;

@@ -8,7 +8,7 @@ import com.wildscapes.particle.WildscapesParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
@@ -36,8 +36,8 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 public final class SoulHarvest {
     private SoulHarvest() {}
 
-    private static final ResourceLocation HEALTH_BOOST =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
+    private static final Identifier HEALTH_BOOST =
+            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
 
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Wildscapes.MODID);
@@ -95,7 +95,7 @@ public final class SoulHarvest {
         if (level.getBlockEntity(dead.getData(ORIGIN)) instanceof CauldronOfSoulsBlockEntity cauldron) {
             cauldron.onMobDeath(dead, event.getSource());
         } else if (isEmpowered(dead)) {
-            level.sendParticles(WildscapesParticles.LOST_SOUL.get(), dead.getX(), dead.getY(0.6), dead.getZ(),
+            level.sendParticles(WildscapesParticles.LOST_SOUL, dead.getX(), dead.getY(0.6), dead.getZ(),
                     6, 0.3, 0.4, 0.3, 0.02);
         }
     }
@@ -126,9 +126,9 @@ public final class SoulHarvest {
             return;
         }
         SimpleParticleType type = switch (random.nextInt(3)) {
-            case 0 -> WildscapesParticles.EMPOWERED_WISP.get();
-            case 1 -> WildscapesParticles.EMPOWERED_RING.get();
-            default -> WildscapesParticles.EMPOWERED_SOUL.get();
+            case 0 -> WildscapesParticles.EMPOWERED_WISP;
+            case 1 -> WildscapesParticles.EMPOWERED_RING;
+            default -> WildscapesParticles.EMPOWERED_SOUL;
         };
         double angle = random.nextDouble() * Math.PI * 2.0;
         double r = entity.getBbWidth() * 0.7 + 0.2;

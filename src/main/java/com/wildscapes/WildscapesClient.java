@@ -44,7 +44,7 @@ import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -67,28 +67,28 @@ public final class WildscapesClient {
         event.enqueueWork(() -> {
             Sheets.addWoodType(WildscapesBlocks.CYPRESS_TYPE);
             ItemProperties.register(Items.FILLED_MAP,
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"),
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"),
                     (stack, level, holder, seed) -> WitchCampMap.isWitchCampMap(stack) ? 1F : 0F);
             ItemProperties.register(WildscapesItems.MIRELASH.get(),
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "active"),
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "active"),
                     (stack, level, holder, seed) -> level != null && holder != null
                             && MirelashItem.isHookOut(level, holder) ? 1F : 0F);
             ItemProperties.register(WildscapesItems.ILLUSIONIST_NECKLACE.get(),
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "active"),
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "active"),
                     (stack, level, holder, seed) -> holder instanceof Player player
                             && (player.getMainHandItem() == stack || player.getOffhandItem() == stack)
                             && Intangibility.isActive(player) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"),
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"),
                     (stack, level, holder, seed) -> hasStoredEnchantment(stack, MirelashItem.ELASTICITY) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"),
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"),
                     (stack, level, holder, seed) -> hasStoredEnchantment(stack, MirelashItem.SLIME_SNARE) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"),
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"),
                     (stack, level, holder, seed) -> hasStoredEnchantment(stack, JumpEnchantments.MULTI_JUMP) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"),
+                    Identifier.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"),
                     (stack, level, holder, seed) -> hasStoredEnchantment(stack, JumpEnchantments.EMPOWERED_JUMP) ? 1F : 0F);
         });
     }
@@ -127,10 +127,10 @@ public final class WildscapesClient {
 
     @SubscribeEvent
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(WildscapesEntities.ABOMINATION.get(), AbominationRenderer::new);
-        event.registerEntityRenderer(WildscapesEntities.MIRELASH_HOOK.get(), MirelashHookRenderer::new);
-        event.registerEntityRenderer(WildscapesEntities.RESIDUE_CLOUD.get(), NoopRenderer::new);
-        event.registerEntityRenderer(WildscapesEntities.INCENDIARY_BOTTLE.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(WildscapesEntities.ABOMINATION, AbominationRenderer::new);
+        event.registerEntityRenderer(WildscapesEntities.MIRELASH_HOOK, MirelashHookRenderer::new);
+        event.registerEntityRenderer(WildscapesEntities.RESIDUE_CLOUD, NoopRenderer::new);
+        event.registerEntityRenderer(WildscapesEntities.INCENDIARY_BOTTLE, ThrownItemRenderer::new);
 
         event.registerEntityRenderer(EntityType.PILLAGER, SwampPillagerRenderer::new);
         event.registerEntityRenderer(EntityType.VINDICATOR, SwampVindicatorRenderer::new);
@@ -140,8 +140,8 @@ public final class WildscapesClient {
         event.registerEntityRenderer(EntityType.EVOKER, EmpoweredEvokerRenderer::new);
         event.registerEntityRenderer(EntityType.SLIME, RedesignedSlimeRenderer::new);
 
-        event.registerBlockEntityRenderer(WildscapesBlockEntities.CAULDRON.get(), CauldronRenderer::new);
-        event.registerBlockEntityRenderer(WildscapesBlockEntities.CAULDRON_OF_SOULS.get(), CauldronOfSoulsRenderer::new);
+        event.registerBlockEntityRenderer(WildscapesBlockEntities.CAULDRON, CauldronRenderer::new);
+        event.registerBlockEntityRenderer(WildscapesBlockEntities.CAULDRON_OF_SOULS, CauldronOfSoulsRenderer::new);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -158,39 +158,39 @@ public final class WildscapesClient {
 
     @SubscribeEvent
     static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(WildscapesParticles.BREW_BUBBLE.get(), BrewBubbleParticle.Provider::new);
-        event.registerSpriteSet(WildscapesParticles.INGREDIENT_STEAM.get(), IngredientSteamParticle.Provider::new);
-        event.registerSpriteSet(WildscapesParticles.RESIDUE_SPLAT.get(),
+        event.registerSpriteSet(WildscapesParticles.BREW_BUBBLE, BrewBubbleParticle.Provider::new);
+        event.registerSpriteSet(WildscapesParticles.INGREDIENT_STEAM, IngredientSteamParticle.Provider::new);
+        event.registerSpriteSet(WildscapesParticles.RESIDUE_SPLAT,
                 sprites -> new ResidueParticle.Provider(sprites, 11, 2.4F, 0.82F, 0.02F));
-        event.registerSpriteSet(WildscapesParticles.RESIDUE_WISP.get(),
+        event.registerSpriteSet(WildscapesParticles.RESIDUE_WISP,
                 sprites -> new ResidueParticle.Provider(sprites, 18, 0.9F, 0.95F, 0.01F));
-        event.registerSpriteSet(WildscapesParticles.RESIDUE_SWIRL.get(),
+        event.registerSpriteSet(WildscapesParticles.RESIDUE_SWIRL,
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.3F, 0.93F, 0.02F));
-        event.registerSpriteSet(WildscapesParticles.SOUL_TRAIL.get(), SoulTrailParticle.Provider::new);
-        event.registerSpriteSet(WildscapesParticles.MULTI_JUMP.get(), MultiJumpParticle.Provider::new);
-        event.registerSpriteSet(WildscapesParticles.SOUL_HARVEST_SPARK.get(),
+        event.registerSpriteSet(WildscapesParticles.SOUL_TRAIL, SoulTrailParticle.Provider::new);
+        event.registerSpriteSet(WildscapesParticles.MULTI_JUMP, MultiJumpParticle.Provider::new);
+        event.registerSpriteSet(WildscapesParticles.SOUL_HARVEST_SPARK,
                 sprites -> new ResidueParticle.Provider(sprites, 16, 0.5F, 0.92F, 0.01F));
-        event.registerSpriteSet(WildscapesParticles.EMPOWERED_WISP.get(),
+        event.registerSpriteSet(WildscapesParticles.EMPOWERED_WISP,
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.1F, 0.94F, 0.0F));
-        event.registerSpriteSet(WildscapesParticles.EMPOWERED_RING.get(),
+        event.registerSpriteSet(WildscapesParticles.EMPOWERED_RING,
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.2F, 0.94F, 0.0F));
-        event.registerSpriteSet(WildscapesParticles.EMPOWERED_SOUL.get(),
+        event.registerSpriteSet(WildscapesParticles.EMPOWERED_SOUL,
                 sprites -> new ResidueParticle.Provider(sprites, 16, 0.9F, 0.94F, 0.01F));
-        event.registerSpriteSet(WildscapesParticles.SOUL_MOTE.get(),
+        event.registerSpriteSet(WildscapesParticles.SOUL_MOTE,
                 sprites -> new ResidueParticle.Provider(sprites, 20, 0.35F, 0.9F, 0.01F));
-        event.registerSpriteSet(WildscapesParticles.LOST_SOUL.get(),
+        event.registerSpriteSet(WildscapesParticles.LOST_SOUL,
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.4F, 0.9F, 0.02F));
-        event.registerSpriteSet(WildscapesParticles.BONFIRE_EMBER.get(),
+        event.registerSpriteSet(WildscapesParticles.BONFIRE_EMBER,
                 sprites -> new ResidueParticle.Provider(sprites, 18, 0.3F, 0.96F, 0.0F));
-        event.registerSpriteSet(WildscapesParticles.CAULDRON_SWIRL.get(),
+        event.registerSpriteSet(WildscapesParticles.CAULDRON_SWIRL,
                 sprites -> new ResidueParticle.Provider(sprites, 16, 1.2F, 0.95F, 0.01F));
-        event.registerSpriteSet(WildscapesParticles.CAULDRON_REWARD.get(),
+        event.registerSpriteSet(WildscapesParticles.CAULDRON_REWARD,
                 sprites -> new ResidueParticle.Provider(sprites, 14, 1.5F, 0.9F, 0.02F));
-        event.registerSpriteSet(WildscapesParticles.SUMMON_WRAITH.get(),
+        event.registerSpriteSet(WildscapesParticles.SUMMON_WRAITH,
                 sprites -> new ResidueParticle.Provider(sprites, 16, 1.8F, 0.92F, 0.02F));
-        event.registerSpriteSet(WildscapesParticles.SUMMON_RISE.get(),
+        event.registerSpriteSet(WildscapesParticles.SUMMON_RISE,
                 sprites -> new ResidueParticle.Provider(sprites, 16, 1.6F, 0.9F, 0.03F));
-        event.registerSpriteSet(WildscapesParticles.SUMMON_MOTE.get(),
+        event.registerSpriteSet(WildscapesParticles.SUMMON_MOTE,
                 sprites -> new ResidueParticle.Provider(sprites, 18, 0.35F, 0.92F, 0.02F));
     }
 }

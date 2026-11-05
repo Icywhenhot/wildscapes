@@ -16,7 +16,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
@@ -33,10 +33,10 @@ import net.neoforged.neoforge.client.model.data.ModelProperty;
 @EventBusSubscriber(modid = Wildscapes.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
     private static final ModelProperty<Boolean> SWAMP = new ModelProperty<>();
-    private final Map<ResourceLocation, TextureAtlasSprite> textures;
+    private final Map<Identifier, TextureAtlasSprite> textures;
     private final Map<BakedQuad, BakedQuad> quads = new ConcurrentHashMap<>();
 
-    private SwampMossModel(BakedModel model, Map<ResourceLocation, TextureAtlasSprite> textures) {
+    private SwampMossModel(BakedModel model, Map<Identifier, TextureAtlasSprite> textures) {
         super(model);
         this.textures = textures;
     }
@@ -44,11 +44,11 @@ public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
     @SubscribeEvent
     static void onModels(ModelEvent.ModifyBakingResult event) {
         var textures = Map.of(
-                ResourceLocation.withDefaultNamespace("block/moss_block"), sprite(event, "swamp_moss_block"),
-                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape"), sprite(event, "swamp_moss_drape"),
-                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape_end"), sprite(event, "swamp_moss_drape_end"));
+                Identifier.withDefaultNamespace("block/moss_block"), sprite(event, "swamp_moss_block"),
+                Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape"), sprite(event, "swamp_moss_drape"),
+                Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape_end"), sprite(event, "swamp_moss_drape_end"));
         for (var block : List.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET,
-                WildscapesBlocks.MOSS_CARPET.get(), WildscapesBlocks.HANGING_MOSS.get())) {
+                WildscapesBlocks.MOSS_CARPET, WildscapesBlocks.HANGING_MOSS)) {
             for (var state : block.getStateDefinition().getPossibleStates()) {
                 var id = BlockModelShaper.stateToModelLocation(state);
                 event.getModels().computeIfPresent(id, (key, model) -> new SwampMossModel(model, textures));
@@ -58,7 +58,7 @@ public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
 
     private static TextureAtlasSprite sprite(ModelEvent.ModifyBakingResult event, String name) {
         return event.getTextureGetter().apply(new Material(TextureAtlas.LOCATION_BLOCKS,
-                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/" + name)));
+                Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/" + name)));
     }
 
     @Override

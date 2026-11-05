@@ -77,6 +77,6 @@ public class ShoreDensityFilter extends PlacementFilter {
 
     @Override
     public PlacementModifierType<?> type() {
-        return WildscapesPlacementModifiers.SHORE_DENSITY.get();
+        return WildscapesPlacementModifiers.SHORE_DENSITY;
     }
 }

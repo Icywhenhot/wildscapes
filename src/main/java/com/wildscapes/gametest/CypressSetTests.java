@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.GameType;
@@ -47,7 +47,7 @@ public final class CypressSetTests {
         var level = helper.getLevel();
         var input = CraftingInput.of(3, 2, List.of(new ItemStack(Items.POTATO),
                 new ItemStack(WildscapesItems.FROG_LEGS.get()), new ItemStack(Items.BOWL),
-                new ItemStack(WildscapesBlocks.LUMINOUS_MUSHROOM.get()), ItemStack.EMPTY, new ItemStack(Items.CARROT)));
+                new ItemStack(WildscapesBlocks.LUMINOUS_MUSHROOM), ItemStack.EMPTY, new ItemStack(Items.CARROT)));
         var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
         helper.assertTrue(recipe.isPresent(), "frog leg stew recipe missing");
         var stew = recipe.get().value().assemble(input, level.registryAccess());
@@ -69,8 +69,8 @@ public final class CypressSetTests {
     private static void signsHoldSignBlockEntities(GameTestHelper helper) {
         BlockPos sign = new BlockPos(1, 2, 1);
         BlockPos hanging = new BlockPos(3, 2, 1);
-        helper.setBlock(sign, WildscapesBlocks.CYPRESS_SIGN.get());
-        helper.setBlock(hanging, WildscapesBlocks.CYPRESS_HANGING_SIGN.get());
+        helper.setBlock(sign, WildscapesBlocks.CYPRESS_SIGN);
+        helper.setBlock(hanging, WildscapesBlocks.CYPRESS_HANGING_SIGN);
         helper.assertTrue(helper.getBlockEntity(sign) instanceof SignBlockEntity, "cypress sign has no sign entity");
         helper.assertTrue(helper.getBlockEntity(hanging) instanceof HangingSignBlockEntity,
                 "cypress hanging sign has no hanging sign entity");
@@ -79,7 +79,7 @@ public final class CypressSetTests {
     private static void boatsUseTheCypressType(GameTestHelper helper) {
         Boat.Type type = CypressBoat.TYPE.getValue();
         helper.assertTrue(type.getName().equals("wildscapes:cypress"), "wrong boat type name");
-        helper.assertTrue(type.getPlanks() == WildscapesBlocks.CYPRESS_PLANKS.get(), "boat drops the wrong planks");
+        helper.assertTrue(type.getPlanks() == WildscapesBlocks.CYPRESS_PLANKS, "boat drops the wrong planks");
         Boat boat = new Boat(helper.getLevel(), 0, 0, 0);
         boat.setVariant(type);
         helper.assertTrue(boat.getDropItem() == WildscapesItems.CYPRESS_BOAT.get(), "boat drops the wrong item");
@@ -91,8 +91,8 @@ public final class CypressSetTests {
     }
 
     private static void raidBlocksAreUnbreakable(GameTestHelper helper) {
-        for (BlockState state : List.of(WildscapesBlocks.CAULDRON_OF_SOULS.get().defaultBlockState(),
-                WildscapesBlocks.SUMMONING_BONFIRE.get().defaultBlockState())) {
+        for (BlockState state : List.of(WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState(),
+                WildscapesBlocks.SUMMONING_BONFIRE.defaultBlockState())) {
             helper.assertTrue(state.getDestroySpeed(helper.getLevel(), BlockPos.ZERO) < 0, state + " can be mined");
         }
     }
@@ -105,13 +105,13 @@ public final class CypressSetTests {
     }
 
     private static void swampPlantsCompost(GameTestHelper helper) {
-        for (var item : List.of(WildscapesBlocks.DUCKWEED.get().asItem(), WildscapesBlocks.RUSHES.get().asItem(),
-                WildscapesBlocks.CYPRESS_LEAVES.get().asItem(), WildscapesBlocks.LUMINOUS_MUSHROOM.get().asItem())) {
+        for (var item : List.of(WildscapesBlocks.DUCKWEED.asItem(), WildscapesBlocks.RUSHES.asItem(),
+                WildscapesBlocks.CYPRESS_LEAVES.asItem(), WildscapesBlocks.LUMINOUS_MUSHROOM.asItem())) {
             helper.assertTrue(item.builtInRegistryHolder().getData(NeoForgeDataMaps.COMPOSTABLES) != null,
                     item + " is not compostable");
         }
         var advancement = helper.getLevel().getServer().getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath("wildscapes", "recipes/building_blocks/cypress_planks"));
+                .get(Identifier.fromNamespaceAndPath("wildscapes", "recipes/building_blocks/cypress_planks"));
         helper.assertTrue(advancement != null, "cypress planks recipe has no unlock advancement");
     }
 }

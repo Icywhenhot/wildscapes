@@ -12,7 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
@@ -38,7 +38,7 @@ public class TreePlacementTests {
                 + helper.getBlockState(GROUND) + ", below it: " + helper.getBlockState(GROUND.below()));
 
         helper.succeedWhen(() -> {
-            assertPresent(helper, WildscapesBlocks.CYPRESS_LOG.get().defaultBlockState(), "cypress log");
+            assertPresent(helper, WildscapesBlocks.CYPRESS_LOG.defaultBlockState(), "cypress log");
             assertAbsent(helper, Blocks.DARK_OAK_LOG.defaultBlockState(), "dark oak log");
             assertAbsent(helper, Blocks.MANGROVE_LEAVES.defaultBlockState(), "mangrove leaves");
         });
@@ -90,7 +90,7 @@ public class TreePlacementTests {
     @GameTest(template = PLATFORM)
     public static void saplingTreeHangsNoFlatVines(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        boolean placed = WildscapesFeatures.CYPRESS_TREE.get().place(new FeaturePlaceContext<>(
+        boolean placed = WildscapesFeatures.CYPRESS_TREE.place(new FeaturePlaceContext<>(
                 Optional.empty(), level, level.getChunkSource().getGenerator(), level.getRandom(),
                 helper.absolutePos(GROUND), NoneFeatureConfiguration.INSTANCE));
         helper.assertTrue(placed, "the sapling tree refused to grow on dirt");
@@ -168,7 +168,7 @@ public class TreePlacementTests {
                         continue;
                     }
                     BlockState above = helper.getBlockState(pos.above());
-                    if (above.is(WildscapesBlocks.MOSS_CARPET.get())) {
+                    if (above.is(WildscapesBlocks.MOSS_CARPET)) {
                         tops++;
                         mossy++;
                     } else if (above.isAir()) {
@@ -231,14 +231,14 @@ public class TreePlacementTests {
             TemplateTreeConfiguration.Ground ground, int yOffset, int maxWaterDepth) {
         ServerLevel level = helper.getLevel();
         BlockPos origin = helper.absolutePos(relative);
-        return WildscapesFeatures.TEMPLATE_TREE.get().place(new FeaturePlaceContext<>(
+        return WildscapesFeatures.TEMPLATE_TREE.place(new FeaturePlaceContext<>(
                 Optional.empty(),
                 level,
                 level.getChunkSource().getGenerator(),
                 level.getRandom(),
                 origin,
                 new TemplateTreeConfiguration(
-                        java.util.List.of(ResourceLocation.parse(template)), ground, yOffset,
+                        java.util.List.of(Identifier.parse(template)), ground, yOffset,
                         maxWaterDepth)));
     }
 

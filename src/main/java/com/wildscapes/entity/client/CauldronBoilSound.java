@@ -16,7 +16,7 @@ public final class CauldronBoilSound extends AbstractTickableSoundInstance {
     private final BlockPos pos;
 
     private CauldronBoilSound(CauldronBlockEntity cauldron) {
-        super(WildscapesSounds.CAULDRON_BOIL_START.get(), SoundSource.BLOCKS, cauldron.getLevel().getRandom());
+        super(WildscapesSounds.CAULDRON_BOIL_START, SoundSource.BLOCKS, cauldron.getLevel().getRandom());
         this.cauldron = cauldron;
         this.level = cauldron.getLevel();
         this.pos = cauldron.getBlockPos();

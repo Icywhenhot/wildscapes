@@ -11,7 +11,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 @EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class JumpInput {
@@ -42,7 +42,7 @@ public final class JumpInput {
             input.jumping = false;
         } else if (pressed && !player.onGround() && MirelashItem.enchantmentLevel(player.level(),
                 player.getItemBySlot(EquipmentSlot.FEET), JumpEnchantments.MULTI_JUMP) > 0) {
-            PacketDistributor.sendToServer(JumpPayload.INSTANCE);
+            ClientPlayNetworking.send(JumpPayload.INSTANCE);
         }
     }
 }
