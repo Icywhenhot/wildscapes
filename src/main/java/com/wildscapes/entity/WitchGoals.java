@@ -61,6 +61,8 @@ public final class WitchGoals {
             return;
         }
 
+        WitchRitual.maybeStart(witch);
+
         if (witch.isDrinkingPotion() && witch.getTarget() != null) {
             witch.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(DRINKING_SPEED);
         }
@@ -106,6 +108,7 @@ public final class WitchGoals {
         List.copyOf(witch.goalSelector.getAvailableGoals()).stream()
                 .filter(wrapped -> wrapped.getGoal() instanceof RangedAttackGoal)
                 .forEach(wrapped -> witch.goalSelector.removeGoal(wrapped.getGoal()));
+        witch.goalSelector.addGoal(0, new WitchRitual.Gather(witch));
         witch.goalSelector.addGoal(1, new MoveTowardsRestrictionGoal(witch, 1.0D));
         witch.goalSelector.addGoal(2, new WitchCombatGoal(witch));
         witch.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witch, Raider.class, 10, true, false,

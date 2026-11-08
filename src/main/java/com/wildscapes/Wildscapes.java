@@ -22,6 +22,7 @@ import com.wildscapes.entity.SwampSpawns;
 import com.wildscapes.entity.SwampVariants;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.WitchGoals;
+import com.wildscapes.entity.WitchRitual;
 import com.wildscapes.item.CypressBoat;
 import com.wildscapes.item.WildscapesDataComponents;
 import com.wildscapes.item.MirelashItem;
@@ -191,6 +192,7 @@ public class Wildscapes {
         WildscapesPotions.register(modEventBus);
         SwampVariants.register(modEventBus);
         SoulHarvest.register(modEventBus);
+        WitchRitual.register(modEventBus);
         WildscapesSounds.register(modEventBus);
         WildscapesParticles.register(modEventBus);
         WildscapesFeatures.register(modEventBus);

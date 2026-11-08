@@ -85,6 +85,20 @@ public final class RedesignedWitchModel {
                         .texOffs(44, 22).addBox(-8F, -2F, -2F, 4F, 8F, 4F)
                         .mirror(false),
                 PartPose.offsetAndRotation(0F, 3F, -1F, -0.75F, 0F, 0F));
+        root.addOrReplaceChild("right_arm",
+                CubeListBuilder.create()
+                        .mirror(true)
+                        .texOffs(44, 22).addBox(-3F, -2F, -2F, 4F, 8F, 4F)
+                        .texOffs(16, 99).addBox(-3F, -2F, -2F, 4F, 5F, 4F, new CubeDeformation(0.25F))
+                        .mirror(false),
+                PartPose.offset(-5F, 2F, 0F));
+        root.addOrReplaceChild("left_arm",
+                CubeListBuilder.create()
+                        .mirror(true)
+                        .texOffs(44, 22).addBox(-1F, -2F, -2F, 4F, 8F, 4F)
+                        .texOffs(0, 99).addBox(-1F, -2F, -2F, 4F, 5F, 4F, new CubeDeformation(0.25F))
+                        .mirror(false),
+                PartPose.offset(5F, 2F, 0F));
         root.addOrReplaceChild("right_leg",
                 CubeListBuilder.create()
                         .texOffs(0, 22).addBox(-2F, 0F, -2F, 4F, 12F, 4F),

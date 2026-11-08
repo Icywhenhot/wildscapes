@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -20,6 +21,7 @@ public class DuckweedBlock extends BushBlock {
     private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 1.0D, 16.0D);
 
     private static final double DRAG = 0.90D;
+    private static final double BOAT_DRAG = 0.985D;
 
     public DuckweedBlock(Properties properties) {
         super(properties);
@@ -27,8 +29,12 @@ public class DuckweedBlock extends BushBlock {
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (entity.isPassenger()) {
+            return;
+        }
+        double drag = entity instanceof Boat ? BOAT_DRAG : DRAG;
         Vec3 movement = entity.getDeltaMovement();
-        entity.setDeltaMovement(movement.x * DRAG, movement.y, movement.z * DRAG);
+        entity.setDeltaMovement(movement.x * drag, movement.y, movement.z * drag);
     }
 
     @Override
