@@ -1,0 +1,23 @@
+{
+  "sort": 12,
+  "icon": {
+    "item": [
+      "wildscapes:bonfire",
+      "wildscapes:soul_bonfire"
+    ]
+  },
+  "recipe": [
+    "minecraft:iron_nugget",
+    "",
+    "minecraft:iron_nugget",
+    "minecraft:iron_nugget",
+    [
+      "minecraft:coal",
+      "minecraft:soul_sand"
+    ],
+    "minecraft:iron_nugget",
+    "minecraft:iron_ingot",
+    "minecraft:iron_ingot",
+    "minecraft:iron_ingot"
+  ]
+}

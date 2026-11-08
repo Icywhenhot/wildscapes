@@ -1,0 +1,17 @@
+{
+  "sort": 15,
+  "icon": {
+    "item": "wildscapes:spell_armor_trim_smithing_template"
+  },
+  "recipe": [
+    "minecraft:diamond",
+    "wildscapes:spell_armor_trim_smithing_template",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:amethyst_block",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:diamond"
+  ]
+}

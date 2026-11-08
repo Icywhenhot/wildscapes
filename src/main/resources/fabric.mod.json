@@ -18,6 +18,6 @@
     "java": ">=25",
     "fabric-api": "*",
     "geckolib": ">=5.5.3",
-    "icys_lib": ">=1.0.0"
+    "icys_lib": ">=1.1.0"
   }
 }

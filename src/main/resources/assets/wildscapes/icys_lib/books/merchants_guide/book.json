@@ -77,7 +77,8 @@
 
     {
       "type": "list", "key": "item", "category": "items",
-      "at": [27, 24], "step": [14, 15], "columns": 4, "max": 12, "scale": 0.75,
+      "at": [27, 24], "step": [14, 15], "columns": 4, "rows": 3, "scale": 0.75,
+      "scrollbar": { "area": [85, 24, 2, 44], "track": "#8A6B3F", "thumb": "#3A2714" },
       "frame": { "texture": "item_slot", "region": [0, 0, 18, 19] },
       "selected": { "texture": "item_slot_selected", "region": [0, 0, 18, 19] },
       "icon": { "at": [3, 3], "size": 12 },
@@ -93,11 +94,13 @@
     {
       "type": "text", "area": [114, 12, 66, 21], "align": "center", "valign": "middle",
       "text": "wildscapes.guide.item.${item}.anecdote", "fallback": "wildscapes.guide.blank",
+      "scrollbar": { "area": [182, 12, 2, 21], "track": "#8A6B3F", "thumb": "#3A2714" },
       "when": { "tab": "items", "recipe": "yes" }
     },
     {
       "type": "text", "area": [114, 12, 66, 77], "align": "center", "valign": "middle",
       "text": "wildscapes.guide.item.${item}.anecdote", "fallback": "wildscapes.guide.blank",
+      "scrollbar": { "area": [182, 12, 2, 77], "track": "#8A6B3F", "thumb": "#3A2714" },
       "when": { "tab": "items", "recipe": "" }
     },
     {
