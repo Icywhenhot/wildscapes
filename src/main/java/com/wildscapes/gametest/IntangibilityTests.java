@@ -1,47 +1,41 @@
 package com.wildscapes.gametest;
 
+import net.minecraft.world.entity.EntityTypes;
 import com.wildscapes.effect.Intangibility;
 import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.effect.MobEffects;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class IntangibilityTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
     private IntangibilityTests() {}
 
-    @GameTest(template = PLATFORM)
     public static void mobsLoseIntangiblePlayer(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 5))));
-        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
-        var zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(6, 3, 5));
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
+        var zombie = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(6, 3, 5));
         zombie.setTarget(player);
         helper.assertTrue(zombie.getTarget() == player, "zombie did not acquire visible player");
         player.setShiftKeyDown(true);
-        Intangibility.onMobTick(new EntityTickEvent.Pre(zombie));
+        Intangibility.onMobTick(zombie);
         helper.assertTrue(zombie.getTarget() == null, "zombie retained intangible target");
         zombie.setTarget(player);
         helper.assertTrue(zombie.getTarget() == null, "zombie reacquired intangible target");
-        helper.assertTrue(!TargetingConditions.forNonCombat().test(zombie, player), "passive detection found player");
+        helper.assertTrue(!TargetingConditions.forNonCombat().test(helper.getLevel(), zombie, player), "passive detection found player");
         helper.assertTrue(!zombie.hasLineOfSight(player), "mob could see intangible player");
-        var warden = helper.spawn(EntityType.WARDEN, new BlockPos(8, 3, 5));
+        var warden = helper.spawn(EntityTypes.WARDEN, new BlockPos(8, 3, 5));
         helper.assertTrue(!warden.canTargetEntity(player), "warden detected intangible player");
         player.setShiftKeyDown(false);
         zombie.setTarget(player);
@@ -49,23 +43,22 @@ public final class IntangibilityTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void necklaceWearsOutWhileActive(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
-        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get());
+        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE);
         player.setItemInHand(InteractionHand.OFF_HAND, stack);
         for (int i = 0; i < 40; i++) {
-            Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+            Intangibility.onPlayerTick(player);
         }
         helper.assertTrue(stack.getDamageValue() == 0, "inactive necklace lost durability");
         player.setShiftKeyDown(true);
         for (int i = 0; i < 40; i++) {
-            Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+            Intangibility.onPlayerTick(player);
         }
         helper.assertTrue(stack.getDamageValue() == 2, "necklace did not lose one durability per second");
         stack.setDamageValue(stack.getMaxDamage() - 2);
         for (int i = 0; i < 40; i++) {
-            Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+            Intangibility.onPlayerTick(player);
         }
         helper.assertTrue(!stack.isEmpty(), "exhausted necklace was destroyed");
         helper.assertTrue(stack.getDamageValue() == stack.getMaxDamage() - 1, "necklace did not stop at one durability");
@@ -73,11 +66,10 @@ public final class IntangibilityTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void playerCrossesSolidBlocksAndCobwebs(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 5))));
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
         player.setShiftKeyDown(true);
         for (int x = 5; x <= 9; x++) {
             helper.setBlock(new BlockPos(x, 2, 5), Blocks.STONE);
@@ -96,12 +88,11 @@ public final class IntangibilityTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void playerPassesThroughWall(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 5))));
         player.setShiftKeyDown(true);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
         helper.setBlock(new BlockPos(5, 2, 5), Blocks.STONE);
         helper.setBlock(new BlockPos(6, 3, 5), Blocks.STONE);
         helper.setBlock(new BlockPos(6, 4, 5), Blocks.STONE);
@@ -121,18 +112,17 @@ public final class IntangibilityTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void necklaceMakesPlayerInvisible(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
         player.setShiftKeyDown(true);
 
-        Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+        Intangibility.onPlayerTick(player);
 
         helper.assertTrue(player.isInvisible(), "active necklace did not make player invisible");
         helper.assertTrue(!player.hasEffect(MobEffects.INVISIBILITY), "necklace added a visible potion effect");
         player.setShiftKeyDown(false);
-        Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+        Intangibility.onPlayerTick(player);
         helper.assertTrue(!player.isInvisible(), "player stayed invisible after releasing the necklace");
         helper.succeed();
     }

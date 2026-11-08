@@ -2,35 +2,31 @@ package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.IllusionerRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Illusioner;
+import net.minecraft.util.LightCoordsUtil;
 
-public class EmpoweredGlowLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
+public class EmpoweredGlowLayer<S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends RenderLayer<S, M> {
     private final RenderType glow;
 
-    public EmpoweredGlowLayer(RenderLayerParent<T, M> renderer, String texture) {
+    public EmpoweredGlowLayer(RenderLayerParent<S, M> renderer, String texture) {
         super(renderer);
-        glow = RenderType.entityTranslucentEmissive(Identifier.fromNamespaceAndPath(Wildscapes.MODID,
-                "textures/entity/" + texture + ".png"));
+        glow = RenderTypes.entityTranslucentEmissive(Wildscapes.id("textures/entity/" + texture + ".png"));
     }
 
     @Override
-    public void render(PoseStack pose, MultiBufferSource buffer, int light, T entity, float limbSwing,
-            float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (!SoulHarvest.isEmpowered(entity) || entity.isInvisible() && !(entity instanceof Illusioner)) {
-            return;
+    public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, S state, float yaw, float pitch) {
+        if (state.getDataOrDefault(MobVisuals.EMPOWERED, false) && (!state.isInvisible || state instanceof IllusionerRenderState)) {
+            nodes.order(1).submitModel(getParentModel(), state, pose, glow, LightCoordsUtil.FULL_BRIGHT,
+                    OverlayTexture.NO_OVERLAY, state.outlineColor, null);
         }
-        getParentModel().renderToBuffer(pose, buffer.getBuffer(glow), LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY, -1);
     }
 }

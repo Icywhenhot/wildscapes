@@ -12,7 +12,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.Illusioner;
+import net.minecraft.world.entity.monster.illager.Illusioner;
 import net.minecraft.world.entity.player.Player;
 
 final class IllusionerMirageGoal extends Goal {
@@ -98,11 +98,11 @@ final class IllusionerMirageGoal extends Goal {
     }
 
     private boolean wasCloned(LivingEntity entity) {
-        return illusioner.getPersistentData().getBoolean(clonedMobKey(entity.getUUID()));
+        return ((WildscapesEntityData) illusioner).wildscapes$data().getBooleanOr(clonedMobKey(entity.getUUID()), false);
     }
 
     private void rememberClone(LivingEntity entity) {
-        illusioner.getPersistentData().putBoolean(clonedMobKey(entity.getUUID()), true);
+        ((WildscapesEntityData) illusioner).wildscapes$data().putBoolean(clonedMobKey(entity.getUUID()), true);
     }
 
     private static String clonedMobKey(UUID uuid) {

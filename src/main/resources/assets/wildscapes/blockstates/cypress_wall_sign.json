@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
-      "model": "wildscapes:block/cypress_sign"
+    "facing=east": {
+      "model": "wildscapes:block/cypress_wall_sign",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "wildscapes:block/cypress_wall_sign",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "wildscapes:block/cypress_wall_sign"
+    },
+    "facing=west": {
+      "model": "wildscapes:block/cypress_wall_sign",
+      "y": 90
     }
   }
 }

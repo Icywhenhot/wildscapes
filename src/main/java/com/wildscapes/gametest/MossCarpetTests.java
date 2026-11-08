@@ -6,22 +6,16 @@ import com.wildscapes.block.WildscapesBlocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public class MossCarpetTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
     private static final BlockPos PILLAR = new BlockPos(12, 2, 12);
     private static final BlockPos CARPET = new BlockPos(12, 3, 12);
 
-    @GameTest(template = PLATFORM)
     public static void bonemealGrowsADrape(GameTestHelper helper) {
         helper.setBlock(PILLAR, Blocks.STONE);
         helper.setBlock(CARPET, WildscapesBlocks.MOSS_CARPET.defaultBlockState());
@@ -44,7 +38,6 @@ public class MossCarpetTests {
         });
     }
 
-    @GameTest(template = PLATFORM)
     public static void vanillaCarpetIsHandedOver(GameTestHelper helper) {
         helper.setBlock(PILLAR, Blocks.STONE);
         helper.setBlock(CARPET, Blocks.MOSS_CARPET);
@@ -54,13 +47,10 @@ public class MossCarpetTests {
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
                 new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BONE_MEAL));
         com.wildscapes.block.MossCarpetSwap.onBonemeal(
-                new net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock(
-                        player,
-                        net.minecraft.world.InteractionHand.MAIN_HAND,
-                        helper.absolutePos(CARPET),
-                        new net.minecraft.world.phys.BlockHitResult(
-                                net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CARPET)),
-                                Direction.UP, helper.absolutePos(CARPET), false)));
+                player, helper.getLevel(), net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.phys.BlockHitResult(
+                        net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CARPET)),
+                        Direction.UP, helper.absolutePos(CARPET), false));
 
         helper.succeedWhen(() -> helper.assertBlockPresent(WildscapesBlocks.MOSS_CARPET, CARPET));
     }

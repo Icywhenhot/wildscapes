@@ -7,15 +7,9 @@
     "C  "
   ],
   "key": {
-    "P": {
-      "tag": "minecraft:planks"
-    },
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "C": {
-      "item": "minecraft:copper_ingot"
-    }
+    "P": "#minecraft:planks",
+    "S": "minecraft:stick",
+    "C": "minecraft:copper_ingot"
   },
   "result": {
     "id": "wildscapes:ladle",

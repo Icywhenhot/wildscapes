@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "wildscapes:sapling_tree_hangs_no_flat_vines",
+  "environment": "minecraft:default",
+  "structure": "wildscapes:gametest/tree_platform",
+  "max_ticks": 100
+}

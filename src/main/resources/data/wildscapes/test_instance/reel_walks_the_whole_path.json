@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "wildscapes:reel_walks_the_whole_path",
+  "environment": "minecraft:default",
+  "structure": "wildscapes:gametest/tree_platform",
+  "max_ticks": 100
+}

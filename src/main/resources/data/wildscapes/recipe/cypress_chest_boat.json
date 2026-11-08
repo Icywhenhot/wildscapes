@@ -3,12 +3,8 @@
   "category": "misc",
   "group": "chest_boat",
   "ingredients": [
-    {
-      "item": "minecraft:chest"
-    },
-    {
-      "item": "wildscapes:cypress_boat"
-    }
+    "minecraft:chest",
+    "wildscapes:cypress_boat"
   ],
   "result": {
     "count": 1,

@@ -18,18 +18,17 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class StiltProcessor extends StructureProcessor {
+public class StiltProcessor implements StructureProcessor {
     public static final StiltProcessor INSTANCE = new StiltProcessor();
     public static final MapCodec<StiltProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
 
     private static final int MAX_DEPTH = 24;
 
     @Override
-    protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.STILTS;
+    public MapCodec<StiltProcessor> codec() {
+        return CODEC;
     }
 
     @Override
@@ -47,7 +46,7 @@ public class StiltProcessor extends StructureProcessor {
                 continue;
             }
             BlockPos at = info.pos();
-            long column = ChunkPos.asLong(at.getX(), at.getZ());
+            long column = ChunkPos.pack(at.getX(), at.getZ());
             StructureTemplate.StructureBlockInfo held = lowest.get(column);
             if (held == null || at.getY() < held.pos().getY()) {
                 lowest.put(column, info);

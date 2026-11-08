@@ -14,6 +14,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
@@ -88,7 +89,7 @@ public class WitchCampStructure extends Structure {
                     start,
                     false,
                     Optional.of(Heightmap.Types.WORLD_SURFACE_WG),
-                    maxDistanceFromCenter,
+                    new JigsawStructure.MaxDistance(maxDistanceFromCenter),
                     PoolAliasLookup.EMPTY,
                     DimensionPadding.ZERO,
                     LIQUIDS);

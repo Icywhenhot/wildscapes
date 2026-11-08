@@ -1,0 +1,25 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "property": "wildscapes:item_condition",
+    "kind": "witch_camp",
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "wildscapes:item/witch_camp_map"
+    },
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/filled_map",
+      "tints": [
+        {
+          "type": "minecraft:constant",
+          "value": -1
+        },
+        {
+          "type": "minecraft:map_color",
+          "default": 4603950
+        }
+      ]
+    }
+  }
+}

@@ -9,6 +9,7 @@ import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.sound.WildscapesSounds;
 
+import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -19,6 +20,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
@@ -27,7 +29,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -86,10 +88,10 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
             Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof CauldronBlockEntity be)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         Item item = stack.getItem();
         CauldronBlockEntity.Contents contents = be.getContents();
@@ -111,7 +113,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
                 consume(player, stack);
             });
         }
-        if (item == WildscapesItems.LADLE.get() && be.isAwaitingStir()) {
+        if (item == WildscapesItems.LADLE && be.isAwaitingStir()) {
             return act(level, () -> {
                 be.startMixing();
                 stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND
@@ -129,8 +131,8 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
 
         if (contents == CauldronBlockEntity.Contents.BREW) {
             return isBrewingItem(item) || isVesselItem(stack)
-                    ? ItemInteractionResult.FAIL
-                    : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    ? InteractionResult.FAIL
+                    : InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 
         if (isWaterBottle(stack)) {
@@ -143,7 +145,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                 });
             }
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (item == Items.WATER_BUCKET && contents != CauldronBlockEntity.Contents.POTION) {
             return act(level, () -> {
@@ -165,7 +167,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
 
         if (item instanceof DyeItem dye && contents == CauldronBlockEntity.Contents.WATER) {
             return act(level, () -> {
-                be.mixInDye(dye.getDyeColor().getTextureDiffuseColor() & 0xFFFFFF);
+                be.mixInDye(stack.getOrDefault(DataComponents.DYE, DyeColor.WHITE).getTextureDiffuseColor() & 0xFFFFFF);
                 consume(player, stack);
                 level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
             });
@@ -174,7 +176,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             boolean dyed = be.getSurfaceColor() != CauldronBlockEntity.WATER_COLOR;
             return act(level, () -> {
                 if (dyed) {
-                    stack.set(DataComponents.DYED_COLOR, new DyedItemColor(be.getSurfaceColor(), true));
+                    stack.set(DataComponents.DYED_COLOR, new DyedItemColor(be.getSurfaceColor()));
                 } else {
                     stack.remove(DataComponents.DYED_COLOR);
                 }
@@ -191,7 +193,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
                     level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
                 });
             }
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (item == Items.GLASS_BOTTLE && contents == CauldronBlockEntity.Contents.POTION) {
             return act(level, () -> {
@@ -215,7 +217,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             int perLevel = 16;
             int tippable = Math.min(stack.getCount(), be.getFillLevel() * perLevel);
             if (tippable <= 0) {
-                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return InteractionResult.TRY_WITH_EMPTY_HAND;
             }
             return act(level, () -> {
                 int levelsUsed = Math.max(1, (tippable + perLevel - 1) / perLevel);
@@ -232,18 +234,18 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             });
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     private interface CauldronAction {
         void run();
     }
 
-    private static ItemInteractionResult act(Level level, CauldronAction action) {
-        if (!level.isClientSide) {
+    private static InteractionResult act(Level level, CauldronAction action) {
+        if (!level.isClientSide()) {
             action.run();
         }
-        return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     private static void consume(Player player, ItemStack stack) {
@@ -259,7 +261,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             double x = pos.getX() + 0.5;
             double y = pos.getY() + be.getSurfaceHeight() + 0.05;
             double z = pos.getZ() + 0.5;
-            server.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, ingredient),
+            server.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, ingredient.getItem()),
                     x, y, z, 8, 0.2, 0.1, 0.2, 0.05);
             if (base) {
                 server.sendParticles(WildscapesParticles.BREW_BUBBLE, x, y, z, 10, 0.22, 0.02, 0.22, 0.02);
@@ -271,7 +273,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
 
     private static boolean isBrewingItem(Item item) {
         return item == CauldronSoups.BASE_INGREDIENT || CauldronSoups.isEffectIngredient(item)
-                || item == WildscapesItems.LADLE.get() || item == Items.BOWL;
+                || item == WildscapesItems.LADLE || item == Items.BOWL;
     }
 
     private static boolean isVesselItem(ItemStack stack) {
@@ -313,7 +315,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return ticker(type, WildscapesBlockEntities.CAULDRON,
-                level.isClientSide ? CauldronBlockEntity::clientTick : CauldronBlockEntity::serverTick);
+                level.isClientSide() ? CauldronBlockEntity::clientTick : CauldronBlockEntity::serverTick);
     }
 
     @SuppressWarnings("unchecked")
@@ -339,7 +341,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(Items.CAULDRON);
     }
 
@@ -349,7 +351,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         return level.getBlockEntity(pos) instanceof CauldronBlockEntity be ? be.getFillLevel() : 0;
     }
 }

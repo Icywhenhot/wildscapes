@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -34,12 +35,12 @@ public class BonfireBlock extends Block {
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects, boolean precise) {
         if (entity instanceof LivingEntity) {
             entity.hurt(level.damageSources().campfire(), damage);
         }
 
-        super.entityInside(state, level, pos, entity);
+        super.entityInside(state, level, pos, entity, effects, precise);
     }
 
     @Override

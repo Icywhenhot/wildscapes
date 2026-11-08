@@ -19,12 +19,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
@@ -119,7 +118,7 @@ public class CauldronBlockEntity extends BlockEntity {
         }
 
         double surface = pos.getY() + surfaceHeight(true, be.fillLevel);
-        var random = level.random;
+        var random = level.getRandom();
 
         boolean brewing = be.hasSoupBase;
         int puffs = be.mixTicks > 0 ? 3 : 1;
@@ -263,7 +262,7 @@ public class CauldronBlockEntity extends BlockEntity {
     }
 
     public ItemStack scoopSoup() {
-        ItemStack bowl = new ItemStack(WildscapesItems.MAGIC_SOUP.get());
+        ItemStack bowl = new ItemStack(WildscapesItems.MAGIC_SOUP);
         bowl.set(WildscapesDataComponents.SOUP_CONTENTS, new SoupContents(List.copyOf(soupEffects)));
         if (--fillLevel <= 0) {
             reset();
@@ -413,15 +412,14 @@ public class CauldronBlockEntity extends BlockEntity {
 
     private void sync() {
         setChanged();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        RegistryOps<Tag> ops = registries.createSerializationContext(NbtOps.INSTANCE);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putByte("Contents", (byte) contents.ordinal());
         tag.putByte("Level", (byte) fillLevel);
         tag.putInt("DyeColor", dyeColor);
@@ -429,46 +427,36 @@ public class CauldronBlockEntity extends BlockEntity {
         tag.putBoolean("Cooled", cooled);
         tag.putInt("MixTicks", mixTicks);
         if (!potion.equals(PotionContents.EMPTY)) {
-            PotionContents.CODEC.encodeStart(ops, potion).result().ifPresent(t -> tag.put("Potion", t));
+            tag.store("Potion", PotionContents.CODEC, potion);
         }
         if (!pendingIngredient.isEmpty()) {
-            tag.putString("Pending", pendingIngredient.getItem().builtInRegistryHolder().key().location().toString());
+            tag.store("Pending", net.minecraft.core.registries.BuiltInRegistries.ITEM.byNameCodec(), pendingIngredient.getItem());
         }
         if (!soupEffects.isEmpty()) {
-            MobEffectInstance.CODEC.listOf().encodeStart(ops, soupEffects).result()
-                    .ifPresent(t -> tag.put("Effects", t));
+            tag.store("Effects", MobEffectInstance.CODEC.listOf(), soupEffects);
         }
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        RegistryOps<Tag> ops = registries.createSerializationContext(NbtOps.INSTANCE);
-        contents = Contents.values()[tag.getByte("Contents")];
-        fillLevel = tag.getByte("Level");
-        dyeColor = tag.getInt("DyeColor");
-        hasSoupBase = tag.getBoolean("HasBase");
-        cooled = tag.getBoolean("Cooled");
-        mixTicks = tag.getInt("MixTicks");
-        potion = tag.contains("Potion")
-                ? PotionContents.CODEC.parse(ops, tag.get("Potion")).result().orElse(PotionContents.EMPTY)
-                : PotionContents.EMPTY;
-        pendingIngredient = tag.contains("Pending")
-                ? new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM
-                        .get(net.minecraft.resources.Identifier.parse(tag.getString("Pending"))))
-                : ItemStack.EMPTY;
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
+        int kind = tag.getByteOr("Contents", (byte) 0);
+        contents = Contents.values()[Math.clamp(kind, 0, Contents.values().length - 1)];
+        fillLevel = tag.getByteOr("Level", (byte) 0);
+        dyeColor = tag.getIntOr("DyeColor", 0);
+        hasSoupBase = tag.getBooleanOr("HasBase", false);
+        cooled = tag.getBooleanOr("Cooled", false);
+        mixTicks = tag.getIntOr("MixTicks", 0);
+        potion = tag.read("Potion", PotionContents.CODEC).orElse(PotionContents.EMPTY);
+        pendingIngredient = tag.read("Pending", net.minecraft.core.registries.BuiltInRegistries.ITEM.byNameCodec())
+                .map(ItemStack::new).orElse(ItemStack.EMPTY);
         soupEffects.clear();
-        if (tag.contains("Effects")) {
-            MobEffectInstance.CODEC.listOf().parse(ops, tag.get("Effects")).result()
-                    .ifPresent(soupEffects::addAll);
-        }
+        tag.read("Effects", MobEffectInstance.CODEC.listOf()).ifPresent(soupEffects::addAll);
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
+        return saveCustomOnly(registries);
     }
 
     @Nullable

@@ -1,9 +1,13 @@
 package com.wildscapes.effect;
 
+import com.wildscapes.entity.WildscapesEntityData;
+
 import com.wildscapes.WildscapesAdvancements;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.sound.WildscapesSounds;
 
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -17,8 +21,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraft.world.damagesource.DamageSource;
 
 public final class Intangibility {
     private static final String ACTIVE_KEY = "wildscapes:necklace_active";
@@ -34,8 +37,8 @@ public final class Intangibility {
         return stack.is(WildscapesItems.ILLUSIONIST_NECKLACE) && stack.getDamageValue() < stack.getMaxDamage() - 1;
     }
 
-    public static void onMobTick(EntityTickEvent.Pre event) {
-        if (!(event.getEntity() instanceof Mob mob) || mob.level().isClientSide()) {
+    public static void onMobTick(Entity ticking) {
+        if (!(ticking instanceof Mob mob) || mob.level().isClientSide()) {
             return;
         }
         if (mob.getTarget() instanceof Player player && isActive(player)) {
@@ -53,15 +56,15 @@ public final class Intangibility {
         }
     }
 
-    public static void onPlayerTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Player player)) {
+    public static void onPlayerTick(Entity ticking) {
+        if (!(ticking instanceof Player player)) {
             return;
         }
 
         boolean active = isActive(player);
         if (active && !player.level().isClientSide() && !player.getAbilities().instabuild) {
-            var data = player.getPersistentData();
-            int ticks = data.getInt("wildscapes:necklace_ticks") + 1;
+            var data = ((WildscapesEntityData) player).wildscapes$data();
+            int ticks = data.getIntOr("wildscapes:necklace_ticks", 0) + 1;
             if (ticks >= 20) {
                 EquipmentSlot slot = canUse(player.getMainHandItem()) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
                 player.getItemBySlot(slot).hurtAndBreak(1, player, slot);
@@ -71,8 +74,8 @@ public final class Intangibility {
             data.putInt("wildscapes:necklace_ticks", ticks);
         }
         if (player.level() instanceof ServerLevel level) {
-            var data = player.getPersistentData();
-            boolean wasActive = data.getBoolean(ACTIVE_KEY);
+            var data = ((WildscapesEntityData) player).wildscapes$data();
+            boolean wasActive = data.getBooleanOr(ACTIVE_KEY, false);
             if (active) {
                 if (!player.isInvisible()) {
                     player.setInvisible(true);
@@ -87,7 +90,7 @@ public final class Intangibility {
                     level.sendParticles(ParticleTypes.LARGE_SMOKE, player.getX(), player.getY() + 0.6,
                             player.getZ(), 1, 0.2, 0.35, 0.2, 0.01);
                 }
-            } else if (data.getBoolean(INVISIBLE_KEY)) {
+            } else if (data.getBooleanOr(INVISIBLE_KEY, false)) {
                 if (!player.hasEffect(MobEffects.INVISIBILITY) && !player.isSpectator()) {
                     player.setInvisible(false);
                 }
@@ -172,10 +175,7 @@ public final class Intangibility {
         return !level.getBlockState(below).getCollisionShape(level, below).isEmpty();
     }
 
-    public static void onDamage(LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof Player player && isActive(player)
-                && event.getSource().getEntity() != null) {
-            event.setCanceled(true);
-        }
+    public static boolean allowDamage(LivingEntity entity, DamageSource source, float amount) {
+        return !(entity instanceof Player player && isActive(player) && source.getEntity() != null);
     }
 }

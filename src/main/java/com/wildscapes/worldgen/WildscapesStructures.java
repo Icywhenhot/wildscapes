@@ -7,7 +7,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import com.mojang.serialization.MapCodec;
 
 public final class WildscapesStructures {
     private WildscapesStructures() {}
@@ -21,17 +21,17 @@ public final class WildscapesStructures {
     public static final StructurePieceType BURIED_PIECE =
             Registry.register(BuiltInRegistries.STRUCTURE_PIECE, Wildscapes.id("buried_jigsaw"), BuriedPiece::new);
 
-    public static final StructureProcessorType<StiltProcessor> STILTS =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("stilts"), () -> StiltProcessor.CODEC);
+    public static final MapCodec<StiltProcessor> STILTS =
+            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("stilts"), StiltProcessor.CODEC);
 
-    public static final StructureProcessorType<ConnectProcessor> CONNECT =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("connect"), () -> ConnectProcessor.CODEC);
+    public static final MapCodec<ConnectProcessor> CONNECT =
+            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("connect"), ConnectProcessor.CODEC);
 
-    public static final StructureProcessorType<ClearProcessor> CLEAR =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("clear"), () -> ClearProcessor.CODEC);
+    public static final MapCodec<ClearProcessor> CLEAR =
+            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("clear"), ClearProcessor.CODEC);
 
-    public static final StructureProcessorType<OvergrowthProcessor> OVERGROWTH =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("overgrowth"), () -> OvergrowthProcessor.CODEC);
+    public static final MapCodec<OvergrowthProcessor> OVERGROWTH =
+            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("overgrowth"), OvergrowthProcessor.CODEC);
 
     public static void register() {}
 }

@@ -1,23 +1,29 @@
 package com.wildscapes.item;
 
-import java.util.function.Supplier;
+import com.wildscapes.Wildscapes;
 
-import com.wildscapes.block.WildscapesBlocks;
-
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
-import net.neoforged.fml.common.asm.enumextension.EnumProxy;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.boat.ChestBoat;
 
 public final class CypressBoat {
     private CypressBoat() {}
 
-    public static final EnumProxy<Boat.Type> TYPE = new EnumProxy<>(Boat.Type.class,
-            (Supplier<Block>) WildscapesBlocks.CYPRESS_PLANKS::get,
-            "wildscapes:cypress",
-            (Supplier<Item>) WildscapesItems.CYPRESS_BOAT::get,
-            (Supplier<Item>) WildscapesItems.CYPRESS_CHEST_BOAT::get,
-            (Supplier<Item>) () -> Items.STICK,
-            false);
+    public static final EntityType<Boat> BOAT = register("cypress_boat",
+            (type, level) -> new Boat(type, level, () -> WildscapesItems.CYPRESS_BOAT));
+
+    public static final EntityType<ChestBoat> CHEST_BOAT = register("cypress_chest_boat",
+            (type, level) -> new ChestBoat(type, level, () -> WildscapesItems.CYPRESS_CHEST_BOAT));
+
+    private static <T extends AbstractBoat> EntityType<T> register(String name, EntityType.EntityFactory<T> factory) {
+        var key = ResourceKey.create(Registries.ENTITY_TYPE, Wildscapes.id(name));
+        return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, EntityType.Builder.of(factory, MobCategory.MISC)
+                .noLootTable().sized(1.375F, 0.5625F).eyeHeight(0.5625F).clientTrackingRange(10).build(key));
+    }
 }

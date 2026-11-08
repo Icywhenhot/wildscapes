@@ -1,12 +1,12 @@
 package com.wildscapes.entity.client;
 
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EvokerRenderer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.monster.Evoker;
+import net.minecraft.client.renderer.entity.state.EvokerRenderState;
+import net.minecraft.world.entity.monster.illager.Evoker;
 
 public class EmpoweredEvokerRenderer extends EvokerRenderer<Evoker> {
     private static final Identifier EMPOWERED =
@@ -18,7 +18,7 @@ public class EmpoweredEvokerRenderer extends EvokerRenderer<Evoker> {
     }
 
     @Override
-    public Identifier getTextureLocation(Evoker entity) {
-        return SoulHarvest.isEmpowered(entity) ? EMPOWERED : super.getTextureLocation(entity);
+    public Identifier getTextureLocation(EvokerRenderState state) {
+        return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : super.getTextureLocation(state);
     }
 }

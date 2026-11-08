@@ -16,26 +16,19 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.SimpleBlockConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.util.RandomSource;
 import java.util.Optional;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public class MushroomTests {
-    @GameTest(template = "gametest/tree_platform")
     public static void pavShroomsShareAnItemAndDropByHand(GameTestHelper helper) {
         var level = helper.getLevel();
         var ground = WildscapesBlocks.LUMINOUS_MUSHROOM;
@@ -76,7 +69,6 @@ public class MushroomTests {
         helper.succeed();
     }
 
-    @GameTest(template = "gametest/tree_platform")
     public static void pavShroomsHealWithinThreeBlocks(GameTestHelper helper) {
         var player = helper.makeMockServerPlayerInLevel();
         BlockPos pos = new BlockPos(10, 4, 10);
@@ -89,37 +81,36 @@ public class MushroomTests {
             player.setHealth(10.0F);
             player.setPos(center.add(2.9, 0, 0));
             player.tickCount = 49;
-            PavShrooms.onTick(new PlayerTickEvent.Post(player));
+            PavShrooms.onTick(player);
             helper.assertTrue(player.getHealth() == 10.0F, "pav shroom healed between pulses");
             player.tickCount = 50;
-            PavShrooms.onTick(new PlayerTickEvent.Post(player));
+            PavShrooms.onTick(player);
             helper.assertTrue(player.getHealth() == 10.5F, "pav shroom did not heal half a health point");
             player.setPos(center.add(3.01, 0, 0));
             player.tickCount = 100;
-            PavShrooms.onTick(new PlayerTickEvent.Post(player));
+            PavShrooms.onTick(player);
             helper.assertTrue(player.getHealth() == 10.5F, "pav shroom healed outside three blocks");
             player.setPos(center.add(2.9, 0, 2.9));
-            PavShrooms.onTick(new PlayerTickEvent.Post(player));
+            PavShrooms.onTick(player);
             helper.assertTrue(player.getHealth() == 10.5F, "pav shroom aura used a cube instead of a radius");
         }
         helper.setBlock(pos.east().below(), Blocks.MUD);
         helper.setBlock(pos.east(), WildscapesBlocks.LUMINOUS_MUSHROOM);
         player.setPos(center);
         player.setHealth(10.0F);
-        PavShrooms.onTick(new PlayerTickEvent.Post(player));
+        PavShrooms.onTick(player);
         helper.assertTrue(player.getHealth() == 10.5F, "overlapping pav shrooms stacked healing");
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200));
-        PavShrooms.onTick(new PlayerTickEvent.Post(player));
+        PavShrooms.onTick(player);
         helper.assertTrue(player.getHealth() == 10.5F && player.hasEffect(MobEffects.REGENERATION),
                 "pav shroom changed potion regeneration");
         player.removeEffect(MobEffects.REGENERATION);
         player.setHealth(10.0F);
-        MobEffects.REGENERATION.value().applyEffectTick(player, 0);
+        MobEffects.REGENERATION.value().applyEffectTick(helper.getLevel(), player, 0);
         helper.assertTrue(player.getHealth() == 11.0F, "pav shroom healing was not half vanilla regeneration");
         helper.succeed();
     }
 
-    @GameTest(template = "gametest/tree_platform")
     public static void shelfMushroomsStayNearTheGround(GameTestHelper helper) {
         helper.setBiome(Biomes.SWAMP);
         for (int x = 7; x <= 13; x++) {
@@ -162,7 +153,6 @@ public class MushroomTests {
         helper.succeed();
     }
 
-    @GameTest(template = "gametest/tree_platform")
     public static void groundMushroomNeedsSoil(GameTestHelper helper) {
         BlockPos pos = new BlockPos(5, 3, 5);
         var state = WildscapesBlocks.LUMINOUS_MUSHROOM.defaultBlockState();
@@ -174,11 +164,10 @@ public class MushroomTests {
         helper.assertTrue(!state.canSurvive(helper.getLevel(), helper.absolutePos(pos)), "mushroom accepted stone");
         helper.setBlock(pos.below(), Blocks.MUD);
         helper.setBlock(pos, state);
-        helper.assertTrue(state.getLightEmission(helper.getLevel(), helper.absolutePos(pos)) == 7, "ground mushroom light is not 7");
+        helper.assertTrue(state.getLightEmission() == 7, "ground mushroom light is not 7");
         helper.succeed();
     }
 
-    @GameTest(template = "gametest/tree_platform")
     public static void shelfMushroomNeedsATrunk(GameTestHelper helper) {
         BlockPos trunk = new BlockPos(10, 4, 10);
         helper.setBlock(trunk, WildscapesBlocks.CYPRESS_LOG);
@@ -187,7 +176,7 @@ public class MushroomTests {
             var state = WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.defaultBlockState().setValue(ShelfMushroomBlock.FACING, face);
             helper.assertTrue(state.canSurvive(helper.getLevel(), helper.absolutePos(pos)), "mushroom rejected trunk face " + face);
             helper.setBlock(pos, state);
-            helper.assertTrue(state.getLightEmission(helper.getLevel(), helper.absolutePos(pos)) == 7, "shelf mushroom light is not 7");
+            helper.assertTrue(state.getLightEmission() == 7, "shelf mushroom light is not 7");
         }
         helper.setBlock(trunk, Blocks.AIR);
         helper.succeedWhen(() -> {
@@ -195,22 +184,21 @@ public class MushroomTests {
         });
     }
 
-    @GameTest(template = "gametest/tree_platform")
     public static void mangroveKeepsVanillaGeneration(GameTestHelper helper) {
-        var biomes = helper.getLevel().registryAccess().registryOrThrow(Registries.BIOME);
-        var swamp = biomes.getHolderOrThrow(Biomes.SWAMP);
-        var mangrove = biomes.getHolderOrThrow(Biomes.MANGROVE_SWAMP);
+        var biomes = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+        var swamp = biomes.getOrThrow(Biomes.SWAMP);
+        var mangrove = biomes.getOrThrow(Biomes.MANGROVE_SWAMP);
         helper.assertTrue(swamp.is(SwampVariants.SWAMP_BIOMES), "swamp is missing from biome tag");
         helper.assertTrue(!mangrove.is(SwampVariants.SWAMP_BIOMES), "mangrove is in biome tag");
         for (var step : mangrove.value().getGenerationSettings().features()) {
             for (var feature : step) {
-                helper.assertTrue(feature.unwrapKey().orElseThrow().location().getNamespace().equals("minecraft"),
+                helper.assertTrue(feature.unwrapKey().orElseThrow().identifier().getNamespace().equals("minecraft"),
                         "mangrove contains a modded feature: " + feature);
             }
         }
-        var structures = helper.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE);
+        var structures = helper.getLevel().registryAccess().lookupOrThrow(Registries.STRUCTURE);
         for (var entry : structures.entrySet()) {
-            if (entry.getKey().location().getNamespace().equals("wildscapes")) {
+            if (entry.getKey().identifier().getNamespace().equals("wildscapes")) {
                 helper.assertTrue(entry.getValue().biomes().contains(swamp), "structure excludes swamp: " + entry.getKey());
                 helper.assertTrue(!entry.getValue().biomes().contains(mangrove), "structure includes mangrove: " + entry.getKey());
             }

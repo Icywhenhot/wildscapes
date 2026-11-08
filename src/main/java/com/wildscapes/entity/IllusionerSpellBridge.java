@@ -3,8 +3,8 @@ package com.wildscapes.entity;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
-import net.minecraft.world.entity.monster.Illusioner;
-import net.minecraft.world.entity.monster.SpellcasterIllager;
+import net.minecraft.world.entity.monster.illager.Illusioner;
+import net.minecraft.world.entity.monster.illager.SpellcasterIllager;
 
 final class IllusionerSpellBridge {
     private static final Method SET_SPELL;
@@ -14,7 +14,7 @@ final class IllusionerSpellBridge {
 
     static {
         try {
-            Class<?> spellClass = Class.forName("net.minecraft.world.entity.monster.SpellcasterIllager$IllagerSpell");
+            Class<?> spellClass = Class.forName("net.minecraft.world.entity.monster.illager.SpellcasterIllager$IllagerSpell");
             SET_SPELL = SpellcasterIllager.class.getDeclaredMethod("setIsCastingSpell", spellClass);
             SET_SPELL.setAccessible(true);
             SPELL_TICKS = SpellcasterIllager.class.getDeclaredField("spellCastingTickCount");

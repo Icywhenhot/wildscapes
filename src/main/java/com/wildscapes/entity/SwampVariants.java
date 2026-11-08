@@ -3,24 +3,20 @@ package com.wildscapes.entity;
 import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
 
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.monster.Pillager;
-import net.minecraft.world.entity.monster.Vindicator;
+import net.minecraft.world.entity.monster.illager.Pillager;
+import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-@EventBusSubscriber(modid = Wildscapes.MODID)
 public final class SwampVariants {
     private SwampVariants() {}
 
@@ -31,35 +27,24 @@ public final class SwampVariants {
     private static final byte SWAMP = 1;
     private static final byte ELSEWHERE = 2;
 
-    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
-            DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Wildscapes.MODID);
+    public static final AttachmentType<Byte> SWAMP_BORN = AttachmentRegistry.<Byte>builder()
+            .persistent(Codec.BYTE)
+            .syncWith(ByteBufCodecs.BYTE, AttachmentSyncPredicate.all())
+            .buildAndRegister(Wildscapes.id("swamp_born"));
 
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Byte>> SWAMP_BORN =
-            ATTACHMENT_TYPES.register("swamp_born", () -> AttachmentType.<Byte>builder(() -> UNDECIDED)
-                    .serialize(Codec.BYTE)
-                    .sync(ByteBufCodecs.BYTE)
-                    .build());
-
-    public static void register(IEventBus bus) {
-        ATTACHMENT_TYPES.register(bus);
+    public static void register() {
+        ServerEntityEvents.ENTITY_LOAD.register(SwampVariants::onEntityJoinLevel);
     }
 
     public static boolean isSwampBorn(Entity entity) {
-        return entity.getData(SWAMP_BORN) == SWAMP;
+        return entity.getAttachedOrElse(SWAMP_BORN, UNDECIDED) == SWAMP;
     }
 
-    @SubscribeEvent
-    static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        Entity entity = event.getEntity();
-        if (event.getLevel().isClientSide() || !hasSwampVariant(entity)) {
-            return;
+    public static void onEntityJoinLevel(Entity entity, ServerLevel level) {
+        if (hasSwampVariant(entity) && !entity.hasAttached(SWAMP_BORN)) {
+            boolean swamp = level.getBiome(entity.blockPosition()).is(SWAMP_BIOMES);
+            entity.setAttached(SWAMP_BORN, swamp ? SWAMP : ELSEWHERE);
         }
-
-        if (entity.getData(SWAMP_BORN) != UNDECIDED) {
-            return;
-        }
-        boolean swamp = event.getLevel().getBiome(entity.blockPosition()).is(SWAMP_BIOMES);
-        entity.setData(SWAMP_BORN, swamp ? SWAMP : ELSEWHERE);
     }
 
     private static boolean hasSwampVariant(Entity entity) {

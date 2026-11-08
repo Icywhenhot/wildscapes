@@ -207,7 +207,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
             }
             return waterDepth(level, origin, maxWaterDepth) <= maxWaterDepth;
         }
-        return (below.is(BlockTags.DIRT) || below.is(Blocks.MUD)
+        return (below.is(WildscapesBlocks.SOIL) || below.is(Blocks.MUD)
                         || below.is(Blocks.CLAY) || below.is(Blocks.SAND))
                 && !below.getFluidState().is(FluidTags.WATER)
                 && (here.isAir() || here.canBeReplaced())

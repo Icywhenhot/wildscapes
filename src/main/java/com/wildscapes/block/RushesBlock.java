@@ -2,9 +2,11 @@ package com.wildscapes.block;
 
 import org.jspecify.annotations.Nullable;
 
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.util.RandomSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
@@ -24,7 +26,7 @@ public class RushesBlock extends DoublePlantBlock implements SimpleWaterloggedBl
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     static boolean isRushSoil(BlockState state) {
-        return state.is(BlockTags.DIRT)
+        return state.is(WildscapesBlocks.SOIL)
                 || state.is(Blocks.FARMLAND)
                 || state.is(Blocks.MUD)
                 || state.is(Blocks.CLAY)
@@ -61,12 +63,12 @@ public class RushesBlock extends DoublePlantBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour,
-            LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
+            Direction direction, BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
         if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        return super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
+        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
     }
 
     @Override

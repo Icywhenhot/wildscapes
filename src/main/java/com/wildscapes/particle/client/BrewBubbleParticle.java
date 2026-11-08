@@ -3,17 +3,17 @@ package com.wildscapes.particle.client;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.util.RandomSource;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 
-public class BrewBubbleParticle extends TextureSheetParticle {
+public class BrewBubbleParticle extends SingleQuadParticle {
     private final SpriteSet sprites;
 
     protected BrewBubbleParticle(ClientLevel level, double x, double y, double z,
             double xd, double yd, double zd, SpriteSet sprites) {
-        super(level, x, y, z);
+        super(level, x, y, z, sprites.get(0, 1));
         this.sprites = sprites;
         this.xd = xd * 0.2;
         this.yd = yd * 0.2 + 0.02;
@@ -27,8 +27,8 @@ public class BrewBubbleParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public SingleQuadParticle.Layer getLayer() {
+        return SingleQuadParticle.Layer.TRANSLUCENT;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class BrewBubbleParticle extends TextureSheetParticle {
 
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
-                double xd, double yd, double zd) {
+                double xd, double yd, double zd, RandomSource random) {
             return new BrewBubbleParticle(level, x, y, z, xd, yd, zd, sprites);
         }
     }

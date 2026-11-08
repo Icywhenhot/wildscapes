@@ -3,12 +3,8 @@
   "category": "misc",
   "group": "wooden_sign",
   "key": {
-    "#": {
-      "item": "wildscapes:cypress_planks"
-    },
-    "X": {
-      "item": "minecraft:stick"
-    }
+    "#": "wildscapes:cypress_planks",
+    "X": "minecraft:stick"
   },
   "pattern": [
     "###",

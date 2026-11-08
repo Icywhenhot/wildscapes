@@ -2,6 +2,9 @@ package com.wildscapes.block;
 
 import org.jspecify.annotations.Nullable;
 
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.util.RandomSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -47,12 +50,12 @@ public class CypressSaplingBlock extends SaplingBlock implements SimpleWaterlogg
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour,
-            LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
+            Direction direction, BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
         if (state.getValue(WATERLOGGED)) {
-            level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+            ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        return super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
+        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
     }
 
     @Override

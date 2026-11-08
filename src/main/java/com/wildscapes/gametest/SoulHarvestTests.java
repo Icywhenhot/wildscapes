@@ -1,5 +1,6 @@
 package com.wildscapes.gametest;
 
+import net.minecraft.world.entity.EntityTypes;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
@@ -18,7 +19,6 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,26 +26,21 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Pig;
-import net.minecraft.world.entity.monster.Vindicator;
+import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.EvokerFangs;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import io.netty.channel.embedded.EmbeddedChannel;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class SoulHarvestTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
     private SoulHarvestTests() {}
 
     @SuppressWarnings("removal")
-    @GameTest(template = PLATFORM, timeoutTicks = 4000, batch = "soul_harvest")
     public static void omenStartsItAndSoulsFinishIt(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos cauldron = new BlockPos(12, 2, 12);
@@ -57,7 +52,7 @@ public final class SoulHarvestTests {
 
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Vec3 stand = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(12, 2, 8)));
-        player.teleportTo(level, stand.x, stand.y, stand.z, 0.0F, 0.0F);
+        player.teleportTo(stand.x, stand.y, stand.z);
         player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, 2000, 0));
 
         helper.runAfterDelay(2, () -> {
@@ -78,7 +73,7 @@ public final class SoulHarvestTests {
         boolean[] paid = {false};
         int[] abominations = {0};
         helper.onEachTick(() -> {
-            for (Mob mob : level.getEntitiesOfClass(Mob.class, area, m -> m.hasData(SoulHarvest.ORIGIN) && m.isAlive())) {
+            for (Mob mob : level.getEntitiesOfClass(Mob.class, area, m -> m.hasAttached(SoulHarvest.ORIGIN) && m.isAlive())) {
                 if (mob instanceof AbominationEntity) {
                     abominations[0]++;
                 }
@@ -110,20 +105,19 @@ public final class SoulHarvestTests {
     }
 
     @SuppressWarnings("removal")
-    @GameTest(template = PLATFORM, timeoutTicks = 1200, batch = "soul_harvest_locals")
     public static void campMobsFeedTheBar(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos cauldron = new BlockPos(12, 2, 12);
         helper.setBlock(cauldron, WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState());
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Vec3 stand = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(12, 2, 8)));
-        player.teleportTo(level, stand.x, stand.y, stand.z, 0.0F, 0.0F);
+        player.teleportTo(stand.x, stand.y, stand.z);
         player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, 2000, 0));
         helper.runAfterDelay(2, () -> CauldronOfSoulsBlockEntity.tryStart(level, player));
 
         helper.runAfterDelay(320, () -> {
             for (int i = 0; i < 10; i++) {
-                Vindicator local = helper.spawn(EntityType.VINDICATOR, new BlockPos(6 + i, 2, 18));
+                Vindicator local = helper.spawn(EntityTypes.VINDICATOR, new BlockPos(6 + i, 2, 18));
                 local.hurt(level.damageSources().playerAttack(player), 10000.0F);
             }
         });
@@ -138,9 +132,8 @@ public final class SoulHarvestTests {
         });
     }
 
-    @GameTest(template = PLATFORM, timeoutTicks = 200)
     public static void gnashingRaisesFangs(GameTestHelper helper) {
-        Pig pig = helper.spawn(EntityType.PIG, new BlockPos(8, 2, 8));
+        Pig pig = helper.spawn(EntityTypes.PIG, new BlockPos(8, 2, 8));
         pig.setNoAi(true);
         pig.addEffect(new MobEffectInstance(WildscapesEffects.GNASHING, 200, 2));
         helper.succeedWhen(() -> helper.assertTrue(
@@ -148,7 +141,6 @@ public final class SoulHarvestTests {
                 "no fangs rose under the pig"));
     }
 
-    @GameTest(template = PLATFORM, timeoutTicks = 600, batch = "incendiary")
     public static void cauldronBottlesRiseAndHuntPlayers(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos pos = new BlockPos(12, 2, 12);
@@ -156,7 +148,7 @@ public final class SoulHarvestTests {
         helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState());
         ServerPlayer player = survivalPlayer(helper);
         Vec3 stand = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(12, 2, 6)));
-        player.teleportTo(level, stand.x, stand.y, stand.z, 0, 0);
+        player.teleportTo(stand.x, stand.y, stand.z);
         player.addEffect(new MobEffectInstance(MobEffects.BAD_OMEN, 2000));
         helper.runAfterDelay(2, () -> CauldronOfSoulsBlockEntity.tryStart(level, player));
         boolean[] rose = {false};
@@ -183,7 +175,6 @@ public final class SoulHarvestTests {
         });
     }
 
-    @GameTest(template = PLATFORM, timeoutTicks = 60, batch = "incendiary")
     public static void breakingTheCauldronRemovesItsBottles(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         BlockPos pos = new BlockPos(12, 2, 12);
@@ -191,7 +182,7 @@ public final class SoulHarvestTests {
         helper.setBlock(pos, WildscapesBlocks.CAULDRON_OF_SOULS.defaultBlockState()
                 .setValue(CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE));
         ServerPlayer player = survivalPlayer(helper);
-        player.teleportTo(level, at.getX() + 6, at.getY(), at.getZ(), 0, 0);
+        player.teleportTo(at.getX() + 6, at.getY(), at.getZ());
         IncendiaryBottle bottle = new IncendiaryBottle(level, at.getX() + 0.5, at.getY() + 1.2, at.getZ() + 0.5);
         bottle.haunt(at, player);
         level.addFreshEntity(bottle);
@@ -206,7 +197,6 @@ public final class SoulHarvestTests {
         });
     }
 
-    @GameTest(template = PLATFORM, timeoutTicks = 100)
     public static void incendiaryFireSparesMobs(GameTestHelper helper) {
         BlockPos mid = new BlockPos(10, 2, 10);
         IncendiaryFireBlock.spread(helper.getLevel(), Vec3.atBottomCenterOf(helper.absolutePos(mid)));
@@ -215,7 +205,7 @@ public final class SoulHarvestTests {
                 helper.assertBlockPresent(WildscapesBlocks.INCENDIARY_FIRE, mid.offset(dx, 0, dz));
             }
         }
-        Pig pig = helper.spawn(EntityType.PIG, mid);
+        Pig pig = helper.spawn(EntityTypes.PIG, mid);
         pig.setNoAi(true);
         helper.runAfterDelay(40, () -> {
             helper.assertTrue(pig.getHealth() == pig.getMaxHealth() && !pig.isOnFire(), "the fire burned a pig");

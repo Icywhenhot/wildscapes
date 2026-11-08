@@ -17,11 +17,11 @@ public final class WildscapesPotions {
 
     public static final Holder.Reference<Potion> LONG_MIRAGE = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("long_mirage"), new Potion("mirage", new MobEffectInstance(WildscapesEffects.MIRAGE, 9600)));
 
-    public static final Holder.Reference<Potion> RESISTANCE = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("resistance"), new Potion("resistance", new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200)));
+    public static final Holder.Reference<Potion> RESISTANCE = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("resistance"), new Potion("resistance", new MobEffectInstance(MobEffects.RESISTANCE, 1200)));
 
-    public static final Holder.Reference<Potion> LONG_RESISTANCE = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("long_resistance"), new Potion("resistance", new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 2400)));
+    public static final Holder.Reference<Potion> LONG_RESISTANCE = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("long_resistance"), new Potion("resistance", new MobEffectInstance(MobEffects.RESISTANCE, 2400)));
 
-    public static final Holder.Reference<Potion> STRONG_RESISTANCE = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("strong_resistance"), new Potion("resistance", new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 1)));
+    public static final Holder.Reference<Potion> STRONG_RESISTANCE = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("strong_resistance"), new Potion("resistance", new MobEffectInstance(MobEffects.RESISTANCE, 600, 1)));
 
     public static final Holder.Reference<Potion> GNASHING = Registry.registerForHolder(BuiltInRegistries.POTION, Wildscapes.id("gnashing"), new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING, 900)));
 

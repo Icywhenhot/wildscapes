@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "minecraft:diamond"
-    },
-    "C": {
-      "item": "minecraft:slime_block"
-    },
-    "S": {
-      "item": "wildscapes:viscose_armor_trim_smithing_template"
-    }
+    "#": "minecraft:diamond",
+    "C": "minecraft:slime_block",
+    "S": "wildscapes:viscose_armor_trim_smithing_template"
   },
   "pattern": [
     "#S#",

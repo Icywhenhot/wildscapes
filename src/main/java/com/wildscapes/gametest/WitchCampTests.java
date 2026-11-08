@@ -1,5 +1,6 @@
 package com.wildscapes.gametest;
 
+import net.minecraft.world.entity.EntityTypes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import com.wildscapes.worldgen.BuriedPiece;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -24,15 +24,10 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public class WitchCampTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
-    @GameTest(template = PLATFORM, timeoutTicks = 400)
     public static void campJoinsUp(GameTestHelper helper) {
         ServerLevel level = helper.getLevel().getServer().getLevel(Level.NETHER);
         for (int camp = 0; camp < 6; camp++) {
@@ -117,17 +112,18 @@ public class WitchCampTests {
         }
         for (StructurePiece prison : prisons) {
             AABB inside = AABB.of(prison.getBoundingBox());
-            helper.assertTrue(level.getEntities(EntityType.VILLAGER, inside, e -> true).size() == 1
-                    && level.getEntities(EntityType.ZOMBIE_VILLAGER, inside, e -> true).size() >= 1,
+            helper.assertTrue(level.getEntities(EntityTypes.VILLAGER, inside, e -> true).size() == 1
+                    && level.getEntities(EntityTypes.ZOMBIE_VILLAGER, inside, e -> true).size() >= 1,
                     "the first dungeon path should hold one villager and a zombie villager");
         }
     }
 
     private static StructureStart generate(ServerLevel level, ChunkPos chunk) {
-        Structure camp = level.registryAccess().registryOrThrow(Registries.STRUCTURE)
-                .get(Identifier.fromNamespaceAndPath("wildscapes", "witch_camp"));
+        var camp = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(
+                net.minecraft.resources.ResourceKey.create(Registries.STRUCTURE,
+                        Identifier.fromNamespaceAndPath("wildscapes", "witch_camp")));
         ChunkGenerator generator = level.getChunkSource().getGenerator();
-        return camp.generate(level.registryAccess(), generator, generator.getBiomeSource(),
+        return camp.value().generate(camp, level.dimension(), level.registryAccess(), generator, generator.getBiomeSource(),
                 level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(),
                 chunk, 0, level, biome -> true);
     }
@@ -143,8 +139,8 @@ public class WitchCampTests {
             for (int cz = all.minZ() >> 4; cz <= all.maxZ() >> 4; cz++) {
                 ChunkPos chunk = new ChunkPos(cx, cz);
                 level.getChunk(cx, cz);
-                BoundingBox box = new BoundingBox(chunk.getMinBlockX(), level.getMinBuildHeight(), chunk.getMinBlockZ(),
-                        chunk.getMaxBlockX(), level.getMaxBuildHeight(), chunk.getMaxBlockZ());
+                BoundingBox box = new BoundingBox(chunk.getMinBlockX(), level.getMinY(), chunk.getMinBlockZ(),
+                        chunk.getMaxBlockX(), level.getMaxY() + 1, chunk.getMaxBlockZ());
                 start.placeInChunk(level, level.structureManager(), level.getChunkSource().getGenerator(),
                         level.getRandom(), box, chunk);
             }

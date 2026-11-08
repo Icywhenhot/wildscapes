@@ -1,0 +1,42 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "property": "wildscapes:item_condition",
+    "kind": "empowered_jump",
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "wildscapes:item/empowered_jump_book"
+    },
+    "on_false": {
+      "type": "minecraft:condition",
+      "property": "wildscapes:item_condition",
+      "kind": "multi_jump",
+      "on_true": {
+        "type": "minecraft:model",
+        "model": "wildscapes:item/multi_jump_book"
+      },
+      "on_false": {
+        "type": "minecraft:condition",
+        "property": "wildscapes:item_condition",
+        "kind": "slime_snare",
+        "on_true": {
+          "type": "minecraft:model",
+          "model": "wildscapes:item/slime_snare_book"
+        },
+        "on_false": {
+          "type": "minecraft:condition",
+          "property": "wildscapes:item_condition",
+          "kind": "elasticity",
+          "on_true": {
+            "type": "minecraft:model",
+            "model": "wildscapes:item/elasticity_book"
+          },
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "minecraft:item/enchanted_book"
+          }
+        }
+      }
+    }
+  }
+}

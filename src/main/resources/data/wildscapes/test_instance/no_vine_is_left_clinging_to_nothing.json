@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "wildscapes:no_vine_is_left_clinging_to_nothing",
+  "environment": "minecraft:default",
+  "structure": "wildscapes:gametest/tree_platform",
+  "max_ticks": 100
+}

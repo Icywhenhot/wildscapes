@@ -3,6 +3,7 @@ package com.wildscapes.effect;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
@@ -11,8 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+
 
 public final class MirageSync {
     private static final Map<LivingEntity, MobEffectInstance> mirages = new WeakHashMap<>();
@@ -20,8 +20,8 @@ public final class MirageSync {
 
     private MirageSync() {}
 
-    public static void onEntityTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof LivingEntity entity)
+    public static void onEntityTick(Entity ticking) {
+        if (!(ticking instanceof LivingEntity entity)
                 || !(entity.level() instanceof ServerLevel level)) {
             return;
         }
@@ -35,7 +35,7 @@ public final class MirageSync {
         MobEffectInstance previous = effects.get(entity);
         if (effect == null) {
             if (effects.remove(entity) != null) {
-                level.getChunkSource().broadcastAndSend(entity,
+                level.getChunkSource().sendToTrackingPlayersAndSelf(entity,
                         new ClientboundRemoveMobEffectPacket(entity.getId(), type));
             }
             return;
@@ -44,14 +44,14 @@ public final class MirageSync {
                 || effect.isAmbient() != previous.isAmbient() || effect.isVisible() != previous.isVisible()
                 || effect.showIcon() != previous.showIcon()
                 || effect.getDuration() != (previous.isInfiniteDuration() ? -1 : previous.getDuration() - 1)) {
-            level.getChunkSource().broadcastAndSend(entity,
+            level.getChunkSource().sendToTrackingPlayersAndSelf(entity,
                     new ClientboundUpdateMobEffectPacket(entity.getId(), effect, false));
         }
         effects.put(entity, new MobEffectInstance(effect));
     }
 
-    public static void onStartTracking(PlayerEvent.StartTracking event) {
-        if (event.getEntity() instanceof ServerPlayer player && event.getTarget() instanceof LivingEntity entity) {
+    public static void onStartTracking(Entity tracked, ServerPlayer player) {
+        if (tracked instanceof LivingEntity entity) {
             send(player, entity, WildscapesEffects.MIRAGE);
             send(player, entity, WildscapesEffects.SLIMEBOUND);
         }

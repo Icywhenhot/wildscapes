@@ -1,21 +1,13 @@
 package com.wildscapes.client;
 
-import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.SwampVariants;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.material.FogType;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 
-@EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class SwampFog {
     private SwampFog() {}
 
@@ -37,9 +29,7 @@ public final class SwampFog {
 
     private static float strength;
 
-    @SubscribeEvent
-    static void onClientTick(ClientTickEvent.Post event) {
-        Minecraft minecraft = Minecraft.getInstance();
+    public static void onClientTick(Minecraft minecraft) {
         if (minecraft.level == null || minecraft.player == null) {
             strength = 0.0F;
             return;
@@ -62,32 +52,19 @@ public final class SwampFog {
         return height * weather;
     }
 
-    @SubscribeEvent
-    static void onRenderFog(ViewportEvent.RenderFog event) {
-        ClientLevel level = Minecraft.getInstance().level;
-
-        if (strength <= 0.001F || level == null || event.getType() != FogType.NONE
-                || event.getMode() == FogRenderer.FogMode.FOG_SKY) {
-            return;
-        }
-        float rain = level.getRainLevel((float) event.getPartialTick());
-        float range = Mth.lerp(rain, CLEAR_RANGE, RAIN_RANGE);
-
-        float far = Mth.lerp(strength, event.getFarPlaneDistance(),
-                Math.min(event.getFarPlaneDistance(), range));
-        event.setFarPlaneDistance(far);
-        event.setNearPlaneDistance(Math.min(event.getNearPlaneDistance(), far * NEAR_FRACTION));
-        event.setCanceled(true);
-    }
-
-    @SubscribeEvent
-    static void onFogColor(ViewportEvent.ComputeFogColor event) {
+    public static void apply(FogData fog, ClientLevel level, float partialTick) {
         if (strength <= 0.001F) {
             return;
         }
+
+        float rain = level.getRainLevel(partialTick);
+        float range = Mth.lerp(rain, CLEAR_RANGE, RAIN_RANGE);
+        float far = Mth.lerp(strength, fog.environmentalEnd, Math.min(fog.environmentalEnd, range));
+        fog.environmentalEnd = far;
+        fog.environmentalStart = Math.min(fog.environmentalStart, far * NEAR_FRACTION);
+
         float blend = strength * MAX_TINT;
-        event.setRed(Mth.lerp(blend, event.getRed(), TINT_R));
-        event.setGreen(Mth.lerp(blend, event.getGreen(), TINT_G));
-        event.setBlue(Mth.lerp(blend, event.getBlue(), TINT_B));
+        fog.color.set(Mth.lerp(blend, fog.color.x, TINT_R),
+                Mth.lerp(blend, fog.color.y, TINT_G), Mth.lerp(blend, fog.color.z, TINT_B), fog.color.w);
     }
 }

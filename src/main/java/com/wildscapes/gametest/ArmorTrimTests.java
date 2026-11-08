@@ -6,7 +6,6 @@ import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -20,22 +19,17 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class ArmorTrimTests {
     private ArmorTrimTests() {}
 
-    @GameTest(template = "gametest/tree_platform", batch = "armor_trims")
     public static void templatesApplyBothPatternsAndDuplicate(GameTestHelper helper) {
         var level = helper.getLevel();
-        var recipes = level.getRecipeManager();
+        var recipes = level.recipeAccess();
         var templates = List.of(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE,
                 WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE);
         for (int i = 0; i < templates.size(); i++) {
-            var template = templates.get(i).get();
+            var template = templates.get(i);
             String name = i == 0 ? "spell" : "viscose";
             var pattern = ResourceKey.create(Registries.TRIM_PATTERN,
                     Identifier.fromNamespaceAndPath("wildscapes", name));
@@ -47,11 +41,11 @@ public final class ArmorTrimTests {
                     var input = new SmithingRecipeInput(new ItemStack(template), base, new ItemStack(material));
                     var recipe = recipes.getRecipeFor(RecipeType.SMITHING, input, level);
                     helper.assertTrue(recipe.isPresent(), "missing smithing recipe for " + name);
-                    ItemStack result = recipe.orElseThrow().value().assemble(input, level.registryAccess());
+                    ItemStack result = recipe.orElseThrow().value().assemble(input);
                     var trim = result.get(DataComponents.TRIM);
                     helper.assertTrue(result.is(armor) && result.getDamageValue() == 12, "smithing changed the armor");
                     helper.assertTrue(trim != null && trim.pattern().is(pattern), "wrong trim pattern for " + name);
-                    helper.assertTrue(trim.material().value().ingredient().value() == material, "wrong trim material");
+                    helper.assertTrue(trim.material().equals(new ItemStack(material).get(DataComponents.PROVIDES_TRIM_MATERIAL)), "wrong trim material");
                     helper.assertTrue(!base.has(DataComponents.TRIM), "smithing changed the input armor");
                 }
             }
@@ -61,13 +55,12 @@ public final class ArmorTrimTests {
                     diamond, diamond, diamond));
             var recipe = recipes.getRecipeFor(RecipeType.CRAFTING, input, level);
             helper.assertTrue(recipe.isPresent(), "missing duplication recipe for " + name);
-            ItemStack result = recipe.orElseThrow().value().assemble(input, level.registryAccess());
+            ItemStack result = recipe.orElseThrow().value().assemble(input);
             helper.assertTrue(result.is(template) && result.getCount() == 2, "template did not duplicate");
         }
         helper.succeed();
     }
 
-    @GameTest(template = "gametest/tree_platform", batch = "armor_trims")
     public static void harvestAwardsBothTrimsAndCampsKeepThemRare(GameTestHelper helper) {
         for (String path : new String[] {"gameplay/cauldron_of_souls", "chests/witch_camp/standard",
                 "chests/witch_camp/dungeon", "pots/witch_camp/cellar"}) {
@@ -81,9 +74,9 @@ public final class ArmorTrimTests {
             int viscose = 0;
             for (int i = 0; i < 1024; i++) {
                 for (ItemStack stack : table.getRandomItems(params)) {
-                    if (stack.is(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE.get())) {
+                    if (stack.is(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE)) {
                         spell++;
-                    } else if (stack.is(WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE.get())) {
+                    } else if (stack.is(WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE)) {
                         viscose++;
                     }
                 }

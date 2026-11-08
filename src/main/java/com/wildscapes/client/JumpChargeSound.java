@@ -25,7 +25,7 @@ public final class JumpChargeSound extends AbstractTickableSoundInstance {
     @Override
     public void tick() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != player || mc.screen != null || !player.input.shiftKeyDown
+        if (mc.player != player || mc.gui.screen() != null || !player.input.keyPresses.shift()
                 || !JumpEnchantments.canCharge(player)) {
             stop();
             return;

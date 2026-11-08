@@ -8,10 +8,9 @@ import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.item.ItemStack;
@@ -23,16 +22,11 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.fabricmc.fabric.api.registry.CompostableRegistry;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class CypressSetTests {
     private CypressSetTests() {}
 
-    @GameTest(template = "gametest/tree_platform", batch = "cypress_set")
     public static void cypressSetAndPolishHoldTogether(GameTestHelper helper) {
         signsHoldSignBlockEntities(helper);
         boatsUseTheCypressType(helper);
@@ -46,22 +40,22 @@ public final class CypressSetTests {
     private static void frogLegStew(GameTestHelper helper) {
         var level = helper.getLevel();
         var input = CraftingInput.of(3, 2, List.of(new ItemStack(Items.POTATO),
-                new ItemStack(WildscapesItems.FROG_LEGS.get()), new ItemStack(Items.BOWL),
+                new ItemStack(WildscapesItems.FROG_LEGS), new ItemStack(Items.BOWL),
                 new ItemStack(WildscapesBlocks.LUMINOUS_MUSHROOM), ItemStack.EMPTY, new ItemStack(Items.CARROT)));
-        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
+        var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
         helper.assertTrue(recipe.isPresent(), "frog leg stew recipe missing");
-        var stew = recipe.get().value().assemble(input, level.registryAccess());
-        helper.assertTrue(stew.is(WildscapesItems.FROG_LEG_STEW.get()), "wrong stew recipe result");
+        var stew = recipe.get().value().assemble(input);
+        helper.assertTrue(stew.is(WildscapesItems.FROG_LEG_STEW), "wrong stew recipe result");
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.getFoodData().setFoodLevel(10);
         var bowl = stew.finishUsingItem(level, player);
         helper.assertTrue(bowl.is(Items.BOWL), "stew did not return a bowl");
-        var effect = player.getEffect(MobEffects.JUMP);
+        var effect = player.getEffect(MobEffects.JUMP_BOOST);
         helper.assertTrue(effect != null && effect.getAmplifier() == 1 && effect.getDuration() == 400,
                 "stew did not give jump boost ii for 20 seconds");
-        var legs = new SingleRecipeInput(new ItemStack(WildscapesItems.FROG_LEGS.get()));
+        var legs = new SingleRecipeInput(new ItemStack(WildscapesItems.FROG_LEGS));
         for (var type : List.of(RecipeType.SMELTING, RecipeType.SMOKING, RecipeType.CAMPFIRE_COOKING)) {
-            helper.assertTrue(level.getRecipeManager().getRecipeFor(type, legs, level).isEmpty(),
+            helper.assertTrue(level.recipeAccess().getRecipeFor(type, legs, level).isEmpty(),
                     "frog legs still cook in " + type);
         }
     }
@@ -71,23 +65,19 @@ public final class CypressSetTests {
         BlockPos hanging = new BlockPos(3, 2, 1);
         helper.setBlock(sign, WildscapesBlocks.CYPRESS_SIGN);
         helper.setBlock(hanging, WildscapesBlocks.CYPRESS_HANGING_SIGN);
-        helper.assertTrue(helper.getBlockEntity(sign) instanceof SignBlockEntity, "cypress sign has no sign entity");
-        helper.assertTrue(helper.getBlockEntity(hanging) instanceof HangingSignBlockEntity,
+        helper.assertTrue(helper.getBlockEntity(sign, SignBlockEntity.class) != null, "cypress sign has no sign entity");
+        helper.assertTrue(helper.getBlockEntity(hanging, HangingSignBlockEntity.class) != null,
                 "cypress hanging sign has no hanging sign entity");
     }
 
     private static void boatsUseTheCypressType(GameTestHelper helper) {
-        Boat.Type type = CypressBoat.TYPE.getValue();
-        helper.assertTrue(type.getName().equals("wildscapes:cypress"), "wrong boat type name");
-        helper.assertTrue(type.getPlanks() == WildscapesBlocks.CYPRESS_PLANKS, "boat drops the wrong planks");
-        Boat boat = new Boat(helper.getLevel(), 0, 0, 0);
-        boat.setVariant(type);
-        helper.assertTrue(boat.getDropItem() == WildscapesItems.CYPRESS_BOAT.get(), "boat drops the wrong item");
         var level = helper.getLevel();
-        var input = CraftingInput.of(2, 1, List.of(new ItemStack(Items.CHEST), new ItemStack(WildscapesItems.CYPRESS_BOAT.get())));
-        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
-        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, level.registryAccess())
-                .is(WildscapesItems.CYPRESS_CHEST_BOAT.get()), "chest boat recipe missing");
+        Boat boat = CypressBoat.BOAT.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        helper.assertTrue(boat != null && boat.getType() == CypressBoat.BOAT, "wrong cypress boat entity type");
+        var input = CraftingInput.of(2, 1, List.of(new ItemStack(Items.CHEST), new ItemStack(WildscapesItems.CYPRESS_BOAT)));
+        var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
+        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input)
+                .is(WildscapesItems.CYPRESS_CHEST_BOAT), "chest boat recipe missing");
     }
 
     private static void raidBlocksAreUnbreakable(GameTestHelper helper) {
@@ -98,16 +88,16 @@ public final class CypressSetTests {
     }
 
     private static void mirelashTakesMending(GameTestHelper helper) {
-        var mending = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT)
-                .getHolderOrThrow(Enchantments.MENDING);
-        helper.assertTrue(new ItemStack(WildscapesItems.MIRELASH.get()).supportsEnchantment(mending),
+        var mending = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(Enchantments.MENDING);
+        helper.assertTrue(mending.value().canEnchant(new ItemStack(WildscapesItems.MIRELASH)),
                 "mirelash refuses mending");
     }
 
     private static void swampPlantsCompost(GameTestHelper helper) {
         for (var item : List.of(WildscapesBlocks.DUCKWEED.asItem(), WildscapesBlocks.RUSHES.asItem(),
                 WildscapesBlocks.CYPRESS_LEAVES.asItem(), WildscapesBlocks.LUMINOUS_MUSHROOM.asItem())) {
-            helper.assertTrue(item.builtInRegistryHolder().getData(NeoForgeDataMaps.COMPOSTABLES) != null,
+            helper.assertTrue(CompostableRegistry.INSTANCE.get(item) != null,
                     item + " is not compostable");
         }
         var advancement = helper.getLevel().getServer().getAdvancements()

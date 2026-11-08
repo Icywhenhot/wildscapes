@@ -1,19 +1,19 @@
 package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.SoulHarvest;
-import com.wildscapes.entity.SwampVariants;
 
-import net.minecraft.client.model.IllagerModel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.model.monster.illager.IllagerModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.monster.Vindicator;
+import net.minecraft.client.renderer.entity.state.IllagerRenderState;
+import net.minecraft.world.entity.monster.illager.Vindicator;
 
-public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
+public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, IllagerRenderState> {
     private static final Identifier DEFAULT =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator.png");
     private static final Identifier SWAMP =
@@ -24,14 +24,11 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
     public SwampVindicatorRenderer(EntityRendererProvider.Context context) {
         super(context, new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.VINDICATOR)), 0.5F);
 
-        this.addLayer(new ItemInHandLayer<Vindicator, IllagerModel<Vindicator>>(this, context.getItemInHandRenderer()) {
+        this.addLayer(new ItemInHandLayer<>(this) {
             @Override
-            public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Vindicator entity,
-                    float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks,
-                    float netHeadYaw, float headPitch) {
-                if (entity.isAggressive()) {
-                    super.render(poseStack, buffer, packedLight, entity, limbSwing, limbSwingAmount,
-                            partialTicks, ageInTicks, netHeadYaw, headPitch);
+            public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, IllagerRenderState state, float yaw, float pitch) {
+                if (state.isAggressive) {
+                    super.submit(pose, nodes, light, state, yaw, pitch);
                 }
             }
         });
@@ -39,10 +36,15 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
     }
 
     @Override
-    public Identifier getTextureLocation(Vindicator entity) {
-        if (SoulHarvest.isEmpowered(entity)) {
+    public IllagerRenderState createRenderState() {
+        return new IllagerRenderState();
+    }
+
+    @Override
+    public Identifier getTextureLocation(IllagerRenderState state) {
+        if (state.getDataOrDefault(MobVisuals.EMPOWERED, false)) {
             return EMPOWERED;
         }
-        return SwampVariants.isSwampBorn(entity) ? SWAMP : DEFAULT;
+        return state.getDataOrDefault(MobVisuals.SWAMP, false) ? SWAMP : DEFAULT;
     }
 }

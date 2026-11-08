@@ -1,103 +1,97 @@
 package com.wildscapes.client;
 
+import java.util.Map;
+import java.util.function.Predicate;
+
 import com.wildscapes.Wildscapes;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.entity.SwampVariants;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.model.loading.v1.wrapper.WrapperBlockStateModel;
+import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
-import net.neoforged.neoforge.client.model.IQuadTransformer;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
 
-@EventBusSubscriber(modid = Wildscapes.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
-    private static final ModelProperty<Boolean> SWAMP = new ModelProperty<>();
-    private final Map<Identifier, TextureAtlasSprite> textures;
-    private final Map<BakedQuad, BakedQuad> quads = new ConcurrentHashMap<>();
+public final class SwampMossModel extends WrapperBlockStateModel {
+    private static final Map<Identifier, Identifier> TEXTURES = Map.of(
+            Identifier.withDefaultNamespace("block/moss_block"), Wildscapes.id("block/swamp_moss_block"),
+            Wildscapes.id("block/moss_drape"), Wildscapes.id("block/swamp_moss_drape"),
+            Wildscapes.id("block/moss_drape_end"), Wildscapes.id("block/swamp_moss_drape_end"));
 
-    private SwampMossModel(BakedModel model, Map<Identifier, TextureAtlasSprite> textures) {
+    private SwampMossModel(BlockStateModel model) {
         super(model);
-        this.textures = textures;
     }
 
-    @SubscribeEvent
-    static void onModels(ModelEvent.ModifyBakingResult event) {
-        var textures = Map.of(
-                Identifier.withDefaultNamespace("block/moss_block"), sprite(event, "swamp_moss_block"),
-                Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape"), sprite(event, "swamp_moss_drape"),
-                Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape_end"), sprite(event, "swamp_moss_drape_end"));
-        for (var block : List.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET,
-                WildscapesBlocks.MOSS_CARPET, WildscapesBlocks.HANGING_MOSS)) {
-            for (var state : block.getStateDefinition().getPossibleStates()) {
-                var id = BlockModelShaper.stateToModelLocation(state);
-                event.getModels().computeIfPresent(id, (key, model) -> new SwampMossModel(model, textures));
+    public static void register() {
+        ModelLoadingPlugin.register(plugin -> plugin.modifyBlockModelAfterBake().register((model, context) -> {
+            var block = context.state().getBlock();
+            return block == Blocks.MOSS_BLOCK || block == Blocks.MOSS_CARPET
+                    || block == WildscapesBlocks.MOSS_CARPET || block == WildscapesBlocks.HANGING_MOSS
+                    ? new SwampMossModel(model) : model;
+        }));
+    }
+
+    @Override
+    public void emitQuads(QuadEmitter emitter, BlockAndTintGetter view, BlockPos pos, BlockState state,
+            RandomSource random, Predicate<Direction> cull) {
+        if (!isSwamp(pos)) {
+            super.emitQuads(emitter, view, pos, state, random, cull);
+            return;
+        }
+
+        var atlases = Minecraft.getInstance().getAtlasManager();
+        var finder = atlases.getAtlasOrThrow(AtlasIds.BLOCKS).spriteFinder();
+        emitter.pushTransform(quad -> {
+            TextureAtlasSprite old = finder.find(quad);
+            Identifier id = TEXTURES.get(old.contents().name());
+            if (id != null) {
+                TextureAtlasSprite sprite = atlases.get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, id));
+                for (int i = 0; i < 4; i++) {
+                    float u = (quad.u(i) - old.getU0()) / (old.getU1() - old.getU0());
+                    float v = (quad.v(i) - old.getV0()) / (old.getV1() - old.getV0());
+                    quad.uv(i, sprite.getU(u), sprite.getV(v));
+                }
             }
+            return true;
+        });
+        try {
+            super.emitQuads(emitter, view, pos, state, random, cull);
+        } finally {
+            emitter.popTransform();
         }
     }
 
-    private static TextureAtlasSprite sprite(ModelEvent.ModifyBakingResult event, String name) {
-        return event.getTextureGetter().apply(new Material(TextureAtlas.LOCATION_BLOCKS,
-                Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/" + name)));
+    @Override
+    public Object createGeometryKey(BlockAndTintGetter view, BlockPos pos, BlockState state, RandomSource random) {
+        Object key = super.createGeometryKey(view, pos, state, random);
+        return key != null && isSwamp(pos) ? new SwampKey(key) : key;
     }
 
     @Override
-    public ModelData getModelData(BlockAndTintGetter view, BlockPos pos, BlockState state, ModelData data) {
+    public Material.Baked particleMaterial(BlockAndTintGetter view, BlockPos pos, BlockState state) {
+        Material.Baked base = super.particleMaterial(view, pos, state);
+        Identifier id = isSwamp(pos) ? TEXTURES.get(base.sprite().contents().name()) : null;
+        return id == null ? base : new Material.Baked(Minecraft.getInstance().getAtlasManager()
+                .get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, id)), base.forceTranslucent());
+    }
+
+    private static boolean isSwamp(BlockPos pos) {
         var level = Minecraft.getInstance().level;
-        return super.getModelData(view, pos, state, data).derive()
-                .with(SWAMP, level != null && level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES)).build();
+        return level != null && level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES);
     }
 
-    @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource random, ModelData data, RenderType type) {
-        var faces = super.getQuads(state, side, random, data, type);
-        if (!Boolean.TRUE.equals(data.get(SWAMP))) {
-            return faces;
-        }
-        return faces.stream().map(face -> quads.computeIfAbsent(face, this::retexture)).toList();
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon(ModelData data) {
-        var sprite = super.getParticleIcon(data);
-        return Boolean.TRUE.equals(data.get(SWAMP)) ? textures.getOrDefault(sprite.contents().name(), sprite) : sprite;
-    }
-
-    private BakedQuad retexture(BakedQuad quad) {
-        var old = quad.getSprite();
-        var sprite = textures.get(old.contents().name());
-        if (sprite == null) {
-            return quad;
-        }
-        var vertices = quad.getVertices().clone();
-        for (int i = 0; i < 4; i++) {
-            int uv = i * IQuadTransformer.STRIDE + IQuadTransformer.UV0;
-            float u = old.getUOffset(Float.intBitsToFloat(vertices[uv]));
-            float v = old.getVOffset(Float.intBitsToFloat(vertices[uv + 1]));
-            vertices[uv] = Float.floatToRawIntBits(sprite.getU(u));
-            vertices[uv + 1] = Float.floatToRawIntBits(sprite.getV(v));
-        }
-        return new BakedQuad(vertices, quad.getTintIndex(), quad.getDirection(), sprite,
-                quad.isShade(), quad.hasAmbientOcclusion());
-    }
+    private record SwampKey(Object base) {}
 }

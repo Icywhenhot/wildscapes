@@ -8,7 +8,8 @@ import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -47,7 +48,8 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     public MirelashHook(Level level, Player owner, ItemStack stack) {
-        super(WildscapesEntities.MIRELASH_HOOK, owner, level);
+        super(WildscapesEntities.MIRELASH_HOOK, owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), level);
+        setOwner(owner);
         int elasticity = MirelashItem.enchantmentLevel(level, stack, MirelashItem.ELASTICITY);
         entityData.set(MAX_RANGE, 30.0F * (elasticity + 1));
         entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
@@ -55,7 +57,8 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     public MirelashHook(Level level, Player owner, ItemStack stack, LivingEntity target) {
-        super(WildscapesEntities.MIRELASH_HOOK, owner, level);
+        super(WildscapesEntities.MIRELASH_HOOK, owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), level);
+        setOwner(owner);
         entityData.set(MAX_RANGE, (float) MirelashItem.ATTACK_RANGE);
         entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
         entityData.set(ATTACK, true);
@@ -103,7 +106,7 @@ public final class MirelashHook extends ThrowableProjectile {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             level().playSound(null, hit.getLocation().x, hit.getLocation().y, hit.getLocation().z,
                     WildscapesSounds.MIRELASH_IMPACT, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
@@ -125,7 +128,7 @@ public final class MirelashHook extends ThrowableProjectile {
     @Override
     protected void onHitEntity(EntityHitResult hit) {
         super.onHitEntity(hit);
-        if (!level().isClientSide && entityData.get(ATTACK) && hit.getEntity() instanceof LivingEntity target
+        if (!level().isClientSide() && entityData.get(ATTACK) && hit.getEntity() instanceof LivingEntity target
                 && getOwner() instanceof Player player) {
             landAttack(player, target);
         }
@@ -139,7 +142,7 @@ public final class MirelashHook extends ThrowableProjectile {
         }
         Vec3 targetPos = new Vec3(target.getX(), target.getY(0.5), target.getZ());
         Vec3 travel = targetPos.subtract(position());
-        if (!level().isClientSide && (tickCount >= 3 || travel.lengthSqr() < 0.36)) {
+        if (!level().isClientSide() && (tickCount >= 3 || travel.lengthSqr() < 0.36)) {
             landAttack(player, target);
             return;
         }
@@ -157,7 +160,7 @@ public final class MirelashHook extends ThrowableProjectile {
         if (entityData.get(SLIME_SNARE)) {
             target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND, 80, 0, false, true, false));
             ServerLevel level = (ServerLevel) level();
-            ItemParticleOption slime = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SLIME_BALL));
+            ItemParticleOption slime = new ItemParticleOption(ParticleTypes.ITEM, Items.SLIME_BALL);
             level.sendParticles(slime, target.getX(), target.getY(0.55), target.getZ(), 28,
                     target.getBbWidth() * 0.45, target.getBbHeight() * 0.35, target.getBbWidth() * 0.45, 0.08);
         }
@@ -175,7 +178,7 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         tag.putBoolean("anchored", isAnchored());
         tag.putFloat("tether_length", getTetherLength());
         tag.putFloat("max_range", entityData.get(MAX_RANGE));
@@ -185,13 +188,13 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        entityData.set(ANCHORED, tag.getBoolean("anchored"));
-        entityData.set(TETHER_LENGTH, tag.getFloat("tether_length"));
-        entityData.set(MAX_RANGE, tag.getFloat("max_range"));
-        entityData.set(SLIME_SNARE, tag.getBoolean("slime_snare"));
-        entityData.set(ATTACK, tag.getBoolean("attack"));
-        entityData.set(TARGET, tag.getInt("target"));
+    public void readAdditionalSaveData(ValueInput tag) {
+        entityData.set(ANCHORED, tag.getBooleanOr("anchored", false));
+        entityData.set(TETHER_LENGTH, tag.getFloatOr("tether_length", 0));
+        entityData.set(MAX_RANGE, tag.getFloatOr("max_range", 0));
+        entityData.set(SLIME_SNARE, tag.getBooleanOr("slime_snare", false));
+        entityData.set(ATTACK, tag.getBooleanOr("attack", false));
+        entityData.set(TARGET, tag.getIntOr("target", 0));
     }
 
     @Override

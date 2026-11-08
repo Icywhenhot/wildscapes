@@ -4,18 +4,19 @@ import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.level.block.VegetationBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class DuckweedBlock extends BushBlock {
+public class DuckweedBlock extends VegetationBlock {
     public static final MapCodec<DuckweedBlock> CODEC = simpleCodec(DuckweedBlock::new);
 
     private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 1.0D, 16.0D);
@@ -28,7 +29,7 @@ public class DuckweedBlock extends BushBlock {
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects, boolean precise) {
         if (entity.isPassenger()) {
             return;
         }
@@ -38,7 +39,7 @@ public class DuckweedBlock extends BushBlock {
     }
 
     @Override
-    protected MapCodec<? extends BushBlock> codec() {
+    public MapCodec<? extends VegetationBlock> codec() {
         return CODEC;
     }
 

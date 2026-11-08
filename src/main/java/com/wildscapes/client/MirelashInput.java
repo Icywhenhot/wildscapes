@@ -1,37 +1,30 @@
 package com.wildscapes.client;
 
-import com.wildscapes.Wildscapes;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.network.MirelashAttackPayload;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-@EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class MirelashInput {
     private MirelashInput() {}
 
-    @SubscribeEvent
-    static void onAttack(InputEvent.InteractionKeyMappingTriggered event) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (!event.isAttack() || minecraft.player == null || minecraft.screen != null
+    public static boolean onAttack(Minecraft minecraft) {
+        if (!ClientPlayNetworking.canSend(MirelashAttackPayload.TYPE) || minecraft.player == null || minecraft.gui.screen() != null
                 || !(minecraft.player.getMainHandItem().getItem() instanceof MirelashItem)
-                || minecraft.player.getCooldowns().isOnCooldown(minecraft.player.getMainHandItem().getItem())
+                || minecraft.player.getCooldowns().isOnCooldown(minecraft.player.getMainHandItem())
                 || minecraft.player.getAttackStrengthScale(0.5F) < 0.9F) {
-            return;
+            return false;
         }
         LivingEntity target = MirelashItem.findAttackTarget(minecraft.player.level(), minecraft.player);
         if (target == null) {
-            return;
+            return false;
         }
         ClientPlayNetworking.send(new MirelashAttackPayload(target.getId()));
         minecraft.player.resetAttackStrengthTicker();
-        event.setSwingHand(true);
-        event.setCanceled(true);
+        minecraft.player.swing(InteractionHand.MAIN_HAND);
+        return true;
     }
 }

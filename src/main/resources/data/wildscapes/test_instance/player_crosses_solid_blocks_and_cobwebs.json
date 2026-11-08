@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "wildscapes:player_crosses_solid_blocks_and_cobwebs",
+  "environment": "minecraft:default",
+  "structure": "wildscapes:gametest/tree_platform",
+  "max_ticks": 100
+}

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:function",
+  "function": "wildscapes:air_jumps_use_the_boots_and_reset_on_landing",
+  "environment": "minecraft:default",
+  "structure": "wildscapes:gametest/tree_platform",
+  "max_ticks": 100
+}

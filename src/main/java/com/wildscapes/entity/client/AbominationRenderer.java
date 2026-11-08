@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.TonguePath;
 
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import com.geckolib.renderer.base.RenderPassInfo;
+import com.geckolib.renderer.base.BoneSnapshots;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -24,9 +26,9 @@ import net.minecraft.world.phys.Vec3;
 
 import org.joml.Quaternionf;
 
-import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import com.geckolib.renderer.GeoEntityRenderer;
 
-public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
+public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity, AbominationRenderer.State> {
     private static final Identifier SEGMENT = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
             "textures/entity/tongue_segment.png");
     private static final Identifier TIP = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
@@ -44,7 +46,7 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
         segment = context.bakeLayer(WildscapesModelLayers.TONGUE_SEGMENT).getChild("segment");
         tip = context.bakeLayer(WildscapesModelLayers.TONGUE_TIP).getChild("tip");
         grasp = context.bakeLayer(WildscapesModelLayers.ABOMINATION_GRASP).getChild("grasp");
-        addRenderLayer(new PotionGlowLayer(this));
+        withRenderLayer(new PotionGlowLayer(this));
     }
 
     @Override
@@ -56,27 +58,65 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
         return target != null && frustum.isVisible(abomination.getBoundingBox().minmax(target.getBoundingBox()));
     }
 
-    @Override
-    public void render(AbominationEntity abomination, float yaw, float partialTick, PoseStack pose,
-            MultiBufferSource buffer, int light) {
-        super.render(abomination, yaw, partialTick, pose, buffer, light);
-        renderTongue(abomination, partialTick, pose, buffer, light);
-        renderGrasp(abomination, partialTick, pose, buffer, light);
+    public static class State extends LivingEntityRenderState {
+        List<Vec3> tongue = List.of();
+        Vec3 base;
+        float reach;
+        Vec3 grasp;
+        float targetYaw;
+        float targetWidth;
+        float targetHeight;
+        boolean hideTongue;
     }
 
-    private void renderTongue(AbominationEntity abomination, float partialTick, PoseStack pose,
-            MultiBufferSource buffer, int light) {
-        float reach = abomination.tongueReach(partialTick);
-        if (reach <= 0.001F) {
-            return;
+    @Override
+    public State createRenderState(AbominationEntity entity, Void unused) {
+        return new State();
+    }
+
+    @Override
+    public void extractRenderState(AbominationEntity entity, State state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.base = entity.getPosition(partialTick);
+        state.reach = entity.tongueReach(partialTick);
+        List<Vec3> path = entity.tonguePath();
+        state.tongue = path.isEmpty() ? List.of() : new ArrayList<>(path);
+        if (!state.tongue.isEmpty()) {
+            state.tongue.set(0, entity.mouthPos(partialTick));
         }
-        List<Vec3> stored = abomination.tonguePath();
-        if (stored.size() < 2) {
+        state.hideTongue = entity.getTongueTicks() >= 0;
+        state.grasp = null;
+        if (entity.isGrasping() && entity.level().getEntity(entity.getTongueTargetId()) instanceof LivingEntity target) {
+            state.grasp = target.getPosition(partialTick).subtract(state.base);
+            state.targetYaw = Mth.rotLerp(partialTick, target.yBodyRotO, target.yBodyRot);
+            state.targetWidth = target.getBbWidth();
+            state.targetHeight = target.getBbHeight();
+        }
+    }
+
+    @Override
+    public void adjustModelBonesForRender(RenderPassInfo<State> pass, BoneSnapshots bones) {
+        State state = pass.renderState();
+        bones.ifPresent("head", head -> {
+            head.setRotX(head.getRotX() + state.xRot * Mth.DEG_TO_RAD);
+            head.setRotY(head.getRotY() + state.yRot * Mth.DEG_TO_RAD);
+        });
+        bones.ifPresent("tongue", tongue -> tongue.skipRender(state.hideTongue).skipChildrenRender(state.hideTongue));
+    }
+
+    @Override
+    public void submit(State state, PoseStack pose, SubmitNodeCollector nodes, CameraRenderState camera) {
+        super.submit(state, pose, nodes, camera);
+        renderTongue(state, pose, nodes);
+        renderGrasp(state, pose, nodes);
+    }
+
+    private void renderTongue(State state, PoseStack pose, SubmitNodeCollector nodes) {
+        List<Vec3> pts = state.tongue;
+        if (state.reach <= 0.001F || pts.size() < 2) {
             return;
         }
 
-        List<Vec3> pts = new ArrayList<>(stored);
-        pts.set(0, abomination.mouthPos(partialTick));
         double total = 0.0D;
         for (int i = 1; i < pts.size(); i++) {
             total += pts.get(i).distanceTo(pts.get(i - 1));
@@ -85,10 +125,9 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
             return;
         }
 
-        Vec3 base = abomination.getPosition(partialTick);
-        double want = total * reach;
+        Vec3 base = state.base;
+        double want = total * state.reach;
         int count = Math.max(1, Mth.ceil(want / SEG));
-        VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(SEGMENT));
         Vec3 last = pts.get(0);
         Vec3 dir = Vec3.ZERO;
         for (int i = 0; i < count; i++) {
@@ -109,7 +148,7 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
             pose.translate(mid.x, mid.y, mid.z);
             pose.mulPose(pointAlong(dir));
             pose.scale(1.0F, 1.0F, (float) (len / SEG));
-            segment.render(pose, consumer, light, OverlayTexture.NO_OVERLAY);
+            nodes.submitModelPart(segment, pose, RenderTypes.entityCutout(SEGMENT), state.lightCoords, OverlayTexture.NO_OVERLAY, null);
             pose.popPose();
         }
 
@@ -120,26 +159,21 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
         pose.pushPose();
         pose.translate(head.x, head.y, head.z);
         pose.mulPose(pointAlong(dir));
-        tip.render(pose, buffer.getBuffer(RenderType.entityCutoutNoCull(TIP)), light, OverlayTexture.NO_OVERLAY);
+        nodes.submitModelPart(tip, pose, RenderTypes.entityCutout(TIP), state.lightCoords, OverlayTexture.NO_OVERLAY, null);
         pose.popPose();
     }
 
-    private void renderGrasp(AbominationEntity abomination, float partialTick, PoseStack pose,
-            MultiBufferSource buffer, int light) {
-        if (!abomination.isGrasping()
-                || !(abomination.level().getEntity(abomination.getTongueTargetId()) instanceof LivingEntity target)) {
+    private void renderGrasp(State state, PoseStack pose, SubmitNodeCollector nodes) {
+        if (state.grasp == null) {
             return;
         }
-        Vec3 at = target.getPosition(partialTick).subtract(abomination.getPosition(partialTick));
-        float bodyYaw = Mth.rotLerp(partialTick, target.yBodyRotO, target.yBodyRot);
 
         pose.pushPose();
-        pose.translate(at.x, at.y, at.z);
-        pose.mulPose(new Quaternionf().rotateY((180.0F - bodyYaw) * Mth.DEG_TO_RAD));
+        pose.translate(state.grasp.x, state.grasp.y, state.grasp.z);
+        pose.mulPose(new Quaternionf().rotateY((180.0F - state.targetYaw) * Mth.DEG_TO_RAD));
         pose.scale(-1.0F, -1.0F, 1.0F);
-        pose.scale(target.getBbWidth() / 0.6F, target.getBbHeight() / 1.8F, target.getBbWidth() / 0.6F);
-        grasp.render(pose, buffer.getBuffer(RenderType.entityCutoutNoCull(GRASP)), light,
-                LivingEntityRenderer.getOverlayCoords(target, 0.0F));
+        pose.scale(state.targetWidth / 0.6F, state.targetHeight / 1.8F, state.targetWidth / 0.6F);
+        nodes.submitModelPart(grasp, pose, RenderTypes.entityCutout(GRASP), state.lightCoords, OverlayTexture.NO_OVERLAY, null);
         pose.popPose();
     }
 

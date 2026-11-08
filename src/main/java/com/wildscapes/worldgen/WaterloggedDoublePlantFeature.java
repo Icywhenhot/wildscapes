@@ -20,7 +20,7 @@ public class WaterloggedDoublePlantFeature extends Feature<SimpleBlockConfigurat
     public boolean place(FeaturePlaceContext<SimpleBlockConfiguration> context) {
         WorldGenLevel level = context.level();
         BlockPos pos = context.origin();
-        BlockState state = context.config().toPlace().getState(context.random(), pos);
+        BlockState state = context.config().toPlace().getState(context.level(), context.random(), pos);
 
         if (!(state.getBlock() instanceof DoublePlantBlock) || !state.canSurvive(level, pos)) {
             return false;

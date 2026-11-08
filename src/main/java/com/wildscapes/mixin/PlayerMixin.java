@@ -20,12 +20,4 @@ public abstract class PlayerMixin {
             cir.setReturnValue(movement);
         }
     }
-
-    @Inject(method = "canBeHitByProjectile", at = @At("HEAD"), cancellable = true)
-    private void intangibleProjectile(CallbackInfoReturnable<Boolean> cir) {
-        Player player = (Player) (Object) this;
-        if (Intangibility.isActive(player)) {
-            cir.setReturnValue(false);
-        }
-    }
 }

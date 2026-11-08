@@ -20,7 +20,7 @@ public class ResidueCloud extends AreaEffectCloud {
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide || isWaiting() || tickCount % 3 != 0) {
+        if (!level().isClientSide() || isWaiting() || tickCount % 3 != 0) {
             return;
         }
         float r = getRadius();

@@ -3,12 +3,8 @@
   "category": "building",
   "group": "dyed_mud_brick_stairs",
   "ingredients": [
-    {
-      "tag": "wildscapes:mud_brick_stairs"
-    },
-    {
-      "item": "minecraft:brown_dye"
-    }
+    "#wildscapes:mud_brick_stairs",
+    "minecraft:brown_dye"
   ],
   "result": {
     "id": "wildscapes:brown_mud_brick_stairs",

@@ -5,17 +5,12 @@ import java.util.List;
 import com.wildscapes.worldgen.ClearProcessor;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public class VillageTerrainTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
@@ -34,7 +29,6 @@ public class VillageTerrainTests {
                 piece, piece, new StructurePlaceSettings());
     }
 
-    @GameTest(template = PLATFORM)
     public static void aTurfFloorSurvivesTheNeighbour(GameTestHelper helper) {
         BlockPos turf = helper.absolutePos(new BlockPos(4, 3, 4));
         BlockState grass = Blocks.GRASS_BLOCK.defaultBlockState();
@@ -49,7 +43,6 @@ public class VillageTerrainTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void groundOnDeckingSurvivesUnannounced(GameTestHelper helper) {
         helper.getLevel().setBlock(helper.absolutePos(new BlockPos(9, 2, 9)),
                 Blocks.OAK_PLANKS.defaultBlockState(), 18);
@@ -62,7 +55,6 @@ public class VillageTerrainTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void aHillsideIsStillDugOut(GameTestHelper helper) {
         helper.getLevel().setBlock(helper.absolutePos(new BlockPos(15, 2, 15)),
                 Blocks.DIRT.defaultBlockState(), 18);

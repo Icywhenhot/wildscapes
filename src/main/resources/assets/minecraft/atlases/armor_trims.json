@@ -3,10 +3,10 @@
     {
       "type": "paletted_permutations",
       "textures": [
-        "wildscapes:trims/models/armor/spell",
-        "wildscapes:trims/models/armor/spell_leggings",
-        "wildscapes:trims/models/armor/viscose",
-        "wildscapes:trims/models/armor/viscose_leggings"
+        "wildscapes:trims/entity/humanoid/spell",
+        "wildscapes:trims/entity/humanoid_leggings/spell",
+        "wildscapes:trims/entity/humanoid/viscose",
+        "wildscapes:trims/entity/humanoid_leggings/viscose"
       ],
       "palette_key": "trims/color_palettes/trim_palette",
       "permutations": {
@@ -20,6 +20,8 @@
         "emerald": "trims/color_palettes/emerald",
         "lapis": "trims/color_palettes/lapis",
         "amethyst": "trims/color_palettes/amethyst",
+        "resin": "trims/color_palettes/resin",
+        "copper_darker": "trims/color_palettes/copper_darker",
         "iron_darker": "trims/color_palettes/iron_darker",
         "gold_darker": "trims/color_palettes/gold_darker",
         "diamond_darker": "trims/color_palettes/diamond_darker",

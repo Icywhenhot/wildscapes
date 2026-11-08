@@ -24,10 +24,7 @@ public class GnashingEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!(entity.level() instanceof ServerLevel level)) {
-            return true;
-        }
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
         double x = entity.getBlockX() + 0.5;
         double y = entity.getBlockY();
         double z = entity.getBlockZ() + 0.5;

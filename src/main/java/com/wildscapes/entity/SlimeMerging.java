@@ -1,5 +1,6 @@
 package com.wildscapes.entity;
 
+import net.minecraft.world.entity.EntityTypes;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -19,11 +20,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.MagmaCube;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.cubemob.MagmaCube;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public final class SlimeMerging {
     private SlimeMerging() {}
@@ -43,18 +43,18 @@ public final class SlimeMerging {
     private static final String TAG_PROGRESS = "WildscapesMergeProgress";
     private static final String TAG_GROWING = "WildscapesMergeGrowing";
 
-    public static void onEntityTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Slime slime) || slime instanceof MagmaCube) {
+    public static void onEntityTick(Entity ticking) {
+        if (!(ticking instanceof Slime slime)) {
             return;
         }
-        if (slime.level().isClientSide || !slime.isAlive()) {
+        if (slime.level().isClientSide() || !slime.isAlive()) {
             return;
         }
 
-        CompoundTag data = slime.getPersistentData();
+        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
         if (data.contains(TAG_GROWING)) {
             tickGrowing(slime, data);
-        } else if (data.hasUUID(TAG_PARTNER)) {
+        } else if (data.contains(TAG_PARTNER)) {
             tickMerging(slime, data);
         } else if (slime.getSize() == 1) {
             seekPartner(slime, data);
@@ -66,7 +66,7 @@ public final class SlimeMerging {
             data.putInt(TAG_DELAY, READY_AFTER_TICKS);
             return;
         }
-        int delay = data.getInt(TAG_DELAY);
+        int delay = data.getIntOr(TAG_DELAY, 0);
         if (delay > 0) {
             data.putInt(TAG_DELAY, delay - 1);
             return;
@@ -93,25 +93,24 @@ public final class SlimeMerging {
                 other -> other != slime
                         && other.isAlive()
                         && other.getSize() == 1
-                        && !(other instanceof MagmaCube)
                         && isReady(other)
                         && !isMerging(other));
         return candidates.stream().min(Comparator.comparingDouble(slime::distanceToSqr)).orElse(null);
     }
 
     private static boolean isReady(Slime slime) {
-        CompoundTag data = slime.getPersistentData();
-        return data.contains(TAG_DELAY) && data.getInt(TAG_DELAY) <= 0;
+        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
+        return data.contains(TAG_DELAY) && data.getIntOr(TAG_DELAY, 0) <= 0;
     }
 
     private static boolean isMerging(Slime slime) {
-        CompoundTag data = slime.getPersistentData();
-        return data.hasUUID(TAG_PARTNER) || data.contains(TAG_GROWING);
+        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
+        return data.contains(TAG_PARTNER) || data.contains(TAG_GROWING);
     }
 
     private static void link(Slime slime, Slime partner) {
-        CompoundTag data = slime.getPersistentData();
-        data.putUUID(TAG_PARTNER, partner.getUUID());
+        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
+        data.store(TAG_PARTNER, net.minecraft.core.UUIDUtil.CODEC, partner.getUUID());
         data.putInt(TAG_PROGRESS, 0);
         slime.setTarget(null);
         slime.setNoAi(true);
@@ -124,13 +123,13 @@ public final class SlimeMerging {
             return;
         }
 
-        int progress = data.getInt(TAG_PROGRESS) + 1;
+        int progress = data.getIntOr(TAG_PROGRESS, 0) + 1;
         data.putInt(TAG_PROGRESS, progress);
         setShrink(slime, (double) progress / MERGE_TICKS);
 
         Vec3 middle = slime.position().add(partner.position()).scale(0.5);
         Vec3 next = slime.position().lerp(middle, 0.35);
-        slime.moveTo(next.x, next.y, next.z, slime.getYRot(), slime.getXRot());
+        slime.snapTo(next.x, next.y, next.z, slime.getYRot(), slime.getXRot());
 
         if (progress >= MERGE_TICKS && slime.getUUID().compareTo(partner.getUUID()) < 0) {
             spawnMerged(slime, middle);
@@ -143,7 +142,7 @@ public final class SlimeMerging {
         if (!(slime.level() instanceof ServerLevel level)) {
             return null;
         }
-        UUID id = data.getUUID(TAG_PARTNER);
+        UUID id = data.read(TAG_PARTNER, net.minecraft.core.UUIDUtil.CODEC).orElse(null);
         Entity partner = level.getEntity(id);
         return partner instanceof Slime other && other.getSize() == 1 ? other : null;
     }
@@ -160,12 +159,12 @@ public final class SlimeMerging {
         if (!(a.level() instanceof ServerLevel level)) {
             return;
         }
-        Slime merged = EntityType.SLIME.create(level);
+        Slime merged = EntityTypes.SLIME.create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
         if (merged == null) {
             return;
         }
         merged.setSize(2, true);
-        merged.moveTo(where.x, where.y, where.z, a.getYRot(), 0.0F);
+        merged.snapTo(where.x, where.y, where.z, a.getYRot(), 0.0F);
 
         beginGrowing(merged);
         level.addFreshEntity(merged);
@@ -175,13 +174,13 @@ public final class SlimeMerging {
     }
 
     private static void beginGrowing(Slime slime) {
-        slime.getPersistentData().putInt(TAG_GROWING, MERGE_TICKS);
+        ((WildscapesEntityData) slime).wildscapes$data().putInt(TAG_GROWING, MERGE_TICKS);
         setShrink(slime, 1.0);
         slime.setNoAi(true);
     }
 
     private static void tickGrowing(Slime slime, CompoundTag data) {
-        int remaining = data.getInt(TAG_GROWING) - 1;
+        int remaining = data.getIntOr(TAG_GROWING, 0) - 1;
         if (remaining <= 0) {
             data.remove(TAG_GROWING);
             clearShrink(slime);

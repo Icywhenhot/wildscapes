@@ -10,7 +10,6 @@ import com.wildscapes.worldgen.WildscapesFeatures;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -20,17 +19,12 @@ import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public class TreePlacementTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
     private static final BlockPos GROUND = new BlockPos(12, 2, 12);
 
-    @GameTest(template = PLATFORM)
     public static void landTreeGrowsAsCypress(GameTestHelper helper) {
         boolean placed = grow(helper, GROUND, "wildscapes:tree/land/tree1",
                 TemplateTreeConfiguration.Ground.LAND, -1);
@@ -44,7 +38,6 @@ public class TreePlacementTests {
         });
     }
 
-    @GameTest(template = PLATFORM)
     public static void noVineIsLeftClingingToNothing(GameTestHelper helper) {
         helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree2",
                 TemplateTreeConfiguration.Ground.LAND, -1), "the tree refused to place");
@@ -87,7 +80,6 @@ public class TreePlacementTests {
         return false;
     }
 
-    @GameTest(template = PLATFORM)
     public static void saplingTreeHangsNoFlatVines(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         boolean placed = WildscapesFeatures.CYPRESS_TREE.place(new FeaturePlaceContext<>(
@@ -101,7 +93,6 @@ public class TreePlacementTests {
         }));
     }
 
-    @GameTest(template = PLATFORM)
     public static void treesRefuseToGrowThroughEachOther(GameTestHelper helper) {
         helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree1",
                 TemplateTreeConfiguration.Ground.LAND, -1), "the first tree refused to place");
@@ -114,7 +105,6 @@ public class TreePlacementTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void landTreeRefusesWater(GameTestHelper helper) {
         helper.setBlock(GROUND, Blocks.WATER);
         boolean placed = grow(helper, GROUND, "wildscapes:tree/land/tree1",
@@ -123,7 +113,6 @@ public class TreePlacementTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void waterTreeRefusesDryLand(GameTestHelper helper) {
         boolean placed = grow(helper, GROUND, "wildscapes:tree/water/watertree1",
                 TemplateTreeConfiguration.Ground.WATER, 0);
@@ -131,7 +120,6 @@ public class TreePlacementTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void waterTreeRefusesDeepWater(GameTestHelper helper) {
         flood(helper, GROUND, 7);
         boolean placed = grow(helper, GROUND, "wildscapes:tree/water/watertree1",
@@ -140,7 +128,6 @@ public class TreePlacementTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void waterTreeAcceptsShallowWater(GameTestHelper helper) {
         flood(helper, GROUND, 3);
         boolean placed = grow(helper, GROUND, "wildscapes:tree/water/watertree1",
@@ -149,7 +136,6 @@ public class TreePlacementTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void mossCoversSomeOfTheTreeTops(GameTestHelper helper) {
         helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree1",
                 TemplateTreeConfiguration.Ground.LAND, -1), "the tree refused to place");
@@ -183,7 +169,6 @@ public class TreePlacementTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void hangingMossAlwaysHasACarpetHoldingIt(GameTestHelper helper) {
         helper.assertTrue(grow(helper, GROUND, "wildscapes:tree/land/tree2",
                 TemplateTreeConfiguration.Ground.LAND, -1), "the tree refused to place");

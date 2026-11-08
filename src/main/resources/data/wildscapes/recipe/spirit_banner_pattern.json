@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:paper"
-    },
-    {
-      "item": "minecraft:ghast_tear"
-    }
+    "minecraft:paper",
+    "minecraft:ghast_tear"
   ],
   "result": {
     "id": "wildscapes:spirit_banner_pattern",

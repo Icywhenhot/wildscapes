@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -41,7 +42,7 @@ public class SummoningBonfireBlock extends Block {
         double z = pos.getZ() + 0.5;
         if (lit) {
             level.playSound(null, pos, WildscapesSounds.SUMMONING_BONFIRE_IGNITE, SoundSource.BLOCKS, 1.0F,
-                    0.9F + level.random.nextFloat() * 0.2F);
+                    0.9F + level.getRandom().nextFloat() * 0.2F);
             level.sendParticles(WildscapesParticles.SOUL_HARVEST_SPARK, x, y, z, 14, 0.35, 0.4, 0.35, 0.06);
             level.sendParticles(WildscapesParticles.BONFIRE_EMBER, x, y, z, 10, 0.3, 0.2, 0.3, 0.08);
         } else {
@@ -56,11 +57,11 @@ public class SummoningBonfireBlock extends Block {
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects, boolean precise) {
         if (state.getValue(LIT) && entity instanceof Player) {
             entity.hurt(level.damageSources().campfire(), 1.0F);
         }
-        super.entityInside(state, level, pos, entity);
+        super.entityInside(state, level, pos, entity, effects, precise);
     }
 
     @Override

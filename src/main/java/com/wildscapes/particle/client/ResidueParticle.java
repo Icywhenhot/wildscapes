@@ -3,19 +3,19 @@ package com.wildscapes.particle.client;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.util.RandomSource;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
 
-public class ResidueParticle extends TextureSheetParticle {
+public class ResidueParticle extends SingleQuadParticle {
     private final SpriteSet sprites;
     private final int frames;
 
     protected ResidueParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd,
             SpriteSet sprites, int life, float size, float drag, float lift) {
-        super(level, x, y, z);
+        super(level, x, y, z, sprites.get(0, 1));
         this.sprites = sprites;
         this.frames = count(sprites);
         this.xd = xd;
@@ -51,8 +51,8 @@ public class ResidueParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public SingleQuadParticle.Layer getLayer() {
+        return SingleQuadParticle.Layer.TRANSLUCENT;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ResidueParticle extends TextureSheetParticle {
 
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
-                double xd, double yd, double zd) {
+                double xd, double yd, double zd, RandomSource random) {
             return new ResidueParticle(level, x, y, z, xd, yd, zd, sprites, life, size, drag, lift);
         }
     }

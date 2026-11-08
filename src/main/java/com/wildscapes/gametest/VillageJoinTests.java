@@ -5,7 +5,6 @@ import java.util.List;
 import com.wildscapes.worldgen.ConnectProcessor;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -13,15 +12,10 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public class VillageJoinTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
-    @GameTest(template = PLATFORM)
     public static void railingsMeetAcrossASeam(GameTestHelper helper) {
         BlockPos standing = helper.absolutePos(new BlockPos(6, 3, 6));
         BlockPos arriving = standing.east();
@@ -46,7 +40,6 @@ public class VillageJoinTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void railingsMeetOnATurnedPiece(GameTestHelper helper) {
         BlockPos standing = helper.absolutePos(new BlockPos(14, 3, 6));
         BlockPos arriving = standing.west();
@@ -73,7 +66,6 @@ public class VillageJoinTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void aRunOfRailingSurvivesBeingTurned(GameTestHelper helper) {
         BlockPos west = helper.absolutePos(new BlockPos(4, 5, 14));
         BlockPos east = west.east();
@@ -97,7 +89,6 @@ public class VillageJoinTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void aLoneRailingStaysBare(GameTestHelper helper) {
         BlockPos alone = helper.absolutePos(new BlockPos(10, 5, 10));
         BlockState bare = Blocks.DARK_OAK_FENCE.defaultBlockState();

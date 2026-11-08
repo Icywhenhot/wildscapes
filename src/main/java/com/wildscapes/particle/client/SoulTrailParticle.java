@@ -3,20 +3,20 @@ package com.wildscapes.particle.client;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import com.wildscapes.particle.SoulTrailOptions;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.util.RandomSource;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class SoulTrailParticle extends TextureSheetParticle {
+public class SoulTrailParticle extends SingleQuadParticle {
     private static final int RISE = 10;
 
     private final SpriteSet sprites;
@@ -29,7 +29,7 @@ public class SoulTrailParticle extends TextureSheetParticle {
     private Vec3 heading = new Vec3(0.0, 1.0, 0.0);
 
     protected SoulTrailParticle(ClientLevel level, double x, double y, double z, SoulTrailOptions options, SpriteSet sprites) {
-        super(level, x, y, z);
+        super(level, x, y, z, sprites.get(0, 1));
         this.sprites = sprites;
         this.from = new Vec3(x, y, z);
         this.peak = from.add((random.nextDouble() - 0.5) * 0.3, 0.7 + random.nextDouble() * 0.4,
@@ -53,12 +53,12 @@ public class SoulTrailParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public SingleQuadParticle.Layer getLayer() {
+        return SingleQuadParticle.Layer.TRANSLUCENT;
     }
 
     @Override
-    protected int getLightColor(float partialTick) {
+    public int getLightCoords(float partialTick) {
         return 0xF000F0;
     }
 
@@ -95,7 +95,7 @@ public class SoulTrailParticle extends TextureSheetParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
+    public void extract(QuadParticleRenderState state, Camera camera, float partialTicks) {
         float tilt = Mth.clamp((age + partialTicks - RISE + 2.0F) / 6.0F, 0.0F, 1.0F);
         float angle = 0.0F;
         if (tilt > 0.0F) {
@@ -105,7 +105,7 @@ public class SoulTrailParticle extends TextureSheetParticle {
         }
         oRoll = angle;
         roll = angle;
-        super.render(buffer, camera, partialTicks);
+        super.extract(state, camera, partialTicks);
     }
 
     public static class Provider implements ParticleProvider<SoulTrailOptions> {
@@ -117,7 +117,7 @@ public class SoulTrailParticle extends TextureSheetParticle {
 
         @Override
         public Particle createParticle(SoulTrailOptions options, ClientLevel level, double x, double y, double z,
-                double xd, double yd, double zd) {
+                double xd, double yd, double zd, RandomSource random) {
             return new SoulTrailParticle(level, x, y, z, options, sprites);
         }
     }

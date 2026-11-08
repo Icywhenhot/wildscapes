@@ -1,5 +1,7 @@
 package com.wildscapes.item;
 
+import com.wildscapes.entity.WildscapesEntityData;
+
 import java.util.UUID;
 
 import com.wildscapes.Wildscapes;
@@ -15,7 +17,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +32,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public final class MirelashItem extends Item {
     public static final ResourceKey<Enchantment> ELASTICITY = ResourceKey.create(Registries.ENCHANTMENT,
@@ -45,50 +46,30 @@ public final class MirelashItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!(level instanceof ServerLevel serverLevel)) {
-            return InteractionResultHolder.sidedSuccess(stack, true);
+            return InteractionResult.SUCCESS;
         }
         MirelashHook hook = findHook(serverLevel, player);
         if (hook != null) {
             hook.discard();
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE,
-                    SoundSource.PLAYERS, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
+                    SoundSource.PLAYERS, 1.0F, 0.9F + level.getRandom().nextFloat() * 0.2F);
         } else {
             hook = new MirelashHook(serverLevel, player, stack);
             serverLevel.addFreshEntity(hook);
-            player.getPersistentData().putUUID(HOOK_KEY, hook.getUUID());
+            ((WildscapesEntityData) player).wildscapes$data().store(HOOK_KEY, net.minecraft.core.UUIDUtil.CODEC, hook.getUUID());
             stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW,
                     SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         player.awardStat(Stats.ITEM_USED.get(this));
-        return InteractionResultHolder.sidedSuccess(stack, false);
-    }
-
-    @Override
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(WildscapesItems.ABOMINATION_TONGUE.get());
-    }
-
-    @Override
-    public boolean isEnchantable(ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public int getEnchantmentValue() {
-        return 12;
-    }
-
-    @Override
-    public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
-        return enchantment.is(Enchantments.UNBREAKING) || enchantment.is(Enchantments.MENDING) || enchantment.is(ELASTICITY) || enchantment.is(SLIME_SNARE);
+        return InteractionResult.SUCCESS;
     }
 
     public static int enchantmentLevel(Level level, ItemStack stack, ResourceKey<Enchantment> key) {
-        Holder<Enchantment> enchantment = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(key);
+        Holder<Enchantment> enchantment = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(key);
         return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
     }
 
@@ -123,24 +104,24 @@ public final class MirelashItem extends Item {
     public static boolean launchAttack(Player player, LivingEntity target) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof MirelashItem) || player.getAttackStrengthScale(0.5F) < 0.9F
-                || player.getCooldowns().isOnCooldown(stack.getItem())
+                || player.getCooldowns().isOnCooldown(stack)
                 || findAttackTarget(player.level(), player) != target) {
             return false;
         }
         if (player.level() instanceof ServerLevel level) {
             level.addFreshEntity(new MirelashHook(level, player, stack, target));
+            player.getCooldowns().addCooldown(stack, 40);
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW,
                     SoundSource.PLAYERS, 1.0F, 1.0F);
             player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-            player.getCooldowns().addCooldown(stack.getItem(), 40);
             player.resetAttackStrengthTicker();
         }
         return true;
     }
 
-    public static void onPlayerTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Player player) || !(player.level() instanceof ServerLevel level)) {
+    public static void onPlayerTick(Entity ticking) {
+        if (!(ticking instanceof Player player) || !(player.level() instanceof ServerLevel level)) {
             return;
         }
         MirelashHook hook = findHook(level, player);
@@ -157,14 +138,14 @@ public final class MirelashItem extends Item {
         Vec3 movement = player.getDeltaMovement().multiply(0.99, 0.995, 0.99);
         Vec3 tug = pull.normalize().multiply(strength, strength * 1.1, strength);
         player.setDeltaMovement(movement.add(tug));
-        player.hasImpulse = true;
+        player.needsSync = true;
         player.hurtMarked = true;
     }
 
     public static void clearHook(Player player, UUID hookId) {
-        if (player.getPersistentData().hasUUID(HOOK_KEY)
-                && player.getPersistentData().getUUID(HOOK_KEY).equals(hookId)) {
-            player.getPersistentData().remove(HOOK_KEY);
+        if (((WildscapesEntityData) player).wildscapes$data().contains(HOOK_KEY)
+                && ((WildscapesEntityData) player).wildscapes$data().read(HOOK_KEY, net.minecraft.core.UUIDUtil.CODEC).filter(hookId::equals).isPresent()) {
+            ((WildscapesEntityData) player).wildscapes$data().remove(HOOK_KEY);
         }
     }
 
@@ -174,15 +155,15 @@ public final class MirelashItem extends Item {
     }
 
     private static MirelashHook findHook(ServerLevel level, Player player) {
-        if (!player.getPersistentData().hasUUID(HOOK_KEY)) {
+        if (!((WildscapesEntityData) player).wildscapes$data().contains(HOOK_KEY)) {
             return null;
         }
-        UUID hookId = player.getPersistentData().getUUID(HOOK_KEY);
-        Entity entity = level.getEntity(hookId);
+        UUID hookId = ((WildscapesEntityData) player).wildscapes$data().read(HOOK_KEY, net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+        Entity entity = hookId == null ? null : level.getEntity(hookId);
         if (entity instanceof MirelashHook hook && hook.getOwner() == player) {
             return hook;
         }
-        player.getPersistentData().remove(HOOK_KEY);
+        ((WildscapesEntityData) player).wildscapes$data().remove(HOOK_KEY);
         return null;
     }
 }

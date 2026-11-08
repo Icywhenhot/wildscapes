@@ -44,7 +44,7 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
             vinesSet = CypressTreeTemplates.WATER_VINES;
             mossSet = CypressTreeTemplates.WATER_MOSS;
             count = CypressTreeTemplates.WATER_COUNT;
-        } else if (below.is(BlockTags.DIRT) || below.is(Blocks.MUD) || below.is(Blocks.CLAY)) {
+        } else if (below.is(WildscapesBlocks.SOIL) || below.is(Blocks.MUD) || below.is(Blocks.CLAY)) {
             logsSet = CypressTreeTemplates.LAND_LOGS;
             leavesSet = CypressTreeTemplates.LAND_LEAVES;
             vinesSet = CypressTreeTemplates.LAND_VINES;
@@ -174,7 +174,7 @@ public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
         return state.isAir()
                 || state.canBeReplaced()
                 || state.is(BlockTags.LEAVES)
-                || state.is(BlockTags.SAPLINGS)
+                || state.getBlock() instanceof net.minecraft.world.level.block.SaplingBlock
                 || state.getFluidState().is(FluidTags.WATER);
     }
 }

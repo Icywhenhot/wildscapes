@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -52,7 +53,7 @@ public final class MudBrickDyeing {
         }
 
         BlockPos pos = hit.getBlockPos();
-        BlockState dyed = recolour(level.getBlockState(pos), dye.getDyeColor());
+        BlockState dyed = recolour(level.getBlockState(pos), stack.getOrDefault(DataComponents.DYE, DyeColor.WHITE));
         if (dyed == null) {
             return InteractionResult.PASS;
         }

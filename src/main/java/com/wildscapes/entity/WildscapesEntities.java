@@ -40,5 +40,7 @@ public final class WildscapesEntities {
                     .updateInterval(2)
                     .build(ResourceKey.create(Registries.ENTITY_TYPE, Wildscapes.id("incendiary_bottle"))));
 
-    public static void register() {}
+    public static void register() {
+        AbominationEntity.registerData();
+    }
 }

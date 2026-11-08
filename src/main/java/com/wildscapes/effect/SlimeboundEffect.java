@@ -1,5 +1,6 @@
 package com.wildscapes.effect;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,10 +13,10 @@ public final class SlimeboundEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
         Vec3 movement = entity.getDeltaMovement();
         entity.setDeltaMovement(0.0, Math.min(movement.y, 0.0), 0.0);
-        entity.hasImpulse = true;
+        entity.needsSync = true;
         entity.hurtMarked = true;
         if (entity instanceof Mob mob) {
             mob.getNavigation().stop();

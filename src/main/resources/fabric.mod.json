@@ -10,12 +10,14 @@
     "main": ["com.wildscapes.Wildscapes"],
     "client": ["com.wildscapes.WildscapesClient"]
   },
+  "accessWidener": "wildscapes.accesswidener",
   "mixins": ["wildscapes.mixins.json"],
   "depends": {
     "fabricloader": ">=0.19.3",
     "minecraft": "26.2",
     "java": ">=25",
     "fabric-api": "*",
-    "geckolib": ">=5.5.3"
+    "geckolib": ">=5.5.3",
+    "icys_lib": ">=1.0.0"
   }
 }

@@ -3,17 +3,17 @@ package com.wildscapes.particle.client;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.util.RandomSource;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 
-public class IngredientSteamParticle extends TextureSheetParticle {
+public class IngredientSteamParticle extends SingleQuadParticle {
     private final SpriteSet sprites;
 
     protected IngredientSteamParticle(ClientLevel level, double x, double y, double z,
             double xd, double yd, double zd, SpriteSet sprites) {
-        super(level, x, y, z);
+        super(level, x, y, z, sprites.get(0, 1));
         this.sprites = sprites;
         this.xd = xd * 0.3;
         this.yd = Math.abs(yd) * 0.5 + 0.07;
@@ -27,8 +27,8 @@ public class IngredientSteamParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public SingleQuadParticle.Layer getLayer() {
+        return SingleQuadParticle.Layer.TRANSLUCENT;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class IngredientSteamParticle extends TextureSheetParticle {
 
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
-                double xd, double yd, double zd) {
+                double xd, double yd, double zd, RandomSource random) {
             return new IngredientSteamParticle(level, x, y, z, xd, yd, zd, sprites);
         }
     }

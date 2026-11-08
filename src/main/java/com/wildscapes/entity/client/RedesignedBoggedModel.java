@@ -1,6 +1,6 @@
 package com.wildscapes.entity.client;
 
-import net.minecraft.client.model.BoggedModel;
+import net.minecraft.client.model.monster.skeleton.BoggedModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -22,7 +22,7 @@ public class RedesignedBoggedModel extends BoggedModel {
                 CubeListBuilder.create()
                         .texOffs(0, 0).addBox(-4F, -8F, -4F, 8F, 8F, 8F),
                 PartPose.ZERO);
-        root.addOrReplaceChild("hat",
+        head.addOrReplaceChild("hat",
                 CubeListBuilder.create()
                         .texOffs(0, 16).addBox(-4F, -8F, -4F, 8F, 8F, 8F),
                 PartPose.ZERO);

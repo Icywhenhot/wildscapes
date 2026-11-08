@@ -1,8 +1,6 @@
 {
   "type": "minecraft:stonecutting",
-  "ingredient": {
-    "item": "wildscapes:purple_mud_bricks"
-  },
+  "ingredient": "wildscapes:purple_mud_bricks",
   "result": {
     "id": "wildscapes:purple_mud_brick_wall",
     "count": 1

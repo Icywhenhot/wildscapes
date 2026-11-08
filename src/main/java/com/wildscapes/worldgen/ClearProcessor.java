@@ -8,6 +8,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.Codec;
 
+import com.wildscapes.block.WildscapesBlocks;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -18,10 +20,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class ClearProcessor extends StructureProcessor {
+public class ClearProcessor implements StructureProcessor {
     public static final MapCodec<ClearProcessor> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
 
@@ -45,8 +46,8 @@ public class ClearProcessor extends StructureProcessor {
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.CLEAR;
+    public MapCodec<ClearProcessor> codec() {
+        return CODEC;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class ClearProcessor extends StructureProcessor {
         if (state.isAir() || !state.getFluidState().isEmpty()) {
             return false;
         }
-        return state.is(BlockTags.DIRT)
+        return state.is(WildscapesBlocks.SOIL)
                 || state.is(BlockTags.BASE_STONE_OVERWORLD)
                 || state.is(BlockTags.SAND)
                 || state.is(BlockTags.LEAVES)

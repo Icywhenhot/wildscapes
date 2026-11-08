@@ -1,25 +1,20 @@
 package com.wildscapes.effect.client;
 
-import com.wildscapes.Wildscapes;
 import com.wildscapes.effect.Intangibility;
-import com.wildscapes.mixin.client.GameRendererAccessor;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.DeltaTracker;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import com.wildscapes.Wildscapes;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.PostChain;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
 
-@EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class PhaseVision {
-    private static final float MAX_BLUR = 11.0F;
     private static final int MAX_DARKEN = 0xD8;
 
     private static float veil;
@@ -27,29 +22,24 @@ public final class PhaseVision {
 
     private PhaseVision() {}
 
-    @SubscribeEvent
-    static void clientTick(ClientTickEvent.Post event) {
+    public static void register() {
+        ClientTickEvents.END_CLIENT_TICK.register(PhaseVision::clientTick);
+        HudElementRegistry.attachElementBefore(VanillaHudElements.CROSSHAIR, Wildscapes.id("phase_vision"), PhaseVision::renderVeil);
+    }
+
+    private static void clientTick(Minecraft minecraft) {
         lastVeil = veil;
         veil = Mth.clamp(veil + (insideBlock() ? 0.25F : -0.3F), 0.0F, 1.0F);
     }
 
-    @SubscribeEvent
-    static void renderVeil(RenderGuiEvent.Pre event) {
-        float partial = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+    private static void renderVeil(GuiGraphicsExtractor graphics, DeltaTracker delta) {
+        float partial = delta.getGameTimeDeltaPartialTick(false);
         float strength = Mth.lerp(partial, lastVeil, veil);
         if (strength <= 0.02F) {
             return;
         }
 
-        Minecraft minecraft = Minecraft.getInstance();
-        PostChain blur = ((GameRendererAccessor) minecraft.gameRenderer).wildscapes$blurEffect();
-        if (blur != null) {
-            blur.setUniform("Radius", 1.0F + MAX_BLUR * strength);
-            blur.process(partial);
-            minecraft.getMainRenderTarget().bindWrite(false);
-        }
-
-        GuiGraphics graphics = event.getGuiGraphics();
+        graphics.blurBeforeThisStratum();
         int alpha = (int) (MAX_DARKEN * strength);
         graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), alpha << 24);
     }
@@ -61,7 +51,7 @@ public final class PhaseVision {
             return false;
         }
         Level level = player.level();
-        BlockPos pos = BlockPos.containing(minecraft.gameRenderer.getMainCamera().getPosition());
+        BlockPos pos = BlockPos.containing(minecraft.gameRenderer.mainCamera().position());
         return !level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
     }
 }

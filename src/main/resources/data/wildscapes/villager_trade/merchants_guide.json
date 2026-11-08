@@ -1,0 +1,12 @@
+{
+  "gives": {
+    "id": "wildscapes:merchants_guide"
+  },
+  "max_uses": 1,
+  "reputation_discount": 0.05,
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 8
+  },
+  "xp": 1
+}

@@ -8,9 +8,11 @@ import com.wildscapes.block.CauldronOfSoulsBlock;
 import com.wildscapes.block.IncendiaryFireBlock;
 import com.wildscapes.item.WildscapesItems;
 
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,7 +20,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LevelEvent;
@@ -38,11 +40,11 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
     }
 
     public IncendiaryBottle(Level level, LivingEntity thrower) {
-        super(WildscapesEntities.INCENDIARY_BOTTLE, thrower, level);
+        super(WildscapesEntities.INCENDIARY_BOTTLE, thrower, level, new ItemStack(WildscapesItems.INCENDIARY_BOTTLE));
     }
 
     public IncendiaryBottle(Level level, double x, double y, double z) {
-        super(WildscapesEntities.INCENDIARY_BOTTLE, x, y, z, level);
+        super(WildscapesEntities.INCENDIARY_BOTTLE, x, y, z, level, new ItemStack(WildscapesItems.INCENDIARY_BOTTLE));
     }
 
     public void haunt(BlockPos pos, Player player) {
@@ -87,7 +89,7 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
 
     @Override
     protected Item getDefaultItem() {
-        return WildscapesItems.INCENDIARY_BOTTLE.get();
+        return WildscapesItems.INCENDIARY_BOTTLE;
     }
 
     @Override
@@ -98,7 +100,7 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
     @Override
     protected void onHit(HitResult result) {
         super.onHit(result);
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             return;
         }
         level().levelEvent(LevelEvent.PARTICLES_SPELL_POTION_SPLASH, blockPosition(), 0xB23FD6);
@@ -114,22 +116,22 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         if (target != null) {
-            tag.putUUID("Target", target);
+            tag.store("Target", net.minecraft.core.UUIDUtil.CODEC, target);
             tag.putLong("Cauldron", cauldron.asLong());
             tag.putInt("FlightTime", flightTime);
         }
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
-        if (tag.hasUUID("Target")) {
-            target = tag.getUUID("Target");
-            cauldron = BlockPos.of(tag.getLong("Cauldron"));
-            flightTime = tag.getInt("FlightTime");
+        target = tag.read("Target", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+        if (target != null) {
+            cauldron = BlockPos.of(tag.getLongOr("Cauldron", 0));
+            flightTime = tag.getIntOr("FlightTime", 0);
             setNoGravity(true);
         }
     }

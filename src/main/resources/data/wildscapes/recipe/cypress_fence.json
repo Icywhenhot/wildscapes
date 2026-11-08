@@ -6,12 +6,8 @@
     "W#W"
   ],
   "key": {
-    "W": {
-      "item": "wildscapes:cypress_planks"
-    },
-    "#": {
-      "item": "minecraft:stick"
-    }
+    "W": "wildscapes:cypress_planks",
+    "#": "minecraft:stick"
   },
   "result": {
     "id": "wildscapes:cypress_fence",

@@ -19,16 +19,15 @@ import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class ConnectProcessor extends StructureProcessor {
+public class ConnectProcessor implements StructureProcessor {
     public static final ConnectProcessor INSTANCE = new ConnectProcessor();
     public static final MapCodec<ConnectProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
 
     @Override
-    protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.CONNECT;
+    public MapCodec<ConnectProcessor> codec() {
+        return CODEC;
     }
 
     @Override
@@ -61,11 +60,11 @@ public class ConnectProcessor extends StructureProcessor {
                 BlockState neighbour = incoming.containsKey(beside)
                         ? incoming.get(beside)
                         : level.getBlockState(beside);
-                state = state.updateShape(side, neighbour, level, at, beside);
+                state = state.updateShape(level, level, at, side, beside, neighbour, level.getRandom());
 
                 if (!incoming.containsKey(beside) && joins(neighbour)) {
                     BlockState rejoined = neighbour.updateShape(
-                            side.getOpposite(), standing, level, beside, at);
+                            level, level, beside, side.getOpposite(), at, standing, level.getRandom());
                     if (rejoined != neighbour) {
                         level.setBlock(beside, rejoined, Block.UPDATE_CLIENTS);
                     }

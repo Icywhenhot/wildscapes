@@ -1,7 +1,6 @@
 package com.wildscapes.item;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.wildscapes.block.CauldronSoups;
 
@@ -13,6 +12,8 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
@@ -22,8 +23,9 @@ public class MagicSoupItem extends Item {
     public MagicSoupItem(Properties properties) {
         super(properties
                 .stacksTo(8)
-                .food(new FoodProperties(4, 0.4F, true, EAT_SECONDS,
-                        Optional.of(new ItemStack(Items.BOWL)), List.of())));
+                .usingConvertsTo(Items.BOWL)
+                .food(new FoodProperties(4, 0.4F, true),
+                        Consumables.defaultFood().consumeSeconds(EAT_SECONDS).build()));
     }
 
     @Override
@@ -31,7 +33,7 @@ public class MagicSoupItem extends Item {
         SoupContents soup = stack.get(WildscapesDataComponents.SOUP_CONTENTS);
 
         ItemStack result = super.finishUsingItem(stack, level, entity);
-        if (!level.isClientSide && soup != null) {
+        if (!level.isClientSide() && soup != null) {
             for (MobEffectInstance effect : soup.effects()) {
                 entity.addEffect(stackOnto(entity.getEffect(effect.getEffect()), effect));
             }
@@ -40,7 +42,7 @@ public class MagicSoupItem extends Item {
     }
 
     private static MobEffectInstance stackOnto(MobEffectInstance current, MobEffectInstance added) {
-        if (current == null || added.getEffect().value().isInstantenous()) {
+        if (current == null || added.getEffect().value().isInstantaneous()) {
             return new MobEffectInstance(added);
         }
 
@@ -53,16 +55,16 @@ public class MagicSoupItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         SoupContents soup = stack.get(WildscapesDataComponents.SOUP_CONTENTS);
         if (soup == null || soup.isEmpty()) {
-            tooltip.add(Component.translatable("item.wildscapes.magic_soup.empty").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("item.wildscapes.magic_soup.empty").withStyle(ChatFormatting.GRAY));
             return;
         }
         for (MobEffectInstance effect : soup.effects()) {
-            tooltip.add(describe(effect));
+            tooltip.accept(describe(effect));
         }
-        tooltip.add(Component.translatable("item.wildscapes.magic_soup.stacks").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(Component.translatable("item.wildscapes.magic_soup.stacks").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     private static Component describe(MobEffectInstance effect) {
@@ -71,7 +73,7 @@ public class MagicSoupItem extends Item {
             name = Component.translatable("potion.withAmplifier", name,
                     Component.translatable("potion.potency." + effect.getAmplifier()));
         }
-        if (!effect.getEffect().value().isInstantenous()) {
+        if (!effect.getEffect().value().isInstantaneous()) {
             name = Component.translatable("potion.withDuration", name,
                     net.minecraft.util.StringUtil.formatTickDuration(effect.getDuration(), 20.0F));
         }

@@ -1,6 +1,6 @@
 package com.wildscapes.entity.client;
 
-import net.minecraft.client.model.IllagerModel;
+import net.minecraft.client.model.monster.illager.IllagerModel;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;

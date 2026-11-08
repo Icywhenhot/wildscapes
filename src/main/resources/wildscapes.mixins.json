@@ -10,13 +10,21 @@
     "MeleeAttackGoalMixin",
     "WardenMixin",
     "PlayerMixin",
-    "ServerGamePacketListenerMixin"
+    "ServerGamePacketListenerMixin",
+    "ServerLevelMixin",
+    "BeardifierMixin",
+    "BlockItemMixin",
+    "SpawnPlacementsMixin",
+    "SlimeMixin"
   ],
   "client": [
     "client.LocalPlayerMixin",
     "client.LivingEntityRendererMixin",
     "client.ScreenEffectRendererMixin",
-    "client.GameRendererAccessor"
+    "client.MinecraftMixin",
+    "client.FogRendererMixin",
+    "client.BossHealthOverlayMixin",
+    "client.ItemConditionsAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

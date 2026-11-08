@@ -3,9 +3,7 @@
   "category": "building",
   "group": "chiseled_mud_bricks",
   "key": {
-    "#": {
-      "item": "wildscapes:light_gray_mud_brick_slab"
-    }
+    "#": "wildscapes:light_gray_mud_brick_slab"
   },
   "pattern": [
     "#",

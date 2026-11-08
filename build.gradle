@@ -3,6 +3,19 @@ plugins {
     id 'maven-publish'
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/wildscapes.accesswidener")
+    runs {
+        client {
+            runDir 'run/fabric-client'
+        }
+        server {
+            runDir 'run/fabric-server'
+            programArg 'nogui'
+        }
+    }
+}
+
 version = mod_version
 group = mod_group_id
 
@@ -11,17 +24,28 @@ base {
 }
 
 repositories {
+    mavenLocal {
+        content { includeGroup 'icy.lib' }
+    }
     maven {
         url = 'https://api.modrinth.com/maven'
         content { includeGroup 'maven.modrinth' }
     }
 }
 
+def guideJar = file(providers.gradleProperty('icys_lib_jar').getOrElse(
+        "../Icy's lib/build/libs/icys_lib-fabric-${minecraft_version}-${icys_lib_version}.jar"))
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     implementation "maven.modrinth:geckolib:${geckolib_version}"
+    if (guideJar.isFile()) {
+        implementation files(guideJar)
+    } else {
+        implementation "icy.lib:icys_lib-fabric-${minecraft_version}:${icys_lib_version}"
+    }
 }
 
 java {

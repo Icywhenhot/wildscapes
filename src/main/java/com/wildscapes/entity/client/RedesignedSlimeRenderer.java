@@ -1,41 +1,42 @@
 package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.SlimeMerging;
 
-import net.minecraft.client.model.SlimeModel;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.model.monster.slime.SlimeModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.SlimeRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.AbstractCubeMobRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 
-public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime>> {
+public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, SlimeRenderState, SlimeModel> {
     static final int[] MODELLED_SIZES = {1, 2, 4};
 
     private static final Identifier[] TEXTURES = {
             texture("slime_small"), texture("slime_medium"), texture("slime_large"),
     };
 
-    private final SlimeModel<Slime>[] innerModels;
+    private final SlimeModel[] innerModels;
 
-    @SuppressWarnings("unchecked")
     public RedesignedSlimeRenderer(EntityRendererProvider.Context context) {
-        super(context, new SlimeModel<>(context.bakeLayer(WildscapesModelLayers.SLIME_SMALL)), 0.25F);
+        super(context, new SlimeModel(context.bakeLayer(WildscapesModelLayers.SLIME_SMALL)));
         this.innerModels = new SlimeModel[] {
                 this.model,
-                new SlimeModel<>(context.bakeLayer(WildscapesModelLayers.SLIME_MEDIUM)),
-                new SlimeModel<>(context.bakeLayer(WildscapesModelLayers.SLIME_LARGE)),
+                new SlimeModel(context.bakeLayer(WildscapesModelLayers.SLIME_MEDIUM)),
+                new SlimeModel(context.bakeLayer(WildscapesModelLayers.SLIME_LARGE)),
         };
         this.addLayer(new RedesignedSlimeOuterLayer(this, context.getModelSet()));
     }
 
-    static int modelIndex(Slime slime) {
-        int size = slime.getSize();
+    static int modelIndex(SlimeRenderState state) {
+        int size = state.size;
         if (size <= 1) {
             return 0;
         }
@@ -43,83 +44,54 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     }
 
     @Override
-    public void render(Slime entity, float entityYaw, float partialTicks, PoseStack poseStack,
-            MultiBufferSource buffer, int packedLight) {
-        this.shadowRadius = 0.25F * entity.getSize();
-        this.model = this.innerModels[modelIndex(entity)];
-
-        float alpha = SlimeMerging.mergeAlpha(entity);
-        MultiBufferSource sink = alpha < 1.0F ? new FadingBufferSource(buffer, alpha) : buffer;
-        super.render(entity, entityYaw, partialTicks, poseStack, sink, packedLight);
+    public SlimeRenderState createRenderState() {
+        return new SlimeRenderState();
     }
 
     @Override
-    protected RenderType getRenderType(Slime entity, boolean bodyVisible, boolean translucent, boolean glowing) {
-        return SlimeMerging.mergeAlpha(entity) < 1.0F
-                ? RenderType.entityTranslucent(this.getTextureLocation(entity))
-                : super.getRenderType(entity, bodyVisible, translucent, glowing);
-    }
-
-    private record FadingBufferSource(MultiBufferSource delegate, float alpha) implements MultiBufferSource {
-        @Override
-        public VertexConsumer getBuffer(RenderType renderType) {
-            return new FadingConsumer(this.delegate.getBuffer(renderType), this.alpha);
-        }
-    }
-
-    private record FadingConsumer(VertexConsumer delegate, float alpha) implements VertexConsumer {
-        @Override
-        public VertexConsumer addVertex(float x, float y, float z) {
-            this.delegate.addVertex(x, y, z);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setColor(int red, int green, int blue, int vertexAlpha) {
-            this.delegate.setColor(red, green, blue, (int) (vertexAlpha * this.alpha));
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv(float u, float v) {
-            this.delegate.setUv(u, v);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv1(int u, int v) {
-            this.delegate.setUv1(u, v);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv2(int u, int v) {
-            this.delegate.setUv2(u, v);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
-            this.delegate.setNormal(normalX, normalY, normalZ);
-            return this;
-        }
+    public void extractRenderState(Slime slime, SlimeRenderState state, float partialTick) {
+        super.extractRenderState(slime, state, partialTick);
+        state.setData(MobVisuals.MERGE_ALPHA, SlimeMerging.mergeAlpha(slime));
     }
 
     @Override
-    protected void scale(Slime livingEntity, PoseStack poseStack, float partialTickTime) {
+    public void submit(SlimeRenderState state, PoseStack pose, SubmitNodeCollector nodes, CameraRenderState camera) {
+        this.model = innerModels[modelIndex(state)];
+        super.submit(state, pose, nodes, camera);
+    }
+
+    @Override
+    protected float getShadowRadius(SlimeRenderState state) {
+        return 0.25F * state.size;
+    }
+
+    @Override
+    protected int getModelTint(SlimeRenderState state) {
+        return ((int) (255 * state.getDataOrDefault(MobVisuals.MERGE_ALPHA, 1.0F)) << 24) | 0xFFFFFF;
+    }
+
+    @Override
+    protected RenderType getRenderType(SlimeRenderState state, boolean bodyVisible, boolean translucent, boolean glowing) {
+        return state.getDataOrDefault(MobVisuals.MERGE_ALPHA, 1.0F) < 1.0F
+                ? RenderTypes.entityTranslucent(getTextureLocation(state))
+                : super.getRenderType(state, bodyVisible, translucent, glowing);
+    }
+
+    @Override
+    protected void scale(SlimeRenderState state, PoseStack poseStack) {
         poseStack.scale(0.999F, 0.999F, 0.999F);
         poseStack.translate(0.0F, 0.001F, 0.0F);
-        float size = livingEntity.getSize();
-        float squish = Mth.lerp(partialTickTime, livingEntity.oSquish, livingEntity.squish) / (size * 0.5F + 1.0F);
+        float size = state.size;
+        float squish = state.squish / (size * 0.5F + 1.0F);
         float stretch = 1.0F / (squish + 1.0F);
 
-        float ratio = size / MODELLED_SIZES[modelIndex(livingEntity)];
+        float ratio = size / MODELLED_SIZES[modelIndex(state)];
         poseStack.scale(stretch * ratio, 1.0F / stretch * ratio, stretch * ratio);
     }
 
     @Override
-    public Identifier getTextureLocation(Slime entity) {
-        return TEXTURES[modelIndex(entity)];
+    public Identifier getTextureLocation(SlimeRenderState state) {
+        return TEXTURES[modelIndex(state)];
     }
 
     private static Identifier texture(String name) {

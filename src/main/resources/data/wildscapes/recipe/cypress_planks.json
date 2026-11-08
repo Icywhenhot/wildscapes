@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "tag": "wildscapes:cypress_logs"
-    }
+    "#wildscapes:cypress_logs"
   ],
   "result": {
     "id": "wildscapes:cypress_planks",

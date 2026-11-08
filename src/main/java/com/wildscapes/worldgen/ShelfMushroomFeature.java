@@ -22,12 +22,12 @@ public class ShelfMushroomFeature extends Feature<SimpleBlockConfiguration> {
     public boolean place(FeaturePlaceContext<SimpleBlockConfiguration> context) {
         var level = context.level();
         var random = context.random();
-        BlockState mushroom = context.config().toPlace().getState(random, context.origin());
+        BlockState mushroom = context.config().toPlace().getState(context.level(), random, context.origin());
         for (int i = 0; i < 24; i++) {
             int x = context.origin().getX() + random.nextInt(7) - 3;
             int z = context.origin().getZ() + random.nextInt(7) - 3;
             BlockPos ground = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
-            while (ground.getY() > level.getMinBuildHeight()
+            while (ground.getY() > level.getMinY()
                     && (level.getBlockState(ground).is(BlockTags.LOGS) || level.getBlockState(ground).is(BlockTags.LEAVES))) {
                 ground = ground.below();
             }

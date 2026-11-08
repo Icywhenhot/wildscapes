@@ -2,42 +2,50 @@ package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.SoulHarvest;
+import com.wildscapes.entity.WitchRitual;
 
-import net.minecraft.client.model.WitchModel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.model.monster.witch.WitchModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.WitchItemLayer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.entity.state.WitchRenderState;
 import net.minecraft.world.entity.monster.Witch;
 
-public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch>> {
+public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchRenderState, WitchModel> {
     private static final Identifier TEXTURE =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
     private static final Identifier EMPOWERED =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
 
     public RedesignedWitchRenderer(EntityRendererProvider.Context context) {
-        super(context, new WitchModel<>(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
-        this.addLayer(new WitchItemLayer<>(this, context.getItemInHandRenderer()));
+        super(context, new ChantingWitchModel(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
+        this.addLayer(new WitchItemLayer(this));
         this.addLayer(new EmpoweredGlowLayer<>(this, "witch_empowered_glow"));
     }
 
     @Override
-    public void render(Witch entity, float entityYaw, float partialTicks, PoseStack poseStack,
-            MultiBufferSource buffer, int packedLight) {
-        this.model.setHoldingItem(!entity.getMainHandItem().isEmpty());
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+    public WitchRenderState createRenderState() {
+        return new WitchRenderState();
     }
 
     @Override
-    public Identifier getTextureLocation(Witch entity) {
-        return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
+    public void extractRenderState(Witch witch, WitchRenderState state, float partialTick) {
+        super.extractRenderState(witch, state, partialTick);
+        net.minecraft.client.renderer.entity.state.HoldingEntityRenderState.extractHoldingEntityRenderState(witch, state, itemModelResolver);
+        state.entityId = witch.getId();
+        state.isHoldingItem = !witch.getMainHandItem().isEmpty();
+        state.isHoldingPotion = witch.getMainHandItem().is(net.minecraft.world.item.Items.POTION);
+        state.setData(MobVisuals.CHANTING, WitchRitual.isChanting(witch));
     }
 
     @Override
-    protected void scale(Witch livingEntity, PoseStack poseStack, float partialTickTime) {
+    public Identifier getTextureLocation(WitchRenderState state) {
+        return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
+    }
+
+    @Override
+    protected void scale(WitchRenderState state, PoseStack poseStack) {
         poseStack.scale(0.9375F, 0.9375F, 0.9375F);
     }
 }

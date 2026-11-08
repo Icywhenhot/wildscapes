@@ -5,7 +5,6 @@ import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -17,15 +16,10 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class GnashingTests {
     private GnashingTests() {}
 
-    @GameTest(template = "gametest/tree_platform", batch = "gnashing")
     public static void potionFormsShareTheGreenTint(GameTestHelper helper) {
         for (var potion : java.util.List.of(WildscapesPotions.GNASHING,
                 WildscapesPotions.LONG_GNASHING, WildscapesPotions.STRONG_GNASHING)) {
@@ -42,7 +36,6 @@ public final class GnashingTests {
         helper.succeed();
     }
 
-    @GameTest(template = "gametest/tree_platform", batch = "gnashing")
     public static void structuresAndSoulHarvestGiveCommonGnashingLoot(GameTestHelper helper) {
         for (String path : new String[] {"chests/witch_camp/standard", "chests/witch_camp/dungeon",
                 "chests/village/swamp_house", "chests/village/swamp_armorer", "chests/village/swamp_cartographer",
@@ -62,7 +55,7 @@ public final class GnashingTests {
             for (int i = 0; i < 128; i++) {
                 boolean hit = false;
                 for (ItemStack stack : table.getRandomItems(params)) {
-                    if (stack.is(WildscapesItems.INCENDIARY_BOTTLE.get())) {
+                    if (stack.is(WildscapesItems.INCENDIARY_BOTTLE)) {
                         helper.assertTrue(stack.getCount() >= 1 && stack.getCount() <= 4, "wrong incendiary bottle count");
                         bottles++;
                     }

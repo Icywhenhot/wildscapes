@@ -1,5 +1,6 @@
 package com.wildscapes.worldgen;
 
+import net.minecraft.world.entity.EntityTypes;
 import com.wildscapes.Wildscapes;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -32,6 +33,6 @@ public final class SwampBiomes {
                     ResourceKey.create(Registries.PLACED_FEATURE, Wildscapes.id(name)));
         }
 
-        BiomeModifications.addSpawn(swamp, MobCategory.MONSTER, EntityType.DROWNED, 40, 1, 2);
+        BiomeModifications.addSpawn(swamp, MobCategory.MONSTER, EntityTypes.DROWNED, 40, 1, 2);
     }
 }

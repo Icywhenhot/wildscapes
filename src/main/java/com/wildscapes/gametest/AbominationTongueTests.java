@@ -5,21 +5,15 @@ import java.util.List;
 import com.wildscapes.entity.TonguePath;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class AbominationTongueTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
     private AbominationTongueTests() {}
 
-    @GameTest(template = PLATFORM)
     public static void tongueBendsAroundAWall(GameTestHelper helper) {
         for (int y = 3; y <= 8; y++) {
             for (int x = 4; x <= 14; x++) {
@@ -43,7 +37,6 @@ public final class AbominationTongueTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void tongueGivesUpOnASealedTarget(GameTestHelper helper) {
         BlockPos prey = new BlockPos(9, 5, 13);
         for (int x = -1; x <= 1; x++) {
@@ -59,7 +52,6 @@ public final class AbominationTongueTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void reelWalksTheWholePath(GameTestHelper helper) {
         List<Vec3> path = List.of(new Vec3(0, 0, 0), new Vec3(0, 0, 4), new Vec3(6, 0, 4));
         helper.assertTrue(TonguePath.pointAt(path, 0.0D).equals(path.get(0)), "reel did not start at the mouth");

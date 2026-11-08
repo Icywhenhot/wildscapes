@@ -8,7 +8,6 @@ import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,18 +18,12 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class AdvancementTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
     private AdvancementTests() {}
 
-    @GameTest(template = PLATFORM)
     public static void soupNeedsToBeCollectedFromCauldron(GameTestHelper helper) {
         var player = helper.makeMockServerPlayerInLevel();
         player.setGameMode(GameType.SURVIVAL);
@@ -61,25 +54,24 @@ public final class AdvancementTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM)
     public static void necklaceNeedsToBeActivated(GameTestHelper helper) {
         var player = helper.makeMockServerPlayerInLevel();
-        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get());
+        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE);
         player.setItemInHand(InteractionHand.OFF_HAND, stack);
-        Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+        Intangibility.onPlayerTick(player);
         helper.assertFalse(earned(player, "now_you_see_me_now_you_dont"), "holding necklace awarded advancement");
         stack.setDamageValue(stack.getMaxDamage() - 1);
         player.setShiftKeyDown(true);
-        Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+        Intangibility.onPlayerTick(player);
         helper.assertFalse(earned(player, "now_you_see_me_now_you_dont"), "exhausted necklace awarded advancement");
         stack.setDamageValue(0);
-        Intangibility.onPlayerTick(new EntityTickEvent.Post(player));
+        Intangibility.onPlayerTick(player);
         helper.assertTrue(earned(player, "now_you_see_me_now_you_dont"), "activating necklace did not award advancement");
         helper.succeed();
     }
 
     private static boolean earned(ServerPlayer player, String path) {
-        var advancement = player.server.getAdvancements().get(Identifier.fromNamespaceAndPath("wildscapes", path));
+        var advancement = player.level().getServer().getAdvancements().get(Identifier.fromNamespaceAndPath("wildscapes", path));
         return player.getAdvancements().getOrStartProgress(advancement).isDone();
     }
 }

@@ -7,6 +7,8 @@ import com.wildscapes.block.entity.CauldronBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
@@ -18,18 +20,15 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 
 public final class CauldronSwap {
     private CauldronSwap() {}
 
-    public static void onPlace(BlockEvent.EntityPlaceEvent event) {
-        if (!(event.getLevel() instanceof Level level)) {
+    public static void onPlace(Level level, BlockPos pos) {
+        if (level.isClientSide()) {
             return;
         }
-        BlockPos pos = event.getPos();
-        BlockState placed = event.getPlacedBlock();
+        BlockState placed = level.getBlockState(pos);
 
         if (isVanillaCauldron(placed) && WildscapesCauldronBlock.hasHeatSourceBelow(level, pos)) {
             swapForHeat(level, pos, placed);
@@ -41,13 +40,9 @@ public final class CauldronSwap {
         }
     }
 
-    public static void onNeighborNotify(BlockEvent.NeighborNotifyEvent event) {
-        if (!(event.getLevel() instanceof Level level)) {
-            return;
-        }
-
-        if (isHeatSource(event.getState())) {
-            heatCauldronAbove(level, event.getPos().above());
+    public static void onNeighborNotify(Level level, BlockPos pos) {
+        if (isHeatSource(level.getBlockState(pos))) {
+            heatCauldronAbove(level, pos.above());
         }
     }
 
@@ -67,32 +62,33 @@ public final class CauldronSwap {
         });
     }
 
-    public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
+    public static InteractionResult onRightClick(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+        if (player.isSpectator()) {
+            return InteractionResult.PASS;
+        }
+        BlockPos pos = hit.getBlockPos();
         BlockState state = level.getBlockState(pos);
-        ItemStack held = event.getItemStack();
-        Player player = event.getEntity();
+        ItemStack held = player.getItemInHand(hand);
 
         if (held.getItem() instanceof DyeItem dye && state.is(Blocks.WATER_CAULDRON)) {
             int waterLevel = state.getValue(LayeredCauldronBlock.LEVEL);
-            int color = dye.getDyeColor().getTextureDiffuseColor() & 0xFFFFFF;
+            int color = held.getOrDefault(DataComponents.DYE, net.minecraft.world.item.DyeColor.WHITE).getTextureDiffuseColor() & 0xFFFFFF;
             boolean heat = WildscapesCauldronBlock.hasHeatSourceBelow(level, pos);
-            finish(event, level, () -> {
+            return finish(level, () -> {
                 toOurBlock(level, pos, heat, be -> be.setDyedWater(waterLevel, color));
                 consume(player, held);
             });
-            return;
         }
 
         if (isStorablePotion(held) && state.is(Blocks.CAULDRON)) {
             PotionContents pc = held.get(DataComponents.POTION_CONTENTS);
             boolean heat = WildscapesCauldronBlock.hasHeatSourceBelow(level, pos);
-            finish(event, level, () -> {
+            return finish(level, () -> {
                 toOurBlock(level, pos, heat, be -> be.addPotion(pc));
                 giveBottle(player, held);
             });
         }
+        return InteractionResult.PASS;
     }
 
     private static void toOurBlock(Level level, BlockPos pos, boolean boiling, Consumer<CauldronBlockEntity> init) {
@@ -103,12 +99,11 @@ public final class CauldronSwap {
         }
     }
 
-    private static void finish(PlayerInteractEvent.RightClickBlock event, Level level, Runnable serverAction) {
-        event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide));
-        if (!level.isClientSide) {
+    private static InteractionResult finish(Level level, Runnable serverAction) {
+        if (!level.isClientSide()) {
             serverAction.run();
         }
+        return InteractionResult.SUCCESS;
     }
 
     private static void consume(Player player, ItemStack held) {

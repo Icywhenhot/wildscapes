@@ -1,0 +1,42 @@
+{
+  "additional_wants": {
+    "id": "minecraft:compass"
+  },
+  "given_item_modifiers": [
+    {
+      "decoration": "wildscapes:witch_camp",
+      "destination": "wildscapes:on_witch_camp_maps",
+      "function": "minecraft:exploration_map",
+      "search_radius": 100
+    },
+    {
+      "function": "minecraft:set_name",
+      "name": {
+        "translate": "filled_map.wildscapes.witch_camp"
+      },
+      "target": "item_name"
+    },
+    {
+      "function": "minecraft:filtered",
+      "item_filter": {
+        "items": "minecraft:filled_map",
+        "predicates": {
+          "minecraft:map_id": {}
+        }
+      },
+      "on_fail": {
+        "function": "minecraft:discard"
+      }
+    }
+  ],
+  "gives": {
+    "id": "minecraft:map"
+  },
+  "max_uses": 12.0,
+  "reputation_discount": 0.2,
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 14
+  },
+  "xp": 30
+}

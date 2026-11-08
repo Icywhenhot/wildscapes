@@ -1,5 +1,6 @@
 package com.wildscapes.block.entity;
 
+import net.minecraft.world.entity.EntityTypes;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,16 +29,13 @@ import com.wildscapes.sound.WildscapesSounds;
 
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -56,7 +54,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -70,7 +68,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
 
 public class CauldronOfSoulsBlockEntity extends BlockEntity {
     public static final ResourceKey<LootTable> REWARDS = ResourceKey.create(Registries.LOOT_TABLE,
@@ -137,8 +134,8 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     @Nullable
     public static CauldronOfSoulsBlockEntity harvesting(ServerLevel level, LivingEntity dead) {
         EntityType<?> type = dead.getType();
-        if (type != EntityType.PILLAGER && type != EntityType.VINDICATOR && type != EntityType.WITCH
-                && type != EntityType.EVOKER && type != EntityType.ILLUSIONER && type != WildscapesEntities.ABOMINATION) {
+        if (type != EntityTypes.PILLAGER && type != EntityTypes.VINDICATOR && type != EntityTypes.WITCH
+                && type != EntityTypes.EVOKER && type != EntityTypes.ILLUSIONER && type != WildscapesEntities.ABOMINATION) {
             return null;
         }
         Set<BlockPos> here = LOADED.get(level.dimension());
@@ -258,7 +255,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     private ServerBossEvent newBar() {
-        return new ServerBossEvent(Component.translatable("event.wildscapes.soul_harvest"),
+        return new ServerBossEvent(UUID.randomUUID(), Component.translatable("event.wildscapes.soul_harvest"),
                 BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
     }
 
@@ -302,7 +299,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             SummoningBonfireBlock.setLit(level, b, false);
         }
         abominationsSent = 0;
-        int wanted = omen >= 4 && level.random.nextBoolean() ? 2 : 1;
+        int wanted = omen >= 4 && level.getRandom().nextBoolean() ? 2 : 1;
         int already = level.getEntitiesOfClass(AbominationEntity.class, new AABB(worldPosition).inflate(ABOMINATION_SEARCH),
                 AbominationEntity::isAlive).size();
         abominationsDue = Math.max(0, wanted - already);
@@ -375,7 +372,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
                     if (spawn(level, b, boss ? WildscapesEntities.ABOMINATION : roll(level)) && boss) {
                         abominationsSent++;
                     }
-                    spawnIn.put(b, 140 + level.random.nextInt(80) - omen * 8);
+                    spawnIn.put(b, 140 + level.getRandom().nextInt(80) - omen * 8);
                 }
             }
         }
@@ -388,21 +385,21 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         lit.forEach(b -> SummoningBonfireBlock.setLit(level, b, false));
         lit.clear();
         spawnIn.clear();
-        rotateIn = ROTATE + level.random.nextInt(120);
+        rotateIn = ROTATE + level.getRandom().nextInt(120);
 
         List<BlockPos> pool = new ArrayList<>(bonfires);
         if (pool.isEmpty()) {
             pool.add(worldPosition);
         }
-        Util.shuffle(pool, level.random);
+        Util.shuffle(pool, level.getRandom());
         if (pool.size() > before.size()) {
             pool.sort((a, b) -> Boolean.compare(before.contains(a), before.contains(b)));
         }
-        int n = pool.size() <= 2 ? 1 : level.random.nextFloat() < 0.35F + omen * 0.1F ? 2 : 1;
+        int n = pool.size() <= 2 ? 1 : level.getRandom().nextFloat() < 0.35F + omen * 0.1F ? 2 : 1;
         for (int i = 0; i < n; i++) {
             BlockPos b = pool.get(i);
             lit.add(b);
-            spawnIn.put(b, 20 + level.random.nextInt(20));
+            spawnIn.put(b, 20 + level.getRandom().nextInt(20));
             if (!paused) {
                 SummoningBonfireBlock.setLit(level, b, true);
             }
@@ -415,15 +412,15 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         if (spot == null) {
             return false;
         }
-        Mob mob = type.create(level);
+        Mob mob = type.create(level, EntitySpawnReason.EVENT);
         if (mob == null) {
             return false;
         }
-        mob.moveTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, level.random.nextFloat() * 360.0F, 0.0F);
-        EventHooks.finalizeMobSpawn(mob, level, level.getCurrentDifficultyAt(spot), MobSpawnType.EVENT, null);
+        mob.snapTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, level.getRandom().nextFloat() * 360.0F, 0.0F);
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(spot), EntitySpawnReason.EVENT, null);
         mob.setPersistenceRequired();
-        mob.setData(SoulHarvest.ORIGIN, worldPosition);
-        if (sinceEmpowered >= 3 || level.random.nextFloat() < 0.15F) {
+        mob.setAttached(SoulHarvest.ORIGIN, worldPosition);
+        if (sinceEmpowered >= 3 || level.getRandom().nextFloat() < 0.15F) {
             SoulHarvest.empower(mob);
             sinceEmpowered = 0;
         } else {
@@ -450,31 +447,31 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         int bosses = 0;
         for (UUID id : mobs) {
             Entity e = level.getEntity(id);
-            if (e != null && (e.getType() == EntityType.ILLUSIONER || e.getType() == WildscapesEntities.ABOMINATION)) {
+            if (e != null && (e.getType() == EntityTypes.ILLUSIONER || e.getType() == WildscapesEntities.ABOMINATION)) {
                 bosses++;
             }
         }
         boolean room = bosses < 1 + omen / 3;
         int illusioner = room ? 2 + omen : 0;
-        int r = level.random.nextInt(30 + 30 + 12 + 10 + illusioner);
+        int r = level.getRandom().nextInt(30 + 30 + 12 + 10 + illusioner);
         if ((r -= 30) < 0) {
-            return EntityType.PILLAGER;
+            return EntityTypes.PILLAGER;
         }
         if ((r -= 30) < 0) {
-            return EntityType.VINDICATOR;
+            return EntityTypes.VINDICATOR;
         }
         if ((r -= 12) < 0) {
-            return EntityType.WITCH;
+            return EntityTypes.WITCH;
         }
         if ((r -= 10) < 0) {
-            return EntityType.EVOKER;
+            return EntityTypes.EVOKER;
         }
-        return EntityType.ILLUSIONER;
+        return EntityTypes.ILLUSIONER;
     }
 
     @Nullable
     private static BlockPos findSpot(ServerLevel level, BlockPos at, EntityType<?> type) {
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         for (int tries = 0; tries < 16; tries++) {
             int dx = random.nextInt(9) - 4;
             int dz = random.nextInt(9) - 4;
@@ -571,12 +568,12 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         }
         Vec3 c = center().add(0.0, 0.9, 0.0);
         ItemEntity item = new ItemEntity(level, c.x, c.y, c.z, stack);
-        item.setDeltaMovement(level.random.nextDouble() * 0.2 - 0.1, 0.35, level.random.nextDouble() * 0.2 - 0.1);
+        item.setDeltaMovement(level.getRandom().nextDouble() * 0.2 - 0.1, 0.35, level.getRandom().nextDouble() * 0.2 - 0.1);
         item.setDefaultPickUpDelay();
         level.addFreshEntity(item);
         level.sendParticles(WildscapesParticles.CAULDRON_REWARD, c.x, c.y, c.z, 6, 0.3, 0.2, 0.3, 0.03);
         level.playSound(null, worldPosition, WildscapesSounds.CAULDRON_OF_SOULS_REWARD, SoundSource.BLOCKS, 1.0F,
-                0.9F + level.random.nextFloat() * 0.2F);
+                0.9F + level.getRandom().nextFloat() * 0.2F);
         ejectIn = 12;
         setChanged();
     }
@@ -673,10 +670,8 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         }
     }
 
-    @Override
     public void onLoad() {
-        super.onLoad();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             LOADED.computeIfAbsent(level.dimension(), k -> new HashSet<>()).add(worldPosition);
         }
     }
@@ -684,7 +679,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             Set<BlockPos> here = LOADED.get(level.dimension());
             if (here != null) {
                 here.remove(worldPosition);
@@ -697,8 +692,8 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(ValueOutput tag) {
+        super.saveAdditional(tag);
         tag.putString("Stage", stage.name());
         tag.putInt("Omen", omen);
         tag.putInt("Timer", timer);
@@ -710,80 +705,55 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         tag.putInt("AbominationsSent", abominationsSent);
         tag.putInt("EjectIn", ejectIn);
         tag.putBoolean("Paused", paused);
-        tag.putLongArray("Bonfires", bonfires.stream().mapToLong(BlockPos::asLong).toArray());
-        tag.putLongArray("Lit", lit.stream().mapToLong(BlockPos::asLong).toArray());
+        tag.store("Bonfires", com.mojang.serialization.Codec.LONG_STREAM, bonfires.stream().mapToLong(BlockPos::asLong));
+        tag.store("Lit", com.mojang.serialization.Codec.LONG_STREAM, lit.stream().mapToLong(BlockPos::asLong));
         tag.putIntArray("Arrivals", arrivals.toIntArray());
-        ListTag worths = new ListTag();
-        for (int i = 0; i < worth.size(); i++) {
-            worths.add(FloatTag.valueOf(worth.getFloat(i)));
-        }
-        tag.put("Worth", worths);
-        tag.put("Mobs", uuids(mobs));
-        tag.put("Participants", uuids(participants));
-        ListTag items = new ListTag();
-        for (ItemStack s : loot) {
-            items.add(s.save(registries));
-        }
-        tag.put("Loot", items);
+        tag.store("Worth", com.mojang.serialization.Codec.FLOAT.listOf(), List.copyOf(worth));
+        tag.store("Mobs", UUIDUtil.CODEC.listOf(), List.copyOf(mobs));
+        tag.store("Participants", UUIDUtil.CODEC.listOf(), List.copyOf(participants));
+        tag.store("Loot", ItemStack.CODEC.listOf(), List.copyOf(loot));
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(ValueInput tag) {
+        super.loadAdditional(tag);
         try {
-            stage = Stage.valueOf(tag.getString("Stage").replace("COOLDOWN", "CLOSING"));
+            stage = Stage.valueOf(tag.getStringOr("Stage", "IDLE").replace("COOLDOWN", "CLOSING"));
         } catch (IllegalArgumentException e) {
             stage = Stage.IDLE;
         }
-        omen = tag.getInt("Omen");
-        timer = stage == Stage.CLOSING ? Math.min(tag.getInt("Timer"), CLOSE_DELAY) : tag.getInt("Timer");
-        filled = tag.getFloat("Filled");
-        rotateIn = tag.getInt("RotateIn");
-        away = tag.getInt("Away");
-        sinceEmpowered = tag.getInt("SinceEmpowered");
-        abominationsDue = tag.getInt("AbominationsDue");
-        abominationsSent = tag.getInt("AbominationsSent");
-        ejectIn = tag.getInt("EjectIn");
-        paused = tag.getBoolean("Paused");
+        omen = tag.getIntOr("Omen", 0);
+        timer = stage == Stage.CLOSING ? Math.min(tag.getIntOr("Timer", 0), CLOSE_DELAY) : tag.getIntOr("Timer", 0);
+        filled = tag.getFloatOr("Filled", 0);
+        rotateIn = tag.getIntOr("RotateIn", 0);
+        away = tag.getIntOr("Away", 0);
+        sinceEmpowered = tag.getIntOr("SinceEmpowered", 0);
+        abominationsDue = tag.getIntOr("AbominationsDue", 0);
+        abominationsSent = tag.getIntOr("AbominationsSent", 0);
+        ejectIn = tag.getIntOr("EjectIn", 0);
+        paused = tag.getBooleanOr("Paused", false);
         bonfires.clear();
-        for (long l : tag.getLongArray("Bonfires")) {
+        for (long l : tag.read("Bonfires", com.mojang.serialization.Codec.LONG_STREAM).orElseGet(java.util.stream.LongStream::empty).toArray()) {
             bonfires.add(BlockPos.of(l));
         }
         lit.clear();
         spawnIn.clear();
-        for (long l : tag.getLongArray("Lit")) {
+        for (long l : tag.read("Lit", com.mojang.serialization.Codec.LONG_STREAM).orElseGet(java.util.stream.LongStream::empty).toArray()) {
             lit.add(BlockPos.of(l));
             spawnIn.put(BlockPos.of(l), 40);
         }
         arrivals.clear();
-        arrivals.addElements(0, tag.getIntArray("Arrivals"));
+        arrivals.addElements(0, tag.getIntArray("Arrivals").orElseGet(() -> new int[0]));
         worth.clear();
-        for (Tag t : tag.getList("Worth", Tag.TAG_FLOAT)) {
-            worth.add(((FloatTag) t).getAsFloat());
-        }
+        tag.read("Worth", com.mojang.serialization.Codec.FLOAT.listOf()).ifPresent(worth::addAll);
         while (worth.size() < arrivals.size()) {
             worth.add(0.0F);
         }
-        readUuids(tag.getList("Mobs", Tag.TAG_INT_ARRAY), mobs);
-        readUuids(tag.getList("Participants", Tag.TAG_INT_ARRAY), participants);
+        mobs.clear();
+        tag.read("Mobs", UUIDUtil.CODEC.listOf()).ifPresent(mobs::addAll);
+        participants.clear();
+        tag.read("Participants", UUIDUtil.CODEC.listOf()).ifPresent(participants::addAll);
         loot.clear();
-        for (Tag t : tag.getList("Loot", Tag.TAG_COMPOUND)) {
-            ItemStack.parse(registries, t).ifPresent(loot::add);
-        }
-    }
-
-    private static ListTag uuids(Iterable<UUID> ids) {
-        ListTag out = new ListTag();
-        for (UUID id : ids) {
-            out.add(NbtUtils.createUUID(id));
-        }
-        return out;
-    }
-
-    private static void readUuids(ListTag list, Collection<UUID> into) {
-        into.clear();
-        for (Tag t : list) {
-            into.add(NbtUtils.loadUUID(t));
-        }
+        tag.read("Loot", ItemStack.CODEC.listOf()).ifPresent(loot::addAll);
     }
 }

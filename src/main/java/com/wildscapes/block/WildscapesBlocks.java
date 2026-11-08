@@ -16,6 +16,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -47,6 +48,8 @@ import net.minecraft.world.level.material.PushReaction;
 
 public final class WildscapesBlocks {
     private WildscapesBlocks() {}
+
+    public static final TagKey<Block> SOIL = TagKey.create(Registries.BLOCK, Wildscapes.id("soil"));
 
     public static final BlockSetType CYPRESS_SET = BlockSetTypeBuilder.copyOf(BlockSetType.OAK).register(Wildscapes.id("cypress"));
     public static final WoodType CYPRESS_TYPE = WoodTypeBuilder.copyOf(WoodType.OAK).register(Wildscapes.id("cypress"), CYPRESS_SET);
@@ -85,7 +88,7 @@ public final class WildscapesBlocks {
     public static final CypressSaplingBlock CYPRESS_SAPLING = register("cypress_sapling",
             properties -> new CypressSaplingBlock(WildscapesTreeGrowers.CYPRESS, properties
                     .mapColor(MapColor.PLANT)
-                    .noCollission()
+                    .noCollision()
                     .randomTicks()
                     .instabreak()
                     .sound(SoundType.GRASS)
@@ -121,7 +124,7 @@ public final class WildscapesBlocks {
 
     public static final ButtonBlock CYPRESS_BUTTON = register("cypress_button",
             properties -> new ButtonBlock(CYPRESS_SET, 30, properties
-                    .noCollission()
+                    .noCollision()
                     .strength(0.5F)
                     .pushReaction(PushReaction.DESTROY)));
 
@@ -130,7 +133,7 @@ public final class WildscapesBlocks {
                     .mapColor(MapColor.COLOR_BROWN)
                     .forceSolidOn()
                     .instrument(NoteBlockInstrument.BASS)
-                    .noCollission()
+                    .noCollision()
                     .strength(0.5F)
                     .ignitedByLava()
                     .pushReaction(PushReaction.DESTROY)));
@@ -150,7 +153,7 @@ public final class WildscapesBlocks {
     public static final DuckweedBlock DUCKWEED = register("duckweed",
             properties -> new DuckweedBlock(properties
                     .mapColor(MapColor.PLANT)
-                    .noCollission()
+                    .noCollision()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .pushReaction(PushReaction.DESTROY)),
@@ -160,7 +163,7 @@ public final class WildscapesBlocks {
     public static final RushesBlock RUSHES = register("rushes",
             properties -> new RushesBlock(properties
                     .mapColor(MapColor.PLANT)
-                    .noCollission()
+                    .noCollision()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
@@ -169,7 +172,7 @@ public final class WildscapesBlocks {
     public static final ShortRushesBlock SHORT_RUSHES = register("short_rushes",
             properties -> new ShortRushesBlock(properties
                     .mapColor(MapColor.PLANT)
-                    .noCollission()
+                    .noCollision()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
@@ -178,7 +181,7 @@ public final class WildscapesBlocks {
     public static final ShelfMushroomBlock SHELF_LUMINOUS_MUSHROOM = registerBlock("shelf_luminous_mushroom",
             properties -> new ShelfMushroomBlock(properties
                     .mapColor(MapColor.COLOR_YELLOW)
-                    .noCollission()
+                    .noCollision()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .lightLevel(state -> 7)
@@ -187,7 +190,7 @@ public final class WildscapesBlocks {
     public static final LuminousMushroomBlock LUMINOUS_MUSHROOM = register("luminous_mushroom",
             properties -> new LuminousMushroomBlock(properties
                     .mapColor(MapColor.COLOR_YELLOW)
-                    .noCollission()
+                    .noCollision()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .lightLevel(state -> 7)
@@ -205,7 +208,7 @@ public final class WildscapesBlocks {
     public static final HangingMossBlock HANGING_MOSS = registerBlock("hanging_moss",
             properties -> new HangingMossBlock(properties
                     .mapColor(MapColor.COLOR_GREEN)
-                    .noCollission()
+                    .noCollision()
                     .instabreak()
                     .randomTicks()
                     .sound(SoundType.MOSS_CARPET)
@@ -252,7 +255,7 @@ public final class WildscapesBlocks {
             properties -> new IncendiaryFireBlock(properties
                     .mapColor(MapColor.COLOR_PURPLE)
                     .replaceable()
-                    .noCollission()
+                    .noCollision()
                     .instabreak()
                     .lightLevel(state -> 12)
                     .sound(SoundType.WOOL)
@@ -281,7 +284,7 @@ public final class WildscapesBlocks {
                 .mapColor(MapColor.COLOR_BROWN)
                 .forceSolidOn()
                 .instrument(NoteBlockInstrument.BASS)
-                .noCollission()
+                .noCollision()
                 .strength(1.0F)
                 .ignitedByLava();
     }

@@ -3,12 +3,8 @@
   "category": "building",
   "group": "dyed_mud_brick_slabs",
   "ingredients": [
-    {
-      "tag": "wildscapes:mud_brick_slabs"
-    },
-    {
-      "item": "minecraft:magenta_dye"
-    }
+    "#wildscapes:mud_brick_slabs",
+    "minecraft:magenta_dye"
   ],
   "result": {
     "id": "wildscapes:magenta_mud_brick_slab",

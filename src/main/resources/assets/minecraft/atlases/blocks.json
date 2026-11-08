@@ -2,11 +2,11 @@
   "sources": [
     {
       "type": "minecraft:single",
-      "resource": "wildscapes:block/concoction"
+      "resource": "wildscapes:entity/signs/cypress"
     },
     {
       "type": "minecraft:single",
-      "resource": "wildscapes:block/jumble_concoction"
+      "resource": "wildscapes:entity/signs/hanging/cypress"
     }
   ]
 }

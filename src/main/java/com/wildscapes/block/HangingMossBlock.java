@@ -121,7 +121,7 @@ public class HangingMossBlock extends Block {
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(Items.MOSS_CARPET);
     }
 }

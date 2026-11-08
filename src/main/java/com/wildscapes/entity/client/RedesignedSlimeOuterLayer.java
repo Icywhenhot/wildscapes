@@ -1,46 +1,41 @@
 package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.SlimeModel;
+import net.minecraft.client.model.monster.slime.SlimeModel;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.SlimeRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.world.entity.monster.Slime;
 
-public class RedesignedSlimeOuterLayer extends RenderLayer<Slime, SlimeModel<Slime>> {
-    private final SlimeModel<Slime>[] outerModels;
+public class RedesignedSlimeOuterLayer extends RenderLayer<SlimeRenderState, SlimeModel> {
+    private final SlimeModel[] outerModels;
+    private final RedesignedSlimeRenderer renderer;
 
-    @SuppressWarnings("unchecked")
-    public RedesignedSlimeOuterLayer(RenderLayerParent<Slime, SlimeModel<Slime>> renderer, EntityModelSet modelSet) {
+    public RedesignedSlimeOuterLayer(RedesignedSlimeRenderer renderer, EntityModelSet modelSet) {
         super(renderer);
+        this.renderer = renderer;
         this.outerModels = new SlimeModel[] {
-                new SlimeModel<>(modelSet.bakeLayer(WildscapesModelLayers.SLIME_SMALL_OUTER)),
-                new SlimeModel<>(modelSet.bakeLayer(WildscapesModelLayers.SLIME_MEDIUM_OUTER)),
-                new SlimeModel<>(modelSet.bakeLayer(WildscapesModelLayers.SLIME_LARGE_OUTER)),
+                new SlimeModel(modelSet.bakeLayer(WildscapesModelLayers.SLIME_SMALL_OUTER)),
+                new SlimeModel(modelSet.bakeLayer(WildscapesModelLayers.SLIME_MEDIUM_OUTER)),
+                new SlimeModel(modelSet.bakeLayer(WildscapesModelLayers.SLIME_LARGE_OUTER)),
         };
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Slime slime,
-            float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks,
-            float netHeadYaw, float headPitch) {
-        boolean glowing = Minecraft.getInstance().shouldEntityAppearGlowing(slime) && slime.isInvisible();
-        if (slime.isInvisible() && !glowing) {
+    public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, SlimeRenderState state, float yaw, float pitch) {
+        boolean glowing = state.appearsGlowing() && state.isInvisible;
+        if (state.isInvisible && !glowing) {
             return;
         }
-        SlimeModel<Slime> outer = this.outerModels[RedesignedSlimeRenderer.modelIndex(slime)];
-        VertexConsumer consumer = glowing
-                ? buffer.getBuffer(RenderType.outline(this.getTextureLocation(slime)))
-                : buffer.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(slime)));
-        this.getParentModel().copyPropertiesTo(outer);
-        outer.prepareMobModel(slime, limbSwing, limbSwingAmount, partialTicks);
-        outer.setupAnim(slime, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        outer.renderToBuffer(poseStack, consumer, packedLight, LivingEntityRenderer.getOverlayCoords(slime, 0.0F));
+        var texture = renderer.getTextureLocation(state);
+        RenderType type = glowing ? RenderTypes.outline(texture) : RenderTypes.entityTranslucent(texture);
+        SlimeModel outer = outerModels[RedesignedSlimeRenderer.modelIndex(state)];
+        nodes.order(1).submitModel(outer, state, pose, type, light, LivingEntityRenderer.getOverlayCoords(state, 0.0F),
+                renderer.getModelTint(state), null, state.outlineColor, null);
     }
 }

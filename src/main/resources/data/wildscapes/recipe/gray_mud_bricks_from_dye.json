@@ -3,12 +3,8 @@
   "category": "building",
   "group": "dyed_mud_bricks",
   "ingredients": [
-    {
-      "tag": "wildscapes:mud_bricks"
-    },
-    {
-      "item": "minecraft:gray_dye"
-    }
+    "#wildscapes:mud_bricks",
+    "minecraft:gray_dye"
   ],
   "result": {
     "id": "wildscapes:gray_mud_bricks",

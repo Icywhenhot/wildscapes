@@ -3,7 +3,6 @@ package com.wildscapes.gametest;
 import com.wildscapes.entity.JumpEnchantments;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -16,22 +15,16 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-@GameTestHolder("wildscapes")
-@PrefixGameTestTemplate(false)
 public final class JumpEnchantmentTests {
     private static final String PLATFORM = "gametest/tree_platform";
 
     private JumpEnchantmentTests() {}
 
-    @GameTest(template = PLATFORM, batch = "jump_enchantments")
     public static void airJumpsUseTheBootsAndResetOnLanding(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        var enchantment = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT)
-                .getHolderOrThrow(JumpEnchantments.MULTI_JUMP);
+        var enchantment = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(JumpEnchantments.MULTI_JUMP);
         ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
         boots.enchant(enchantment, 1);
         player.setItemSlot(EquipmentSlot.FEET, boots);
@@ -45,7 +38,7 @@ public final class JumpEnchantmentTests {
                 "air jump did not stop the fall");
         helper.assertFalse(JumpEnchantments.jump(player), "level one allowed a second air jump");
         player.setOnGround(true);
-        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        JumpEnchantments.onTick(player);
         boots.enchant(enchantment, 2);
         player.setOnGround(false);
         helper.assertTrue(JumpEnchantments.jump(player), "landing did not restore air jumps");
@@ -53,7 +46,7 @@ public final class JumpEnchantmentTests {
         helper.assertFalse(JumpEnchantments.jump(player), "level two allowed a third air jump");
         player.setItemSlot(EquipmentSlot.FEET, ItemStack.EMPTY);
         player.setOnGround(true);
-        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        JumpEnchantments.onTick(player);
         player.setOnGround(false);
         helper.assertFalse(JumpEnchantments.jump(player), "air jump worked without enchanted boots");
         helper.assertTrue(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_BOOTS)), "boots rejected multi jump");
@@ -61,11 +54,10 @@ public final class JumpEnchantmentTests {
         helper.succeed();
     }
 
-    @GameTest(template = PLATFORM, batch = "jump_enchantments")
     public static void poweredJumpChargesForTheLengthOfItsSound(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        var enchantment = helper.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT)
-                .getHolderOrThrow(JumpEnchantments.EMPOWERED_JUMP);
+        var enchantment = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+                .getOrThrow(JumpEnchantments.EMPOWERED_JUMP);
         ItemStack leggings = new ItemStack(Items.DIAMOND_LEGGINGS);
         leggings.enchant(enchantment, 1);
         player.setItemSlot(EquipmentSlot.LEGS, leggings);
@@ -80,7 +72,7 @@ public final class JumpEnchantmentTests {
         helper.assertTrue(low > 0.42 && player.getDeltaMovement().x == 0.0 && player.getDeltaMovement().z == 0.0,
                 "powered jump did not launch straight up");
         player.setShiftKeyDown(true);
-        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        JumpEnchantments.onTick(player);
         helper.assertFalse(release(player), "powered jump reused its charge in midair");
         player.setOnGround(true);
         charge(player, JumpEnchantments.FULL_CHARGE);
@@ -94,7 +86,7 @@ public final class JumpEnchantmentTests {
         player.setOnGround(true);
         charge(player, 60);
         player.setOnGround(false);
-        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        JumpEnchantments.onTick(player);
         player.setOnGround(true);
         helper.assertFalse(release(player), "leaving the ground kept a stored charge");
         helper.assertTrue(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_LEGGINGS)), "leggings rejected empowered jump");
@@ -107,18 +99,17 @@ public final class JumpEnchantmentTests {
     private static void charge(ServerPlayer player, int ticks) {
         player.setShiftKeyDown(true);
         for (int i = 0; i < ticks; i++) {
-            JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+            JumpEnchantments.onTick(player);
         }
     }
 
     private static boolean release(ServerPlayer player) {
         player.setDeltaMovement(player.getDeltaMovement().multiply(1.0, 0.0, 1.0));
         player.setShiftKeyDown(false);
-        JumpEnchantments.onTick(new PlayerTickEvent.Post(player));
+        JumpEnchantments.onTick(player);
         return player.getDeltaMovement().y > 0.0;
     }
 
-    @GameTest(template = PLATFORM, batch = "jump_enchantments")
     public static void jumpBooksLoadInTheirLootPools(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         LootParams params = new LootParams.Builder(helper.getLevel())

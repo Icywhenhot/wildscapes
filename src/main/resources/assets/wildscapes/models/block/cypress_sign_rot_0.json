@@ -1,0 +1,147 @@
+{
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        7.33333,
+        0,
+        7.33333
+      ],
+      "to": [
+        8.66667,
+        9.33333,
+        8.66667
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1.5,
+            8.0,
+            2.0,
+            15.0
+          ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [
+            1.0,
+            8.0,
+            1.5,
+            15.0
+          ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            8.0,
+            1.0,
+            15.0
+          ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [
+            0.0,
+            8.0,
+            0.5,
+            15.0
+          ],
+          "texture": "#all"
+        },
+        "down": {
+          "uv": [
+            1.0,
+            0.0,
+            1.5,
+            1.0
+          ],
+          "texture": "#all",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        9.33333,
+        7.33333
+      ],
+      "to": [
+        16,
+        17.33333,
+        8.66667
+      ],
+      "rotation": {
+        "angle": 0.0001,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            7.0,
+            1.0,
+            13.0,
+            7.0
+          ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [
+            6.5,
+            1.0,
+            7.0,
+            7.0
+          ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            1.0,
+            6.5,
+            7.0
+          ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [
+            0.0,
+            1.0,
+            0.5,
+            7.0
+          ],
+          "texture": "#all"
+        },
+        "up": {
+          "uv": [
+            0.5,
+            0.0,
+            6.5,
+            1.0
+          ],
+          "texture": "#all"
+        },
+        "down": {
+          "uv": [
+            2.5,
+            1.0,
+            8.5,
+            0.0
+          ],
+          "texture": "#all"
+        }
+      }
+    }
+  ],
+  "textures": {
+    "all": "wildscapes:entity/signs/cypress",
+    "particle": "wildscapes:block/cypress_planks"
+  }
+}
