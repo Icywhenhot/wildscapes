@@ -1,0 +1,17 @@
+{
+  "sort": 16,
+  "icon": {
+    "item": "wildscapes:viscose_armor_trim_smithing_template"
+  },
+  "recipe": [
+    "minecraft:diamond",
+    "wildscapes:viscose_armor_trim_smithing_template",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:slime_block",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:diamond",
+    "minecraft:diamond"
+  ]
+}

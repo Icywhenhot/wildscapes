@@ -1,0 +1,17 @@
+{
+  "sort": 18,
+  "icon": {
+    "item": "wildscapes:spirit_banner_pattern"
+  },
+  "recipe": [
+    "minecraft:paper",
+    "minecraft:ghast_tear",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ]
+}

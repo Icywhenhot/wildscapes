@@ -1,0 +1,17 @@
+{
+  "sort": 17,
+  "icon": {
+    "item": "wildscapes:slime_banner_pattern"
+  },
+  "recipe": [
+    "minecraft:paper",
+    "minecraft:slime_ball",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ]
+}
