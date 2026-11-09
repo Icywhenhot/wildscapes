@@ -1,5 +1,6 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.item.WildscapesEnchantments;
 import java.util.UUID;
 
 import com.wildscapes.effect.WildscapesEffects;
@@ -48,16 +49,16 @@ public final class MirelashHook extends ThrowableProjectile {
 
     public MirelashHook(Level level, Player owner, ItemStack stack) {
         super(WildscapesEntities.MIRELASH_HOOK.get(), owner, level);
-        int elasticity = MirelashItem.enchantmentLevel(level, stack, MirelashItem.ELASTICITY);
+        int elasticity = stack.getEnchantmentLevel(WildscapesEnchantments.ELASTICITY.get());
         entityData.set(MAX_RANGE, 30.0F * (elasticity + 1));
-        entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
+        entityData.set(SLIME_SNARE, stack.getEnchantmentLevel(WildscapesEnchantments.SLIME_SNARE.get()) > 0);
         setDeltaMovement(owner.getLookAngle().scale(5.0));
     }
 
     public MirelashHook(Level level, Player owner, ItemStack stack, LivingEntity target) {
         super(WildscapesEntities.MIRELASH_HOOK.get(), owner, level);
         entityData.set(MAX_RANGE, (float) MirelashItem.ATTACK_RANGE);
-        entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
+        entityData.set(SLIME_SNARE, stack.getEnchantmentLevel(WildscapesEnchantments.SLIME_SNARE.get()) > 0);
         entityData.set(ATTACK, true);
         entityData.set(TARGET, target.getId());
         setNoGravity(true);

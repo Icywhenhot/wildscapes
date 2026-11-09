@@ -8,30 +8,24 @@ import javax.annotation.Nullable;
 import com.wildscapes.block.CauldronSoups;
 import com.wildscapes.block.WildscapesCauldronBlock;
 import com.wildscapes.item.SoupContents;
-import com.wildscapes.item.WildscapesDataComponents;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.DyeColor;
+import com.wildscapes.item.StoredPotion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,7 +44,7 @@ public class CauldronBlockEntity extends BlockEntity {
     private int fillLevel;
 
     private int dyeColor = -1;
-    private PotionContents potion = PotionContents.EMPTY;
+    private StoredPotion potion = StoredPotion.EMPTY;
     private boolean hasSoupBase;
 
     private boolean cooled;
@@ -150,7 +144,7 @@ public class CauldronBlockEntity extends BlockEntity {
     }
 
     private void finishMixing(ServerLevel level, BlockPos pos) {
-        Holder<MobEffect> effect = pendingIngredient.isEmpty()
+        MobEffect effect = pendingIngredient.isEmpty()
                 ? null : CauldronSoups.effectOf(pendingIngredient.getItem());
         if (effect != null) {
             int existing = indexOfEffect(effect);
@@ -183,7 +177,7 @@ public class CauldronBlockEntity extends BlockEntity {
         contents = Contents.WATER;
         fillLevel = Math.min(newLevel, MAX_LEVEL);
         dyeColor = -1;
-        potion = PotionContents.EMPTY;
+        potion = StoredPotion.EMPTY;
         clearBrew();
         sync();
     }
@@ -209,7 +203,7 @@ public class CauldronBlockEntity extends BlockEntity {
         }
     }
 
-    public boolean addPotion(PotionContents added) {
+    public boolean addPotion(StoredPotion added) {
         if (contents == Contents.POTION) {
             if (fillLevel >= MAX_LEVEL || !samePotion(potion, added)) {
                 return false;
@@ -228,8 +222,8 @@ public class CauldronBlockEntity extends BlockEntity {
         return true;
     }
 
-    public PotionContents takePotion() {
-        PotionContents taken = potion;
+    public StoredPotion takePotion() {
+        StoredPotion taken = potion;
         if (--fillLevel <= 0) {
             reset();
         }
@@ -241,7 +235,7 @@ public class CauldronBlockEntity extends BlockEntity {
         contents = Contents.BREW;
         hasSoupBase = true;
         dyeColor = -1;
-        potion = PotionContents.EMPTY;
+        potion = StoredPotion.EMPTY;
         sync();
     }
 
@@ -264,7 +258,7 @@ public class CauldronBlockEntity extends BlockEntity {
 
     public ItemStack scoopSoup() {
         ItemStack bowl = new ItemStack(WildscapesItems.MAGIC_SOUP.get());
-        bowl.set(WildscapesDataComponents.SOUP_CONTENTS.get(), new SoupContents(List.copyOf(soupEffects)));
+        new SoupContents(List.copyOf(soupEffects)).write(bowl);
         if (--fillLevel <= 0) {
             reset();
         }
@@ -276,7 +270,7 @@ public class CauldronBlockEntity extends BlockEntity {
         contents = Contents.EMPTY;
         fillLevel = 0;
         dyeColor = -1;
-        potion = PotionContents.EMPTY;
+        potion = StoredPotion.EMPTY;
         clearBrew();
         sync();
     }
@@ -311,7 +305,7 @@ public class CauldronBlockEntity extends BlockEntity {
         sync();
     }
 
-    private int indexOfEffect(Holder<MobEffect> effect) {
+    private int indexOfEffect(MobEffect effect) {
         for (int i = 0; i < soupEffects.size(); i++) {
             if (soupEffects.get(i).getEffect() == effect) {
                 return i;
@@ -337,7 +331,7 @@ public class CauldronBlockEntity extends BlockEntity {
         if (!isBrewing()) {
             return false;
         }
-        Holder<MobEffect> effect = CauldronSoups.effectOf(stack.getItem());
+        MobEffect effect = CauldronSoups.effectOf(stack.getItem());
         if (effect == null) {
             return false;
         }
@@ -379,7 +373,7 @@ public class CauldronBlockEntity extends BlockEntity {
         return pendingIngredient;
     }
 
-    public PotionContents getPotion() {
+    public StoredPotion getPotion() {
         return potion;
     }
 
@@ -400,7 +394,7 @@ public class CauldronBlockEntity extends BlockEntity {
         };
     }
 
-    private static boolean samePotion(PotionContents a, PotionContents b) {
+    private static boolean samePotion(StoredPotion a, StoredPotion b) {
         return a.potion().equals(b.potion());
     }
 
@@ -411,6 +405,11 @@ public class CauldronBlockEntity extends BlockEntity {
         return (r << 16) | (g << 8) | bl;
     }
 
+    public static int dyeColor(DyeColor dye) {
+        float[] rgb = dye.getTextureDiffuseColors();
+        return ((int) (rgb[0] * 255) << 16) | ((int) (rgb[1] * 255) << 8) | (int) (rgb[2] * 255);
+    }
+
     private void sync() {
         setChanged();
         if (level != null && !level.isClientSide) {
@@ -419,31 +418,28 @@ public class CauldronBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        RegistryOps<Tag> ops = registries.createSerializationContext(NbtOps.INSTANCE);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putByte("Contents", (byte) contents.ordinal());
         tag.putByte("Level", (byte) fillLevel);
         tag.putInt("DyeColor", dyeColor);
         tag.putBoolean("HasBase", hasSoupBase);
         tag.putBoolean("Cooled", cooled);
         tag.putInt("MixTicks", mixTicks);
-        if (!potion.equals(PotionContents.EMPTY)) {
-            PotionContents.CODEC.encodeStart(ops, potion).result().ifPresent(t -> tag.put("Potion", t));
+        if (!potion.equals(StoredPotion.EMPTY)) {
+            tag.put("Potion", potion.save());
         }
         if (!pendingIngredient.isEmpty()) {
             tag.putString("Pending", pendingIngredient.getItem().builtInRegistryHolder().key().location().toString());
         }
         if (!soupEffects.isEmpty()) {
-            MobEffectInstance.CODEC.listOf().encodeStart(ops, soupEffects).result()
-                    .ifPresent(t -> tag.put("Effects", t));
+            tag.put("Effects", new SoupContents(soupEffects).save());
         }
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        RegistryOps<Tag> ops = registries.createSerializationContext(NbtOps.INSTANCE);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         contents = Contents.values()[tag.getByte("Contents")];
         fillLevel = tag.getByte("Level");
         dyeColor = tag.getInt("DyeColor");
@@ -451,23 +447,22 @@ public class CauldronBlockEntity extends BlockEntity {
         cooled = tag.getBoolean("Cooled");
         mixTicks = tag.getInt("MixTicks");
         potion = tag.contains("Potion")
-                ? PotionContents.CODEC.parse(ops, tag.get("Potion")).result().orElse(PotionContents.EMPTY)
-                : PotionContents.EMPTY;
+                ? StoredPotion.load(tag.getCompound("Potion"))
+                : StoredPotion.EMPTY;
         pendingIngredient = tag.contains("Pending")
                 ? new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM
                         .get(net.minecraft.resources.ResourceLocation.parse(tag.getString("Pending"))))
                 : ItemStack.EMPTY;
         soupEffects.clear();
         if (tag.contains("Effects")) {
-            MobEffectInstance.CODEC.listOf().parse(ops, tag.get("Effects")).result()
-                    .ifPresent(soupEffects::addAll);
+            soupEffects.addAll(SoupContents.load(tag.getList("Effects", Tag.TAG_COMPOUND)).effects());
         }
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+    public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
+        saveAdditional(tag);
         return tag;
     }
 

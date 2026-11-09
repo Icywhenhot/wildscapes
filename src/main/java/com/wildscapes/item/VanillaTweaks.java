@@ -4,36 +4,55 @@ import java.util.List;
 
 import com.wildscapes.Wildscapes;
 
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@EventBusSubscriber(modid = Wildscapes.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Wildscapes.MODID)
 public final class VanillaTweaks {
     private VanillaTweaks() {}
-
-    private static final float FAST_EAT_SECONDS = 0.4F;
 
     private static final List<Item> STEWS =
             List.of(Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.BEETROOT_SOUP, Items.SUSPICIOUS_STEW);
 
-    @SubscribeEvent
-    static void modifyComponents(ModifyDefaultComponentsEvent event) {
-        event.modify(Items.POTION, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 8));
+    public static void setup(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            Items.POTION.maxStackSize = 8;
+            STEWS.forEach(stew -> stew.maxStackSize = 8);
+        });
+    }
 
-        for (Item stew : STEWS) {
-            FoodProperties food = stew.components().get(DataComponents.FOOD);
-            event.modify(stew, builder -> {
-                builder.set(DataComponents.MAX_STACK_SIZE, 8);
-                if (food != null) {
-                    builder.set(DataComponents.FOOD, new FoodProperties(food.nutrition(), food.saturation(),
-                            food.canAlwaysEat(), FAST_EAT_SECONDS, food.usingConvertsTo(), food.effects()));
+    public static boolean isFastFood(ItemStack stack) {
+        return STEWS.contains(stack.getItem()) || stack.getItem() instanceof MagicSoupItem;
+    }
+
+    @SubscribeEvent
+    static void finishEating(LivingEntityUseItemEvent.Finish event) {
+        if (!isFastFood(event.getItem()) || event.getItem().getCount() <= 1) {
+            return;
+        }
+        LivingEntity entity = event.getEntity();
+        if (entity instanceof Player player && player.getAbilities().instabuild) {
+            return;
+        }
+        ItemStack remaining = event.getItem().copy();
+        remaining.shrink(1);
+        event.setResultStack(remaining);
+        if (!entity.level().isClientSide) {
+            ItemStack bowl = new ItemStack(Items.BOWL);
+            if (entity instanceof Player player) {
+                if (!player.getInventory().add(bowl)) {
+                    player.drop(bowl, false);
                 }
-            });
+            } else {
+                entity.spawnAtLocation(bowl);
+            }
         }
     }
 }

@@ -5,6 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "wildscapes.refmap.json",
   "mixins": [
+    "ItemMixin",
+    "EnchantmentInstanceMixin",
+    "AnvilMenuMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "MobMixin",

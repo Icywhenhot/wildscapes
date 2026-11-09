@@ -16,7 +16,6 @@ import com.wildscapes.effect.WildscapesPotions;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.IllusionerGoals;
 import com.wildscapes.entity.SoulHarvest;
-import com.wildscapes.entity.JumpEnchantments;
 import com.wildscapes.entity.SlimeMerging;
 import com.wildscapes.entity.SwampSpawns;
 import com.wildscapes.entity.SwampVariants;
@@ -24,7 +23,8 @@ import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.WitchGoals;
 import com.wildscapes.entity.WitchRitual;
 import com.wildscapes.item.CypressBoat;
-import com.wildscapes.item.WildscapesDataComponents;
+import com.wildscapes.item.WildscapesEnchantments;
+import com.wildscapes.item.VanillaTweaks;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.item.WitchCampMap;
@@ -167,19 +167,15 @@ public class Wildscapes {
                         output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.INCENDIARY.get()));
                         output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.INCENDIARY.get()));
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
-                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(MirelashItem.ELASTICITY).value(), 1)));
+                                WildscapesEnchantments.ELASTICITY.get(), 1)));
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
-                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(MirelashItem.SLIME_SNARE).value(), 1)));
+                                WildscapesEnchantments.SLIME_SNARE.get(), 1)));
                         for (int i = 1; i <= 2; i++) {
                             output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
-                                    parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                            .getOrThrow(JumpEnchantments.MULTI_JUMP).value(), i)));
+                                    WildscapesEnchantments.MULTI_JUMP.get(), i)));
                         }
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
-                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(JumpEnchantments.EMPOWERED_JUMP).value(), 1)));
+                                WildscapesEnchantments.EMPOWERED_JUMP.get(), 1)));
                     }).build());
 
     public Wildscapes(FMLJavaModLoadingContext context) {
@@ -188,8 +184,7 @@ public class Wildscapes {
         WildscapesBlockEntities.register(modEventBus);
         WildscapesItems.register(modEventBus);
         WildscapesDecorations.register(modEventBus);
-        WitchCampMap.register(modEventBus);
-        WildscapesDataComponents.register(modEventBus);
+        WildscapesEnchantments.register(modEventBus);
         WildscapesEntities.register(modEventBus);
         WildscapesEffects.register(modEventBus);
         WildscapesPotions.register(modEventBus);
@@ -204,6 +199,7 @@ public class Wildscapes {
         CREATIVE_MODE_TABS.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(VanillaTweaks::setup);
         modEventBus.addListener(this::registerEntityAttributes);
         modEventBus.addListener(MirelashAttackPayload::register);
         modEventBus.addListener(JumpPayload::register);

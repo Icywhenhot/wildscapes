@@ -9,10 +9,10 @@ import icy.lib.GuideBookItem;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BannerPatternItem;
+import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.SignItem;
@@ -20,8 +20,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tiers;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.RegistryObject;
@@ -72,10 +70,9 @@ public final class WildscapesItems {
             () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<Item> FROG_LEG_STEW = ITEMS.register("frog_leg_stew",
-            () -> new Item(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder()
+            () -> new BowlFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder()
                     .nutrition(5)
-                    .saturationModifier(0.6F)
-                    .usingConvertsTo(Items.BOWL)
+                    .saturationMod(0.6F)
                     .effect(() -> new MobEffectInstance(MobEffects.JUMP, 400, 1), 1.0F)
                     .build())));
 
@@ -86,8 +83,7 @@ public final class WildscapesItems {
             () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<MirelashItem> MIRELASH = ITEMS.register("mirelash",
-            () -> new MirelashItem(new Item.Properties().durability(64)
-                    .attributes(SwordItem.createAttributes(Tiers.IRON, 3, -2.4F))));
+            () -> new MirelashItem(new Item.Properties().durability(64)));
 
     public static final RegistryObject<Item> ILLUSIONIST_NECKLACE = ITEMS.register("illusionist_necklace",
             () -> new Item(new Item.Properties().durability(432)));

@@ -2,14 +2,11 @@ package com.wildscapes.item;
 
 import java.util.UUID;
 
-import com.wildscapes.Wildscapes;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.wildscapes.entity.MirelashHook;
 import com.wildscapes.sound.WildscapesSounds;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.sounds.SoundEvents;
@@ -19,24 +16,27 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraftforge.event.TickEvent;
 
 public final class MirelashItem extends Item {
-    public static final ResourceKey<Enchantment> ELASTICITY = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"));
-    public static final ResourceKey<Enchantment> SLIME_SNARE = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"));
+    private final Multimap<Attribute, AttributeModifier> attributes = ImmutableMultimap.of(
+            Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 5.0,
+                    AttributeModifier.Operation.ADDITION),
+            Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4,
+                    AttributeModifier.Operation.ADDITION));
     private static final String HOOK_KEY = "wildscapes:mirelash_hook";
     public static final double ATTACK_RANGE = 10.0;
 
@@ -59,7 +59,7 @@ public final class MirelashItem extends Item {
             hook = new MirelashHook(serverLevel, player, stack);
             serverLevel.addFreshEntity(hook);
             player.getPersistentData().putUUID(HOOK_KEY, hook.getUUID());
-            stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+            stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
             level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW.get(),
                     SoundSource.PLAYERS, 1.0F, 1.0F);
         }
@@ -83,13 +83,15 @@ public final class MirelashItem extends Item {
     }
 
     @Override
-    public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
-        return enchantment.is(Enchantments.UNBREAKING) || enchantment.is(Enchantments.MENDING) || enchantment.is(ELASTICITY) || enchantment.is(SLIME_SNARE);
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        return enchantment == Enchantments.UNBREAKING || enchantment == Enchantments.MENDING
+                || enchantment == WildscapesEnchantments.ELASTICITY.get()
+                || enchantment == WildscapesEnchantments.SLIME_SNARE.get();
     }
 
-    public static int enchantmentLevel(Level level, ItemStack stack, ResourceKey<Enchantment> key) {
-        Holder<Enchantment> enchantment = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(key);
-        return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
+    @Override
+    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
+        return slot == EquipmentSlot.MAINHAND ? attributes : super.getDefaultAttributeModifiers(slot);
     }
 
     public static LivingEntity findAttackTarget(Level level, Player player) {
@@ -129,7 +131,7 @@ public final class MirelashItem extends Item {
         }
         if (player.level() instanceof ServerLevel level) {
             level.addFreshEntity(new MirelashHook(level, player, stack, target));
-            stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+            stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
             level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW.get(),
                     SoundSource.PLAYERS, 1.0F, 1.0F);
             player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
@@ -139,8 +141,9 @@ public final class MirelashItem extends Item {
         return true;
     }
 
-    public static void onPlayerTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Player player) || !(player.level() instanceof ServerLevel level)) {
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        Player player = event.player;
+        if (event.phase != TickEvent.Phase.END || !(player.level() instanceof ServerLevel level)) {
             return;
         }
         MirelashHook hook = findHook(level, player);

@@ -1,8 +1,8 @@
 package com.wildscapes.client;
 
+import com.wildscapes.item.WildscapesEnchantments;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.JumpEnchantments;
-import com.wildscapes.item.MirelashItem;
 import com.wildscapes.network.JumpPayload;
 
 import net.minecraft.client.Minecraft;
@@ -40,8 +40,7 @@ public final class JumpInput {
         }
         if (charging) {
             input.jumping = false;
-        } else if (pressed && !player.onGround() && MirelashItem.enchantmentLevel(player.level(),
-                player.getItemBySlot(EquipmentSlot.FEET), JumpEnchantments.MULTI_JUMP) > 0) {
+        } else if (pressed && !player.onGround() && player.getItemBySlot(EquipmentSlot.FEET).getEnchantmentLevel(WildscapesEnchantments.MULTI_JUMP.get()) > 0) {
             PacketDistributor.sendToServer(JumpPayload.INSTANCE);
         }
     }

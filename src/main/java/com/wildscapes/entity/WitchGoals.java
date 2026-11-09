@@ -22,7 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -51,7 +52,7 @@ public final class WitchGoals {
                 && potion.getOwner() instanceof Witch witch
                 && witch.getTarget() instanceof Player player
                 && player.getHealth() <= player.getMaxHealth() * 0.4F) {
-            potion.setItem(PotionContents.createItemStack(Items.SPLASH_POTION,
+            potion.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION),
                     witch.getRandom().nextBoolean() ? Potions.WEAKNESS : Potions.SLOWNESS));
         }
     }
@@ -90,7 +91,7 @@ public final class WitchGoals {
         }
 
         witch.setItemSlot(EquipmentSlot.MAINHAND,
-                PotionContents.createItemStack(Items.POTION, WildscapesPotions.RESISTANCE));
+                PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.RESISTANCE.get()));
         witch.usingTime = witch.getMainHandItem().getUseDuration(witch);
         witch.setUsingItem(true);
         if (!witch.isSilent()) {

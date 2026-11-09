@@ -1,9 +1,9 @@
 package com.wildscapes;
 
+import com.wildscapes.item.WildscapesEnchantments;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.WildscapesEntities;
-import com.wildscapes.entity.JumpEnchantments;
 import com.wildscapes.entity.client.AbominationModels;
 import com.wildscapes.entity.client.AbominationRenderer;
 import com.wildscapes.entity.client.CauldronOfSoulsRenderer;
@@ -42,8 +42,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -80,22 +79,21 @@ public final class WildscapesClient {
                             && Intangibility.isActive(player) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"),
-                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, MirelashItem.ELASTICITY) ? 1F : 0F);
+                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, WildscapesEnchantments.ELASTICITY.get()) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"),
-                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, MirelashItem.SLIME_SNARE) ? 1F : 0F);
+                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, WildscapesEnchantments.SLIME_SNARE.get()) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"),
-                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, JumpEnchantments.MULTI_JUMP) ? 1F : 0F);
+                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, WildscapesEnchantments.MULTI_JUMP.get()) ? 1F : 0F);
             ItemProperties.register(Items.ENCHANTED_BOOK,
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"),
-                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, JumpEnchantments.EMPOWERED_JUMP) ? 1F : 0F);
+                    (stack, level, holder, seed) -> hasStoredEnchantment(stack, WildscapesEnchantments.EMPOWERED_JUMP.get()) ? 1F : 0F);
         });
     }
 
-    private static boolean hasStoredEnchantment(ItemStack stack, ResourceKey<Enchantment> key) {
-        var enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
-        return enchantments != null && enchantments.keySet().stream().anyMatch(enchantment -> enchantment.is(key));
+    private static boolean hasStoredEnchantment(ItemStack stack, Enchantment enchantment) {
+        return EnchantmentHelper.getEnchantments(stack).containsKey(enchantment);
     }
 
     @SubscribeEvent

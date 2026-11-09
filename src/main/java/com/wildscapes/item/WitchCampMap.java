@@ -2,47 +2,53 @@ package com.wildscapes.item;
 
 import com.wildscapes.Wildscapes;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.MapDecorations;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.saveddata.maps.MapDecorationType;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraftforge.event.village.VillagerTradesEvent;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
 
 public final class WitchCampMap {
     private WitchCampMap() {}
 
-    private static final DeferredRegister<MapDecorationType> DECORATIONS =
-            DeferredRegister.create(Registries.MAP_DECORATION_TYPE, Wildscapes.MODID);
-
-    public static final RegistryObject<MapDecorationType> WITCH_CAMP =
-            DECORATIONS.register("witch_camp", () -> new MapDecorationType(
-                    ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"), true, -1, true, false));
+    public static final String MARKER = "wildscapes:witch_camp";
 
     public static final TagKey<Structure> DESTINATION = TagKey.create(Registries.STRUCTURE,
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "on_witch_camp_maps"));
 
-    public static void register(IEventBus bus) {
-        DECORATIONS.register(bus);
-    }
-
     public static void onVillagerTrades(VillagerTradesEvent event) {
         if (event.getType() == VillagerProfession.CARTOGRAPHER) {
-            event.getTrades().get(4).add(new VillagerTrades.TreasureMapForEmeralds(
-                    14, DESTINATION, "filled_map.wildscapes.witch_camp", WITCH_CAMP, 12, 30));
+            VillagerTrades.TreasureMapForEmeralds map = new VillagerTrades.TreasureMapForEmeralds(
+                    14, DESTINATION, "filled_map.wildscapes.witch_camp", MapDecoration.Type.RED_X, 12, 30);
+            event.getTrades().get(4).add((trader, random) -> {
+                var offer = map.getOffer(trader, random);
+                if (offer != null) {
+                    ListTag decorations = offer.getResult().getOrCreateTag().getList("Decorations", Tag.TAG_COMPOUND);
+                    for (int i = 0; i < decorations.size(); i++) {
+                        decorations.getCompound(i).putString("id", MARKER);
+                    }
+                }
+                return offer;
+            });
         }
     }
 
     public static boolean isWitchCampMap(ItemStack stack) {
-        return stack.getOrDefault(DataComponents.MAP_DECORATIONS, MapDecorations.EMPTY)
-                .decorations().values().stream().anyMatch(entry -> entry.type().is(WITCH_CAMP.getKey()));
+        if (!stack.hasTag()) {
+            return false;
+        }
+        ListTag decorations = stack.getTag().getList("Decorations", Tag.TAG_COMPOUND);
+        for (int i = 0; i < decorations.size(); i++) {
+            if (MARKER.equals(decorations.getCompound(i).getString("id"))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

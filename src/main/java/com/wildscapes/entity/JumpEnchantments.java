@@ -1,20 +1,16 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.item.WildscapesEnchantments;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.item.MirelashItem;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.sound.WildscapesSounds;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.event.TickEvent;
@@ -22,10 +18,6 @@ import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class JumpEnchantments {
-    public static final ResourceKey<Enchantment> MULTI_JUMP = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"));
-    public static final ResourceKey<Enchantment> EMPOWERED_JUMP = ResourceKey.create(Registries.ENCHANTMENT,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"));
     private static final String USED = "wildscapes:air_jumps";
     public static final int FULL_CHARGE = 181;
     private static final String CHARGE = "wildscapes:jump_charge";
@@ -40,7 +32,7 @@ public final class JumpEnchantments {
 
     public static boolean canCharge(Player player) {
         return canJump(player) && player.onGround()
-                && MirelashItem.enchantmentLevel(player.level(), player.getItemBySlot(EquipmentSlot.LEGS), EMPOWERED_JUMP) > 0;
+                && player.getItemBySlot(EquipmentSlot.LEGS).getEnchantmentLevel(WildscapesEnchantments.EMPOWERED_JUMP.get()) > 0;
     }
 
     @SubscribeEvent
@@ -85,8 +77,7 @@ public final class JumpEnchantments {
             return false;
         }
         var data = player.getPersistentData();
-        int level = Math.min(2, MirelashItem.enchantmentLevel(player.level(),
-                player.getItemBySlot(EquipmentSlot.FEET), MULTI_JUMP));
+        int level = Math.min(2, player.getItemBySlot(EquipmentSlot.FEET).getEnchantmentLevel(WildscapesEnchantments.MULTI_JUMP.get()));
         int used = data.getInt(USED);
         if (player.onGround() || used >= level) {
             return false;
