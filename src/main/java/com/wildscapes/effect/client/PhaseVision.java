@@ -14,7 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
@@ -28,7 +29,10 @@ public final class PhaseVision {
     private PhaseVision() {}
 
     @SubscribeEvent
-    static void clientTick(ClientTickEvent.Post event) {
+    static void clientTick(ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         lastVeil = veil;
         veil = Mth.clamp(veil + (insideBlock() ? 0.25F : -0.3F), 0.0F, 1.0F);
     }

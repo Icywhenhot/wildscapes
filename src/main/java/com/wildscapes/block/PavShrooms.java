@@ -7,15 +7,19 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class PavShrooms {
     private PavShrooms() {}
 
     @SubscribeEvent
-    public static void onTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player) || player.tickCount % 50 != 0
+    public static void onTick(PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        if (!(event.player instanceof ServerPlayer player) || player.tickCount % 50 != 0
                 || !player.isAlive() || player.isSpectator() || player.getHealth() >= player.getMaxHealth()
                 || player.hasEffect(MobEffects.REGENERATION)) {
             return;

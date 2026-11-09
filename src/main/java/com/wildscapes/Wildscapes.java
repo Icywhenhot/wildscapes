@@ -48,7 +48,8 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Blocks;
@@ -60,7 +61,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.common.BasicItemListing;
 import net.minecraftforge.common.MinecraftForge;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.village.WandererTradesEvent;
@@ -131,59 +131,59 @@ public class Wildscapes {
                         output.accept(WildscapesItems.SPIRIT_BANNER_PATTERN.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
                         output.accept(WildscapesItems.ILLUSIONER_SPAWN_EGG.get());
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.LONG_MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.LONG_MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.LONG_MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.LONG_MIRAGE));
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.LONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.LONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.LONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.LONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.STRONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.STRONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.STRONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.STRONG_RESISTANCE));
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.LONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.LONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.LONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.LONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.POTION, WildscapesPotions.STRONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.STRONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.STRONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.STRONG_GNASHING));
-                        output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.INCENDIARY));
-                        output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.INCENDIARY));
-                        output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.INCENDIARY));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.LONG_MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.LONG_MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.LONG_MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.LONG_MIRAGE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.LONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.LONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.LONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.LONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.STRONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.STRONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.STRONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.STRONG_RESISTANCE.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.LONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.LONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.LONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.LONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.STRONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.STRONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.STRONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.STRONG_GNASHING.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.INCENDIARY.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.LINGERING_POTION), WildscapesPotions.INCENDIARY.get()));
+                        output.accept(PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW), WildscapesPotions.INCENDIARY.get()));
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(MirelashItem.ELASTICITY), 1)));
+                                        .getOrThrow(MirelashItem.ELASTICITY).value(), 1)));
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(MirelashItem.SLIME_SNARE), 1)));
+                                        .getOrThrow(MirelashItem.SLIME_SNARE).value(), 1)));
                         for (int i = 1; i <= 2; i++) {
                             output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                     parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                            .getOrThrow(JumpEnchantments.MULTI_JUMP), i)));
+                                            .getOrThrow(JumpEnchantments.MULTI_JUMP).value(), i)));
                         }
                         output.accept(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
+                                        .getOrThrow(JumpEnchantments.EMPOWERED_JUMP).value(), 1)));
                     }).build());
 
-    public Wildscapes() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public Wildscapes(FMLJavaModLoadingContext context) {
+        IEventBus modEventBus = context.getModEventBus();
         WildscapesBlocks.register(modEventBus);
         WildscapesBlockEntities.register(modEventBus);
         WildscapesItems.register(modEventBus);
@@ -207,7 +207,6 @@ public class Wildscapes {
         modEventBus.addListener(this::registerEntityAttributes);
         modEventBus.addListener(MirelashAttackPayload::register);
         modEventBus.addListener(JumpPayload::register);
-        MinecraftForge.EVENT_BUS.addListener(this::registerBrewingRecipes);
 
         MinecraftForge.EVENT_BUS.addListener(this::onLivingDrops);
         MinecraftForge.EVENT_BUS.addListener(this::onWandererTrades);
@@ -255,19 +254,16 @@ public class Wildscapes {
         event.put(WildscapesEntities.ABOMINATION.get(), AbominationEntity.createAttributes().build());
     }
 
-    private void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
-        event.getBuilder().addMix(WildscapesPotions.GNASHING, Items.REDSTONE, WildscapesPotions.LONG_GNASHING);
-        event.getBuilder().addMix(WildscapesPotions.GNASHING, Items.GLOWSTONE_DUST, WildscapesPotions.STRONG_GNASHING);
-        event.getBuilder().addMix(Potions.AWKWARD, Items.ENDER_PEARL, WildscapesPotions.MIRAGE);
-        event.getBuilder().addMix(WildscapesPotions.MIRAGE, Items.REDSTONE, WildscapesPotions.LONG_MIRAGE);
-        event.getBuilder().addMix(Potions.AWKWARD, Items.TURTLE_EGG, WildscapesPotions.RESISTANCE);
-        event.getBuilder().addMix(WildscapesPotions.RESISTANCE, Items.REDSTONE, WildscapesPotions.LONG_RESISTANCE);
-        event.getBuilder().addMix(WildscapesPotions.RESISTANCE, Items.GLOWSTONE_DUST,
-                WildscapesPotions.STRONG_RESISTANCE);
-    }
-
     private void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            PotionBrewing.addMix(WildscapesPotions.GNASHING.get(), Items.REDSTONE, WildscapesPotions.LONG_GNASHING.get());
+            PotionBrewing.addMix(WildscapesPotions.GNASHING.get(), Items.GLOWSTONE_DUST, WildscapesPotions.STRONG_GNASHING.get());
+            PotionBrewing.addMix(Potions.AWKWARD, Items.ENDER_PEARL, WildscapesPotions.MIRAGE.get());
+            PotionBrewing.addMix(WildscapesPotions.MIRAGE.get(), Items.REDSTONE, WildscapesPotions.LONG_MIRAGE.get());
+            PotionBrewing.addMix(Potions.AWKWARD, Items.TURTLE_EGG, WildscapesPotions.RESISTANCE.get());
+            PotionBrewing.addMix(WildscapesPotions.RESISTANCE.get(), Items.REDSTONE, WildscapesPotions.LONG_RESISTANCE.get());
+            PotionBrewing.addMix(WildscapesPotions.RESISTANCE.get(), Items.GLOWSTONE_DUST,
+                    WildscapesPotions.STRONG_RESISTANCE.get());
             MudBrickDyeing.buildLookup();
             DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_BOAT.get(),
                     new BoatDispenseItemBehavior(CypressBoat.TYPE.getValue()));

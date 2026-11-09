@@ -41,7 +41,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.LevelTickEvent;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -96,8 +97,11 @@ public final class WitchRitual {
     }
 
     @SubscribeEvent
-    static void onLevelTick(LevelTickEvent.Post event) {
-        if (event.getLevel() instanceof ServerLevel level) {
+    static void onLevelTick(LevelTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        if (event.level instanceof ServerLevel level) {
             tickAll(level);
         }
     }

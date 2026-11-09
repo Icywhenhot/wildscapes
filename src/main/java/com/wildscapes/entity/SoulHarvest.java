@@ -27,7 +27,8 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -108,8 +109,11 @@ public final class SoulHarvest {
     }
 
     @SubscribeEvent
-    static void onPlayerTick(PlayerTickEvent.Pre event) {
-        Player player = event.getEntity();
+    static void onPlayerTick(PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.START) {
+            return;
+        }
+        Player player = event.player;
         if (player.level() instanceof ServerLevel level && player.hasEffect(MobEffects.BAD_OMEN)) {
             CauldronOfSoulsBlockEntity.tryStart(level, player);
         }

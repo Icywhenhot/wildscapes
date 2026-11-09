@@ -18,7 +18,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
+import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
 import net.minecraftforge.event.entity.living.FinalizeSpawnEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
@@ -29,13 +29,13 @@ public final class SwampSpawns {
 
     private static final int DAY_SLIME_RARITY = 100;
 
-    public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+    public static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
         event.register(EntityType.BOGGED, SwampSpawns::nightSwampBogged,
-                RegisterSpawnPlacementsEvent.Operation.AND);
+                SpawnPlacementRegisterEvent.Operation.AND);
         event.register(EntityType.DROWNED, SwampSpawns::swampDrowned,
-                RegisterSpawnPlacementsEvent.Operation.OR);
+                SpawnPlacementRegisterEvent.Operation.OR);
         event.register(EntityType.SLIME, SwampSpawns::daylightSwampSlime,
-                RegisterSpawnPlacementsEvent.Operation.OR);
+                SpawnPlacementRegisterEvent.Operation.OR);
     }
 
     private static boolean nightSwampBogged(EntityType<Bogged> type, ServerLevelAccessor level,

@@ -13,7 +13,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class SwampFog {
@@ -38,7 +39,10 @@ public final class SwampFog {
     private static float strength;
 
     @SubscribeEvent
-    static void onClientTick(ClientTickEvent.Post event) {
+    static void onClientTick(ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null || minecraft.player == null) {
             strength = 0.0F;

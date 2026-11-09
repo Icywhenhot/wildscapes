@@ -92,26 +92,26 @@ public final class WildscapesBlocks {
                     .pushReaction(PushReaction.DESTROY)));
 
     public static final RegistryObject<DoorBlock> CYPRESS_DOOR = register("cypress_door",
-            () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.of()
+            () -> new DoorBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(3.0F)
                     .noOcclusion()
                     .pushReaction(PushReaction.DESTROY)
-                    .ignitedByLava()));
+                    .ignitedByLava(), BlockSetType.OAK));
 
     public static final RegistryObject<TrapDoorBlock> CYPRESS_TRAPDOOR = register("cypress_trapdoor",
-            () -> new TrapDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.of()
+            () -> new TrapDoorBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(3.0F)
                     .noOcclusion()
                     .isValidSpawn((state, level, pos, type) -> false)
-                    .ignitedByLava()));
+                    .ignitedByLava(), BlockSetType.OAK));
 
     public static final RegistryObject<FenceBlock> CYPRESS_FENCE = register("cypress_fence",
             () -> new FenceBlock(plankProps()));
 
     public static final RegistryObject<FenceGateBlock> CYPRESS_FENCE_GATE = register("cypress_fence_gate",
-            () -> new FenceGateBlock(WoodType.OAK, plankProps()));
+            () -> new FenceGateBlock(plankProps(), WoodType.OAK));
 
     public static final RegistryObject<StairBlock> CYPRESS_STAIRS = register("cypress_stairs",
             () -> new StairBlock(CYPRESS_PLANKS.get().defaultBlockState(), plankProps()));
@@ -120,32 +120,32 @@ public final class WildscapesBlocks {
             () -> new SlabBlock(plankProps()));
 
     public static final RegistryObject<ButtonBlock> CYPRESS_BUTTON = register("cypress_button",
-            () -> new ButtonBlock(CYPRESS_SET, 30, BlockBehaviour.Properties.of()
+            () -> new ButtonBlock(BlockBehaviour.Properties.of()
                     .noCollission()
                     .strength(0.5F)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.DESTROY), CYPRESS_SET, 30, true));
 
     public static final RegistryObject<PressurePlateBlock> CYPRESS_PRESSURE_PLATE = register("cypress_pressure_plate",
-            () -> new PressurePlateBlock(CYPRESS_SET, BlockBehaviour.Properties.of()
+            () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .forceSolidOn()
                     .instrument(NoteBlockInstrument.BASS)
                     .noCollission()
                     .strength(0.5F)
                     .ignitedByLava()
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.DESTROY), CYPRESS_SET));
 
     public static final RegistryObject<StandingSignBlock> CYPRESS_SIGN = BLOCKS.register("cypress_sign",
-            () -> new StandingSignBlock(CYPRESS_TYPE, signProps()));
+            () -> new StandingSignBlock(signProps(), CYPRESS_TYPE));
 
     public static final RegistryObject<WallSignBlock> CYPRESS_WALL_SIGN = BLOCKS.register("cypress_wall_sign",
-            () -> new WallSignBlock(CYPRESS_TYPE, signProps()));
+            () -> new WallSignBlock(signProps(), CYPRESS_TYPE));
 
     public static final RegistryObject<CeilingHangingSignBlock> CYPRESS_HANGING_SIGN = BLOCKS.register(
-            "cypress_hanging_sign", () -> new CeilingHangingSignBlock(CYPRESS_TYPE, signProps()));
+            "cypress_hanging_sign", () -> new CeilingHangingSignBlock(signProps(), CYPRESS_TYPE));
 
     public static final RegistryObject<WallHangingSignBlock> CYPRESS_WALL_HANGING_SIGN = BLOCKS.register(
-            "cypress_wall_hanging_sign", () -> new WallHangingSignBlock(CYPRESS_TYPE, signProps()));
+            "cypress_wall_hanging_sign", () -> new WallHangingSignBlock(signProps(), CYPRESS_TYPE));
 
     public static final RegistryObject<DuckweedBlock> DUCKWEED = register("duckweed",
             () -> new DuckweedBlock(BlockBehaviour.Properties.of()

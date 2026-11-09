@@ -23,7 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.common.DeferredSpawnEggItem;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 
@@ -49,10 +49,10 @@ public final class WildscapesItems {
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "viscose")));
 
     public static final RegistryObject<Item> ABOMINATION_SPAWN_EGG = ITEMS.register("abomination_spawn_egg",
-            () -> new DeferredSpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+            () -> new ForgeSpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
     public static final RegistryObject<Item> ILLUSIONER_SPAWN_EGG = ITEMS.register("illusioner_spawn_egg",
-            () -> new DeferredSpawnEggItem(() -> EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+            () -> new ForgeSpawnEggItem(() -> EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
     public static final RegistryObject<SignItem> CYPRESS_SIGN = ITEMS.register("cypress_sign",
             () -> new SignItem(new Item.Properties().stacksTo(16),

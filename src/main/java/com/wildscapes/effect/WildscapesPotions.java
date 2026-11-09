@@ -17,10 +17,10 @@ public final class WildscapesPotions {
             DeferredRegister.create(Registries.POTION, Wildscapes.MODID);
 
     public static final RegistryObject<Potion> MIRAGE = POTIONS.register("mirage",
-            () -> new Potion(new MobEffectInstance(WildscapesEffects.MIRAGE, 3600)));
+            () -> new Potion(new MobEffectInstance(WildscapesEffects.MIRAGE.get(), 3600)));
 
     public static final RegistryObject<Potion> LONG_MIRAGE = POTIONS.register("long_mirage",
-            () -> new Potion("mirage", new MobEffectInstance(WildscapesEffects.MIRAGE, 9600)));
+            () -> new Potion("mirage", new MobEffectInstance(WildscapesEffects.MIRAGE.get(), 9600)));
 
     public static final RegistryObject<Potion> RESISTANCE = POTIONS.register("resistance",
             () -> new Potion(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200)));
@@ -32,16 +32,16 @@ public final class WildscapesPotions {
             () -> new Potion("resistance", new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 600, 1)));
 
     public static final RegistryObject<Potion> GNASHING = POTIONS.register("gnashing",
-            () -> new Potion(new MobEffectInstance(WildscapesEffects.GNASHING, 900)));
+            () -> new Potion(new MobEffectInstance(WildscapesEffects.GNASHING.get(), 900)));
 
     public static final RegistryObject<Potion> LONG_GNASHING = POTIONS.register("long_gnashing",
-            () -> new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING, 1800)));
+            () -> new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING.get(), 1800)));
 
     public static final RegistryObject<Potion> STRONG_GNASHING = POTIONS.register("strong_gnashing",
-            () -> new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING, 640, 1)));
+            () -> new Potion("gnashing", new MobEffectInstance(WildscapesEffects.GNASHING.get(), 640, 1)));
 
     public static final RegistryObject<Potion> INCENDIARY = POTIONS.register("incendiary",
-            () -> new Potion(new MobEffectInstance(WildscapesEffects.INCENDIARY, 1)));
+            () -> new Potion(new MobEffectInstance(WildscapesEffects.INCENDIARY.get(), 1)));
 
     public static void register(IEventBus bus) {
         POTIONS.register(bus);

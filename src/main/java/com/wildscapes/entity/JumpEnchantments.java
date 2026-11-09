@@ -17,7 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class JumpEnchantments {
@@ -43,8 +44,11 @@ public final class JumpEnchantments {
     }
 
     @SubscribeEvent
-    public static void onTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
+    public static void onTick(PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        if (!(event.player instanceof ServerPlayer player)) {
             return;
         }
         var data = player.getPersistentData();
