@@ -54,17 +54,18 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.BasicItemListing;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.common.BasicItemListing;
+import net.minecraftforge.common.MinecraftForge;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.village.WandererTradesEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.village.WandererTradesEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 
 @Mod(Wildscapes.MODID)
 public class Wildscapes {
@@ -74,7 +75,7 @@ public class Wildscapes {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WILDSCAPES_TAB =
+    public static final RegistryObject<CreativeModeTab> WILDSCAPES_TAB =
             CREATIVE_MODE_TABS.register("wildscapes", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.wildscapes"))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
@@ -181,10 +182,12 @@ public class Wildscapes {
                                         .getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
                     }).build());
 
-    public Wildscapes(IEventBus modEventBus) {
+    public Wildscapes() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         WildscapesBlocks.register(modEventBus);
         WildscapesBlockEntities.register(modEventBus);
         WildscapesItems.register(modEventBus);
+        WildscapesDecorations.register(modEventBus);
         WitchCampMap.register(modEventBus);
         WildscapesDataComponents.register(modEventBus);
         WildscapesEntities.register(modEventBus);
@@ -204,27 +207,27 @@ public class Wildscapes {
         modEventBus.addListener(this::registerEntityAttributes);
         modEventBus.addListener(MirelashAttackPayload::register);
         modEventBus.addListener(JumpPayload::register);
-        NeoForge.EVENT_BUS.addListener(this::registerBrewingRecipes);
+        MinecraftForge.EVENT_BUS.addListener(this::registerBrewingRecipes);
 
-        NeoForge.EVENT_BUS.addListener(this::onLivingDrops);
-        NeoForge.EVENT_BUS.addListener(this::onWandererTrades);
-        NeoForge.EVENT_BUS.addListener(WitchCampMap::onVillagerTrades);
-        NeoForge.EVENT_BUS.addListener(IllusionerGoals::onJoinLevel);
-        NeoForge.EVENT_BUS.addListener(WitchGoals::onJoinLevel);
-        NeoForge.EVENT_BUS.addListener(WitchGoals::onEntityTick);
-        NeoForge.EVENT_BUS.addListener(MirageSync::onEntityTick);
-        NeoForge.EVENT_BUS.addListener(MirageSync::onStartTracking);
-        NeoForge.EVENT_BUS.addListener(Intangibility::onPlayerTick);
-        NeoForge.EVENT_BUS.addListener(Intangibility::onMobTick);
-        NeoForge.EVENT_BUS.addListener(Intangibility::onDamage);
-        NeoForge.EVENT_BUS.addListener(MirelashItem::onPlayerTick);
-        NeoForge.EVENT_BUS.addListener(MudBrickDyeing::onRightClick);
-        NeoForge.EVENT_BUS.addListener(SlimeMerging::onEntityTick);
-        NeoForge.EVENT_BUS.addListener(CauldronSwap::onRightClick);
-        NeoForge.EVENT_BUS.addListener(CauldronSwap::onPlace);
-        NeoForge.EVENT_BUS.addListener(CauldronSwap::onNeighborNotify);
-        NeoForge.EVENT_BUS.addListener(MossCarpetSwap::onPlace);
-        NeoForge.EVENT_BUS.addListener(MossCarpetSwap::onBonemeal);
+        MinecraftForge.EVENT_BUS.addListener(this::onLivingDrops);
+        MinecraftForge.EVENT_BUS.addListener(this::onWandererTrades);
+        MinecraftForge.EVENT_BUS.addListener(WitchCampMap::onVillagerTrades);
+        MinecraftForge.EVENT_BUS.addListener(IllusionerGoals::onJoinLevel);
+        MinecraftForge.EVENT_BUS.addListener(WitchGoals::onJoinLevel);
+        MinecraftForge.EVENT_BUS.addListener(WitchGoals::onEntityTick);
+        MinecraftForge.EVENT_BUS.addListener(MirageSync::onEntityTick);
+        MinecraftForge.EVENT_BUS.addListener(MirageSync::onStartTracking);
+        MinecraftForge.EVENT_BUS.addListener(Intangibility::onPlayerTick);
+        MinecraftForge.EVENT_BUS.addListener(Intangibility::onMobTick);
+        MinecraftForge.EVENT_BUS.addListener(Intangibility::onDamage);
+        MinecraftForge.EVENT_BUS.addListener(MirelashItem::onPlayerTick);
+        MinecraftForge.EVENT_BUS.addListener(MudBrickDyeing::onRightClick);
+        MinecraftForge.EVENT_BUS.addListener(SlimeMerging::onEntityTick);
+        MinecraftForge.EVENT_BUS.addListener(CauldronSwap::onRightClick);
+        MinecraftForge.EVENT_BUS.addListener(CauldronSwap::onPlace);
+        MinecraftForge.EVENT_BUS.addListener(CauldronSwap::onNeighborNotify);
+        MinecraftForge.EVENT_BUS.addListener(MossCarpetSwap::onPlace);
+        MinecraftForge.EVENT_BUS.addListener(MossCarpetSwap::onBonemeal);
 
         modEventBus.addListener(SwampSpawns::registerSpawnPlacements);
     }

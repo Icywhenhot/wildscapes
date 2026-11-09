@@ -4,9 +4,9 @@ import com.wildscapes.Wildscapes;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 
 public final class WildscapesDataComponents {
     private WildscapesDataComponents() {}
@@ -14,7 +14,7 @@ public final class WildscapesDataComponents {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS =
             DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Wildscapes.MODID);
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<SoupContents>> SOUP_CONTENTS =
+    public static final RegistryObject<DataComponentType<SoupContents>> SOUP_CONTENTS =
             DATA_COMPONENTS.register("soup_contents", () -> DataComponentType.<SoupContents>builder()
                     .persistent(SoupContents.CODEC)
                     .networkSynchronized(SoupContents.STREAM_CODEC)

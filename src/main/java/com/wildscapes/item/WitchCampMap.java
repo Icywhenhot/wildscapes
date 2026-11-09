@@ -12,10 +12,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.MapDecorations;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.village.VillagerTradesEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 
 public final class WitchCampMap {
     private WitchCampMap() {}
@@ -23,7 +23,7 @@ public final class WitchCampMap {
     private static final DeferredRegister<MapDecorationType> DECORATIONS =
             DeferredRegister.create(Registries.MAP_DECORATION_TYPE, Wildscapes.MODID);
 
-    public static final DeferredHolder<MapDecorationType, MapDecorationType> WITCH_CAMP =
+    public static final RegistryObject<MapDecorationType> WITCH_CAMP =
             DECORATIONS.register("witch_camp", () -> new MapDecorationType(
                     ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "witch_camp"), true, -1, true, false));
 

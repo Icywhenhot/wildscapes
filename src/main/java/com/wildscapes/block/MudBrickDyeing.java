@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 public final class MudBrickDyeing {
     private MudBrickDyeing() {}
@@ -33,7 +33,7 @@ public final class MudBrickDyeing {
         addFamily(Blocks.MUD_BRICK_WALL, MudBrickBlocks.WALLS);
     }
 
-    private static void addFamily(Block undyed, Map<DyeColor, ? extends DeferredBlock<? extends Block>> dyed) {
+    private static void addFamily(Block undyed, Map<DyeColor, ? extends RegistryObject<? extends Block>> dyed) {
         Map<DyeColor, Block> byColor = new EnumMap<>(DyeColor.class);
         dyed.forEach((color, block) -> byColor.put(color, block.get()));
 

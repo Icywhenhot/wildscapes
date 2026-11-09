@@ -11,13 +11,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Pillager;
 import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.level.biome.Biome;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
@@ -34,7 +34,7 @@ public final class SwampVariants {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Wildscapes.MODID);
 
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Byte>> SWAMP_BORN =
+    public static final RegistryObject<AttachmentType<Byte>> SWAMP_BORN =
             ATTACHMENT_TYPES.register("swamp_born", () -> AttachmentType.<Byte>builder(() -> UNDECIDED)
                     .serialize(Codec.BYTE)
                     .sync(ByteBufCodecs.BYTE)

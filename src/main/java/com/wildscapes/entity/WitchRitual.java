@@ -34,16 +34,16 @@ import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
@@ -58,12 +58,12 @@ public final class WitchRitual {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Wildscapes.MODID);
 
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Boolean>> CHANTING =
+    public static final RegistryObject<AttachmentType<Boolean>> CHANTING =
             ATTACHMENT_TYPES.register("chanting", () -> AttachmentType.builder(() -> false)
                     .sync(ByteBufCodecs.BOOL)
                     .build());
 
-    private static final DeferredHolder<AttachmentType<?>, AttachmentType<Boolean>> TOAD =
+    private static final RegistryObject<AttachmentType<Boolean>> TOAD =
             ATTACHMENT_TYPES.register("ritual_toad", () -> AttachmentType.builder(() -> false)
                     .serialize(Codec.BOOL)
                     .build());

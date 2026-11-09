@@ -3,7 +3,7 @@ package com.wildscapes.entity;
 import java.util.List;
 
 import net.minecraft.world.entity.monster.Illusioner;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 
 public final class IllusionerGoals {
     private IllusionerGoals() {}

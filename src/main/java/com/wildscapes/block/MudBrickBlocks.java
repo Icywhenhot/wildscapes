@@ -11,18 +11,18 @@ import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.neoforge.registries.DeferredBlock;
+import net.minecraftforge.registries.RegistryObject;
 
 public final class MudBrickBlocks {
     private MudBrickBlocks() {}
 
-    public static final Map<DyeColor, DeferredBlock<Block>> BRICKS = new EnumMap<>(DyeColor.class);
-    public static final Map<DyeColor, DeferredBlock<Block>> CHISELED = new EnumMap<>(DyeColor.class);
-    public static final Map<DyeColor, DeferredBlock<StairBlock>> STAIRS = new EnumMap<>(DyeColor.class);
-    public static final Map<DyeColor, DeferredBlock<SlabBlock>> SLABS = new EnumMap<>(DyeColor.class);
-    public static final Map<DyeColor, DeferredBlock<WallBlock>> WALLS = new EnumMap<>(DyeColor.class);
+    public static final Map<DyeColor, RegistryObject<Block>> BRICKS = new EnumMap<>(DyeColor.class);
+    public static final Map<DyeColor, RegistryObject<Block>> CHISELED = new EnumMap<>(DyeColor.class);
+    public static final Map<DyeColor, RegistryObject<StairBlock>> STAIRS = new EnumMap<>(DyeColor.class);
+    public static final Map<DyeColor, RegistryObject<SlabBlock>> SLABS = new EnumMap<>(DyeColor.class);
+    public static final Map<DyeColor, RegistryObject<WallBlock>> WALLS = new EnumMap<>(DyeColor.class);
 
-    public static final DeferredBlock<Block> CHISELED_MUD_BRICKS = WildscapesBlocks.register(
+    public static final RegistryObject<Block> CHISELED_MUD_BRICKS = WildscapesBlocks.register(
             "chiseled_mud_bricks", () -> new Block(props(MapColor.TERRACOTTA_LIGHT_GRAY)));
 
     static {
@@ -30,7 +30,7 @@ public final class MudBrickBlocks {
             String name = color.getName();
             MapColor mapColor = color.getMapColor();
 
-            DeferredBlock<Block> bricks = WildscapesBlocks.register(name + "_mud_bricks",
+            RegistryObject<Block> bricks = WildscapesBlocks.register(name + "_mud_bricks",
                     () -> new Block(props(mapColor)));
 
             BRICKS.put(color, bricks);

@@ -1,0 +1,42 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="dtech"
+description='''
+Wildscapes adds wetland-themed nature content to Minecraft: a full cypress wood set
+(logs, wood, planks, leaves, saplings that grow into cypress trees, doors and trapdoors)
+plus swamp plants like duckweed and rushes.
+'''
+
+[[dependencies.${mod_id}]]
+modId="forge"
+mandatory=true
+versionRange="${forge_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+mandatory=true
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="geckolib"
+mandatory=true
+versionRange="[${geckolib_version},5)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="icys_lib"
+mandatory=true
+versionRange="[${icys_lib_version},2)"
+ordering="AFTER"
+side="BOTH"

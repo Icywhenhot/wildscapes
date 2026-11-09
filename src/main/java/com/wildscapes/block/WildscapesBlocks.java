@@ -3,11 +3,14 @@ package com.wildscapes.block;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.google.common.collect.ImmutableSet;
+
 import com.wildscapes.Wildscapes;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.worldgen.WildscapesTreeGrowers;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -35,37 +38,37 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 
 public final class WildscapesBlocks {
     private WildscapesBlocks() {}
 
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Wildscapes.MODID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, Wildscapes.MODID);
 
     public static final BlockSetType CYPRESS_SET = BlockSetType.register(new BlockSetType("wildscapes:cypress"));
     public static final WoodType CYPRESS_TYPE = WoodType.register(new WoodType("wildscapes:cypress", CYPRESS_SET));
 
-    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_CYPRESS_LOG = register("stripped_cypress_log",
+    public static final RegistryObject<RotatedPillarBlock> STRIPPED_CYPRESS_LOG = register("stripped_cypress_log",
             () -> new RotatedPillarBlock(logProps()));
-    public static final DeferredBlock<RotatedPillarBlock> CYPRESS_LOG = register("cypress_log",
+    public static final RegistryObject<RotatedPillarBlock> CYPRESS_LOG = register("cypress_log",
             () -> new StrippableLogBlock(STRIPPED_CYPRESS_LOG, logProps()));
 
-    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_CYPRESS_WOOD = register("stripped_cypress_wood",
+    public static final RegistryObject<RotatedPillarBlock> STRIPPED_CYPRESS_WOOD = register("stripped_cypress_wood",
             () -> new RotatedPillarBlock(logProps()));
-    public static final DeferredBlock<RotatedPillarBlock> CYPRESS_WOOD = register("cypress_wood",
+    public static final RegistryObject<RotatedPillarBlock> CYPRESS_WOOD = register("cypress_wood",
             () -> new StrippableLogBlock(STRIPPED_CYPRESS_WOOD, logProps()));
 
-    public static final DeferredBlock<Block> CYPRESS_PLANKS = register("cypress_planks",
+    public static final RegistryObject<Block> CYPRESS_PLANKS = register("cypress_planks",
             () -> new Block(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(2.0F, 3.0F)
                     .sound(SoundType.WOOD)
                     .ignitedByLava()));
 
-    public static final DeferredBlock<LeavesBlock> CYPRESS_LEAVES = register("cypress_leaves",
+    public static final RegistryObject<LeavesBlock> CYPRESS_LEAVES = register("cypress_leaves",
             () -> new LeavesBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
                     .strength(0.2F)
@@ -79,7 +82,7 @@ public final class WildscapesBlocks {
                     .pushReaction(PushReaction.DESTROY)
                     .isRedstoneConductor((state, level, pos) -> false)));
 
-    public static final DeferredBlock<CypressSaplingBlock> CYPRESS_SAPLING = register("cypress_sapling",
+    public static final RegistryObject<CypressSaplingBlock> CYPRESS_SAPLING = register("cypress_sapling",
             () -> new CypressSaplingBlock(WildscapesTreeGrowers.CYPRESS, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
                     .noCollission()
@@ -88,7 +91,7 @@ public final class WildscapesBlocks {
                     .sound(SoundType.GRASS)
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<DoorBlock> CYPRESS_DOOR = register("cypress_door",
+    public static final RegistryObject<DoorBlock> CYPRESS_DOOR = register("cypress_door",
             () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(3.0F)
@@ -96,7 +99,7 @@ public final class WildscapesBlocks {
                     .pushReaction(PushReaction.DESTROY)
                     .ignitedByLava()));
 
-    public static final DeferredBlock<TrapDoorBlock> CYPRESS_TRAPDOOR = register("cypress_trapdoor",
+    public static final RegistryObject<TrapDoorBlock> CYPRESS_TRAPDOOR = register("cypress_trapdoor",
             () -> new TrapDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(3.0F)
@@ -104,25 +107,25 @@ public final class WildscapesBlocks {
                     .isValidSpawn((state, level, pos, type) -> false)
                     .ignitedByLava()));
 
-    public static final DeferredBlock<FenceBlock> CYPRESS_FENCE = register("cypress_fence",
+    public static final RegistryObject<FenceBlock> CYPRESS_FENCE = register("cypress_fence",
             () -> new FenceBlock(plankProps()));
 
-    public static final DeferredBlock<FenceGateBlock> CYPRESS_FENCE_GATE = register("cypress_fence_gate",
+    public static final RegistryObject<FenceGateBlock> CYPRESS_FENCE_GATE = register("cypress_fence_gate",
             () -> new FenceGateBlock(WoodType.OAK, plankProps()));
 
-    public static final DeferredBlock<StairBlock> CYPRESS_STAIRS = register("cypress_stairs",
+    public static final RegistryObject<StairBlock> CYPRESS_STAIRS = register("cypress_stairs",
             () -> new StairBlock(CYPRESS_PLANKS.get().defaultBlockState(), plankProps()));
 
-    public static final DeferredBlock<SlabBlock> CYPRESS_SLAB = register("cypress_slab",
+    public static final RegistryObject<SlabBlock> CYPRESS_SLAB = register("cypress_slab",
             () -> new SlabBlock(plankProps()));
 
-    public static final DeferredBlock<ButtonBlock> CYPRESS_BUTTON = register("cypress_button",
+    public static final RegistryObject<ButtonBlock> CYPRESS_BUTTON = register("cypress_button",
             () -> new ButtonBlock(CYPRESS_SET, 30, BlockBehaviour.Properties.of()
                     .noCollission()
                     .strength(0.5F)
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<PressurePlateBlock> CYPRESS_PRESSURE_PLATE = register("cypress_pressure_plate",
+    public static final RegistryObject<PressurePlateBlock> CYPRESS_PRESSURE_PLATE = register("cypress_pressure_plate",
             () -> new PressurePlateBlock(CYPRESS_SET, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .forceSolidOn()
@@ -132,19 +135,19 @@ public final class WildscapesBlocks {
                     .ignitedByLava()
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<StandingSignBlock> CYPRESS_SIGN = BLOCKS.register("cypress_sign",
+    public static final RegistryObject<StandingSignBlock> CYPRESS_SIGN = BLOCKS.register("cypress_sign",
             () -> new StandingSignBlock(CYPRESS_TYPE, signProps()));
 
-    public static final DeferredBlock<WallSignBlock> CYPRESS_WALL_SIGN = BLOCKS.register("cypress_wall_sign",
+    public static final RegistryObject<WallSignBlock> CYPRESS_WALL_SIGN = BLOCKS.register("cypress_wall_sign",
             () -> new WallSignBlock(CYPRESS_TYPE, signProps()));
 
-    public static final DeferredBlock<CeilingHangingSignBlock> CYPRESS_HANGING_SIGN = BLOCKS.register(
+    public static final RegistryObject<CeilingHangingSignBlock> CYPRESS_HANGING_SIGN = BLOCKS.register(
             "cypress_hanging_sign", () -> new CeilingHangingSignBlock(CYPRESS_TYPE, signProps()));
 
-    public static final DeferredBlock<WallHangingSignBlock> CYPRESS_WALL_HANGING_SIGN = BLOCKS.register(
+    public static final RegistryObject<WallHangingSignBlock> CYPRESS_WALL_HANGING_SIGN = BLOCKS.register(
             "cypress_wall_hanging_sign", () -> new WallHangingSignBlock(CYPRESS_TYPE, signProps()));
 
-    public static final DeferredBlock<DuckweedBlock> DUCKWEED = register("duckweed",
+    public static final RegistryObject<DuckweedBlock> DUCKWEED = register("duckweed",
             () -> new DuckweedBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
                     .noCollission()
@@ -154,7 +157,7 @@ public final class WildscapesBlocks {
 
             block -> new PlaceOnWaterBlockItem(block, new Item.Properties()));
 
-    public static final DeferredBlock<RushesBlock> RUSHES = register("rushes",
+    public static final RegistryObject<RushesBlock> RUSHES = register("rushes",
             () -> new RushesBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
                     .noCollission()
@@ -163,7 +166,7 @@ public final class WildscapesBlocks {
                     .offsetType(BlockBehaviour.OffsetType.XZ)
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<ShortRushesBlock> SHORT_RUSHES = register("short_rushes",
+    public static final RegistryObject<ShortRushesBlock> SHORT_RUSHES = register("short_rushes",
             () -> new ShortRushesBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT)
                     .noCollission()
@@ -172,7 +175,7 @@ public final class WildscapesBlocks {
                     .offsetType(BlockBehaviour.OffsetType.XZ)
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<LuminousMushroomBlock> LUMINOUS_MUSHROOM = register("luminous_mushroom",
+    public static final RegistryObject<LuminousMushroomBlock> LUMINOUS_MUSHROOM = register("luminous_mushroom",
             () -> new LuminousMushroomBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_YELLOW)
                     .noCollission()
@@ -183,7 +186,7 @@ public final class WildscapesBlocks {
             block -> new StandingAndWallBlockItem(block, WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get(),
                     new Item.Properties(), Direction.DOWN));
 
-    public static final DeferredBlock<ShelfMushroomBlock> SHELF_LUMINOUS_MUSHROOM = BLOCKS.register("shelf_luminous_mushroom",
+    public static final RegistryObject<ShelfMushroomBlock> SHELF_LUMINOUS_MUSHROOM = BLOCKS.register("shelf_luminous_mushroom",
             () -> new ShelfMushroomBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_YELLOW)
                     .noCollission()
@@ -192,7 +195,7 @@ public final class WildscapesBlocks {
                     .lightLevel(state -> 7)
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<DrapingMossCarpetBlock> MOSS_CARPET = BLOCKS.register("moss_carpet",
+    public static final RegistryObject<DrapingMossCarpetBlock> MOSS_CARPET = BLOCKS.register("moss_carpet",
             () -> new DrapingMossCarpetBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
                     .strength(0.1F)
@@ -200,7 +203,7 @@ public final class WildscapesBlocks {
                     .sound(SoundType.MOSS_CARPET)
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<HangingMossBlock> HANGING_MOSS = BLOCKS.register("hanging_moss",
+    public static final RegistryObject<HangingMossBlock> HANGING_MOSS = BLOCKS.register("hanging_moss",
             () -> new HangingMossBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_GREEN)
                     .noCollission()
@@ -210,7 +213,7 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final DeferredBlock<BonfireBlock> BONFIRE = register("bonfire",
+    public static final RegistryObject<BonfireBlock> BONFIRE = register("bonfire",
             () -> new BonfireBlock(1.0F, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(2.0F)
@@ -219,7 +222,7 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .ignitedByLava()));
 
-    public static final DeferredBlock<BonfireBlock> SOUL_BONFIRE = register("soul_bonfire",
+    public static final RegistryObject<BonfireBlock> SOUL_BONFIRE = register("soul_bonfire",
             () -> new BonfireBlock(2.0F, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(2.0F)
@@ -228,7 +231,7 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .ignitedByLava()));
 
-    public static final DeferredBlock<CauldronOfSoulsBlock> CAULDRON_OF_SOULS = register("cauldron_of_souls",
+    public static final RegistryObject<CauldronOfSoulsBlock> CAULDRON_OF_SOULS = register("cauldron_of_souls",
             () -> new CauldronOfSoulsBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
                     .strength(-1.0F, 3600000.0F)
@@ -237,7 +240,7 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .noLootTable()));
 
-    public static final DeferredBlock<SummoningBonfireBlock> SUMMONING_BONFIRE = register("summoning_bonfire",
+    public static final RegistryObject<SummoningBonfireBlock> SUMMONING_BONFIRE = register("summoning_bonfire",
             () -> new SummoningBonfireBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
                     .strength(-1.0F, 3600000.0F)
@@ -246,7 +249,7 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .noLootTable()));
 
-    public static final DeferredBlock<IncendiaryFireBlock> INCENDIARY_FIRE = BLOCKS.register("incendiary_fire",
+    public static final RegistryObject<IncendiaryFireBlock> INCENDIARY_FIRE = BLOCKS.register("incendiary_fire",
             () -> new IncendiaryFireBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
                     .replaceable()
@@ -257,7 +260,7 @@ public final class WildscapesBlocks {
                     .pushReaction(PushReaction.DESTROY)
                     .noLootTable()));
 
-    public static final DeferredBlock<WildscapesCauldronBlock> CAULDRON = BLOCKS.register("cauldron",
+    public static final RegistryObject<WildscapesCauldronBlock> CAULDRON = BLOCKS.register("cauldron",
             () -> new WildscapesCauldronBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .strength(2.0F)
@@ -292,15 +295,15 @@ public final class WildscapesBlocks {
                 .ignitedByLava();
     }
 
-    static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier) {
-        DeferredBlock<T> block = BLOCKS.register(name, supplier);
-        WildscapesItems.ITEMS.registerSimpleBlockItem(name, block);
+    static <T extends Block> RegistryObject<T> register(String name, Supplier<T> supplier) {
+        RegistryObject<T> block = BLOCKS.register(name, supplier);
+        WildscapesItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
 
-    private static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> supplier,
+    private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> supplier,
             Function<T, ? extends BlockItem> itemFactory) {
-        DeferredBlock<T> block = BLOCKS.register(name, supplier);
+        RegistryObject<T> block = BLOCKS.register(name, supplier);
         WildscapesItems.ITEMS.register(name, () -> itemFactory.apply(block.get()));
         return block;
     }
@@ -311,8 +314,14 @@ public final class WildscapesBlocks {
         bus.addListener(WildscapesBlocks::addSignBlocks);
     }
 
-    private static void addSignBlocks(BlockEntityTypeAddBlocksEvent event) {
-        event.modify(BlockEntityType.SIGN, CYPRESS_SIGN.get(), CYPRESS_WALL_SIGN.get());
-        event.modify(BlockEntityType.HANGING_SIGN, CYPRESS_HANGING_SIGN.get(), CYPRESS_WALL_HANGING_SIGN.get());
+    private static void addSignBlocks(FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            BlockEntityType.SIGN.validBlocks = ImmutableSet.<Block>builder()
+                    .addAll(BlockEntityType.SIGN.validBlocks)
+                    .add(CYPRESS_SIGN.get(), CYPRESS_WALL_SIGN.get()).build();
+            BlockEntityType.HANGING_SIGN.validBlocks = ImmutableSet.<Block>builder()
+                    .addAll(BlockEntityType.HANGING_SIGN.validBlocks)
+                    .add(CYPRESS_HANGING_SIGN.get(), CYPRESS_WALL_HANGING_SIGN.get()).build();
+        });
     }
 }
