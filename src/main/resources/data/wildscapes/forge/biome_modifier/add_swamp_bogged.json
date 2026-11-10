@@ -1,0 +1,12 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#wildscapes:swamp_variant_biomes",
+  "spawners": [
+    {
+      "type": "wildscapes:bogged",
+      "weight": 30,
+      "minCount": 4,
+      "maxCount": 4
+    }
+  ]
+}

@@ -51,14 +51,14 @@ public class SummoningBonfireBlock extends Block {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (state.getValue(LIT) && entity instanceof Player) {
-            entity.hurt(level.damageSources().campfire(), 1.0F);
+            entity.hurt(level.damageSources().inFire(), 1.0F);
         }
         super.entityInside(state, level, pos, entity);
     }

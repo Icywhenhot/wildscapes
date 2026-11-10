@@ -134,7 +134,7 @@ public final class WildscapesClient {
         event.registerEntityRenderer(EntityType.VINDICATOR, SwampVindicatorRenderer::new);
         event.registerEntityRenderer(EntityType.ILLUSIONER, RedesignedIllusionerRenderer::new);
         event.registerEntityRenderer(EntityType.WITCH, RedesignedWitchRenderer::new);
-        event.registerEntityRenderer(EntityType.BOGGED, RedesignedBoggedRenderer::new);
+        event.registerEntityRenderer(WildscapesEntities.BOGGED.get(), RedesignedBoggedRenderer::new);
         event.registerEntityRenderer(EntityType.EVOKER, EmpoweredEvokerRenderer::new);
         event.registerEntityRenderer(EntityType.SLIME, RedesignedSlimeRenderer::new);
 

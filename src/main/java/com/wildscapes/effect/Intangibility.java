@@ -12,13 +12,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 
 public final class Intangibility {
     private static final String ACTIVE_KEY = "wildscapes:necklace_active";
@@ -34,7 +35,7 @@ public final class Intangibility {
         return stack.is(WildscapesItems.ILLUSIONIST_NECKLACE) && stack.getDamageValue() < stack.getMaxDamage() - 1;
     }
 
-    public static void onMobTick(EntityTickEvent.Pre event) {
+    public static void onMobTick(LivingEvent.LivingTickEvent event) {
         if (!(event.getEntity() instanceof Mob mob) || mob.level().isClientSide()) {
             return;
         }
@@ -53,8 +54,8 @@ public final class Intangibility {
         }
     }
 
-    public static void onPlayerTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Player player)) {
+    public static void onPlayerTick(Entity entity) {
+        if (!(entity instanceof Player player)) {
             return;
         }
 
@@ -64,7 +65,7 @@ public final class Intangibility {
             int ticks = data.getInt("wildscapes:necklace_ticks") + 1;
             if (ticks >= 20) {
                 EquipmentSlot slot = canUse(player.getMainHandItem()) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-                player.getItemBySlot(slot).hurtAndBreak(1, player, slot);
+                player.getItemBySlot(slot).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(slot));
                 ticks = 0;
                 active = isActive(player);
             }
@@ -98,14 +99,14 @@ public final class Intangibility {
             }
             data.putBoolean(ACTIVE_KEY, active);
         }
-        MobEffectInstance effect = player.getEffect(WildscapesEffects.INTANGIBILITY);
+        MobEffectInstance effect = player.getEffect(WildscapesEffects.INTANGIBILITY.get());
         if (active) {
             if (effect == null) {
-                player.addEffect(new MobEffectInstance(WildscapesEffects.INTANGIBILITY,
+                player.addEffect(new MobEffectInstance(WildscapesEffects.INTANGIBILITY.get(),
                         MobEffectInstance.INFINITE_DURATION, 0, false, false, true));
             }
         } else if (effect != null) {
-            player.removeEffect(WildscapesEffects.INTANGIBILITY);
+            player.removeEffect(WildscapesEffects.INTANGIBILITY.get());
         }
     }
 
@@ -172,7 +173,7 @@ public final class Intangibility {
         return !level.getBlockState(below).getCollisionShape(level, below).isEmpty();
     }
 
-    public static void onDamage(LivingIncomingDamageEvent event) {
+    public static void onDamage(LivingAttackEvent event) {
         if (event.getEntity() instanceof Player player && isActive(player)
                 && event.getSource().getEntity() != null) {
             event.setCanceled(true);

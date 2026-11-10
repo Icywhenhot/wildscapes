@@ -235,7 +235,7 @@ public final class WildscapesBlocks {
             () -> new CauldronOfSoulsBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
                     .strength(-1.0F, 3600000.0F)
-                    .sound(SoundType.TRIAL_SPAWNER)
+                    .sound(com.wildscapes.sound.WildscapesSounds.SUMMONING_BONFIRE)
                     .lightLevel(state -> state.getValue(CauldronOfSoulsBlock.PHASE) == CauldronOfSoulsBlock.Phase.INACTIVE ? 3 : 10)
                     .noOcclusion()
                     .noLootTable()));
@@ -244,7 +244,7 @@ public final class WildscapesBlocks {
             () -> new SummoningBonfireBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_PURPLE)
                     .strength(-1.0F, 3600000.0F)
-                    .sound(SoundType.TRIAL_SPAWNER)
+                    .sound(com.wildscapes.sound.WildscapesSounds.SUMMONING_BONFIRE)
                     .lightLevel(state -> state.getValue(SummoningBonfireBlock.LIT) ? 12 : 0)
                     .noOcclusion()
                     .noLootTable()));

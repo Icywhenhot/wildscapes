@@ -1,13 +1,11 @@
 package com.wildscapes.particle;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
 
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -73,16 +71,12 @@ public final class WildscapesParticles {
             PARTICLE_TYPES.register("summon_mote", () -> new SimpleParticleType(false));
 
     public static final RegistryObject<ParticleType<SoulTrailOptions>> SOUL_TRAIL =
-            PARTICLE_TYPES.register("soul_trail", () -> new ParticleType<SoulTrailOptions>(true) {
+            PARTICLE_TYPES.register("soul_trail", () -> new ParticleType<SoulTrailOptions>(true, SoulTrailOptions.DESERIALIZER) {
                 @Override
-                public MapCodec<SoulTrailOptions> codec() {
+                public Codec<SoulTrailOptions> codec() {
                     return SoulTrailOptions.CODEC;
                 }
 
-                @Override
-                public StreamCodec<? super RegistryFriendlyByteBuf, SoulTrailOptions> streamCodec() {
-                    return SoulTrailOptions.STREAM_CODEC;
-                }
             });
 
     public static void register(IEventBus bus) {

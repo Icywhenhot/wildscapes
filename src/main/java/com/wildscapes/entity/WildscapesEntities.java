@@ -15,6 +15,18 @@ public final class WildscapesEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
             DeferredRegister.create(Registries.ENTITY_TYPE, Wildscapes.MODID);
 
+    public static final RegistryObject<EntityType<Bogged>> BOGGED =
+            ENTITY_TYPES.register("bogged", () -> EntityType.Builder.of(Bogged::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.99F).clientTrackingRange(8).build("bogged"));
+
+    public static final RegistryObject<EntityType<CypressBoat>> CYPRESS_BOAT =
+            ENTITY_TYPES.register("cypress_boat", () -> EntityType.Builder.of(CypressBoat::new, MobCategory.MISC)
+                    .sized(1.375F, 0.5625F).clientTrackingRange(10).build("cypress_boat"));
+
+    public static final RegistryObject<EntityType<CypressChestBoat>> CYPRESS_CHEST_BOAT =
+            ENTITY_TYPES.register("cypress_chest_boat", () -> EntityType.Builder.of(CypressChestBoat::new, MobCategory.MISC)
+                    .sized(1.375F, 0.5625F).clientTrackingRange(10).build("cypress_chest_boat"));
+
     public static final RegistryObject<EntityType<AbominationEntity>> ABOMINATION =
             ENTITY_TYPES.register("abomination", () -> EntityType.Builder.of(AbominationEntity::new, MobCategory.MONSTER)
                     .sized(1.6F, 1.9F)

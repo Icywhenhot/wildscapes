@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,8 +24,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.server.level.ServerLevel;
 
 public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableBlock {
-    public static final MapCodec<DrapingMossCarpetBlock> CODEC = simpleCodec(DrapingMossCarpetBlock::new);
-
     public enum Drape implements StringRepresentable {
         NONE("none"),
         SHORT("short"),
@@ -66,22 +63,17 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
     }
 
     @Override
-    public MapCodec<? extends CarpetBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, SOUTH, WEST);
     }
 
     @Override
-    protected boolean isRandomlyTicking(BlockState state) {
+    public boolean isRandomlyTicking(BlockState state) {
         return true;
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         List<Direction> pending = unsettledSides(level, pos, state, false);
         if (pending.isEmpty()) {
             for (Direction side : BY_DIRECTION.keySet()) {
@@ -95,7 +87,7 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, boolean client) {
         return !unsettledSides(level, pos, state, true).isEmpty();
     }
 
@@ -140,7 +132,7 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!newState.is(this)) {
             for (Direction side : BY_DIRECTION.keySet()) {
                 if (state.getValue(sideFacing(side)) == Drape.LONG) {

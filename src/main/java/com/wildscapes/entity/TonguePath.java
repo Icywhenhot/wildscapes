@@ -27,7 +27,7 @@ public final class TonguePath {
 
     public static boolean clear(Level level, Vec3 from, Vec3 to) {
         return level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
-                CollisionContext.empty())).getType() == HitResult.Type.MISS;
+                (net.minecraft.world.entity.Entity) null)).getType() == HitResult.Type.MISS;
     }
 
     @Nullable

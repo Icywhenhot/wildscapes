@@ -1,6 +1,5 @@
 package com.wildscapes.block;
 
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,8 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class IncendiaryFireBlock extends BaseFireBlock {
-    public static final MapCodec<IncendiaryFireBlock> CODEC = simpleCodec(IncendiaryFireBlock::new);
-
     public IncendiaryFireBlock(Properties properties) {
         super(properties, 1.0F);
     }
@@ -43,29 +40,24 @@ public class IncendiaryFireBlock extends BaseFireBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseFireBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected boolean canBurn(BlockState state) {
         return true;
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockPos below = pos.below();
         return level.getBlockState(below).isFaceSturdy(level, below, Direction.UP);
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level,
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level,
             BlockPos pos, BlockPos neighborPos) {
         return canSurvive(state, level, pos) ? state : Blocks.AIR.defaultBlockState();
     }
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moved) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moved) {
         super.onPlace(state, level, pos, oldState, moved);
         level.scheduleTick(pos, this, 100 + level.random.nextInt(60));
     }
@@ -76,7 +68,7 @@ public class IncendiaryFireBlock extends BaseFireBlock {
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity instanceof Player) {
             super.entityInside(state, level, pos, entity);
         }

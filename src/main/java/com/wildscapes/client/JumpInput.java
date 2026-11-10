@@ -11,7 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import com.wildscapes.network.WildscapesNetwork;
 
 @EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class JumpInput {
@@ -41,7 +41,7 @@ public final class JumpInput {
         if (charging) {
             input.jumping = false;
         } else if (pressed && !player.onGround() && player.getItemBySlot(EquipmentSlot.FEET).getEnchantmentLevel(WildscapesEnchantments.MULTI_JUMP.get()) > 0) {
-            PacketDistributor.sendToServer(JumpPayload.INSTANCE);
+            WildscapesNetwork.CHANNEL.sendToServer(JumpPayload.INSTANCE);
         }
     }
 }

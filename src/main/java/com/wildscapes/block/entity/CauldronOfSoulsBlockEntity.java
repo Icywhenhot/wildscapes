@@ -70,16 +70,13 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.EventHooks;
+import net.minecraftforge.event.ForgeEventFactory;
 
 public class CauldronOfSoulsBlockEntity extends BlockEntity {
-    public static final ResourceKey<LootTable> REWARDS = ResourceKey.create(Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/cauldron_of_souls"));
+    public static final ResourceLocation REWARDS = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/cauldron_of_souls");
 
-    private static final ResourceKey<LootTable> LOW_REWARDS = ResourceKey.create(Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/soul_harvest_low"));
-    private static final ResourceKey<LootTable> HIGH_REWARDS = ResourceKey.create(Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/soul_harvest_high"));
+    private static final ResourceLocation LOW_REWARDS = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/soul_harvest_low");
+    private static final ResourceLocation HIGH_REWARDS = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "gameplay/soul_harvest_high");
 
     private static final Map<ResourceKey<Level>, Set<BlockPos>> LOADED = new HashMap<>();
 
@@ -332,7 +329,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             Vec3 c = center();
             level.sendParticles(WildscapesParticles.CAULDRON_SWIRL.get(), c.x, c.y + 0.8, c.z, 8, 0.3, 0.2, 0.3, 0.04);
             level.sendParticles(WildscapesParticles.SOUL_HARVEST_SPARK.get(), c.x, c.y + 0.8, c.z, 12, 0.4, 0.3, 0.4, 0.06);
-            level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 2.0F, 0.8F);
+            level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE, SoundSource.BLOCKS, 2.0F, 0.8F);
             setChanged();
         }
         bar.setProgress(Math.min(1.0F, filled));
@@ -353,7 +350,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
                 IncendiaryBottle bottle = new IncendiaryBottle(level, c.x, c.y, c.z);
                 bottle.haunt(worldPosition, player);
                 level.addFreshEntity(bottle);
-                level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5F, 1.3F);
+                level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE, SoundSource.BLOCKS, 1.5F, 1.3F);
             }
         }
         if (!paused && (mobs.size() >= CAP || full)) {
@@ -394,7 +391,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         if (pool.isEmpty()) {
             pool.add(worldPosition);
         }
-        Util.shuffle(pool, level.random);
+        pool = new ArrayList<>(Util.shuffledCopy(pool, level.random));
         if (pool.size() > before.size()) {
             pool.sort((a, b) -> Boolean.compare(before.contains(a), before.contains(b)));
         }
@@ -420,9 +417,9 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             return false;
         }
         mob.moveTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, level.random.nextFloat() * 360.0F, 0.0F);
-        EventHooks.finalizeMobSpawn(mob, level, level.getCurrentDifficultyAt(spot), MobSpawnType.EVENT, null);
+        ForgeEventFactory.onFinalizeSpawn(mob, level, level.getCurrentDifficultyAt(spot), MobSpawnType.EVENT, null, null);
         mob.setPersistenceRequired();
-        mob.setData(SoulHarvest.ORIGIN, worldPosition);
+        mob.getPersistentData().putLong(SoulHarvest.ORIGIN, worldPosition.asLong());
         if (sinceEmpowered >= 3 || level.random.nextFloat() < 0.15F) {
             SoulHarvest.empower(mob);
             sinceEmpowered = 0;
@@ -441,7 +438,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         level.sendParticles(WildscapesParticles.SUMMON_WRAITH.get(), x, spot.getY() + 0.6, z, 4, 0.3, 0.4, 0.3, 0.02);
         level.sendParticles(WildscapesParticles.SUMMON_RISE.get(), x, spot.getY() + 0.2, z, 6, 0.4, 0.1, 0.4, 0.03);
         level.sendParticles(WildscapesParticles.SUMMON_MOTE.get(), x, spot.getY() + 1.0, z, 12, 0.4, 0.6, 0.4, 0.05);
-        level.playSound(null, spot, SoundEvents.TRIAL_SPAWNER_SPAWN_MOB, SoundSource.HOSTILE, 1.0F, 0.8F);
+        level.playSound(null, spot, WildscapesSounds.TRIAL_SPAWNER_SPAWN_MOB.get(), SoundSource.HOSTILE, 1.0F, 0.8F);
         setChanged();
         return true;
     }
@@ -486,7 +483,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
                 BlockPos below = p.below();
                 if (level.getBlockState(below).isFaceSturdy(level, below, Direction.UP)
                         && level.getFluidState(p).isEmpty()
-                        && level.noCollision(type.getSpawnAABB(p.getX() + 0.5, p.getY(), p.getZ() + 0.5))) {
+                        && level.noCollision(type.getDimensions().makeBoundingBox(p.getX() + 0.5, p.getY(), p.getZ() + 0.5))) {
                     return p;
                 }
             }
@@ -535,7 +532,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         bar.setProgress(1.0F);
         barLinger = BAR_LINGER;
 
-        LootTable table = level.getServer().reloadableRegistries().getLootTable(REWARDS);
+        LootTable table = level.getServer().getLootData().getLootTable(REWARDS);
         int rolls = (omen + 1) / 2;
         for (ServerPlayer player : near(level)) {
             if (!participants.contains(player.getUUID())) {
@@ -545,12 +542,12 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
                     .withParameter(LootContextParams.ORIGIN, center())
                     .withParameter(LootContextParams.THIS_ENTITY, player)
                     .withLuck(player.getLuck())
-                    .create(LootContextParamSets.VAULT);
+                    .create(LootContextParamSets.CHEST);
             for (int i = 0; i < rolls; i++) {
                 table.getRandomItems(params).forEach(loot::add);
             }
             if (omen <= 2 || omen >= 4) {
-                level.getServer().reloadableRegistries().getLootTable(omen <= 2 ? LOW_REWARDS : HIGH_REWARDS)
+                level.getServer().getLootData().getLootTable(omen <= 2 ? LOW_REWARDS : HIGH_REWARDS)
                         .getRandomItems(params).forEach(loot::add);
             }
         }
@@ -614,7 +611,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         level.getEntitiesOfClass(IncendiaryBottle.class, new AABB(worldPosition).inflate(RADIUS + 16),
                 b -> b.cameFrom(worldPosition)).forEach(Entity::discard);
         for (ServerPlayer p : near(level)) {
-            p.removeEffect(WildscapesEffects.SOUL_HARVEST);
+            p.removeEffect(WildscapesEffects.SOUL_HARVEST.get());
         }
         for (UUID id : mobs) {
             Entity e = level.getEntity(id);
@@ -639,7 +636,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         for (ServerPlayer p : near) {
             participants.add(p.getUUID());
             bar.addPlayer(p);
-            p.addEffect(new MobEffectInstance(WildscapesEffects.SOUL_HARVEST, 60, 0, true, false, true));
+            p.addEffect(new MobEffectInstance(WildscapesEffects.SOUL_HARVEST.get(), 60, 0, true, false, true));
         }
         for (ServerPlayer p : new ArrayList<>(bar.getPlayers())) {
             if (!near.contains(p)) {
@@ -697,8 +694,8 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putString("Stage", stage.name());
         tag.putInt("Omen", omen);
         tag.putInt("Timer", timer);
@@ -722,14 +719,14 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         tag.put("Participants", uuids(participants));
         ListTag items = new ListTag();
         for (ItemStack s : loot) {
-            items.add(s.save(registries));
+            items.add(s.save(new CompoundTag()));
         }
         tag.put("Loot", items);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         try {
             stage = Stage.valueOf(tag.getString("Stage").replace("COOLDOWN", "CLOSING"));
         } catch (IllegalArgumentException e) {
@@ -768,7 +765,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         readUuids(tag.getList("Participants", Tag.TAG_INT_ARRAY), participants);
         loot.clear();
         for (Tag t : tag.getList("Loot", Tag.TAG_COMPOUND)) {
-            ItemStack.parse(registries, t).ifPresent(loot::add);
+            loot.add(ItemStack.of((CompoundTag) t));
         }
     }
 

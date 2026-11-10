@@ -1,5 +1,7 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.network.WildscapesNetwork;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -7,7 +9,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.sound.WildscapesSounds;
@@ -17,11 +18,9 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -34,18 +33,13 @@ import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.attachment.AttachmentType;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.LevelTickEvent;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class WitchRitual {
@@ -56,18 +50,8 @@ public final class WitchRitual {
     private static final int CHECK_EVERY = 1200;
     private static final int ODDS = 300;
 
-    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
-            DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Wildscapes.MODID);
-
-    public static final RegistryObject<AttachmentType<Boolean>> CHANTING =
-            ATTACHMENT_TYPES.register("chanting", () -> AttachmentType.builder(() -> false)
-                    .sync(ByteBufCodecs.BOOL)
-                    .build());
-
-    private static final RegistryObject<AttachmentType<Boolean>> TOAD =
-            ATTACHMENT_TYPES.register("ritual_toad", () -> AttachmentType.builder(() -> false)
-                    .serialize(Codec.BOOL)
-                    .build());
+    public static final String CHANTING = "wildscapes:chanting";
+    private static final String TOAD = "wildscapes:ritual_toad";
 
     private static final List<WitchRitual> running = new ArrayList<>();
 
@@ -92,10 +76,6 @@ public final class WitchRitual {
         }
     }
 
-    public static void register(IEventBus bus) {
-        ATTACHMENT_TYPES.register(bus);
-    }
-
     @SubscribeEvent
     static void onLevelTick(LevelTickEvent event) {
         if (event.phase != TickEvent.Phase.END) {
@@ -113,9 +93,12 @@ public final class WitchRitual {
 
     @SubscribeEvent
     static void onJoinLevel(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide() && event.getEntity() instanceof Frog frog && frog.hasData(TOAD)
+        if (!event.getLevel().isClientSide() && event.loadedFromDisk()) {
+            event.getEntity().getPersistentData().remove(CHANTING);
+        }
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof Frog frog && frog.getPersistentData().contains(TOAD)
                 && running.stream().noneMatch(r -> r.toad == frog)) {
-            frog.removeData(TOAD);
+            frog.getPersistentData().remove(TOAD);
             frog.setNoAi(false);
         }
     }
@@ -186,10 +169,10 @@ public final class WitchRitual {
             return null;
         }
         toad.moveTo(at.x, at.y, at.z, level.getRandom().nextFloat() * 360.0F, 0.0F);
-        toad.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(at)), MobSpawnType.EVENT, null);
+        toad.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(at)), MobSpawnType.EVENT, null, null);
         level.addFreshEntity(toad);
         toad.setNoAi(true);
-        toad.setData(TOAD, true);
+        toad.getPersistentData().putBoolean(TOAD, true);
 
         WitchRitual ritual = new WitchRitual(level, at, toad, witches);
         running.add(ritual);
@@ -222,7 +205,7 @@ public final class WitchRitual {
             if (ready || this.ticks >= GATHER_MAX) {
                 this.chanting = true;
                 this.ticks = 0;
-                this.witches.forEach(w -> w.setData(CHANTING, true));
+                this.witches.forEach(w -> setChanting(w, true));
             }
             return;
         }
@@ -238,13 +221,14 @@ public final class WitchRitual {
                     2 + (int) (t * 6.0F), 0.4D, 0.5D, 0.4D, 0.02D);
         }
 
-        ColorParticleOption spell = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.45F, 0.3F, 0.7F);
         for (Witch w : this.witches) {
             float body = w.yBodyRot * Mth.DEG_TO_RAD + Mth.cos(w.tickCount * 0.6662F) * 0.25F;
             double cx = Mth.cos(body) * 0.6D;
             double cz = Mth.sin(body) * 0.6D;
-            this.level.sendParticles(spell, w.getX() + cx, w.getY() + 1.8D, w.getZ() + cz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-            this.level.sendParticles(spell, w.getX() - cx, w.getY() + 1.8D, w.getZ() - cz, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            this.level.sendParticles(ParticleTypes.ENTITY_EFFECT, w.getX() + cx, w.getY() + 1.8D, w.getZ() + cz,
+                    0, 0.45D, 0.3D, 0.7D, 1.0D);
+            this.level.sendParticles(ParticleTypes.ENTITY_EFFECT, w.getX() - cx, w.getY() + 1.8D, w.getZ() - cz,
+                    0, 0.45D, 0.3D, 0.7D, 1.0D);
         }
 
         if (this.ticks % 25 == 0) {
@@ -273,7 +257,7 @@ public final class WitchRitual {
         if (mob != null) {
             mob.moveTo(x, y, z, this.toad.getYRot(), 0.0F);
             mob.finalizeSpawn(this.level, this.level.getCurrentDifficultyAt(this.toad.blockPosition()),
-                    MobSpawnType.EVENT, null);
+                    MobSpawnType.EVENT, null, null);
             this.level.addFreshEntity(mob);
         }
         this.toad.discard();
@@ -282,14 +266,14 @@ public final class WitchRitual {
 
     private void abort() {
         if (this.toad.isAlive()) {
-            this.toad.removeData(TOAD);
+            this.toad.getPersistentData().remove(TOAD);
             this.toad.setNoAi(false);
         }
         finish();
     }
 
     private void finish() {
-        this.witches.forEach(w -> w.removeData(CHANTING));
+        this.witches.forEach(w -> setChanting(w, false));
         running.remove(this);
     }
 
@@ -311,8 +295,13 @@ public final class WitchRitual {
         return null;
     }
 
+    private static void setChanting(Witch witch, boolean chanting) {
+        witch.getPersistentData().putBoolean(CHANTING, chanting);
+        WildscapesNetwork.sync(witch);
+    }
+
     public static boolean isChanting(Entity entity) {
-        return entity.getData(CHANTING);
+        return entity.getPersistentData().getBoolean(CHANTING);
     }
 
     @Nullable

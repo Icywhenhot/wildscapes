@@ -9,7 +9,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.monster.Bogged;
+import com.wildscapes.entity.Bogged;
 import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.monster.Monster;
@@ -19,7 +19,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
-import net.minecraftforge.event.entity.living.FinalizeSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class SwampSpawns {
@@ -30,8 +30,11 @@ public final class SwampSpawns {
     private static final int DAY_SLIME_RARITY = 100;
 
     public static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
-        event.register(EntityType.BOGGED, SwampSpawns::nightSwampBogged,
-                SpawnPlacementRegisterEvent.Operation.AND);
+        event.register(WildscapesEntities.BOGGED.get(), net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND,
+                net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> Monster.checkMonsterSpawnRules(type, level, reason, pos, random)
+                        && nightSwampBogged(type, level, reason, pos, random),
+                SpawnPlacementRegisterEvent.Operation.REPLACE);
         event.register(EntityType.DROWNED, SwampSpawns::swampDrowned,
                 SpawnPlacementRegisterEvent.Operation.OR);
         event.register(EntityType.SLIME, SwampSpawns::daylightSwampSlime,
@@ -75,7 +78,7 @@ public final class SwampSpawns {
     }
 
     @SubscribeEvent
-    static void onFinalizeSpawn(FinalizeSpawnEvent event) {
+    static void onFinalizeSpawn(FinalizeSpawn event) {
         if (!(event.getEntity() instanceof Slime slime) || slime instanceof MagmaCube) {
             return;
         }

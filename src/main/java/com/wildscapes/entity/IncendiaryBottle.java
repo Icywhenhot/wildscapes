@@ -91,8 +91,8 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0.05;
+    protected float getGravity() {
+        return 0.05F;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
         if (result instanceof EntityHitResult hit && hit.getEntity() instanceof Player player) {
             at = player.position();
             player.hurt(damageSources().thrown(this, getOwner()), 3.0F);
-            player.igniteForSeconds(5.0F);
+            player.setSecondsOnFire((int) 5.0);
         }
         IncendiaryFireBlock.spread(level(), at);
         discard();

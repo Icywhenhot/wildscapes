@@ -12,7 +12,7 @@ public final class WildscapesAdvancements {
             return;
         }
         var advancement = serverPlayer.server.getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, path));
+                .getAdvancement(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, path));
         if (advancement != null) {
             serverPlayer.getAdvancements().award(advancement, "trigger");
         }

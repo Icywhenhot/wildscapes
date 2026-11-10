@@ -3,7 +3,6 @@ package com.wildscapes.effect;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -11,8 +10,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public final class MirageSync {
     private static final Map<LivingEntity, MobEffectInstance> mirages = new WeakHashMap<>();
@@ -20,16 +19,16 @@ public final class MirageSync {
 
     private MirageSync() {}
 
-    public static void onEntityTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof LivingEntity entity)
+    public static void onEntityTick(Entity mob) {
+        if (!(mob instanceof LivingEntity entity)
                 || !(entity.level() instanceof ServerLevel level)) {
             return;
         }
-        sync(level, entity, WildscapesEffects.MIRAGE, mirages);
-        sync(level, entity, WildscapesEffects.SLIMEBOUND, slimebound);
+        sync(level, entity, WildscapesEffects.MIRAGE.get(), mirages);
+        sync(level, entity, WildscapesEffects.SLIMEBOUND.get(), slimebound);
     }
 
-    private static void sync(ServerLevel level, LivingEntity entity, Holder<MobEffect> type,
+    private static void sync(ServerLevel level, LivingEntity entity, MobEffect type,
             Map<LivingEntity, MobEffectInstance> effects) {
         MobEffectInstance effect = entity.getEffect(type);
         MobEffectInstance previous = effects.get(entity);
@@ -45,22 +44,22 @@ public final class MirageSync {
                 || effect.showIcon() != previous.showIcon()
                 || effect.getDuration() != (previous.isInfiniteDuration() ? -1 : previous.getDuration() - 1)) {
             level.getChunkSource().broadcastAndSend(entity,
-                    new ClientboundUpdateMobEffectPacket(entity.getId(), effect, false));
+                    new ClientboundUpdateMobEffectPacket(entity.getId(), effect));
         }
         effects.put(entity, new MobEffectInstance(effect));
     }
 
     public static void onStartTracking(PlayerEvent.StartTracking event) {
         if (event.getEntity() instanceof ServerPlayer player && event.getTarget() instanceof LivingEntity entity) {
-            send(player, entity, WildscapesEffects.MIRAGE);
-            send(player, entity, WildscapesEffects.SLIMEBOUND);
+            send(player, entity, WildscapesEffects.MIRAGE.get());
+            send(player, entity, WildscapesEffects.SLIMEBOUND.get());
         }
     }
 
-    private static void send(ServerPlayer player, LivingEntity entity, Holder<MobEffect> type) {
+    private static void send(ServerPlayer player, LivingEntity entity, MobEffect type) {
         MobEffectInstance effect = entity.getEffect(type);
         if (effect != null) {
-            player.connection.send(new ClientboundUpdateMobEffectPacket(entity.getId(), effect, false));
+            player.connection.send(new ClientboundUpdateMobEffectPacket(entity.getId(), effect));
         }
     }
 }

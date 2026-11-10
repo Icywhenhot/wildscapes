@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import com.wildscapes.Wildscapes;
+import com.wildscapes.network.WildscapesNetwork;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -23,13 +23,11 @@ import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public final class SlimeMerging {
     private SlimeMerging() {}
 
-    public static final ResourceLocation MERGE_MODIFIER_ID =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "merging");
+    public static final String SCALE = "wildscapes:merge_scale";
 
     public static final double MAX_SHRINK = 0.9375;
 
@@ -43,8 +41,8 @@ public final class SlimeMerging {
     private static final String TAG_PROGRESS = "WildscapesMergeProgress";
     private static final String TAG_GROWING = "WildscapesMergeGrowing";
 
-    public static void onEntityTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Slime slime) || slime instanceof MagmaCube) {
+    public static void onEntityTick(Entity entity) {
+        if (!(entity instanceof Slime slime) || slime instanceof MagmaCube) {
             return;
         }
         if (slime.level().isClientSide || !slime.isAlive()) {
@@ -193,28 +191,28 @@ public final class SlimeMerging {
         setShrink(slime, (double) remaining / MERGE_TICKS);
     }
 
+    public static float scale(Entity entity) {
+        var data = entity.getPersistentData();
+        return data.contains(SCALE) ? data.getFloat(SCALE) : 1.0F;
+    }
+
     private static void setShrink(LivingEntity entity, double progress) {
-        AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
-        if (scale != null) {
-            scale.addOrUpdateTransientModifier(new AttributeModifier(MERGE_MODIFIER_ID,
-                    -MAX_SHRINK * Mth.clamp(progress, 0.0, 1.0),
-                    AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-        }
+        setScale(entity, (float) (1.0 - MAX_SHRINK * Mth.clamp(progress, 0.0, 1.0)));
     }
 
     private static void clearShrink(LivingEntity entity) {
-        AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
-        if (scale != null) {
-            scale.removeModifier(MERGE_MODIFIER_ID);
+        setScale(entity, 1.0F);
+    }
+
+    private static void setScale(LivingEntity entity, float value) {
+        if (scale(entity) != value) {
+            entity.getPersistentData().putFloat(SCALE, value);
+            entity.refreshDimensions();
+            WildscapesNetwork.sync(entity);
         }
     }
 
     public static float mergeAlpha(LivingEntity entity) {
-        AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
-        if (scale == null) {
-            return 1.0F;
-        }
-        AttributeModifier modifier = scale.getModifier(MERGE_MODIFIER_ID);
-        return modifier == null ? 1.0F : (float) Mth.clamp(1.0 + modifier.amount() / MAX_SHRINK, 0.0, 1.0);
+        return (float) Mth.clamp(1.0 + (scale(entity) - 1.0) / MAX_SHRINK, 0.0, 1.0);
     }
 }

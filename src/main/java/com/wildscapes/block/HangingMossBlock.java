@@ -3,7 +3,6 @@ package com.wildscapes.block;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,8 +22,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class HangingMossBlock extends Block {
-    public static final MapCodec<HangingMossBlock> CODEC = simpleCodec(HangingMossBlock::new);
-
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -66,17 +63,12 @@ public class HangingMossBlock extends Block {
     }
 
     @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, SOUTH, WEST);
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         VoxelShape shape = Shapes.empty();
         for (Map.Entry<Direction, BooleanProperty> side : BY_DIRECTION.entrySet()) {
             if (state.getValue(side.getValue())) {
@@ -87,12 +79,12 @@ public class HangingMossBlock extends Block {
     }
 
     @Override
-    protected boolean isRandomlyTicking(BlockState state) {
+    public boolean isRandomlyTicking(BlockState state) {
         return true;
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         BlockState kept = state;
         for (Map.Entry<Direction, BooleanProperty> side : BY_DIRECTION.entrySet()) {
             if (state.getValue(side.getValue()) && !hasCarpet(level, pos, side.getKey())) {

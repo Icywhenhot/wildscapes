@@ -59,6 +59,22 @@ public final class WildscapesSounds {
                         ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, name)));
     }
 
+    public static final RegistryObject<SoundEvent> BOGGED_AMBIENT = register("entity.bogged.ambient");
+    public static final RegistryObject<SoundEvent> BOGGED_HURT = register("entity.bogged.hurt");
+    public static final RegistryObject<SoundEvent> BOGGED_DEATH = register("entity.bogged.death");
+    public static final RegistryObject<SoundEvent> BOGGED_STEP = register("entity.bogged.step");
+    public static final RegistryObject<SoundEvent> BOGGED_SHEAR = register("entity.bogged.shear");
+    public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_BREAK = register("block.trial_spawner.break");
+    public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_STEP = register("block.trial_spawner.step");
+    public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_PLACE = register("block.trial_spawner.place");
+    public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_HIT = register("block.trial_spawner.hit");
+    public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_FALL = register("block.trial_spawner.fall");
+    public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_SPAWN_MOB = register("block.trial_spawner.spawn_mob");
+
+    public static final net.minecraft.world.level.block.SoundType SUMMONING_BONFIRE =
+            new net.minecraftforge.common.util.ForgeSoundType(1.0F, 1.0F, TRIAL_SPAWNER_BREAK,
+                    TRIAL_SPAWNER_STEP, TRIAL_SPAWNER_PLACE, TRIAL_SPAWNER_HIT, TRIAL_SPAWNER_FALL);
+
     public static void register(IEventBus bus) {
         SOUND_EVENTS.register(bus);
     }

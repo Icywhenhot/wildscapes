@@ -1,13 +1,13 @@
 package com.wildscapes.entity;
 
-import com.mojang.serialization.Codec;
+import com.wildscapes.network.WildscapesNetwork;
+
 import com.wildscapes.Wildscapes;
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.particle.WildscapesParticles;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -19,61 +19,41 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.neoforge.attachment.AttachmentType;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class SoulHarvest {
     private SoulHarvest() {}
 
-    private static final ResourceLocation HEALTH_BOOST =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
-
-    public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
-            DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, Wildscapes.MODID);
-
-    public static final RegistryObject<AttachmentType<Boolean>> EMPOWERED =
-            ATTACHMENT_TYPES.register("empowered", () -> AttachmentType.builder(() -> false)
-                    .serialize(Codec.BOOL)
-                    .sync(ByteBufCodecs.BOOL)
-                    .build());
-
-    public static final RegistryObject<AttachmentType<BlockPos>> ORIGIN =
-            ATTACHMENT_TYPES.register("soul_harvest_origin", () -> AttachmentType.builder(() -> BlockPos.ZERO)
-                    .serialize(BlockPos.CODEC)
-                    .build());
-
-    public static void register(IEventBus bus) {
-        ATTACHMENT_TYPES.register(bus);
-    }
+    public static final String EMPOWERED = "wildscapes:empowered";
+    public static final String ORIGIN = "wildscapes:soul_harvest_origin";
+    private static final java.util.UUID HEALTH_BOOST = java.util.UUID.nameUUIDFromBytes(
+            "wildscapes:empowered_health".getBytes(java.nio.charset.StandardCharsets.UTF_8));
 
     public static boolean isEmpowered(Entity entity) {
-        return entity.getData(EMPOWERED);
+        return entity.getPersistentData().getBoolean(EMPOWERED);
     }
 
     public static void empower(Mob mob) {
-        mob.setData(EMPOWERED, true);
+        mob.getPersistentData().putBoolean(EMPOWERED, true);
+        WildscapesNetwork.sync(mob);
         AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.addOrReplacePermanentModifier(new AttributeModifier(HEALTH_BOOST, 1.0,
-                    AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            health.removeModifier(HEALTH_BOOST);
+            health.addPermanentModifier(new AttributeModifier(HEALTH_BOOST, "empowered health", 1.0,
+                    AttributeModifier.Operation.MULTIPLY_TOTAL));
             mob.setHealth(mob.getMaxHealth());
         }
     }
 
     @SubscribeEvent
-    static void onHurt(LivingIncomingDamageEvent event) {
+    static void onHurt(LivingHurtEvent event) {
         Entity attacker = event.getSource().getEntity();
         if (attacker instanceof Mob && isEmpowered(attacker)) {
             event.setAmount(event.getAmount() * 2.0F);
@@ -86,14 +66,14 @@ public final class SoulHarvest {
         if (!(dead.level() instanceof ServerLevel level)) {
             return;
         }
-        if (!dead.hasData(ORIGIN)) {
+        if (!dead.getPersistentData().contains(ORIGIN)) {
             CauldronOfSoulsBlockEntity running = CauldronOfSoulsBlockEntity.harvesting(level, dead);
             if (running != null) {
                 running.onMobDeath(dead, event.getSource());
             }
             return;
         }
-        if (level.getBlockEntity(dead.getData(ORIGIN)) instanceof CauldronOfSoulsBlockEntity cauldron) {
+        if (level.getBlockEntity(BlockPos.of(dead.getPersistentData().getLong(ORIGIN))) instanceof CauldronOfSoulsBlockEntity cauldron) {
             cauldron.onMobDeath(dead, event.getSource());
         } else if (isEmpowered(dead)) {
             level.sendParticles(WildscapesParticles.LOST_SOUL.get(), dead.getX(), dead.getY(0.6), dead.getZ(),
@@ -103,7 +83,7 @@ public final class SoulHarvest {
 
     @SubscribeEvent
     static void onDrops(LivingDropsEvent event) {
-        if (event.getEntity().hasData(ORIGIN)) {
+        if (event.getEntity().getPersistentData().contains(ORIGIN)) {
             event.setCanceled(true);
         }
     }
@@ -119,9 +99,7 @@ public final class SoulHarvest {
         }
     }
 
-    @SubscribeEvent
-    static void onEntityTick(EntityTickEvent.Post event) {
-        Entity entity = event.getEntity();
+    public static void onEntityTick(Entity entity) {
         if (!entity.level().isClientSide || !(entity instanceof Mob) || !isEmpowered(entity)) {
             return;
         }

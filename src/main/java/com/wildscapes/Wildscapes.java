@@ -22,15 +22,14 @@ import com.wildscapes.entity.SwampVariants;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.WitchGoals;
 import com.wildscapes.entity.WitchRitual;
-import com.wildscapes.item.CypressBoat;
+import com.wildscapes.item.CypressBoatItem;
 import com.wildscapes.item.WildscapesEnchantments;
 import com.wildscapes.item.VanillaTweaks;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.item.WitchCampMap;
 import com.wildscapes.particle.WildscapesParticles;
-import com.wildscapes.network.MirelashAttackPayload;
-import com.wildscapes.network.JumpPayload;
+import com.wildscapes.network.WildscapesNetwork;
 import com.wildscapes.sound.WildscapesSounds;
 import com.wildscapes.worldgen.WildscapesFeatures;
 import com.wildscapes.worldgen.WildscapesPlacementModifiers;
@@ -130,6 +129,7 @@ public class Wildscapes {
                         output.accept(WildscapesItems.SLIME_BANNER_PATTERN.get());
                         output.accept(WildscapesItems.SPIRIT_BANNER_PATTERN.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
+                        output.accept(WildscapesItems.BOGGED_SPAWN_EGG.get());
                         output.accept(WildscapesItems.ILLUSIONER_SPAWN_EGG.get());
                         output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.MIRAGE.get()));
                         output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.MIRAGE.get()));
@@ -188,9 +188,6 @@ public class Wildscapes {
         WildscapesEntities.register(modEventBus);
         WildscapesEffects.register(modEventBus);
         WildscapesPotions.register(modEventBus);
-        SwampVariants.register(modEventBus);
-        SoulHarvest.register(modEventBus);
-        WitchRitual.register(modEventBus);
         WildscapesSounds.register(modEventBus);
         WildscapesParticles.register(modEventBus);
         WildscapesFeatures.register(modEventBus);
@@ -201,23 +198,18 @@ public class Wildscapes {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(VanillaTweaks::setup);
         modEventBus.addListener(this::registerEntityAttributes);
-        modEventBus.addListener(MirelashAttackPayload::register);
-        modEventBus.addListener(JumpPayload::register);
+        WildscapesNetwork.register();
 
         MinecraftForge.EVENT_BUS.addListener(this::onLivingDrops);
         MinecraftForge.EVENT_BUS.addListener(this::onWandererTrades);
         MinecraftForge.EVENT_BUS.addListener(WitchCampMap::onVillagerTrades);
         MinecraftForge.EVENT_BUS.addListener(IllusionerGoals::onJoinLevel);
         MinecraftForge.EVENT_BUS.addListener(WitchGoals::onJoinLevel);
-        MinecraftForge.EVENT_BUS.addListener(WitchGoals::onEntityTick);
-        MinecraftForge.EVENT_BUS.addListener(MirageSync::onEntityTick);
         MinecraftForge.EVENT_BUS.addListener(MirageSync::onStartTracking);
-        MinecraftForge.EVENT_BUS.addListener(Intangibility::onPlayerTick);
         MinecraftForge.EVENT_BUS.addListener(Intangibility::onMobTick);
         MinecraftForge.EVENT_BUS.addListener(Intangibility::onDamage);
         MinecraftForge.EVENT_BUS.addListener(MirelashItem::onPlayerTick);
         MinecraftForge.EVENT_BUS.addListener(MudBrickDyeing::onRightClick);
-        MinecraftForge.EVENT_BUS.addListener(SlimeMerging::onEntityTick);
         MinecraftForge.EVENT_BUS.addListener(CauldronSwap::onRightClick);
         MinecraftForge.EVENT_BUS.addListener(CauldronSwap::onPlace);
         MinecraftForge.EVENT_BUS.addListener(CauldronSwap::onNeighborNotify);
@@ -225,6 +217,14 @@ public class Wildscapes {
         MinecraftForge.EVENT_BUS.addListener(MossCarpetSwap::onBonemeal);
 
         modEventBus.addListener(SwampSpawns::registerSpawnPlacements);
+    }
+
+    public static void tickEntity(net.minecraft.world.entity.Entity entity) {
+        WitchGoals.onEntityTick(entity);
+        MirageSync.onEntityTick(entity);
+        Intangibility.onPlayerTick(entity);
+        SlimeMerging.onEntityTick(entity);
+        SoulHarvest.onEntityTick(entity);
     }
 
     private void onLivingDrops(LivingDropsEvent event) {
@@ -247,6 +247,7 @@ public class Wildscapes {
     }
 
     private void registerEntityAttributes(EntityAttributeCreationEvent event) {
+        event.put(WildscapesEntities.BOGGED.get(), com.wildscapes.entity.Bogged.createAttributes().build());
         event.put(WildscapesEntities.ABOMINATION.get(), AbominationEntity.createAttributes().build());
     }
 
@@ -262,9 +263,9 @@ public class Wildscapes {
                     WildscapesPotions.STRONG_RESISTANCE.get());
             MudBrickDyeing.buildLookup();
             DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_BOAT.get(),
-                    new BoatDispenseItemBehavior(CypressBoat.TYPE.getValue()));
+                    CypressBoatItem.DISPENSER);
             DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_CHEST_BOAT.get(),
-                    new BoatDispenseItemBehavior(CypressBoat.TYPE.getValue(), true));
+                    CypressBoatItem.DISPENSER);
 
             FireBlock fire = (FireBlock) Blocks.FIRE;
             fire.setFlammable(WildscapesBlocks.CYPRESS_LOG.get(), 5, 5);

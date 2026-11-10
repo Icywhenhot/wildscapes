@@ -302,5 +302,9 @@
   "advancements.wildscapes.its_time_to_harvest.title": "It's time to harvest",
   "advancements.wildscapes.its_time_to_harvest.description": "Activate Soul Harvest for the first time",
   "advancements.wildscapes.now_you_see_me_now_you_dont.title": "Now you see me, now you don't",
-  "advancements.wildscapes.now_you_see_me_now_you_dont.description": "Use the illusionist's necklace for the first time"
+  "advancements.wildscapes.now_you_see_me_now_you_dont.description": "Use the illusionist's necklace for the first time",
+  "entity.wildscapes.bogged": "Bogged",
+  "item.wildscapes.bogged_spawn_egg": "Bogged Spawn Egg",
+  "entity.wildscapes.cypress_boat": "Cypress Boat",
+  "entity.wildscapes.cypress_chest_boat": "Cypress Boat with Chest"
 }

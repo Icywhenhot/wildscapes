@@ -65,13 +65,13 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(ANCHORED, false);
-        builder.define(TETHER_LENGTH, 1.5F);
-        builder.define(MAX_RANGE, 30.0F);
-        builder.define(SLIME_SNARE, false);
-        builder.define(ATTACK, false);
-        builder.define(TARGET, -1);
+    protected void defineSynchedData() {
+        entityData.define(ANCHORED, false);
+        entityData.define(TETHER_LENGTH, 1.5F);
+        entityData.define(MAX_RANGE, 30.0F);
+        entityData.define(SLIME_SNARE, false);
+        entityData.define(ATTACK, false);
+        entityData.define(TARGET, -1);
     }
 
     @Override
@@ -156,7 +156,7 @@ public final class MirelashHook extends ThrowableProjectile {
         level().playSound(null, target.getX(), target.getY(0.5), target.getZ(), WildscapesSounds.MIRELASH_HIT.get(),
                 SoundSource.PLAYERS, 1.0F, 1.0F);
         if (entityData.get(SLIME_SNARE)) {
-            target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND, 80, 0, false, true, false));
+            target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND.get(), 80, 0, false, true, false));
             ServerLevel level = (ServerLevel) level();
             ItemParticleOption slime = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SLIME_BALL));
             level.sendParticles(slime, target.getX(), target.getY(0.55), target.getZ(), 28,

@@ -12,7 +12,7 @@ public final class SlimeboundEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier) {
         Vec3 movement = entity.getDeltaMovement();
         entity.setDeltaMovement(0.0, Math.min(movement.y, 0.0), 0.0);
         entity.hasImpulse = true;
@@ -20,11 +20,11 @@ public final class SlimeboundEffect extends MobEffect {
         if (entity instanceof Mob mob) {
             mob.getNavigation().stop();
         }
-        return true;
+
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 }

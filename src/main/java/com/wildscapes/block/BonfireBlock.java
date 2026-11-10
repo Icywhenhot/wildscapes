@@ -29,14 +29,14 @@ public class BonfireBlock extends Block {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity instanceof LivingEntity) {
-            entity.hurt(level.damageSources().campfire(), damage);
+            entity.hurt(level.damageSources().inFire(), damage);
         }
 
         super.entityInside(state, level, pos, entity);

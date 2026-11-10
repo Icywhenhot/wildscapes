@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
@@ -27,12 +28,11 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public final class WitchGoals {
     private static final String CHECKED = "wildscapes:cauldron_checked";
     private static final String HOME = "wildscapes:cauldron_home";
-    private static final ResourceLocation DRINKING_SPEED = ResourceLocation.withDefaultNamespace("drinking");
+    private static final java.util.UUID DRINKING_SPEED = java.util.UUID.fromString("5cd17e52-a79a-43d3-a529-90fde04b181e");
 
     private WitchGoals() {}
 
@@ -57,8 +57,8 @@ public final class WitchGoals {
         }
     }
 
-    public static void onEntityTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Witch witch) || witch.level().isClientSide()) {
+    public static void onEntityTick(Entity entity) {
+        if (!(entity instanceof Witch witch) || witch.level().isClientSide()) {
             return;
         }
 
@@ -92,7 +92,7 @@ public final class WitchGoals {
 
         witch.setItemSlot(EquipmentSlot.MAINHAND,
                 PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.RESISTANCE.get()));
-        witch.usingTime = witch.getMainHandItem().getUseDuration(witch);
+        witch.usingTime = witch.getMainHandItem().getUseDuration();
         witch.setUsingItem(true);
         if (!witch.isSilent()) {
             witch.level().playSound(null, witch.getX(), witch.getY(), witch.getZ(), SoundEvents.WITCH_DRINK,

@@ -49,6 +49,9 @@ public final class WildscapesItems {
     public static final RegistryObject<Item> ABOMINATION_SPAWN_EGG = ITEMS.register("abomination_spawn_egg",
             () -> new ForgeSpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
+    public static final RegistryObject<Item> BOGGED_SPAWN_EGG = ITEMS.register("bogged_spawn_egg",
+            () -> new ForgeSpawnEggItem(WildscapesEntities.BOGGED, 9084018, 3231003, new Item.Properties()));
+
     public static final RegistryObject<Item> ILLUSIONER_SPAWN_EGG = ITEMS.register("illusioner_spawn_egg",
             () -> new ForgeSpawnEggItem(() -> EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
@@ -60,11 +63,11 @@ public final class WildscapesItems {
             () -> new HangingSignItem(WildscapesBlocks.CYPRESS_HANGING_SIGN.get(),
                     WildscapesBlocks.CYPRESS_WALL_HANGING_SIGN.get(), new Item.Properties().stacksTo(16)));
 
-    public static final RegistryObject<BoatItem> CYPRESS_BOAT = ITEMS.register("cypress_boat",
-            () -> new BoatItem(false, CypressBoat.TYPE.getValue(), new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<CypressBoatItem> CYPRESS_BOAT = ITEMS.register("cypress_boat",
+            () -> new CypressBoatItem(false, new Item.Properties().stacksTo(1)));
 
-    public static final RegistryObject<BoatItem> CYPRESS_CHEST_BOAT = ITEMS.register("cypress_chest_boat",
-            () -> new BoatItem(true, CypressBoat.TYPE.getValue(), new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<CypressBoatItem> CYPRESS_CHEST_BOAT = ITEMS.register("cypress_chest_boat",
+            () -> new CypressBoatItem(true, new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<Item> FROG_LEGS = ITEMS.register("frog_legs",
             () -> new Item(new Item.Properties()));

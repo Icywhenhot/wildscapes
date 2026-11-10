@@ -8,6 +8,9 @@
     "ItemMixin",
     "EnchantmentInstanceMixin",
     "AnvilMenuMixin",
+    "ServerLevelMixin",
+    "SlimeMixin",
+    "BoatMixin",
     "EntityMixin",
     "LivingEntityMixin",
     "MobMixin",
@@ -17,6 +20,7 @@
     "ServerGamePacketListenerMixin"
   ],
   "client": [
+    "client.ClientLevelMixin",
     "client.LocalPlayerMixin",
     "client.LivingEntityRendererMixin",
     "client.ScreenEffectRendererMixin",

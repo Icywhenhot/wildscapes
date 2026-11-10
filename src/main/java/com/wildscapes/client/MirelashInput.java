@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.client.event.InputEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import com.wildscapes.network.WildscapesNetwork;
 
 @EventBusSubscriber(modid = Wildscapes.MODID, value = Dist.CLIENT)
 public final class MirelashInput {
@@ -29,7 +29,7 @@ public final class MirelashInput {
         if (target == null) {
             return;
         }
-        PacketDistributor.sendToServer(new MirelashAttackPayload(target.getId()));
+        WildscapesNetwork.CHANNEL.sendToServer(new MirelashAttackPayload(target.getId()));
         minecraft.player.resetAttackStrengthTicker();
         event.setSwingHand(true);
         event.setCanceled(true);
