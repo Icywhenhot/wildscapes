@@ -10,6 +10,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -29,9 +30,15 @@ public final class WitchCampMap {
             event.getTrades().get(4).add((trader, random) -> {
                 var offer = map.getOffer(trader, random);
                 if (offer != null) {
+                    var data = MapItem.getSavedData(offer.getResult(), trader.level());
                     ListTag decorations = offer.getResult().getOrCreateTag().getList("Decorations", Tag.TAG_COMPOUND);
                     for (int i = 0; i < decorations.size(); i++) {
-                        decorations.getCompound(i).putString("id", MARKER);
+                        var tag = decorations.getCompound(i);
+                        tag.putString("id", MARKER);
+                        if (data != null) {
+                            tag.putInt("center_x", data.centerX);
+                            tag.putInt("center_z", data.centerZ);
+                        }
                     }
                 }
                 return offer;

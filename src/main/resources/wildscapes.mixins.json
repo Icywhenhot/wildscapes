@@ -24,7 +24,10 @@
     "client.LocalPlayerMixin",
     "client.LivingEntityRendererMixin",
     "client.ScreenEffectRendererMixin",
-    "client.GameRendererAccessor"
+    "client.PostChainAccessor",
+    "client.ItemInHandRendererMixin",
+    "client.MapItemMixin",
+    "client.MapInstanceMixin"
   ],
   "injectors": {
     "defaultRequire": 1

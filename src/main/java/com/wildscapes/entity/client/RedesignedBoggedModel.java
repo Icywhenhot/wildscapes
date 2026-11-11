@@ -1,6 +1,7 @@
 package com.wildscapes.entity.client;
 
-import net.minecraft.client.model.BoggedModel;
+import com.wildscapes.entity.Bogged;
+import net.minecraft.client.model.SkeletonModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -9,9 +10,18 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class RedesignedBoggedModel extends BoggedModel {
+public class RedesignedBoggedModel extends SkeletonModel<Bogged> {
+    private final ModelPart mushrooms;
+
     public RedesignedBoggedModel(ModelPart root) {
         super(root);
+        mushrooms = root.getChild("head").getChild("mushrooms");
+    }
+
+    @Override
+    public void prepareMobModel(Bogged entity, float swing, float amount, float partialTick) {
+        mushrooms.visible = !entity.isSheared();
+        super.prepareMobModel(entity, swing, amount, partialTick);
     }
 
     public static LayerDefinition createBodyLayer() {

@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
 import net.minecraft.world.entity.monster.Slime;
 
 public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime>> {
@@ -45,7 +46,7 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     @Override
     public void render(Slime entity, float entityYaw, float partialTicks, PoseStack poseStack,
             MultiBufferSource buffer, int packedLight) {
-        this.shadowRadius = 0.25F * entity.getSize();
+        this.shadowRadius = 0.25F * entity.getSize() * SlimeMerging.scale(entity);
         this.model = this.innerModels[modelIndex(entity)];
 
         float alpha = SlimeMerging.mergeAlpha(entity);
@@ -67,41 +68,23 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         }
     }
 
-    private record FadingConsumer(VertexConsumer delegate, float alpha) implements VertexConsumer {
+    private static class FadingConsumer extends VertexConsumerWrapper {
+        private final float alpha;
+
+        private FadingConsumer(VertexConsumer parent, float alpha) {
+            super(parent);
+            this.alpha = alpha;
+        }
+
         @Override
-        public VertexConsumer addVertex(float x, float y, float z) {
-            this.delegate.addVertex(x, y, z);
+        public VertexConsumer color(int red, int green, int blue, int vertexAlpha) {
+            parent.color(red, green, blue, (int) (vertexAlpha * alpha));
             return this;
         }
 
         @Override
-        public VertexConsumer setColor(int red, int green, int blue, int vertexAlpha) {
-            this.delegate.setColor(red, green, blue, (int) (vertexAlpha * this.alpha));
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv(float u, float v) {
-            this.delegate.setUv(u, v);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv1(int u, int v) {
-            this.delegate.setUv1(u, v);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv2(int u, int v) {
-            this.delegate.setUv2(u, v);
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
-            this.delegate.setNormal(normalX, normalY, normalZ);
-            return this;
+        public void defaultColor(int red, int green, int blue, int vertexAlpha) {
+            parent.defaultColor(red, green, blue, (int) (vertexAlpha * alpha));
         }
     }
 
@@ -113,7 +96,7 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         float squish = Mth.lerp(partialTickTime, livingEntity.oSquish, livingEntity.squish) / (size * 0.5F + 1.0F);
         float stretch = 1.0F / (squish + 1.0F);
 
-        float ratio = size / MODELLED_SIZES[modelIndex(livingEntity)];
+        float ratio = size / MODELLED_SIZES[modelIndex(livingEntity)] * SlimeMerging.scale(livingEntity);
         poseStack.scale(stretch * ratio, 1.0F / stretch * ratio, stretch * ratio);
     }
 

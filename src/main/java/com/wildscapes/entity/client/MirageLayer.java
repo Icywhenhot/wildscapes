@@ -22,7 +22,7 @@ public final class MirageLayer<T extends LivingEntity, M extends EntityModel<T>>
     @Override
     public void render(PoseStack pose, MultiBufferSource buffer, int light, T entity, float limbSwing,
             float limbSwingAmount, float partialTick, float age, float headYaw, float headPitch) {
-        if (!entity.hasEffect(WildscapesEffects.MIRAGE)) {
+        if (!entity.hasEffect(WildscapesEffects.MIRAGE.get())) {
             return;
         }
         float phase = (entity.tickCount + partialTick) * SPEED;
@@ -31,7 +31,7 @@ public final class MirageLayer<T extends LivingEntity, M extends EntityModel<T>>
             float angle = phase + i * Mth.PI;
             pose.pushPose();
             pose.translate(Mth.cos(angle) * RADIUS, 0.0, Mth.sin(angle) * RADIUS);
-            renderColoredCutoutModel(getParentModel(), getTextureLocation(entity), pose, buffer, light, entity, -1);
+            renderColoredCutoutModel(getParentModel(), getTextureLocation(entity), pose, buffer, light, entity, 1.0F, 1.0F, 1.0F);
             pose.popPose();
         }
     }

@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.phys.AABB;
 
 public class CauldronOfSoulsRenderer implements BlockEntityRenderer<CauldronOfSoulsBlockEntity> {
     private static final Material LID = new Material(InventoryMenu.BLOCK_ATLAS,
@@ -49,8 +48,8 @@ public class CauldronOfSoulsRenderer implements BlockEntityRenderer<CauldronOfSo
 
     private static void corner(VertexConsumer vc, PoseStack.Pose pose, float x, float z, float u, float v,
             int light, int overlay) {
-        vc.addVertex(pose, x, 0.0F, z).setColor(-1).setUv(u, v).setOverlay(overlay).setLight(light)
-                .setNormal(pose, 0.0F, 1.0F, 0.0F);
+        vc.vertex(pose.pose(), x, 0.0F, z).color(255, 255, 255, 255).uv(u, v).overlayCoords(overlay).uv2(light)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
     }
 
     private static float u(TextureAtlasSprite sprite, int px) {
@@ -61,8 +60,4 @@ public class CauldronOfSoulsRenderer implements BlockEntityRenderer<CauldronOfSo
         return sprite.getV0() + (sprite.getV1() - sprite.getV0()) * px / 16.0F;
     }
 
-    @Override
-    public AABB getRenderBoundingBox(CauldronOfSoulsBlockEntity be) {
-        return new AABB(be.getBlockPos()).expandTowards(0.0, 1.2, 0.0).inflate(0.1);
-    }
 }

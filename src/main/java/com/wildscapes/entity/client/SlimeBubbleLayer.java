@@ -29,7 +29,7 @@ public final class SlimeBubbleLayer<T extends LivingEntity, M extends EntityMode
     @Override
     public void render(PoseStack pose, MultiBufferSource buffer, int light, T entity, float limbSwing,
             float limbSwingAmount, float partialTick, float age, float headYaw, float headPitch) {
-        if (!entity.hasEffect(WildscapesEffects.SLIMEBOUND)) {
+        if (!entity.hasEffect(WildscapesEffects.SLIMEBOUND.get())) {
             return;
         }
 

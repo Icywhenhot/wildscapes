@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -33,10 +32,10 @@ import net.minecraftforge.client.model.data.ModelProperty;
 @EventBusSubscriber(modid = Wildscapes.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
     private static final ModelProperty<Boolean> SWAMP = new ModelProperty<>();
-    private final Map<ResourceLocation, TextureAtlasSprite> textures;
+    private final Map<ResourceLocation, ResourceLocation> textures;
     private final Map<BakedQuad, BakedQuad> quads = new ConcurrentHashMap<>();
 
-    private SwampMossModel(BakedModel model, Map<ResourceLocation, TextureAtlasSprite> textures) {
+    private SwampMossModel(BakedModel model, Map<ResourceLocation, ResourceLocation> textures) {
         super(model);
         this.textures = textures;
     }
@@ -44,9 +43,9 @@ public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
     @SubscribeEvent
     static void onModels(ModelEvent.ModifyBakingResult event) {
         var textures = Map.of(
-                ResourceLocation.withDefaultNamespace("block/moss_block"), sprite(event, "swamp_moss_block"),
-                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape"), sprite(event, "swamp_moss_drape"),
-                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape_end"), sprite(event, "swamp_moss_drape_end"));
+                ResourceLocation.withDefaultNamespace("block/moss_block"), texture("swamp_moss_block"),
+                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape"), texture("swamp_moss_drape"),
+                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/moss_drape_end"), texture("swamp_moss_drape_end"));
         for (var block : List.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET,
                 WildscapesBlocks.MOSS_CARPET.get(), WildscapesBlocks.HANGING_MOSS.get())) {
             for (var state : block.getStateDefinition().getPossibleStates()) {
@@ -56,9 +55,12 @@ public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
         }
     }
 
-    private static TextureAtlasSprite sprite(ModelEvent.ModifyBakingResult event, String name) {
-        return event.getTextureGetter().apply(new Material(TextureAtlas.LOCATION_BLOCKS,
-                ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/" + name)));
+    private static ResourceLocation texture(String name) {
+        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/" + name);
+    }
+
+    private static TextureAtlasSprite sprite(ResourceLocation id) {
+        return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(id);
     }
 
     @Override
@@ -80,15 +82,17 @@ public final class SwampMossModel extends BakedModelWrapper<BakedModel> {
     @Override
     public TextureAtlasSprite getParticleIcon(ModelData data) {
         var sprite = super.getParticleIcon(data);
-        return Boolean.TRUE.equals(data.get(SWAMP)) ? textures.getOrDefault(sprite.contents().name(), sprite) : sprite;
+        return Boolean.TRUE.equals(data.get(SWAMP))
+                ? sprite(textures.getOrDefault(sprite.contents().name(), sprite.contents().name())) : sprite;
     }
 
     private BakedQuad retexture(BakedQuad quad) {
         var old = quad.getSprite();
-        var sprite = textures.get(old.contents().name());
-        if (sprite == null) {
+        var id = textures.get(old.contents().name());
+        if (id == null) {
             return quad;
         }
+        var sprite = sprite(id);
         var vertices = quad.getVertices().clone();
         for (int i = 0; i < 4; i++) {
             int uv = i * IQuadTransformer.STRIDE + IQuadTransformer.UV0;

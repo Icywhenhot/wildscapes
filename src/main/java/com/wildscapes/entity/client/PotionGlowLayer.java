@@ -22,6 +22,6 @@ public class PotionGlowLayer extends GeoRenderLayer<AbominationEntity> {
             MultiBufferSource buffer, VertexConsumer consumer, float partialTick, int light, int overlay) {
         RenderType glow = RenderType.entityTranslucentEmissive(AbominationModel.glowFrame(animatable));
         getRenderer().reRender(model, pose, buffer, animatable, glow, buffer.getBuffer(glow), partialTick,
-                LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1);
+                LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

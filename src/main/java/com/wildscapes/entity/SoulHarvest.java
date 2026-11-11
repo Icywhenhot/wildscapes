@@ -100,10 +100,10 @@ public final class SoulHarvest {
     }
 
     public static void onEntityTick(Entity entity) {
-        if (!entity.level().isClientSide || !(entity instanceof Mob) || !isEmpowered(entity)) {
+        if (!entity.level().isClientSide || !(entity instanceof Mob mob) || !isEmpowered(entity)) {
             return;
         }
-        RandomSource random = entity.getRandom();
+        RandomSource random = mob.getRandom();
         if (random.nextInt(4) != 0) {
             return;
         }

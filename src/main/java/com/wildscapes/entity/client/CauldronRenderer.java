@@ -81,12 +81,12 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
 
     private static void vertex(VertexConsumer vc, PoseStack.Pose p, float x, float y, float z,
             float r, float g, float b, float a, float u, float v, int light) {
-        vc.addVertex(p, x, y, z)
-                .setColor(r, g, b, a)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(p, 0.0F, 1.0F, 0.0F);
+        vc.vertex(p.pose(), x, y, z)
+                .color(r, g, b, a)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(light)
+                .normal(p.normal(), 0.0F, 1.0F, 0.0F).endVertex();
     }
 
     private void renderPendingIngredient(CauldronBlockEntity be, float partialTick, PoseStack pose,

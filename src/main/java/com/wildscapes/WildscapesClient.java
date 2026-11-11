@@ -5,6 +5,8 @@ import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.entity.client.AbominationModels;
+import com.wildscapes.entity.client.CypressBoatRenderer;
+import com.wildscapes.effect.client.PhaseVision;
 import com.wildscapes.entity.client.AbominationRenderer;
 import com.wildscapes.entity.client.CauldronOfSoulsRenderer;
 import com.wildscapes.entity.client.CauldronRenderer;
@@ -42,6 +44,8 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -54,6 +58,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 
@@ -125,6 +130,8 @@ public final class WildscapesClient {
 
     @SubscribeEvent
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(WildscapesEntities.CYPRESS_BOAT.get(), ctx -> new CypressBoatRenderer(ctx, false));
+        event.registerEntityRenderer(WildscapesEntities.CYPRESS_CHEST_BOAT.get(), ctx -> new CypressBoatRenderer(ctx, true));
         event.registerEntityRenderer(WildscapesEntities.ABOMINATION.get(), AbominationRenderer::new);
         event.registerEntityRenderer(WildscapesEntities.MIRELASH_HOOK.get(), MirelashHookRenderer::new);
         event.registerEntityRenderer(WildscapesEntities.RESIDUE_CLOUD.get(), NoopRenderer::new);
@@ -145,13 +152,18 @@ public final class WildscapesClient {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @SubscribeEvent
     static void addLayers(EntityRenderersEvent.AddLayers event) {
-        for (EntityType<?> type : event.getEntityTypes()) {
-            EntityRenderer<?> renderer = event.getRenderer(type);
+        for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
+            EntityRenderer<?> renderer = event.getRenderer((EntityType) type);
             if (renderer instanceof LivingEntityRenderer living) {
                 living.addLayer(new MirageLayer(living));
                 living.addLayer(new SlimeBubbleLayer(living, event.getContext().getModelSet()));
             }
         }
+    }
+
+    @SubscribeEvent
+    static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) manager -> PhaseVision.reload());
     }
 
     @SubscribeEvent

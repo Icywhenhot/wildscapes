@@ -31,6 +31,6 @@ public class EmpoweredGlowLayer<T extends LivingEntity, M extends EntityModel<T>
             return;
         }
         getParentModel().renderToBuffer(pose, buffer.getBuffer(glow), LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY, -1);
+                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

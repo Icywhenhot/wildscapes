@@ -32,7 +32,7 @@ public final class Intangibility {
     }
 
     private static boolean canUse(ItemStack stack) {
-        return stack.is(WildscapesItems.ILLUSIONIST_NECKLACE) && stack.getDamageValue() < stack.getMaxDamage() - 1;
+        return stack.is(WildscapesItems.ILLUSIONIST_NECKLACE.get()) && stack.getDamageValue() < stack.getMaxDamage() - 1;
     }
 
     public static void onMobTick(LivingEvent.LivingTickEvent event) {

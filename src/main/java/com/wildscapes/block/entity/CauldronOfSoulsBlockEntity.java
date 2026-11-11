@@ -391,7 +391,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         if (pool.isEmpty()) {
             pool.add(worldPosition);
         }
-        pool = new ArrayList<>(Util.shuffledCopy(pool, level.random));
+        pool = Util.shuffledCopy(pool.toArray(BlockPos[]::new), level.random);
         if (pool.size() > before.size()) {
             pool.sort((a, b) -> Boolean.compare(before.contains(a), before.contains(b)));
         }
@@ -783,4 +783,9 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             into.add(NbtUtils.loadUUID(t));
         }
     }
+    @Override
+    public AABB getRenderBoundingBox() {
+        return new AABB(getBlockPos()).expandTowards(0.0, 1.2, 0.0).inflate(0.1);
+    }
+
 }

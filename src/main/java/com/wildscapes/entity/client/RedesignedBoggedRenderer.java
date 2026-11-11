@@ -1,20 +1,29 @@
 package com.wildscapes.entity.client;
 
 import com.wildscapes.Wildscapes;
-
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.SkeletonRenderer;
-import net.minecraft.resources.ResourceLocation;
 import com.wildscapes.entity.Bogged;
 
-public class RedesignedBoggedRenderer extends SkeletonRenderer<Bogged> {
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.SkeletonModel;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.resources.ResourceLocation;
+
+public class RedesignedBoggedRenderer extends HumanoidMobRenderer<Bogged, RedesignedBoggedModel> {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/bogged.png");
 
     public RedesignedBoggedRenderer(EntityRendererProvider.Context context) {
-        super(context, ModelLayers.BOGGED_INNER_ARMOR, ModelLayers.BOGGED_OUTER_ARMOR,
-                new RedesignedBoggedModel(context.bakeLayer(WildscapesModelLayers.BOGGED)));
+        super(context, new RedesignedBoggedModel(context.bakeLayer(WildscapesModelLayers.BOGGED)), 0.5F);
+        addLayer(new HumanoidArmorLayer<>(this,
+                new SkeletonModel<>(context.bakeLayer(ModelLayers.SKELETON_INNER_ARMOR)),
+                new SkeletonModel<>(context.bakeLayer(ModelLayers.SKELETON_OUTER_ARMOR)), context.getModelManager()));
+    }
+
+    @Override
+    protected boolean isShaking(Bogged entity) {
+        return entity.isShaking();
     }
 
     @Override

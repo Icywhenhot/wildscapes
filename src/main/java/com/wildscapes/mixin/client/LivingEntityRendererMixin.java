@@ -22,21 +22,21 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             at = @At("HEAD"), cancellable = true)
     private void intangiblePlayer(T entity, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffer,
             int light, CallbackInfo ci) {
-        if (entity.hasEffect(WildscapesEffects.INTANGIBILITY) && Minecraft.getInstance().player != entity) {
+        if (entity.hasEffect(WildscapesEffects.INTANGIBILITY.get()) && Minecraft.getInstance().player != entity) {
             ci.cancel();
         }
     }
 
     @Inject(method = "isBodyVisible", at = @At("HEAD"), cancellable = true)
     private void intangibleBody(T entity, CallbackInfoReturnable<Boolean> cir) {
-        if (entity.hasEffect(WildscapesEffects.INTANGIBILITY)) {
+        if (entity.hasEffect(WildscapesEffects.INTANGIBILITY.get())) {
             cir.setReturnValue(false);
         }
     }
 
     @ModifyConstant(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            constant = @Constant(intValue = 654311423))
-    private int intangibleOpacity(int color, T entity) {
-        return entity.hasEffect(WildscapesEffects.INTANGIBILITY) ? 0x80FFFFFF : color;
+            constant = @Constant(floatValue = 0.15F))
+    private float intangibleOpacity(float alpha, T entity) {
+        return entity.hasEffect(WildscapesEffects.INTANGIBILITY.get()) ? 0.5F : alpha;
     }
 }
