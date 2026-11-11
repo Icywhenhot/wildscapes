@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "wildscapes:block/verdant_mud_bricks",
+    "side": "wildscapes:block/verdant_mud_bricks",
+    "top": "wildscapes:block/verdant_mud_bricks"
+  }
+}

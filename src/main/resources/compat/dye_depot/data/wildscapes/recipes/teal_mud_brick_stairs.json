@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "mud_brick_stairs",
+  "key": {
+    "#": {
+      "item": "wildscapes:teal_mud_bricks"
+    }
+  },
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "result": {
+    "item": "wildscapes:teal_mud_brick_stairs",
+    "count": 4
+  }
+}

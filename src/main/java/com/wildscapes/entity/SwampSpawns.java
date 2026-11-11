@@ -1,5 +1,6 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.Backports;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.WildscapesConfig;
 
@@ -40,6 +41,9 @@ public final class SwampSpawns {
 
     private static boolean nightSwampBogged(EntityType<Bogged> type, ServerLevelAccessor level,
             MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        if (spawnType == MobSpawnType.NATURAL && Backports.hasBogged()) {
+            return false;
+        }
         return spawnType != MobSpawnType.NATURAL || !isSwamp(level, pos) || level.getLevel().isNight();
     }
 

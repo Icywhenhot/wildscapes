@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "wildscapes:block/slate_mud_bricks"
+  }
+}

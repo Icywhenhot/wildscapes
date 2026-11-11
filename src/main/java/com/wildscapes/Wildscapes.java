@@ -35,9 +35,15 @@ import com.wildscapes.worldgen.WildscapesFeatures;
 import com.wildscapes.worldgen.WildscapesPlacementModifiers;
 import com.wildscapes.worldgen.WildscapesStructures;
 
+import java.nio.file.Path;
+
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -56,6 +62,8 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.event.AddPackFindersEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLEnvironment;
@@ -128,13 +136,17 @@ public class Wildscapes {
                         output.accept(WildscapesItems.ILLUSIONIST_NECKLACE.get());
                         output.accept(WildscapesItems.MERCHANTS_GUIDE.get());
                         output.accept(WildscapesItems.INCENDIARY_BOTTLE.get());
-                        output.accept(WildscapesItems.OMINOUS_BOTTLE.get());
+                        if (!Backports.hasBottle()) {
+                            output.accept(WildscapesItems.OMINOUS_BOTTLE.get());
+                        }
                         output.accept(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE.get());
                         output.accept(WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE.get());
                         output.accept(WildscapesItems.SLIME_BANNER_PATTERN.get());
                         output.accept(WildscapesItems.SPIRIT_BANNER_PATTERN.get());
                         output.accept(WildscapesItems.ABOMINATION_SPAWN_EGG.get());
-                        output.accept(WildscapesItems.BOGGED_SPAWN_EGG.get());
+                        if (!Backports.hasBogged()) {
+                            output.accept(WildscapesItems.BOGGED_SPAWN_EGG.get());
+                        }
                         output.accept(WildscapesItems.ILLUSIONER_SPAWN_EGG.get());
                         output.accept(PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.MIRAGE.get()));
                         output.accept(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), WildscapesPotions.MIRAGE.get()));
@@ -204,16 +216,19 @@ public class Wildscapes {
         WildscapesPlacementModifiers.register(modEventBus);
         WildscapesStructures.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        Backports.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(VanillaTweaks::setup);
         modEventBus.addListener(this::registerEntityAttributes);
+        modEventBus.addListener(this::addCompatPacks);
         WildscapesNetwork.register();
 
         MinecraftForge.EVENT_BUS.addListener(this::onLivingDrops);
         MinecraftForge.EVENT_BUS.addListener(this::onWandererTrades);
         MinecraftForge.EVENT_BUS.addListener(WitchCampMap::onVillagerTrades);
         MinecraftForge.EVENT_BUS.addListener(IllusionerGoals::onJoinLevel);
+        MinecraftForge.EVENT_BUS.addListener(Backports::onJoin);
         MinecraftForge.EVENT_BUS.addListener(WitchGoals::onJoinLevel);
         MinecraftForge.EVENT_BUS.addListener(MirageSync::onStartTracking);
         MinecraftForge.EVENT_BUS.addListener(Intangibility::onMobTick);
@@ -259,6 +274,18 @@ public class Wildscapes {
         event.getGenericTrades().add(new BasicItemListing(8, new ItemStack(WildscapesItems.MERCHANTS_GUIDE.get()), 1, 1, 0.05f));
     }
 
+    private void addCompatPacks(AddPackFindersEvent event) {
+        if (event.getPackType() != PackType.SERVER_DATA || !ModList.get().isLoaded("dye_depot")) {
+            return;
+        }
+        Path root = ModList.get().getModFileById(MODID).getFile().findResource("compat/dye_depot");
+        Pack pack = Pack.readMetaAndCreate(MODID + ":dye_depot", Component.literal("Wildscapes x Dye Depot"), true,
+                id -> new PathPackResources(id, root, true), PackType.SERVER_DATA, Pack.Position.TOP, PackSource.BUILT_IN);
+        if (pack != null) {
+            event.addRepositorySource(add -> add.accept(pack));
+        }
+    }
+
     private void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(WildscapesEntities.BOGGED.get(), com.wildscapes.entity.Bogged.createAttributes().build());
         event.put(WildscapesEntities.ABOMINATION.get(), AbominationEntity.createAttributes().build());
@@ -266,6 +293,7 @@ public class Wildscapes {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            Backports.scan();
             PotionBrewing.addMix(WildscapesPotions.GNASHING.get(), Items.REDSTONE, WildscapesPotions.LONG_GNASHING.get());
             PotionBrewing.addMix(WildscapesPotions.GNASHING.get(), Items.GLOWSTONE_DUST, WildscapesPotions.STRONG_GNASHING.get());
             PotionBrewing.addMix(Potions.AWKWARD, Items.ENDER_PEARL, WildscapesPotions.MIRAGE.get());

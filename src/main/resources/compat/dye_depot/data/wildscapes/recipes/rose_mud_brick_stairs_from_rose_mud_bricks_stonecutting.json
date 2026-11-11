@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "wildscapes:rose_mud_bricks"
+  },
+  "result": "wildscapes:rose_mud_brick_stairs",
+  "count": 1
+}

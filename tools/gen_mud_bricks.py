@@ -28,6 +28,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BB = os.path.join(ROOT, "models", "blocks", "mud")
 ASSETS = os.path.join(ROOT, "src", "main", "resources", "assets", MODID)
 DATA = os.path.join(ROOT, "src", "main", "resources", "data")
+# Built-in datapack Wildscapes only registers when Dye Depot is loaded (see DyeDepotCompat).
+# Loot tables can't carry load conditions on Forge 47, so all DD data lives here instead.
+DD_PACK = os.path.join(ROOT, "src", "main", "resources", "compat", "dye_depot")
+DD_DATA = os.path.join(DD_PACK, "data")
 
 # Dye order matches net.minecraft.world.item.DyeColor.
 COLORS = ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
@@ -270,9 +274,9 @@ def slab_loot(block_id):
     }
 
 
-def gen_loot(color):
+def gen_loot(color, data=DATA):
     n = names(color)
-    out = os.path.join(DATA, MODID, "loot_tables", "blocks")
+    out = os.path.join(data, MODID, "loot_tables", "blocks")
     for key in ("bricks", "chiseled", "stairs", "wall"):
         write_json(os.path.join(out, n[key] + ".json"), simple_loot(n[key]))
     write_json(os.path.join(out, n["slab"] + ".json"), slab_loot(n["slab"]))
@@ -331,10 +335,10 @@ def stonecutting(result, count, ingredient):
             "result": result, "count": count}
 
 
-def gen_recipes(color):
+def gen_recipes(color, dye=None, data=DATA):
     n = names(color)
-    out = os.path.join(DATA, MODID, "recipes")
-    dye = f"minecraft:{color}_dye"
+    out = os.path.join(data, MODID, "recipes")
+    dye = dye or f"minecraft:{color}_dye"
     bricks = f"{MODID}:{n['bricks']}"
 
     # Dyeing. One shapeless recipe per colour per family, taking the family tag, so
@@ -398,9 +402,135 @@ def gen_lang():
 
 # --------------------------------------------------------------------------- main
 
+# --------------------------------------------------------------------------- Dye Depot
+#
+# Dye Depot (dye_depot, Forge 1.20.1 1.3.0) appends 16 values to the DyeColor enum, so
+# MudBrickBlocks registers <color>_mud_bricks etc. for them automatically when it is
+# installed. These are the assets/data for those blocks. Without DD the blocks simply
+# don't exist and these files are inert: recipes carry forge:mod_loaded, tag entries are
+# required:false, loot/models/blockstates/lang for missing blocks are ignored by the game.
+#
+# Diffuse colours read from com.ninni.dye_depot.registry.DDDyes (javap).
+DD_COLORS = {
+    "maroon": 8070931, "rose": 16735844, "coral": 14645080, "indigo": 3350103,
+    "navy": 1391972, "slate": 5004934, "olive": 9211690, "amber": 14135040,
+    "beige": 14800291, "teal": 3111783, "mint": 3722877, "aqua": 6222028,
+    "verdant": 2447124, "forest": 3318566, "ginger": 13590817, "tan": 16030813,
+}
+
+# Vanilla DyeColor texture diffuse colours, used to pick the nearest hand-painted ramp.
+VANILLA_DIFFUSE = {
+    "white": 0xF9FFFE, "orange": 0xF9801D, "magenta": 0xC74EBD, "light_blue": 0x3AB3DA,
+    "yellow": 0xFED83D, "lime": 0x80C71F, "pink": 0xF38BAA, "gray": 0x474F52,
+    "light_gray": 0x9D9D97, "cyan": 0x169C9C, "purple": 0x8932B8, "blue": 0x3C44AA,
+    "brown": 0x835432, "green": 0x5E7C16, "red": 0xB02E26, "black": 0x1D1D21,
+}
+
+
+def _rgb(v):
+    return (v >> 16) & 255, (v >> 8) & 255, v & 255
+
+
+def _lab(rgb):
+    def lin(c):
+        c /= 255
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (lin(c) for c in rgb)
+    x = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047
+    y = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883
+    f = lambda t: t ** (1 / 3) if t > 0.008856 else 7.787 * t + 16 / 116
+    fx, fy, fz = f(x), f(y), f(z)
+    return 116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)
+
+
+def nearest_vanilla(color_int):
+    target = _lab(_rgb(color_int))
+    return min(VANILLA_DIFFUSE, key=lambda c: sum((a - b) ** 2 for a, b in zip(_lab(_rgb(VANILLA_DIFFUSE[c])), target)))
+
+
+def _from_lab(lab):
+    L, A, B = lab
+    fy = (L + 16) / 116
+    fx, fz = fy + A / 500, fy - B / 200
+    inv = lambda t: t ** 3 if t ** 3 > 0.008856 else (t - 16 / 116) / 7.787
+    x, y, z = inv(fx) * 0.95047, inv(fy), inv(fz) * 1.08883
+    r = 3.2406 * x - 1.5372 * y - 0.4986 * z
+    g = -0.9689 * x + 1.8758 * y + 0.0415 * z
+    b = 0.0557 * x - 0.2040 * y + 1.0570 * z
+    enc = lambda c: 12.92 * c if c <= 0.0031308 else 1.055 * c ** (1 / 2.4) - 0.055
+    return tuple(max(0, min(255, round(enc(max(0.0, c)) * 255))) for c in (r, g, b))
+
+
+def gen_dd_textures():
+    """Recolours the nearest vanilla colour's hand-painted bricks toward each DD dye.
+
+    Every brick texture is the same 7-tone ramp over a shared layout. Working in Lab,
+    each pixel keeps its lightness offset from the base dye and its chroma relative to
+    the base dye, but takes the hue of the DD dye. Per-channel RGB scaling was tried
+    first and blew up channels the base barely had (mint from lime went cyan)."""
+    from PIL import Image
+    import math
+    out = os.path.join(ASSETS, "textures", "block")
+    for color, value in DD_COLORS.items():
+        base = nearest_vanilla(value)
+        bl, ba, bb = _lab(_rgb(VANILLA_DIFFUSE[base]))
+        tl, ta, tb = _lab(_rgb(value))
+        bc = math.hypot(ba, bb)
+        tc = math.hypot(ta, tb)
+        hue = math.atan2(tb, ta)
+        for pattern in ("{}_mud_bricks.png", "chiseled_{}_mud_bricks.png"):
+            im = Image.open(os.path.join(out, pattern.format(base))).convert("RGBA")
+            px = im.load()
+            for y in range(im.height):
+                for x in range(im.width):
+                    r, g, b, a = px[x, y]
+                    pl, pa, pb = _lab((r, g, b))
+                    pc = math.hypot(pa, pb)
+                    ratio = pc / bc if bc > 12 else 0.8
+                    c = tc * min(ratio, 1.6)
+                    px[x, y] = _from_lab((tl + (pl - bl), c * math.cos(hue), c * math.sin(hue))) + (a,)
+            path = os.path.join(out, pattern.format(color))
+            im.save(path)
+            written.append(path)
+        print(f"  {color:8s} <- {base}")
+
+
+def gen_dd_tags():
+    """Adds the DD colours to the same tags, from inside the compat pack (tags merge)."""
+    for tag, (key, _base) in TAG_SOURCES.items():
+        values = [f"{MODID}:{names(c)[key]}" for c in DD_COLORS]
+        for kind in ("blocks", "items"):
+            write_json(os.path.join(DD_DATA, MODID, "tags", kind, tag + ".json"),
+                       {"replace": False, "values": values})
+    for kind, tag, key in [("blocks", "walls", "wall"), ("blocks", "stairs", "stairs"),
+                           ("blocks", "slabs", "slab"), ("items", "walls", "wall"),
+                           ("items", "stairs", "stairs"), ("items", "slabs", "slab")]:
+        write_json(os.path.join(DD_DATA, "minecraft", "tags", kind, tag + ".json"),
+                   {"replace": False, "values": [f"{MODID}:{names(c)[key]}" for c in DD_COLORS]})
+
+
+def gen_dd_pack_meta():
+    write_json(os.path.join(DD_PACK, "pack.mcmeta"),
+               {"pack": {"pack_format": 15, "description": "Wildscapes mud bricks in Dye Depot colours"}})
+
+
+def gen_dd_lang():
+    path = os.path.join(ASSETS, "lang", "en_us.json")
+    with open(path, encoding="utf-8") as f:
+        lang = json.load(f)
+    for color in DD_COLORS:
+        for block_id in names(color).values():
+            lang.setdefault(f"block.{MODID}.{block_id}", title(block_id))
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(lang, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+
 def main():
     textures = extract_textures()
     print(f"textures: {len(textures)}")
+    gen_dd_textures()
 
     gen_undyed_chiseled()
     gen_undyed_recipes()
@@ -409,8 +539,16 @@ def main():
         gen_blockstates(color)
         gen_loot(color)
         gen_recipes(color)
+    for color in DD_COLORS:
+        gen_models(color)
+        gen_blockstates(color)
+        gen_loot(color, data=DD_DATA)
+        gen_recipes(color, dye=f"dye_depot:{color}_dye", data=DD_DATA)
     gen_tags()
+    gen_dd_tags()
+    gen_dd_pack_meta()
     added = gen_lang()
+    gen_dd_lang()
 
     print(f"json files: {len(written) - len(textures)}")
     print(f"lang keys added: {added}")

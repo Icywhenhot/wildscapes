@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "wildscapes:olive_mud_bricks"
+  },
+  "result": "wildscapes:chiseled_olive_mud_bricks",
+  "count": 1
+}
