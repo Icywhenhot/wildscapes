@@ -1,6 +1,7 @@
 package com.wildscapes.client;
 
 import com.wildscapes.Wildscapes;
+import com.wildscapes.WildscapesConfig;
 import com.wildscapes.entity.SwampVariants;
 
 import net.minecraft.client.Minecraft;
@@ -56,14 +57,14 @@ public final class SwampFog {
     }
 
     private static float targetStrength(ClientLevel level, BlockPos pos) {
-        if (!level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES)) {
+        if (!WildscapesConfig.SWAMP_FOG.get() || !level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES)) {
             return 0.0F;
         }
         float above = pos.getY() - (level.getSeaLevel() + LOW);
         float height = 1.0F - Mth.clamp(above / (HIGH - LOW), 0.0F, 1.0F);
 
         float weather = 0.45F + 0.55F * level.getRainLevel(1.0F);
-        return height * weather;
+        return height * weather * WildscapesConfig.SWAMP_FOG_STRENGTH.get().floatValue();
     }
 
     @SubscribeEvent

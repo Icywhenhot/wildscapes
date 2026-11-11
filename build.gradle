@@ -64,6 +64,13 @@ repositories {
             includeGroup 'com.eliotlash.mclib'
         }
     }
+    maven {
+        name = 'Shedaniel'
+        url = 'https://maven.shedaniel.me/'
+        content {
+            includeGroup 'me.shedaniel.cloth'
+        }
+    }
     mavenLocal {
         content {
             includeGroup 'icy.lib'
@@ -75,6 +82,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
     implementation fg.deobf("icy.lib:icys_lib-forge-${minecraft_version}:${icys_lib_version}")
+    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:${cloth_config_version}")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
@@ -88,7 +96,8 @@ tasks.named('processResources', ProcessResources).configure {
             mod_license: mod_license,
             mod_version: mod_version,
             geckolib_version: geckolib_version,
-            icys_lib_version: icys_lib_version
+            icys_lib_version: icys_lib_version,
+            cloth_config_version: cloth_config_version
     ]
     inputs.properties props
     from('src/main/templates') {

@@ -1,6 +1,7 @@
 package com.wildscapes.entity;
 
 import com.wildscapes.Wildscapes;
+import com.wildscapes.WildscapesConfig;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
@@ -24,10 +25,6 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn;
 @EventBusSubscriber(modid = Wildscapes.MODID)
 public final class SwampSpawns {
     private SwampSpawns() {}
-
-    private static final int DROWNED_RARITY = 20;
-
-    private static final int DAY_SLIME_RARITY = 100;
 
     public static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
         event.register(WildscapesEntities.BOGGED.get(), net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND,
@@ -58,7 +55,8 @@ public final class SwampSpawns {
         if (!level.getFluidState(pos).is(FluidTags.WATER)) {
             return false;
         }
-        return Monster.isDarkEnoughToSpawn(level, pos, random) && random.nextInt(DROWNED_RARITY) == 0;
+        int rarity = WildscapesConfig.get(WildscapesConfig.DROWNED_RARITY);
+        return rarity > 0 && Monster.isDarkEnoughToSpawn(level, pos, random) && random.nextInt(rarity) == 0;
     }
 
     private static boolean daylightSwampSlime(EntityType<Slime> type, ServerLevelAccessor level,
@@ -73,7 +71,8 @@ public final class SwampSpawns {
         if (!level.getLevel().isDay() || !level.canSeeSky(pos)) {
             return false;
         }
-        return random.nextInt(DAY_SLIME_RARITY) == 0
+        int rarity = WildscapesConfig.get(WildscapesConfig.DAY_SLIME_RARITY);
+        return rarity > 0 && random.nextInt(rarity) == 0
                 && Mob.checkMobSpawnRules(type, level, spawnType, pos, random);
     }
 

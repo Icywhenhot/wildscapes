@@ -6,10 +6,12 @@ import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.SlimeMerging;
 
 import net.minecraft.client.model.SlimeModel;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.layers.SlimeOuterLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.model.pipeline.VertexConsumerWrapper;
@@ -21,12 +23,25 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     private static final ResourceLocation[] TEXTURES = {
             texture("slime_small"), texture("slime_medium"), texture("slime_large"),
     };
+    private static final ResourceLocation VANILLA = ResourceLocation.withDefaultNamespace("textures/entity/slime/slime.png");
 
     private final SlimeModel<Slime>[] innerModels;
+    private final boolean vanilla;
+
+    public RedesignedSlimeRenderer(EntityRendererProvider.Context context) {
+        this(context, MobLook.vanilla(context, "slime", VANILLA));
+    }
 
     @SuppressWarnings("unchecked")
-    public RedesignedSlimeRenderer(EntityRendererProvider.Context context) {
-        super(context, new SlimeModel<>(context.bakeLayer(WildscapesModelLayers.SLIME_SMALL)), 0.25F);
+    private RedesignedSlimeRenderer(EntityRendererProvider.Context context, boolean vanilla) {
+        super(context, new SlimeModel<>(context.bakeLayer(vanilla ? ModelLayers.SLIME
+                : WildscapesModelLayers.SLIME_SMALL)), 0.25F);
+        this.vanilla = vanilla;
+        if (vanilla) {
+            this.innerModels = new SlimeModel[] {this.model, this.model, this.model};
+            this.addLayer(new SlimeOuterLayer<>(this, context.getModelSet()));
+            return;
+        }
         this.innerModels = new SlimeModel[] {
                 this.model,
                 new SlimeModel<>(context.bakeLayer(WildscapesModelLayers.SLIME_MEDIUM)),
@@ -96,13 +111,14 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         float squish = Mth.lerp(partialTickTime, livingEntity.oSquish, livingEntity.squish) / (size * 0.5F + 1.0F);
         float stretch = 1.0F / (squish + 1.0F);
 
-        float ratio = size / MODELLED_SIZES[modelIndex(livingEntity)] * SlimeMerging.scale(livingEntity);
+        float modelled = vanilla ? 1.0F : MODELLED_SIZES[modelIndex(livingEntity)];
+        float ratio = size / modelled * SlimeMerging.scale(livingEntity);
         poseStack.scale(stretch * ratio, 1.0F / stretch * ratio, stretch * ratio);
     }
 
     @Override
     public ResourceLocation getTextureLocation(Slime entity) {
-        return TEXTURES[modelIndex(entity)];
+        return vanilla ? VANILLA : TEXTURES[modelIndex(entity)];
     }
 
     private static ResourceLocation texture(String name) {

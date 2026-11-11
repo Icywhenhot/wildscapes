@@ -19,6 +19,7 @@
     "MeleeAttackGoalMixin",
     "WardenMixin",
     "PlayerMixin",
+    "ProjectileMixin",
     "ServerGamePacketListenerMixin"
   ],
   "client": [

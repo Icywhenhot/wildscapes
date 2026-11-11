@@ -37,6 +37,7 @@ import com.wildscapes.particle.client.ResidueParticle;
 import com.wildscapes.particle.client.IngredientSteamParticle;
 import com.wildscapes.particle.client.SoulTrailParticle;
 import com.wildscapes.particle.client.MultiJumpParticle;
+import com.wildscapes.client.ConfigScreen;
 
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -57,6 +58,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
@@ -65,6 +69,13 @@ import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 @EventBusSubscriber(modid = Wildscapes.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class WildscapesClient {
     private WildscapesClient() {}
+
+    static void registerConfigScreen(FMLJavaModLoadingContext context) {
+        if (ModList.get().isLoaded("cloth_config")) {
+            context.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
+                    () -> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> ConfigScreen.create(parent)));
+        }
+    }
 
     @SubscribeEvent
     static void clientSetup(FMLClientSetupEvent event) {

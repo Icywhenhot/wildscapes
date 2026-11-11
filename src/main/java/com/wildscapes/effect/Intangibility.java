@@ -1,11 +1,13 @@
 package com.wildscapes.effect;
 
 import com.wildscapes.WildscapesAdvancements;
+import com.wildscapes.WildscapesConfig;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,17 +20,52 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
 public final class Intangibility {
     private static final String ACTIVE_KEY = "wildscapes:necklace_active";
     private static final String INVISIBLE_KEY = "wildscapes:necklace_invisible";
+    private static final String REVEALED_KEY = "wildscapes:revealed_to";
 
     private Intangibility() {}
 
     public static boolean isActive(Player player) {
         return player.isShiftKeyDown() && (canUse(player.getMainHandItem()) || canUse(player.getOffhandItem()));
+    }
+
+    public static boolean hiddenFrom(Player player, Entity observer) {
+        if (!isActive(player)) {
+            return false;
+        }
+        if (observer == null || observer.level().isClientSide()) {
+            return true;
+        }
+        if (!WildscapesConfig.get(WildscapesConfig.NECKLACE_HIDES_FROM_BOSSES)
+                && observer.getType().is(Tags.EntityTypes.BOSSES)) {
+            return false;
+        }
+        CompoundTag seen = observer.getPersistentData().getCompound(REVEALED_KEY);
+        String id = player.getStringUUID();
+        return !seen.contains(id) || seen.getLong(id) < observer.level().getGameTime();
+    }
+
+    private static void reveal(Entity victim, Player player) {
+        int secs = WildscapesConfig.get(WildscapesConfig.NECKLACE_REVEAL_SECONDS);
+        if (secs <= 0) {
+            return;
+        }
+        long now = victim.level().getGameTime();
+        CompoundTag data = victim.getPersistentData();
+        CompoundTag seen = data.getCompound(REVEALED_KEY);
+        for (String key : seen.getAllKeys().toArray(String[]::new)) {
+            if (seen.getLong(key) < now) {
+                seen.remove(key);
+            }
+        }
+        seen.putLong(player.getStringUUID(), now + secs * 20L);
+        data.put(REVEALED_KEY, seen);
     }
 
     private static boolean canUse(ItemStack stack) {
@@ -39,14 +76,14 @@ public final class Intangibility {
         if (!(event.getEntity() instanceof Mob mob) || mob.level().isClientSide()) {
             return;
         }
-        if (mob.getTarget() instanceof Player player && isActive(player)) {
+        if (mob.getTarget() instanceof Player player && hiddenFrom(player, mob)) {
             mob.setTarget(null);
             mob.getNavigation().stop();
         }
         var brain = mob.getBrain();
         if (brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
                 && brain.getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null) instanceof Player player
-                && isActive(player)) {
+                && hiddenFrom(player, mob)) {
             brain.eraseMemory(MemoryModuleType.ATTACK_TARGET);
             brain.eraseMemory(MemoryModuleType.WALK_TARGET);
             brain.eraseMemory(MemoryModuleType.LOOK_TARGET);
@@ -63,7 +100,7 @@ public final class Intangibility {
         if (active && !player.level().isClientSide() && !player.getAbilities().instabuild) {
             var data = player.getPersistentData();
             int ticks = data.getInt("wildscapes:necklace_ticks") + 1;
-            if (ticks >= 20) {
+            if (ticks >= WildscapesConfig.get(WildscapesConfig.NECKLACE_DRAIN_TICKS)) {
                 EquipmentSlot slot = canUse(player.getMainHandItem()) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
                 player.getItemBySlot(slot).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(slot));
                 ticks = 0;
@@ -94,7 +131,8 @@ public final class Intangibility {
                 }
                 data.remove(INVISIBLE_KEY);
             }
-            if (wasActive && !active && player.isInWall()) {
+            if (wasActive && !active && player.isInWall()
+                    && WildscapesConfig.get(WildscapesConfig.NECKLACE_WALL_ESCAPE)) {
                 escapeWall(player, level);
             }
             data.putBoolean(ACTIVE_KEY, active);
@@ -174,8 +212,13 @@ public final class Intangibility {
     }
 
     public static void onDamage(LivingAttackEvent event) {
-        if (event.getEntity() instanceof Player player && isActive(player)
-                && event.getSource().getEntity() != null) {
+        Entity source = event.getSource().getEntity();
+        if (source instanceof Player attacker && source != event.getEntity()) {
+            reveal(event.getEntity(), attacker);
+        }
+        if (event.getEntity() instanceof Player player && source != null && source != player
+                && WildscapesConfig.get(WildscapesConfig.NECKLACE_BLOCKS_DAMAGE)
+                && hiddenFrom(player, source)) {
             event.setCanceled(true);
         }
     }

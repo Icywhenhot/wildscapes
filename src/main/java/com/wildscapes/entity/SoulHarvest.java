@@ -3,6 +3,7 @@ package com.wildscapes.entity;
 import com.wildscapes.network.WildscapesNetwork;
 
 import com.wildscapes.Wildscapes;
+import com.wildscapes.WildscapesConfig;
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.particle.WildscapesParticles;
 
@@ -46,7 +47,8 @@ public final class SoulHarvest {
         AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             health.removeModifier(HEALTH_BOOST);
-            health.addPermanentModifier(new AttributeModifier(HEALTH_BOOST, "empowered health", 1.0,
+            health.addPermanentModifier(new AttributeModifier(HEALTH_BOOST, "empowered health",
+                    WildscapesConfig.get(WildscapesConfig.EMPOWERED_HEALTH) - 1.0,
                     AttributeModifier.Operation.MULTIPLY_TOTAL));
             mob.setHealth(mob.getMaxHealth());
         }
@@ -56,7 +58,7 @@ public final class SoulHarvest {
     static void onHurt(LivingHurtEvent event) {
         Entity attacker = event.getSource().getEntity();
         if (attacker instanceof Mob && isEmpowered(attacker)) {
-            event.setAmount(event.getAmount() * 2.0F);
+            event.setAmount(event.getAmount() * WildscapesConfig.get(WildscapesConfig.EMPOWERED_DAMAGE).floatValue());
         }
     }
 

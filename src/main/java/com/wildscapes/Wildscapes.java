@@ -57,6 +57,9 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.common.BasicItemListing;
@@ -182,6 +185,11 @@ public class Wildscapes {
 
     public Wildscapes(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
+        context.registerConfig(ModConfig.Type.SERVER, WildscapesConfig.SERVER_SPEC);
+        context.registerConfig(ModConfig.Type.CLIENT, WildscapesConfig.CLIENT_SPEC);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            WildscapesClient.registerConfigScreen(context);
+        }
         WildscapesBlocks.register(modEventBus);
         WildscapesBlockEntities.register(modEventBus);
         WildscapesItems.register(modEventBus);
@@ -232,11 +240,14 @@ public class Wildscapes {
     private void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity.getType() == EntityType.ILLUSIONER) {
+            if (entity.getRandom().nextDouble() >= WildscapesConfig.get(WildscapesConfig.NECKLACE_DROP_CHANCE)) {
+                return;
+            }
             ItemStack stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get());
             event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack));
             return;
         }
-        if (entity.getType() != EntityType.FROG) {
+        if (entity.getType() != EntityType.FROG || !WildscapesConfig.get(WildscapesConfig.FROG_LEGS)) {
             return;
         }
         int count = 1 + entity.getRandom().nextInt(2);

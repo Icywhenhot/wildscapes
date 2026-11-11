@@ -1,5 +1,7 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.WildscapesConfig;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +33,6 @@ public final class SlimeMerging {
 
     public static final double MAX_SHRINK = 0.9375;
 
-    private static final int READY_AFTER_TICKS = 600;
     private static final int MERGE_TICKS = 20;
     private static final double SEEK_RADIUS = 16.0;
     private static final double TOUCH_DISTANCE = 1.0;
@@ -54,14 +55,14 @@ public final class SlimeMerging {
             tickGrowing(slime, data);
         } else if (data.hasUUID(TAG_PARTNER)) {
             tickMerging(slime, data);
-        } else if (slime.getSize() == 1) {
+        } else if (slime.getSize() == 1 && WildscapesConfig.get(WildscapesConfig.SLIME_MERGING)) {
             seekPartner(slime, data);
         }
     }
 
     private static void seekPartner(Slime slime, CompoundTag data) {
         if (!data.contains(TAG_DELAY)) {
-            data.putInt(TAG_DELAY, READY_AFTER_TICKS);
+            data.putInt(TAG_DELAY, readyAfter());
             return;
         }
         int delay = data.getInt(TAG_DELAY);
@@ -83,6 +84,10 @@ public final class SlimeMerging {
             link(slime, partner);
             link(partner, slime);
         }
+    }
+
+    private static int readyAfter() {
+        return WildscapesConfig.get(WildscapesConfig.SLIME_MERGE_DELAY) * 20;
     }
 
     private static Slime findPartner(Slime slime) {
@@ -149,7 +154,7 @@ public final class SlimeMerging {
     private static void abort(Slime slime, CompoundTag data) {
         data.remove(TAG_PARTNER);
         data.remove(TAG_PROGRESS);
-        data.putInt(TAG_DELAY, READY_AFTER_TICKS);
+        data.putInt(TAG_DELAY, readyAfter());
         clearShrink(slime);
         slime.setNoAi(false);
     }
@@ -184,7 +189,7 @@ public final class SlimeMerging {
             data.remove(TAG_GROWING);
             clearShrink(slime);
             slime.setNoAi(false);
-            data.putInt(TAG_DELAY, READY_AFTER_TICKS);
+            data.putInt(TAG_DELAY, readyAfter());
             return;
         }
         data.putInt(TAG_GROWING, remaining);

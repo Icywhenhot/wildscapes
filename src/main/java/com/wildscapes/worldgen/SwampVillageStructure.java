@@ -13,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -97,10 +98,6 @@ public class SwampVillageStructure extends Structure {
 
     @Override
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
-        if (!isOpenWater(context)) {
-            return Optional.empty();
-        }
-
         ChunkPos chunk = context.chunkPos();
         boolean derelict = derelictChance > 0 && RandomSource.create(context.seed()).forkPositional()
                 .at(chunk.getWorldPosition()).nextInt(derelictChance) == derelictChance - 1;
@@ -121,6 +118,11 @@ public class SwampVillageStructure extends Structure {
                 chunk.getMinBlockX(),
                 height.sample(context.random(), heights),
                 chunk.getMinBlockZ());
+
+        if (!inBiome(context, chunk.getMiddleBlockX(), start.getY(), chunk.getMiddleBlockZ())
+                || !isOpenWater(context)) {
+            return Optional.empty();
+        }
 
         for (int attempt = 0; attempt < attempts; attempt++) {
             Optional<GenerationStub> laid = JigsawPlacement.addPieces(
@@ -205,6 +207,12 @@ public class SwampVillageStructure extends Structure {
                         Codec.intRange(0, 64).fieldOf("min").forGetter(Quota::min),
                         Codec.STRING.listOf().fieldOf("pieces").forGetter(Quota::pieces))
                         .apply(instance, Quota::new));
+    }
+
+    private static boolean inBiome(GenerationContext context, int x, int y, int z) {
+        return context.validBiome().test(context.chunkGenerator().getBiomeSource().getNoiseBiome(
+                QuartPos.fromBlock(x), QuartPos.fromBlock(y), QuartPos.fromBlock(z),
+                context.randomState().sampler()));
     }
 
     private boolean isOpenWater(GenerationContext context) {
