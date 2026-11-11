@@ -29,13 +29,13 @@ public class CauldronOfSoulsRenderer implements BlockEntityRenderer<CauldronOfSo
         VertexConsumer vc = buffer.getBuffer(RenderType.entityCutoutNoCull(InventoryMenu.BLOCK_ATLAS));
 
         pose.pushPose();
-        pose.translate(15.0F / 16.0F, 18.0F / 16.0F, 0.0F);
+        pose.translate(15.01F / 16.0F, 18.01F / 16.0F, 0.0F);
         pose.mulPose(Axis.ZP.rotationDegrees(-be.lidAngle(partialTick)));
         PoseStack.Pose last = pose.last();
 
-        float x0 = -14.0F / 16.0F;
-        float z0 = 1.0F / 16.0F;
-        float z1 = 15.0F / 16.0F;
+        float x0 = -14.02F / 16.0F;
+        float z0 = 0.99F / 16.0F;
+        float z1 = 15.01F / 16.0F;
         float u0 = u(sprite, 1);
         float u1 = u(sprite, 15);
         float v0 = v(sprite, 1);

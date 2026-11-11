@@ -8,6 +8,7 @@ import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.client.model.IllagerModel;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
@@ -24,11 +25,20 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
     private static final ResourceLocation EMPOWERED =
             ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
+    private static final ResourceLocation VANILLA =
+            ResourceLocation.withDefaultNamespace("textures/entity/illager/illusioner.png");
 
     private final Map<Illusioner, Trail> trails = new WeakHashMap<>();
+    private final boolean vanilla;
 
     public RedesignedIllusionerRenderer(EntityRendererProvider.Context context) {
-        super(context, new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.ILLUSIONER)), 0.5F);
+        this(context, MobLook.vanilla(context, "illusioner", WildscapesModelLayers.ILLUSIONER, VANILLA));
+    }
+
+    private RedesignedIllusionerRenderer(EntityRendererProvider.Context context, boolean vanilla) {
+        super(context, new IllagerModel<>(context.bakeLayer(vanilla ? ModelLayers.ILLUSIONER
+                : WildscapesModelLayers.ILLUSIONER)), 0.5F);
+        this.vanilla = vanilla;
         this.addLayer(new ItemInHandLayer<Illusioner, IllagerModel<Illusioner>>(this, context.getItemInHandRenderer()) {
             @Override
             public void render(PoseStack pose, MultiBufferSource buf, int light, Illusioner entity, float limbSwing,
@@ -39,11 +49,16 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
             }
         });
         this.model.getHat().visible = true;
-        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/illusioner_empowered_glow"));
+        if (!vanilla) {
+            this.addLayer(new EmpoweredGlowLayer<>(this, "illager/illusioner_empowered_glow"));
+        }
     }
 
     @Override
     public ResourceLocation getTextureLocation(Illusioner entity) {
+        if (vanilla) {
+            return VANILLA;
+        }
         return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 

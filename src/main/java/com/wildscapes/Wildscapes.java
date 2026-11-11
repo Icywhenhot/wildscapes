@@ -54,8 +54,12 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.BasicItemListing;
 import net.neoforged.neoforge.common.NeoForge;
@@ -181,7 +185,12 @@ public class Wildscapes {
                                         .getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
                     }).build());
 
-    public Wildscapes(IEventBus modEventBus) {
+    public Wildscapes(IEventBus modEventBus, ModContainer container) {
+        container.registerConfig(ModConfig.Type.SERVER, WildscapesConfig.SERVER_SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, WildscapesConfig.CLIENT_SPEC);
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            WildscapesClient.registerConfigScreen(container);
+        }
         WildscapesBlocks.register(modEventBus);
         WildscapesBlockEntities.register(modEventBus);
         WildscapesItems.register(modEventBus);
@@ -232,11 +241,14 @@ public class Wildscapes {
     private void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity.getType() == EntityType.ILLUSIONER) {
+            if (entity.getRandom().nextDouble() >= WildscapesConfig.get(WildscapesConfig.NECKLACE_DROP_CHANCE)) {
+                return;
+            }
             ItemStack stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get());
             event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), stack));
             return;
         }
-        if (entity.getType() != EntityType.FROG) {
+        if (entity.getType() != EntityType.FROG || !WildscapesConfig.get(WildscapesConfig.FROG_LEGS)) {
             return;
         }
         int count = 1 + entity.getRandom().nextInt(2);

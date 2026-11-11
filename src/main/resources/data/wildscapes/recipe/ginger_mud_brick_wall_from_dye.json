@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dye_depot"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyed_mud_brick_walls",
+  "ingredients": [
+    {
+      "tag": "wildscapes:mud_brick_walls"
+    },
+    {
+      "item": "dye_depot:ginger_dye"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:ginger_mud_brick_wall",
+    "count": 1
+  }
+}

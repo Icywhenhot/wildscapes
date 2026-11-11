@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dye_depot"
+    }
+  ],
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "dyed_mud_brick_slabs",
+  "ingredients": [
+    {
+      "tag": "wildscapes:mud_brick_slabs"
+    },
+    {
+      "item": "dye_depot:tan_dye"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:tan_mud_brick_slab",
+    "count": 1
+  }
+}

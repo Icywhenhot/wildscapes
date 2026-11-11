@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dye_depot"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "mud_brick_walls",
+  "key": {
+    "#": {
+      "item": "wildscapes:verdant_mud_bricks"
+    }
+  },
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "result": {
+    "id": "wildscapes:verdant_mud_brick_wall",
+    "count": 6
+  }
+}

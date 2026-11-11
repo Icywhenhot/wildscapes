@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "dye_depot"
+    }
+  ],
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "wildscapes:beige_mud_bricks"
+  },
+  "result": {
+    "id": "wildscapes:beige_mud_brick_stairs",
+    "count": 1
+  }
+}

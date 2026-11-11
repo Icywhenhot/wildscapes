@@ -1,5 +1,7 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.WildscapesConfig;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -151,7 +153,8 @@ public final class WitchRitual {
     }
 
     public static void maybeStart(Witch witch) {
-        if ((witch.tickCount + witch.getId()) % CHECK_EVERY != 0 || witch.getRandom().nextInt(ODDS) != 0) {
+        if ((witch.tickCount + witch.getId()) % CHECK_EVERY != 0 || witch.getRandom().nextInt(ODDS) != 0
+                || !WildscapesConfig.get(WildscapesConfig.WITCH_RITUALS)) {
             return;
         }
         ServerLevel level = (ServerLevel) witch.level();

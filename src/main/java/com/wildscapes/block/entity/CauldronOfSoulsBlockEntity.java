@@ -1,5 +1,7 @@
 package com.wildscapes.block.entity;
 
+import com.wildscapes.WildscapesConfig;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,13 +86,11 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     private static final Map<ResourceKey<Level>, Set<BlockPos>> LOADED = new HashMap<>();
 
     private static final int RADIUS = 48;
-    private static final int TRIGGER_RANGE = 16;
     private static final int WINDUP = 300;
     private static final int ROTATE = 300;
     private static final int GIVE_UP = 600;
     private static final int CLOSE_DELAY = 60;
     private static final int BAR_LINGER = 100;
-    private static final int CAP = 15;
 
     private static final float[] ABOMINATION_AT = {0.15F, 0.5F};
     private static final float[][] MOB_WORTH = {
@@ -159,8 +159,9 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         if (here == null || player.isSpectator()) {
             return;
         }
+        int range = WildscapesConfig.get(WildscapesConfig.HARVEST_TRIGGER_RANGE);
         for (BlockPos pos : here) {
-            if (pos.distSqr(player.blockPosition()) > TRIGGER_RANGE * TRIGGER_RANGE) {
+            if (pos.distSqr(player.blockPosition()) > range * range) {
                 continue;
             }
             if (level.getBlockEntity(pos) instanceof CauldronOfSoulsBlockEntity be && be.stage == Stage.IDLE) {
@@ -346,6 +347,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
             pending += worth.getFloat(i);
         }
         boolean full = pending >= 0.999F;
+        int cap = WildscapesConfig.get(WildscapesConfig.HARVEST_MAX_ALIVE);
         if (timer % (180 - omen * 20) == 40) {
             Player player = nearest(level, center());
             if (player != null) {
@@ -356,7 +358,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
                 level.playSound(null, worldPosition, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 1.5F, 1.3F);
             }
         }
-        if (!paused && (mobs.size() >= CAP || full)) {
+        if (!paused && (mobs.size() >= cap || full)) {
             paused = true;
             lit.forEach(b -> SummoningBonfireBlock.setLit(level, b, false));
         } else if (paused && !full && mobs.size() < REFILL) {
@@ -370,7 +372,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         if (!paused) {
             for (BlockPos b : lit) {
                 int left = spawnIn.merge(b, -1, Integer::sum);
-                if (left <= 0 && mobs.size() < CAP) {
+                if (left <= 0 && mobs.size() < cap) {
                     boolean boss = abominationsSent < abominationsDue && filled >= ABOMINATION_AT[abominationsSent];
                     if (spawn(level, b, boss ? WildscapesEntities.ABOMINATION.get() : roll(level)) && boss) {
                         abominationsSent++;
