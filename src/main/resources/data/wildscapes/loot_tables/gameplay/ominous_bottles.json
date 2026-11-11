@@ -1,0 +1,54 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:ominous_bottle"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:ominous_bottle",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{OminousBottleAmplifier:1}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:ominous_bottle",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{OminousBottleAmplifier:2}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:ominous_bottle",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{OminousBottleAmplifier:3}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:ominous_bottle",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{OminousBottleAmplifier:4}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

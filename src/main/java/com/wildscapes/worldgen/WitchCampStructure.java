@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
@@ -17,14 +16,11 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
-import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
-import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 
 public class WitchCampStructure extends Structure {
-    public static final MapCodec<WitchCampStructure> CODEC = RecordCodecBuilder.mapCodec(
+    public static final Codec<WitchCampStructure> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     settingsCodec(instance),
                     StructureTemplatePool.CODEC.fieldOf("start_pool")
@@ -44,8 +40,6 @@ public class WitchCampStructure extends Structure {
                     Codec.intRange(1, 64).optionalFieldOf("attempts", 16)
                             .forGetter(s -> s.attempts))
                     .apply(instance, WitchCampStructure::new));
-
-    private static final LiquidSettings LIQUIDS = LiquidSettings.IGNORE_WATERLOGGING;
 
     private final Holder<StructureTemplatePool> startPool;
     private final int maxDepth;
@@ -88,10 +82,7 @@ public class WitchCampStructure extends Structure {
                     start,
                     false,
                     Optional.of(Heightmap.Types.WORLD_SURFACE_WG),
-                    maxDistanceFromCenter,
-                    PoolAliasLookup.EMPTY,
-                    DimensionPadding.ZERO,
-                    LIQUIDS);
+                    maxDistanceFromCenter);
             if (laid.isEmpty()) {
                 continue;
             }
@@ -112,7 +103,7 @@ public class WitchCampStructure extends Structure {
         StructurePiecesBuilder out = new StructurePiecesBuilder();
         for (StructurePiece piece : pieces.build().pieces()) {
             if (piece instanceof PoolElementStructurePiece pooled && pooled.getElement().toString().contains(buried)) {
-                out.addPiece(new BuriedPiece(context.structureTemplateManager(), pooled, LIQUIDS));
+                out.addPiece(new BuriedPiece(context.structureTemplateManager(), pooled));
             } else {
                 out.addPiece(piece);
             }

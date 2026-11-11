@@ -12,9 +12,9 @@ import pathlib
 import struct
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / (
-    "src/main/resources/data/wildscapes/structure/gametest/tree_platform.nbt")
+    "src/main/resources/data/wildscapes/structures/gametest/tree_platform.nbt")
 
-DATA_VERSION = 3955  # 1.21.1
+DATA_VERSION = 3465
 SIZE = (24, 20, 24)
 
 

@@ -1,0 +1,246 @@
+{
+  "type": "minecraft:chest",
+  "random_sequence": "wildscapes:pots/witch_camp/cellar",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:emerald",
+          "weight": 12,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1.0,
+                "max": 5.0
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:suspicious_stew",
+          "weight": 6,
+          "functions": [
+            {
+              "function": "minecraft:set_stew_effect",
+              "effects": [
+                {
+                  "type": "minecraft:poison",
+                  "duration": {
+                    "type": "minecraft:uniform",
+                    "min": 7,
+                    "max": 10
+                  }
+                },
+                {
+                  "type": "minecraft:weakness",
+                  "duration": {
+                    "type": "minecraft:uniform",
+                    "min": 7,
+                    "max": 10
+                  }
+                },
+                {
+                  "type": "minecraft:night_vision",
+                  "duration": {
+                    "type": "minecraft:uniform",
+                    "min": 7,
+                    "max": 10
+                  }
+                },
+                {
+                  "type": "minecraft:blindness",
+                  "duration": {
+                    "type": "minecraft:uniform",
+                    "min": 5,
+                    "max": 7
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:potion",
+          "weight": 6,
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:night_vision"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:potion",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:regeneration"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:potion",
+          "weight": 6,
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:slowness"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:potion",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:water"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:splash_potion",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:swiftness"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:splash_potion",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_potion",
+              "id": "minecraft:weakness"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:ominous_bottle",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:glass_bottle",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1.0,
+                "max": 3.0
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:pufferfish_bucket",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:milk_bucket",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:magic_soup",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{\"wildscapes:soup_contents\":[{Id:16,Duration:300,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:magic_soup",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{\"wildscapes:soup_contents\":[{Id:10,Duration:300,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b},{Id:18,Duration:160,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:magic_soup",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{\"wildscapes:soup_contents\":[{Id:1,Duration:300,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b},{Id:8,Duration:300,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:magic_soup",
+          "weight": 3,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{\"wildscapes:soup_contents\":[{Id:19,Duration:160,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b},{Id:2,Duration:160,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:magic_soup",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{\"wildscapes:soup_contents\":[{Id:12,Duration:300,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b},{Id:13,Duration:300,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b},{Id:24,Duration:300,Amplifier:0b,Ambient:0b,ShowParticles:1b,ShowIcon:1b}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wild_armor_trim_smithing_template",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:skull_banner_pattern",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 1305,
+          "name": "wildscapes:gameplay/gnashing"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "wildscapes:incendiary_bottle",
+          "weight": 348
+        },
+        {
+          "type": "minecraft:loot_table",
+          "weight": 36,
+          "name": "wildscapes:gameplay/armor_trims"
+        }
+      ]
+    }
+  ]
+}

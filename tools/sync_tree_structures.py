@@ -1,7 +1,7 @@
 """Rebuilds the tree configured features from whatever .nbt files are in the structure folders.
 
 Drop structure-block exports into
-    src/main/resources/data/wildscapes/structure/tree/{land,water,fallen,roots}/
+    src/main/resources/data/wildscapes/structures/tree/{land,water,fallen,roots}/
 and run this from the repo root:
 
     python tools/sync_tree_structures.py
@@ -16,7 +16,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "src/main/resources/data/wildscapes"
-STRUCTURES = DATA / "structure"
+STRUCTURES = DATA / "structures"
 FEATURES = DATA / "worldgen/configured_feature"
 
 # structure subfolder -> configured feature that grows what is in it

@@ -193,7 +193,7 @@ def gen_undyed_chiseled():
                {"parent": f"{MODID}:block/chiseled_mud_bricks"})
     write_json(os.path.join(ASSETS, "blockstates", "chiseled_mud_bricks.json"),
                {"variants": {"": {"model": f"{MODID}:block/chiseled_mud_bricks"}}})
-    write_json(os.path.join(DATA, MODID, "loot_table", "blocks", "chiseled_mud_bricks.json"),
+    write_json(os.path.join(DATA, MODID, "loot_tables", "blocks", "chiseled_mud_bricks.json"),
                simple_loot("chiseled_mud_bricks"))
 
 
@@ -272,7 +272,7 @@ def slab_loot(block_id):
 
 def gen_loot(color):
     n = names(color)
-    out = os.path.join(DATA, MODID, "loot_table", "blocks")
+    out = os.path.join(DATA, MODID, "loot_tables", "blocks")
     for key in ("bricks", "chiseled", "stairs", "wall"):
         write_json(os.path.join(out, n[key] + ".json"), simple_loot(n[key]))
     write_json(os.path.join(out, n["slab"] + ".json"), slab_loot(n["slab"]))
@@ -296,19 +296,19 @@ def gen_tags():
     # an already-coloured block instead of only starting from a plain one.
     for tag, (key, base) in TAG_SOURCES.items():
         values = [base] + [f"{MODID}:{names(c)[key]}" for c in COLORS]
-        for kind in ("block", "item"):
+        for kind in ("blocks", "items"):
             write_json(os.path.join(DATA, MODID, "tags", kind, tag + ".json"),
                        {"replace": False, "values": values})
 
     # One umbrella tag so mineable/pickaxe only needs a single extra line.
-    write_json(os.path.join(DATA, MODID, "tags", "block", "mud_brick_blocks.json"),
+    write_json(os.path.join(DATA, MODID, "tags", "blocks", "mud_brick_blocks.json"),
                {"replace": False, "values": [f"#{MODID}:{t}" for t in sorted(TAG_SOURCES)]})
 
     # Vanilla tags. #minecraft:walls is the important one — WallBlock reads it to
     # decide what to connect to, so without it the walls ignore each other.
-    for kind, tag, key in [("block", "walls", "wall"), ("block", "stairs", "stairs"),
-                           ("block", "slabs", "slab"), ("item", "walls", "wall"),
-                           ("item", "stairs", "stairs"), ("item", "slabs", "slab")]:
+    for kind, tag, key in [("blocks", "walls", "wall"), ("blocks", "stairs", "stairs"),
+                           ("blocks", "slabs", "slab"), ("items", "walls", "wall"),
+                           ("items", "stairs", "stairs"), ("items", "slabs", "slab")]:
         write_json(os.path.join(DATA, "minecraft", "tags", kind, tag + ".json"),
                    {"replace": False, "values": [f"{MODID}:{names(c)[key]}" for c in COLORS]})
 
@@ -317,23 +317,23 @@ def gen_tags():
 
 def shapeless(result, count, ingredients, group, category="building"):
     return {"type": "minecraft:crafting_shapeless", "category": category, "group": group,
-            "ingredients": ingredients, "result": {"id": result, "count": count}}
+            "ingredients": ingredients, "result": {"item": result, "count": count}}
 
 
 def shaped(result, count, pattern, ingredient, group, category="building"):
     return {"type": "minecraft:crafting_shaped", "category": category, "group": group,
             "key": {"#": {"item": ingredient}}, "pattern": pattern,
-            "result": {"id": result, "count": count}}
+            "result": {"item": result, "count": count}}
 
 
 def stonecutting(result, count, ingredient):
     return {"type": "minecraft:stonecutting", "ingredient": {"item": ingredient},
-            "result": {"id": result, "count": count}}
+            "result": result, "count": count}
 
 
 def gen_recipes(color):
     n = names(color)
-    out = os.path.join(DATA, MODID, "recipe")
+    out = os.path.join(DATA, MODID, "recipes")
     dye = f"minecraft:{color}_dye"
     bricks = f"{MODID}:{n['bricks']}"
 
@@ -365,7 +365,7 @@ def gen_recipes(color):
 
 
 def gen_undyed_recipes():
-    out = os.path.join(DATA, MODID, "recipe")
+    out = os.path.join(DATA, MODID, "recipes")
     write_json(os.path.join(out, "chiseled_mud_bricks.json"),
                shaped(f"{MODID}:chiseled_mud_bricks", 1, ["#", "#"], "minecraft:mud_brick_slab",
                       "chiseled_mud_bricks"))

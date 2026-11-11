@@ -5,6 +5,7 @@ import com.wildscapes.Wildscapes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.RegistryObject;
@@ -28,6 +29,12 @@ public final class WildscapesStructures {
     public static final DeferredRegister<StructurePieceType> PIECES =
             DeferredRegister.create(Registries.STRUCTURE_PIECE, Wildscapes.MODID);
 
+    private static final DeferredRegister<StructurePoolElementType<?>> POOL_ELEMENTS =
+            DeferredRegister.create(Registries.STRUCTURE_POOL_ELEMENT, Wildscapes.MODID);
+
+    public static final RegistryObject<StructurePoolElementType<DryPoolElement>> DRY_POOL_ELEMENT =
+            POOL_ELEMENTS.register("dry_pool_element", () -> () -> DryPoolElement.CODEC);
+
     public static final RegistryObject<StructurePieceType> BURIED_PIECE =
             PIECES.register("buried_jigsaw", () -> BuriedPiece::new);
 
@@ -46,6 +53,7 @@ public final class WildscapesStructures {
     public static void register(IEventBus bus) {
         STRUCTURE_TYPES.register(bus);
         PIECES.register(bus);
+        POOL_ELEMENTS.register(bus);
         PROCESSORS.register(bus);
     }
 }

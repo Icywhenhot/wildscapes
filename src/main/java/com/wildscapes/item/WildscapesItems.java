@@ -94,6 +94,9 @@ public final class WildscapesItems {
     public static final RegistryObject<IncendiaryBottleItem> INCENDIARY_BOTTLE = ITEMS.register("incendiary_bottle",
             () -> new IncendiaryBottleItem(new Item.Properties().stacksTo(16)));
 
+    public static final RegistryObject<OminousBottleItem> OMINOUS_BOTTLE = ITEMS.register("ominous_bottle",
+            () -> new OminousBottleItem(new Item.Properties()));
+
     public static final RegistryObject<MagicSoupItem> MAGIC_SOUP = ITEMS.register("magic_soup",
             () -> new MagicSoupItem(new Item.Properties()));
 

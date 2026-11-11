@@ -360,5 +360,11 @@
       "wildscapes:block/trial_spawner/spawn4"
     ],
     "subtitle": "subtitles.block.trial_spawner.spawn_mob"
+  },
+  "item.ominous_bottle.dispose": {
+    "sounds": [
+      "wildscapes:item/ominous_bottle/dispose"
+    ],
+    "subtitle": "subtitles.item.ominous_bottle.dispose"
   }
 }

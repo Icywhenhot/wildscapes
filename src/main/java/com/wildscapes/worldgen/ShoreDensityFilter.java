@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
@@ -18,7 +17,7 @@ import net.minecraft.world.level.levelgen.placement.PlacementFilter;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
 public class ShoreDensityFilter extends PlacementFilter {
-    public static final MapCodec<ShoreDensityFilter> CODEC = RecordCodecBuilder.mapCodec(
+    public static final Codec<ShoreDensityFilter> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Codec.intRange(1, 16).fieldOf("max_distance").forGetter(filter -> filter.maxDistance),
                     Codec.BOOL.optionalFieldOf("include_land", false).forGetter(filter -> filter.includeLand))

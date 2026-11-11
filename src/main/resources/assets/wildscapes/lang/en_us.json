@@ -310,5 +310,7 @@
   "subtitles.entity.bogged.ambient": "Bogged rattles",
   "subtitles.entity.bogged.hurt": "Bogged hurts",
   "subtitles.entity.bogged.death": "Bogged dies",
-  "subtitles.block.trial_spawner.spawn_mob": "Trial Spawner spawns a mob"
+  "subtitles.block.trial_spawner.spawn_mob": "Trial Spawner spawns a mob",
+  "item.wildscapes.ominous_bottle": "Ominous Bottle",
+  "subtitles.item.ominous_bottle.dispose": "Bottle breaks"
 }

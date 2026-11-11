@@ -6,14 +6,13 @@ import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.neoforged.neoforge.common.world.PieceBeardifierModifier;
+import net.minecraftforge.common.world.PieceBeardifierModifier;
 
 public class BuriedPiece extends PoolElementStructurePiece implements PieceBeardifierModifier {
-    public BuriedPiece(StructureTemplateManager templates, PoolElementStructurePiece piece, LiquidSettings liquids) {
+    public BuriedPiece(StructureTemplateManager templates, PoolElementStructurePiece piece) {
         super(templates, piece.getElement(), piece.getPosition(), piece.getGroundLevelDelta(),
-                piece.getRotation(), piece.getBoundingBox(), liquids);
+                piece.getRotation(), piece.getBoundingBox());
         piece.getJunctions().forEach(this::addJunction);
     }
 

@@ -4,28 +4,31 @@
     {
       "weight": 4,
       "element": {
-        "element_type": "minecraft:legacy_single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:village/swamp/stock_sheep",
         "projection": "rigid",
-        "processors": "wildscapes:village/swamp/stilts"
+        "processors": "wildscapes:village/swamp/stilts",
+        "ignore_air": true
       }
     },
     {
       "weight": 4,
       "element": {
-        "element_type": "minecraft:legacy_single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:village/swamp/stock_cow",
         "projection": "rigid",
-        "processors": "wildscapes:village/swamp/stilts"
+        "processors": "wildscapes:village/swamp/stilts",
+        "ignore_air": true
       }
     },
     {
       "weight": 2,
       "element": {
-        "element_type": "minecraft:legacy_single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:village/swamp/stock_horse",
         "projection": "rigid",
-        "processors": "wildscapes:village/swamp/stilts"
+        "processors": "wildscapes:village/swamp/stilts",
+        "ignore_air": true
       }
     },
     {

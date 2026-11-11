@@ -64,6 +64,7 @@ public final class WildscapesSounds {
     public static final RegistryObject<SoundEvent> BOGGED_DEATH = register("entity.bogged.death");
     public static final RegistryObject<SoundEvent> BOGGED_STEP = register("entity.bogged.step");
     public static final RegistryObject<SoundEvent> BOGGED_SHEAR = register("entity.bogged.shear");
+    public static final RegistryObject<SoundEvent> OMINOUS_BOTTLE_DISPOSE = register("item.ominous_bottle.dispose");
     public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_BREAK = register("block.trial_spawner.break");
     public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_STEP = register("block.trial_spawner.step");
     public static final RegistryObject<SoundEvent> TRIAL_SPAWNER_PLACE = register("block.trial_spawner.place");

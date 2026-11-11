@@ -2,17 +2,21 @@ package com.wildscapes.worldgen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
@@ -22,15 +26,11 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasBinding;
-import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
-import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 
 public class SwampVillageStructure extends Structure {
-    public static final MapCodec<SwampVillageStructure> CODEC = RecordCodecBuilder.mapCodec(
+    public static final Codec<SwampVillageStructure> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     settingsCodec(instance),
                     StructureTemplatePool.CODEC.fieldOf("start_pool")
@@ -50,8 +50,10 @@ public class SwampVillageStructure extends Structure {
                             .forGetter(s -> s.requirements),
                     Codec.intRange(1, 64).optionalFieldOf("attempts", 12)
                             .forGetter(s -> s.attempts),
-                    PoolAliasBinding.CODEC.listOf().optionalFieldOf("pool_aliases", List.of())
-                            .forGetter(s -> s.poolAliases),
+                    Codec.unboundedMap(ResourceLocation.CODEC, ResourceLocation.CODEC)
+                            .optionalFieldOf("derelict_pools", Map.of()).forGetter(s -> s.derelictPools),
+                    Codec.intRange(0, 1024).optionalFieldOf("derelict_chance", 0)
+                            .forGetter(s -> s.derelictChance),
                     Quota.CODEC.listOf().optionalFieldOf("derelict_requirements")
                             .forGetter(s -> s.derelictRequirements),
                     HeightProvider.CODEC.optionalFieldOf("derelict_start_height")
@@ -66,14 +68,17 @@ public class SwampVillageStructure extends Structure {
     private final int openWaterRadius;
     private final List<Quota> requirements;
     private final int attempts;
-    private final List<PoolAliasBinding> poolAliases;
+    private static final ThreadLocal<Map<ResourceLocation, ResourceLocation>> activeAliases = new ThreadLocal<>();
+    private final Map<ResourceLocation, ResourceLocation> derelictPools;
+    private final int derelictChance;
     private final Optional<List<Quota>> derelictRequirements;
     private final Optional<HeightProvider> derelictStartHeight;
 
     public SwampVillageStructure(StructureSettings settings, Holder<StructureTemplatePool> startPool,
             int maxDepth, HeightProvider startHeight, int maxDistanceFromCenter,
             float minOpenWater, int openWaterRadius, List<Quota> requirements, int attempts,
-            List<PoolAliasBinding> poolAliases, Optional<List<Quota>> derelictRequirements,
+            Map<ResourceLocation, ResourceLocation> derelictPools, int derelictChance,
+            Optional<List<Quota>> derelictRequirements,
             Optional<HeightProvider> derelictStartHeight) {
         super(settings);
         this.startPool = startPool;
@@ -84,7 +89,8 @@ public class SwampVillageStructure extends Structure {
         this.openWaterRadius = openWaterRadius;
         this.requirements = requirements;
         this.attempts = attempts;
-        this.poolAliases = poolAliases;
+        this.derelictPools = derelictPools;
+        this.derelictChance = derelictChance;
         this.derelictRequirements = derelictRequirements;
         this.derelictStartHeight = derelictStartHeight;
     }
@@ -96,17 +102,18 @@ public class SwampVillageStructure extends Structure {
         }
 
         ChunkPos chunk = context.chunkPos();
-        PoolAliasLookup aliases = PoolAliasLookup.create(
-                poolAliases, chunk.getWorldPosition(), context.seed());
-        boolean derelict = startPool.unwrapKey()
-                .map(key -> !aliases.lookup(key).equals(key))
-                .orElse(false);
-
+        boolean derelict = derelictChance > 0 && RandomSource.create(context.seed()).forkPositional()
+                .at(chunk.getWorldPosition()).nextInt(derelictChance) == derelictChance - 1;
+        Holder<StructureTemplatePool> pool = startPool;
+        if (derelict) {
+            pool = startPool.unwrapKey()
+                    .map(key -> derelictPools.get(key.location()))
+                    .flatMap(id -> context.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL)
+                            .getHolder(ResourceKey.create(Registries.TEMPLATE_POOL, id)).map(holder -> (Holder<StructureTemplatePool>) holder))
+                    .orElse(startPool);
+        }
         List<Quota> quotas = derelict ? derelictRequirements.orElse(requirements) : requirements;
         HeightProvider height = derelict ? derelictStartHeight.orElse(startHeight) : startHeight;
-        LiquidSettings liquids = derelict
-                ? LiquidSettings.APPLY_WATERLOGGING
-                : LiquidSettings.IGNORE_WATERLOGGING;
 
         WorldGenerationContext heights = new WorldGenerationContext(
                 context.chunkGenerator(), context.heightAccessor());
@@ -118,26 +125,42 @@ public class SwampVillageStructure extends Structure {
         for (int attempt = 0; attempt < attempts; attempt++) {
             Optional<GenerationStub> laid = JigsawPlacement.addPieces(
                     context,
-                    startPool,
+                    pool,
                     Optional.empty(),
                     maxDepth,
                     start,
                     false,
                     Optional.empty(),
-                    maxDistanceFromCenter,
-                    aliases,
-                    DimensionPadding.ZERO,
-                    liquids);
+                    maxDistanceFromCenter);
             if (laid.isEmpty()) {
                 continue;
             }
 
-            StructurePiecesBuilder pieces = laid.get().getPiecesBuilder();
+            StructurePiecesBuilder pieces;
+            if (derelict) {
+                activeAliases.set(derelictPools);
+                try {
+                    pieces = laid.get().getPiecesBuilder();
+                } finally {
+                    activeAliases.remove();
+                }
+            } else {
+                pieces = laid.get().getPiecesBuilder();
+            }
             if (meetsRequirements(pieces, quotas)) {
                 return Optional.of(new GenerationStub(laid.get().position(), Either.right(pieces)));
             }
         }
         return Optional.empty();
+    }
+
+    public static ResourceKey<StructureTemplatePool> resolvePool(ResourceKey<StructureTemplatePool> key) {
+        var aliases = activeAliases.get();
+        if (aliases == null) {
+            return key;
+        }
+        ResourceLocation id = aliases.get(key.location());
+        return id == null ? key : ResourceKey.create(Registries.TEMPLATE_POOL, id);
     }
 
     private static final Pattern PIECE_ID = Pattern.compile("[a-z0-9_.-]+:[a-z0-9_./-]+");

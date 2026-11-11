@@ -87,7 +87,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         ResourceLocation id = templates.get(random.nextInt(templates.size()));
         Optional<StructureTemplate> found = manager.get(id);
         if (found.isEmpty()) {
-            Wildscapes.LOGGER.warn("Tree structure {} is missing; expected it in data/{}/structure/{}.nbt",
+            Wildscapes.LOGGER.warn("Tree structure {} is missing; expected it in data/{}/structures/{}.nbt",
                     id, id.getNamespace(), id.getPath());
             return false;
         }

@@ -4,7 +4,7 @@
     {
       "weight": 1,
       "element": {
-        "element_type": "minecraft:single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:witch_camp/streetlight1",
         "projection": "rigid",
         "processors": "minecraft:empty"
@@ -13,7 +13,7 @@
     {
       "weight": 1,
       "element": {
-        "element_type": "minecraft:single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:witch_camp/streetlight2",
         "projection": "rigid",
         "processors": "minecraft:empty"
@@ -22,7 +22,7 @@
     {
       "weight": 1,
       "element": {
-        "element_type": "minecraft:single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:witch_camp/streetlight3",
         "projection": "rigid",
         "processors": "minecraft:empty"
@@ -31,7 +31,7 @@
     {
       "weight": 1,
       "element": {
-        "element_type": "minecraft:single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:witch_camp/streetlight4",
         "projection": "rigid",
         "processors": "minecraft:empty"
@@ -40,7 +40,7 @@
     {
       "weight": 1,
       "element": {
-        "element_type": "minecraft:single_pool_element",
+        "element_type": "wildscapes:dry_pool_element",
         "location": "wildscapes:witch_camp/streetlight5",
         "projection": "rigid",
         "processors": "minecraft:empty"

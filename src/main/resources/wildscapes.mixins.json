@@ -9,6 +9,8 @@
     "EnchantmentInstanceMixin",
     "AnvilMenuMixin",
     "ServerLevelMixin",
+    "JigsawPlacerMixin",
+    "DecoratedPotBlockMixin",
     "SlimeMixin",
     "BoatMixin",
     "EntityMixin",

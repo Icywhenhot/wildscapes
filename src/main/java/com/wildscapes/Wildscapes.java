@@ -52,6 +52,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -124,6 +125,7 @@ public class Wildscapes {
                         output.accept(WildscapesItems.ILLUSIONIST_NECKLACE.get());
                         output.accept(WildscapesItems.MERCHANTS_GUIDE.get());
                         output.accept(WildscapesItems.INCENDIARY_BOTTLE.get());
+                        output.accept(WildscapesItems.OMINOUS_BOTTLE.get());
                         output.accept(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE.get());
                         output.accept(WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE.get());
                         output.accept(WildscapesItems.SLIME_BANNER_PATTERN.get());
@@ -262,6 +264,12 @@ public class Wildscapes {
             PotionBrewing.addMix(WildscapesPotions.RESISTANCE.get(), Items.GLOWSTONE_DUST,
                     WildscapesPotions.STRONG_RESISTANCE.get());
             MudBrickDyeing.buildLookup();
+            ComposterBlock.COMPOSTABLES.put(WildscapesBlocks.CYPRESS_LEAVES.get().asItem(), 0.3F);
+            ComposterBlock.COMPOSTABLES.put(WildscapesBlocks.CYPRESS_SAPLING.get().asItem(), 0.3F);
+            ComposterBlock.COMPOSTABLES.put(WildscapesBlocks.DUCKWEED.get().asItem(), 0.3F);
+            ComposterBlock.COMPOSTABLES.put(WildscapesBlocks.SHORT_RUSHES.get().asItem(), 0.3F);
+            ComposterBlock.COMPOSTABLES.put(WildscapesBlocks.RUSHES.get().asItem(), 0.5F);
+            ComposterBlock.COMPOSTABLES.put(WildscapesBlocks.LUMINOUS_MUSHROOM.get().asItem(), 0.65F);
             DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_BOAT.get(),
                     CypressBoatItem.DISPENSER);
             DispenserBlock.registerBehavior(WildscapesItems.CYPRESS_CHEST_BOAT.get(),

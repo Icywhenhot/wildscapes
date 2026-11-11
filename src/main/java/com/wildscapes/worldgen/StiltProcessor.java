@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 import com.wildscapes.block.WildscapesBlocks;
 
 import net.minecraft.core.BlockPos;
@@ -23,7 +23,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 public class StiltProcessor extends StructureProcessor {
     public static final StiltProcessor INSTANCE = new StiltProcessor();
-    public static final MapCodec<StiltProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
+    public static final Codec<StiltProcessor> CODEC = Codec.unit(() -> INSTANCE);
 
     private static final int MAX_DEPTH = 24;
 

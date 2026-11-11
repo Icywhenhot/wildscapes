@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "wildscapes:cypress_planks"
+    }
+  },
+  "result": {
+    "count": 6,
+    "item": "wildscapes:cypress_slab"
+  }
+}

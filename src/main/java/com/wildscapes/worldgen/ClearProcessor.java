@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.Codec;
 
@@ -22,7 +21,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class ClearProcessor extends StructureProcessor {
-    public static final MapCodec<ClearProcessor> CODEC = RecordCodecBuilder.mapCodec(
+    public static final Codec<ClearProcessor> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
 
                     Codec.intRange(0, 8).optionalFieldOf("margin", 1)
