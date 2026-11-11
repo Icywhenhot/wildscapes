@@ -23,7 +23,7 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchModel<Witch
     private final boolean vanilla;
 
     public RedesignedWitchRenderer(EntityRendererProvider.Context context) {
-        this(context, MobLook.vanilla(context, "witch", VANILLA));
+        this(context, MobLook.vanilla(context, "witch", WildscapesModelLayers.WITCH, VANILLA));
     }
 
     private RedesignedWitchRenderer(EntityRendererProvider.Context context, boolean vanilla) {

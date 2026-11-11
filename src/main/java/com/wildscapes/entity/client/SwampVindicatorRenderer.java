@@ -27,7 +27,7 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
     private final boolean vanilla;
 
     public SwampVindicatorRenderer(EntityRendererProvider.Context context) {
-        this(context, MobLook.vanilla(context, "vindicator", VANILLA));
+        this(context, MobLook.vanilla(context, "vindicator", WildscapesModelLayers.VINDICATOR, VANILLA));
     }
 
     private SwampVindicatorRenderer(EntityRendererProvider.Context context, boolean vanilla) {

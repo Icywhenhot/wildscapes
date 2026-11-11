@@ -28,7 +28,7 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
 
     public SwampPillagerRenderer(EntityRendererProvider.Context context) {
         super(context, new IllagerModel<>(context.bakeLayer(ModelLayers.PILLAGER)), 0.5F);
-        this.vanilla = MobLook.vanilla(context, "pillager", VANILLA);
+        this.vanilla = MobLook.vanilla(context, "pillager", WildscapesModelLayers.PILLAGER_SWAMP, VANILLA);
         this.vanillaModel = this.model;
         this.swampModel = vanilla ? this.model
                 : new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.PILLAGER_SWAMP));

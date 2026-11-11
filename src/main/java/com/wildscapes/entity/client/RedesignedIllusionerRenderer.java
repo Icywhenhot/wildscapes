@@ -32,7 +32,7 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
     private final boolean vanilla;
 
     public RedesignedIllusionerRenderer(EntityRendererProvider.Context context) {
-        this(context, MobLook.vanilla(context, "illusioner", VANILLA));
+        this(context, MobLook.vanilla(context, "illusioner", WildscapesModelLayers.ILLUSIONER, VANILLA));
     }
 
     private RedesignedIllusionerRenderer(EntityRendererProvider.Context context, boolean vanilla) {

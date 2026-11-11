@@ -29,7 +29,7 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     private final boolean vanilla;
 
     public RedesignedSlimeRenderer(EntityRendererProvider.Context context) {
-        this(context, MobLook.vanilla(context, "slime", VANILLA));
+        this(context, MobLook.vanilla(context, "slime", WildscapesModelLayers.SLIME_SMALL, VANILLA));
     }
 
     @SuppressWarnings("unchecked")
