@@ -311,7 +311,7 @@ public final class WitchRitual {
     }
 
     public static boolean isChanting(Entity entity) {
-        return entity.getData(CHANTING);
+        return Boolean.TRUE.equals(entity.getExistingDataOrNull(CHANTING));
     }
 
     @Nullable

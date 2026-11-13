@@ -45,7 +45,8 @@ public final class SwampVariants {
     }
 
     public static boolean isSwampBorn(Entity entity) {
-        return entity.getData(SWAMP_BORN) == SWAMP;
+        Byte born = entity.getExistingDataOrNull(SWAMP_BORN);
+        return born != null && born == SWAMP;
     }
 
     @SubscribeEvent
@@ -55,7 +56,8 @@ public final class SwampVariants {
             return;
         }
 
-        if (entity.getData(SWAMP_BORN) != UNDECIDED) {
+        Byte born = entity.getExistingDataOrNull(SWAMP_BORN);
+        if (born != null && born != UNDECIDED) {
             return;
         }
         boolean swamp = event.getLevel().getBiome(entity.blockPosition()).is(SWAMP_BIOMES);

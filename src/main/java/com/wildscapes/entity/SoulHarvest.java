@@ -59,7 +59,7 @@ public final class SoulHarvest {
     }
 
     public static boolean isEmpowered(Entity entity) {
-        return entity.getData(EMPOWERED);
+        return Boolean.TRUE.equals(entity.getExistingDataOrNull(EMPOWERED));
     }
 
     public static void empower(Mob mob) {
