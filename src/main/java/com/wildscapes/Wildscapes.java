@@ -1,5 +1,8 @@
 package com.wildscapes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -40,6 +43,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -153,20 +157,25 @@ public class Wildscapes implements ModInitializer {
                         output.accept(PotionContents.createItemStack(Items.SPLASH_POTION, WildscapesPotions.INCENDIARY));
                         output.accept(PotionContents.createItemStack(Items.LINGERING_POTION, WildscapesPotions.INCENDIARY));
                         output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.INCENDIARY));
-                        output.accept(EnchantmentHelper.createBook(new EnchantmentInstance(
-                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(MirelashItem.ELASTICITY), 1)));
-                        output.accept(EnchantmentHelper.createBook(new EnchantmentInstance(
-                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(MirelashItem.SLIME_SNARE), 1)));
+                        var enchantments = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT);
+                        List<ItemStack> books = new ArrayList<>();
+                        books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                                enchantments.getOrThrow(MirelashItem.ELASTICITY), 1)));
+                        books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                                enchantments.getOrThrow(MirelashItem.SLIME_SNARE), 1)));
                         for (int i = 1; i <= 2; i++) {
-                            output.accept(EnchantmentHelper.createBook(new EnchantmentInstance(
-                                    parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                            .getOrThrow(JumpEnchantments.MULTI_JUMP), i)));
+                            books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                                    enchantments.getOrThrow(JumpEnchantments.MULTI_JUMP), i)));
                         }
-                        output.accept(EnchantmentHelper.createBook(new EnchantmentInstance(
-                                parameters.holders().lookupOrThrow(Registries.ENCHANTMENT)
-                                        .getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
+                        books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                                enchantments.getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
+                        List<ItemStack> added = new ArrayList<>();
+                        for (ItemStack book : books) {
+                            if (added.stream().noneMatch(seen -> ItemStack.isSameItemSameComponents(seen, book))) {
+                                added.add(book);
+                                output.accept(book);
+                            }
+                        }
                     }).build();
 
     public static Identifier id(String path) {
