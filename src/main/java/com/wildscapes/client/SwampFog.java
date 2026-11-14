@@ -25,10 +25,10 @@ public final class SwampFog {
 
     private static final float NEAR_FRACTION = 0.25F;
 
-    private static final int LOW = 3;
-    private static final int HIGH = 16;
+    private static final int LOW = 6;
+    private static final int HIGH = 48;
 
-    private static final float EASE = 0.025F;
+    private static final float EASE = 0.0125F;
 
     private static final float TINT_R = 0.42F;
     private static final float TINT_G = 0.47F;
@@ -57,7 +57,8 @@ public final class SwampFog {
             return 0.0F;
         }
         float above = pos.getY() - (level.getSeaLevel() + LOW);
-        float height = 1.0F - Mth.clamp(above / (HIGH - LOW), 0.0F, 1.0F);
+        float t = Mth.clamp(above / (HIGH - LOW), 0.0F, 1.0F);
+        float height = 1.0F - t * t * (3.0F - 2.0F * t);
 
         float weather = 0.45F + 0.55F * level.getRainLevel(1.0F);
         return height * weather * WildscapesConfig.SWAMP_FOG_STRENGTH.get().floatValue();
@@ -74,10 +75,13 @@ public final class SwampFog {
         float rain = level.getRainLevel((float) event.getPartialTick());
         float range = Mth.lerp(rain, CLEAR_RANGE, RAIN_RANGE);
 
-        float far = Mth.lerp(strength, event.getFarPlaneDistance(),
-                Math.min(event.getFarPlaneDistance(), range));
+        float vanillaFar = event.getFarPlaneDistance();
+        float vanillaNear = event.getNearPlaneDistance();
+        float thick = Math.min(vanillaFar, range);
+        float far = 1.0F / Mth.lerp(strength, 1.0F / vanillaFar, 1.0F / thick);
+        float near = Mth.lerp(strength, vanillaNear, Math.min(vanillaNear, thick * NEAR_FRACTION));
         event.setFarPlaneDistance(far);
-        event.setNearPlaneDistance(Math.min(event.getNearPlaneDistance(), far * NEAR_FRACTION));
+        event.setNearPlaneDistance(Math.min(near, far));
         event.setCanceled(true);
     }
 

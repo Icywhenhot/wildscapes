@@ -2,6 +2,9 @@ package com.wildscapes.entity;
 
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.wildscapes.compat.SableCompat;
 import com.wildscapes.effect.WildscapesEffects;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.sound.WildscapesSounds;
@@ -41,6 +44,8 @@ public final class MirelashHook extends ThrowableProjectile {
             EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> TARGET = SynchedEntityData.defineId(MirelashHook.class,
             EntityDataSerializers.INT);
+    @Nullable
+    private Vec3 shipAnchor;
 
     public MirelashHook(EntityType<? extends MirelashHook> type, Level level) {
         super(type, level);
@@ -81,6 +86,14 @@ public final class MirelashHook extends ThrowableProjectile {
             discard();
             return;
         }
+        if (isAnchored() && shipAnchor != null) {
+            Vec3 pos = SableCompat.follow(level(), shipAnchor);
+            if (pos == null) {
+                discard();
+                return;
+            }
+            setPos(pos);
+        }
         if (entityData.get(ATTACK)) {
             tickAttack(player);
             return;
@@ -103,21 +116,26 @@ public final class MirelashHook extends ThrowableProjectile {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
+        Vec3 at = hit.getLocation();
+        if (SableCompat.inPlot(level(), at)) {
+            shipAnchor = at;
+            at = SableCompat.toWorld(level(), at);
+        }
         if (!level().isClientSide) {
-            level().playSound(null, hit.getLocation().x, hit.getLocation().y, hit.getLocation().z,
-                    WildscapesSounds.MIRELASH_IMPACT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+            level().playSound(null, at.x, at.y, at.z, WildscapesSounds.MIRELASH_IMPACT.get(), SoundSource.PLAYERS,
+                    1.0F, 1.0F);
         }
         if (entityData.get(ATTACK)) {
             discard();
             return;
         }
-        setPos(hit.getLocation());
+        setPos(at);
         setDeltaMovement(0.0, 0.0, 0.0);
         setNoGravity(true);
         entityData.set(ANCHORED, true);
         Entity owner = getOwner();
         if (owner != null) {
-            float length = Math.max((float) owner.getEyePosition().distanceTo(hit.getLocation()) * 0.5F - 3.0F, 1.5F);
+            float length = Math.max((float) owner.getEyePosition().distanceTo(at) * 0.5F - 3.0F, 1.5F);
             entityData.set(TETHER_LENGTH, length);
         }
     }
@@ -182,6 +200,11 @@ public final class MirelashHook extends ThrowableProjectile {
         tag.putBoolean("slime_snare", entityData.get(SLIME_SNARE));
         tag.putBoolean("attack", entityData.get(ATTACK));
         tag.putInt("target", entityData.get(TARGET));
+        if (shipAnchor != null) {
+            tag.putDouble("ship_x", shipAnchor.x);
+            tag.putDouble("ship_y", shipAnchor.y);
+            tag.putDouble("ship_z", shipAnchor.z);
+        }
     }
 
     @Override
@@ -192,6 +215,9 @@ public final class MirelashHook extends ThrowableProjectile {
         entityData.set(SLIME_SNARE, tag.getBoolean("slime_snare"));
         entityData.set(ATTACK, tag.getBoolean("attack"));
         entityData.set(TARGET, tag.getInt("target"));
+        if (tag.contains("ship_x")) {
+            shipAnchor = new Vec3(tag.getDouble("ship_x"), tag.getDouble("ship_y"), tag.getDouble("ship_z"));
+        }
     }
 
     @Override
@@ -206,6 +232,10 @@ public final class MirelashHook extends ThrowableProjectile {
 
     public float getTetherLength() {
         return entityData.get(TETHER_LENGTH);
+    }
+
+    public float getMaxRange() {
+        return entityData.get(MAX_RANGE);
     }
 
     private boolean isHeldBy(Player player) {

@@ -3,6 +3,7 @@ package com.wildscapes.item;
 import java.util.UUID;
 
 import com.wildscapes.Wildscapes;
+import com.wildscapes.compat.SableCompat;
 import com.wildscapes.entity.MirelashHook;
 import com.wildscapes.sound.WildscapesSounds;
 
@@ -100,7 +101,7 @@ public final class MirelashItem extends Item {
                 ClipContext.Fluid.NONE, player));
         double nearest = blockHit.getType() == HitResult.Type.MISS
                 ? ATTACK_RANGE * ATTACK_RANGE
-                : eye.distanceToSqr(blockHit.getLocation());
+                : eye.distanceToSqr(SableCompat.toWorld(level, blockHit.getLocation()));
         LivingEntity found = null;
         AABB search = player.getBoundingBox().expandTowards(look.scale(ATTACK_RANGE)).inflate(1.0);
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search,
@@ -150,7 +151,7 @@ public final class MirelashItem extends Item {
         player.resetFallDistance();
         Vec3 pull = hook.position().subtract(player.getEyePosition());
         double distance = pull.length();
-        if (distance <= hook.getTetherLength()) {
+        if (distance <= hook.getTetherLength() || distance > hook.getMaxRange()) {
             return;
         }
         double strength = distance / hook.getTetherLength() * 0.1;

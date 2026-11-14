@@ -41,6 +41,20 @@ repositories {
             includeGroup("icy.lib")
         }
     }
+    maven {
+        name = 'RyanHCode'
+        url = 'https://maven.ryanhcode.dev/releases'
+        content {
+            includeGroupByRegex("dev\\.ryanhcode.*")
+        }
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup("maven.modrinth")
+        }
+    }
 }
 
 base {
@@ -122,6 +136,11 @@ dependencies {
     // GeckoLib — animation library for modded entities/blocks/items
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     implementation "icy.lib:icys_lib-neoforge-${minecraft_version}:${icys_lib_version}"
+
+    compileOnly("dev.ryanhcode.sable-companion:sable-companion-common-${minecraft_version}:${sable_companion_version}") { transitive = false }
+    localRuntime("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}") { transitive = false }
+    localRuntime("maven.modrinth:create:${create_version}") { transitive = false }
+    localRuntime("maven.modrinth:create-aeronautics:${create_aeronautics_version}") { transitive = false }
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
