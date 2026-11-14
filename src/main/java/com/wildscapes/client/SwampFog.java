@@ -1,5 +1,6 @@
 package com.wildscapes.client;
 
+import com.wildscapes.WildscapesConfig;
 import com.wildscapes.entity.SwampVariants;
 
 import net.minecraft.client.Minecraft;
@@ -16,10 +17,10 @@ public final class SwampFog {
 
     private static final float NEAR_FRACTION = 0.25F;
 
-    private static final int LOW = 3;
-    private static final int HIGH = 16;
+    private static final int LOW = 6;
+    private static final int HIGH = 48;
 
-    private static final float EASE = 0.025F;
+    private static final float EASE = 0.0125F;
 
     private static final float TINT_R = 0.42F;
     private static final float TINT_G = 0.47F;
@@ -42,14 +43,15 @@ public final class SwampFog {
     }
 
     private static float targetStrength(ClientLevel level, BlockPos pos) {
-        if (!level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES)) {
+        if (!WildscapesConfig.SWAMP_FOG.get() || !level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES)) {
             return 0.0F;
         }
         float above = pos.getY() - (level.getSeaLevel() + LOW);
-        float height = 1.0F - Mth.clamp(above / (HIGH - LOW), 0.0F, 1.0F);
+        float t = Mth.clamp(above / (HIGH - LOW), 0.0F, 1.0F);
+        float height = 1.0F - t * t * (3.0F - 2.0F * t);
 
         float weather = 0.45F + 0.55F * level.getRainLevel(1.0F);
-        return height * weather;
+        return height * weather * WildscapesConfig.SWAMP_FOG_STRENGTH.get().floatValue();
     }
 
     public static void apply(FogData fog, ClientLevel level, float partialTick) {
@@ -59,9 +61,13 @@ public final class SwampFog {
 
         float rain = level.getRainLevel(partialTick);
         float range = Mth.lerp(rain, CLEAR_RANGE, RAIN_RANGE);
-        float far = Mth.lerp(strength, fog.environmentalEnd, Math.min(fog.environmentalEnd, range));
+        float vanillaFar = fog.environmentalEnd;
+        float vanillaNear = fog.environmentalStart;
+        float thick = Math.min(vanillaFar, range);
+        float far = 1.0F / Mth.lerp(strength, 1.0F / vanillaFar, 1.0F / thick);
+        float near = Mth.lerp(strength, vanillaNear, Math.min(vanillaNear, thick * NEAR_FRACTION));
         fog.environmentalEnd = far;
-        fog.environmentalStart = Math.min(fog.environmentalStart, far * NEAR_FRACTION);
+        fog.environmentalStart = Math.min(near, far);
 
         float blend = strength * MAX_TINT;
         fog.color.set(Mth.lerp(blend, fog.color.x, TINT_R),

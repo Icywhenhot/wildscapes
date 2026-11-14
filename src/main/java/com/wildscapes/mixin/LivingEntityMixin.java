@@ -1,5 +1,6 @@
 package com.wildscapes.mixin;
 
+import com.wildscapes.WildscapesConfig;
 import com.wildscapes.effect.Intangibility;
 import com.wildscapes.entity.SoulHarvest;
 import com.wildscapes.item.WildscapesItems;
@@ -32,8 +33,10 @@ public abstract class LivingEntityMixin {
         if (entity.hasAttached(SoulHarvest.ORIGIN)) {
             ci.cancel();
         } else if (entity.getType() == EntityTypes.ILLUSIONER) {
-            entity.spawnAtLocation(level, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
-        } else if (entity.getType() == EntityTypes.FROG) {
+            if (entity.getRandom().nextDouble() < WildscapesConfig.get(WildscapesConfig.NECKLACE_DROP_CHANCE)) {
+                entity.spawnAtLocation(level, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
+            }
+        } else if (entity.getType() == EntityTypes.FROG && WildscapesConfig.get(WildscapesConfig.FROG_LEGS)) {
             entity.spawnAtLocation(level, new ItemStack(WildscapesItems.FROG_LEGS, 1 + entity.getRandom().nextInt(2)));
         }
     }
@@ -41,7 +44,7 @@ public abstract class LivingEntityMixin {
 
     @Inject(method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
     private void intangibleSight(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (entity instanceof Player player && Intangibility.isActive(player)) {
+        if (entity instanceof Player player && Intangibility.hiddenFrom(player, (Entity) (Object) this)) {
             cir.setReturnValue(false);
         }
     }

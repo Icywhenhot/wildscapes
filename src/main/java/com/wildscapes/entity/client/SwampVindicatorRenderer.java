@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import com.wildscapes.Wildscapes;
 
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.monster.illager.IllagerModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
@@ -20,9 +21,19 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, Illager
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_swamp.png");
     private static final Identifier EMPOWERED =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_empowered.png");
+    private static final Identifier VANILLA =
+            Identifier.withDefaultNamespace("textures/entity/illager/vindicator.png");
+
+    private final boolean vanilla;
 
     public SwampVindicatorRenderer(EntityRendererProvider.Context context) {
-        super(context, new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.VINDICATOR)), 0.5F);
+        this(context, MobLook.vanilla(context, "vindicator", WildscapesModelLayers.VINDICATOR, VANILLA));
+    }
+
+    private SwampVindicatorRenderer(EntityRendererProvider.Context context, boolean vanilla) {
+        super(context, new IllagerModel<>(context.bakeLayer(vanilla ? ModelLayers.VINDICATOR
+                : WildscapesModelLayers.VINDICATOR)), 0.5F);
+        this.vanilla = vanilla;
 
         this.addLayer(new ItemInHandLayer<>(this) {
             @Override
@@ -32,7 +43,9 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, Illager
                 }
             }
         });
-        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/vindicator_empowered_glow"));
+        if (!vanilla) {
+            this.addLayer(new EmpoweredGlowLayer<>(this, "illager/vindicator_empowered_glow"));
+        }
     }
 
     @Override
@@ -42,6 +55,9 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, Illager
 
     @Override
     public Identifier getTextureLocation(IllagerRenderState state) {
+        if (vanilla) {
+            return VANILLA;
+        }
         if (state.getDataOrDefault(MobVisuals.EMPOWERED, false)) {
             return EMPOWERED;
         }

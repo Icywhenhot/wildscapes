@@ -1,5 +1,7 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.WildscapesConfig;
+
 import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
@@ -46,14 +48,16 @@ public final class SoulHarvest {
         mob.setAttached(EMPOWERED, true);
         AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.addOrReplacePermanentModifier(new AttributeModifier(HEALTH_BOOST, 1.0,
+            health.addOrReplacePermanentModifier(new AttributeModifier(HEALTH_BOOST,
+                    WildscapesConfig.get(WildscapesConfig.EMPOWERED_HEALTH) - 1.0,
                     AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
             mob.setHealth(mob.getMaxHealth());
         }
     }
 
     public static float damage(DamageSource source, float amount) {
-        return source.getEntity() instanceof Mob mob && isEmpowered(mob) ? amount * 2.0F : amount;
+        return source.getEntity() instanceof Mob mob && isEmpowered(mob)
+                ? amount * WildscapesConfig.get(WildscapesConfig.EMPOWERED_DAMAGE).floatValue() : amount;
     }
 
     public static void onDeath(LivingEntity dead, DamageSource source) {

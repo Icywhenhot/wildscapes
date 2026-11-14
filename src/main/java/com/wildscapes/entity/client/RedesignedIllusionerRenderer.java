@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import com.wildscapes.Wildscapes;
 
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.monster.illager.IllagerModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
@@ -26,10 +27,20 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
     private static final Identifier EMPOWERED =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
 
+    private static final Identifier VANILLA =
+            Identifier.withDefaultNamespace("textures/entity/illager/illusioner.png");
+
     private final Map<Illusioner, Trail> trails = new WeakHashMap<>();
+    private final boolean vanilla;
 
     public RedesignedIllusionerRenderer(EntityRendererProvider.Context context) {
-        super(context, new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.ILLUSIONER)), 0.5F);
+        this(context, MobLook.vanilla(context, "illusioner", WildscapesModelLayers.ILLUSIONER, VANILLA));
+    }
+
+    private RedesignedIllusionerRenderer(EntityRendererProvider.Context context, boolean vanilla) {
+        super(context, new IllagerModel<>(context.bakeLayer(vanilla ? ModelLayers.ILLUSIONER
+                : WildscapesModelLayers.ILLUSIONER)), 0.5F);
+        this.vanilla = vanilla;
         this.addLayer(new ItemInHandLayer<>(this) {
             @Override
             public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, IllusionerRenderState state, float yaw, float pitch) {
@@ -39,7 +50,9 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
             }
         });
         this.model.getHat().visible = true;
-        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/illusioner_empowered_glow"));
+        if (!vanilla) {
+            this.addLayer(new EmpoweredGlowLayer<>(this, "illager/illusioner_empowered_glow"));
+        }
     }
 
     @Override
@@ -49,6 +62,9 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
 
     @Override
     public Identifier getTextureLocation(IllusionerRenderState state) {
+        if (vanilla) {
+            return VANILLA;
+        }
         return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
     }
 

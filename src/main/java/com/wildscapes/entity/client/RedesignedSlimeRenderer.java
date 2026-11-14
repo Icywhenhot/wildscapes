@@ -4,7 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.SlimeMerging;
 
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.monster.slime.SlimeModel;
+import net.minecraft.client.renderer.entity.layers.SlimeOuterLayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.SlimeRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -23,10 +25,24 @@ public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, Slim
             texture("slime_small"), texture("slime_medium"), texture("slime_large"),
     };
 
+    private static final Identifier VANILLA = Identifier.withDefaultNamespace("textures/entity/slime/slime.png");
+
     private final SlimeModel[] innerModels;
+    private final boolean vanilla;
 
     public RedesignedSlimeRenderer(EntityRendererProvider.Context context) {
-        super(context, new SlimeModel(context.bakeLayer(WildscapesModelLayers.SLIME_SMALL)));
+        this(context, MobLook.vanilla(context, "slime", WildscapesModelLayers.SLIME_SMALL, VANILLA));
+    }
+
+    private RedesignedSlimeRenderer(EntityRendererProvider.Context context, boolean vanilla) {
+        super(context, new SlimeModel(context.bakeLayer(vanilla ? ModelLayers.SLIME
+                : WildscapesModelLayers.SLIME_SMALL)));
+        this.vanilla = vanilla;
+        if (vanilla) {
+            this.innerModels = new SlimeModel[] {this.model, this.model, this.model};
+            this.addLayer(new SlimeOuterLayer(this, context.getModelSet()));
+            return;
+        }
         this.innerModels = new SlimeModel[] {
                 this.model,
                 new SlimeModel(context.bakeLayer(WildscapesModelLayers.SLIME_MEDIUM)),
@@ -85,13 +101,13 @@ public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, Slim
         float squish = state.squish / (size * 0.5F + 1.0F);
         float stretch = 1.0F / (squish + 1.0F);
 
-        float ratio = size / MODELLED_SIZES[modelIndex(state)];
+        float ratio = size / (vanilla ? 1.0F : MODELLED_SIZES[modelIndex(state)]);
         poseStack.scale(stretch * ratio, 1.0F / stretch * ratio, stretch * ratio);
     }
 
     @Override
     public Identifier getTextureLocation(SlimeRenderState state) {
-        return TEXTURES[modelIndex(state)];
+        return vanilla ? VANILLA : TEXTURES[modelIndex(state)];
     }
 
     private static Identifier texture(String name) {

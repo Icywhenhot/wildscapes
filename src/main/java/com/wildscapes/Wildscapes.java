@@ -184,6 +184,7 @@ public class Wildscapes implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        WildscapesConfig.load();
         WildscapesBlocks.register();
         WildscapesBlockEntities.register();
         WildscapesDataComponents.register();

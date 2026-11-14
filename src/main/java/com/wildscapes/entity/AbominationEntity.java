@@ -1,5 +1,7 @@
 package com.wildscapes.entity;
 
+import com.wildscapes.WildscapesConfig;
+
 import com.wildscapes.Wildscapes;
 
 import java.util.ArrayList;
@@ -108,7 +110,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private static final int INTERMEDIATE_TICKS = 13;
     private static final int REFERENCE_AIR = 20;
     private static final double LEAP_RANGE = 16.0D;
-    private static final float POUNCE_DAMAGE = 12.0F;
     private static final int ARC_STEP = 3;
     private static final int ARC_MAX = 8;
 
@@ -118,7 +119,6 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private static final int TONGUE_END = 47;
     private static final double TONGUE_RANGE = 18.0D;
     private static final double TONGUE_FAR = 12.0D;
-    private static final float CHIP_DAMAGE = 2.0F;
     private static final float MOUTH_HOLD = 0.08F;
     private static final double MOUTH_HEIGHT = 1.5D;
     private static final double MOUTH_FORWARD = 0.75D;
@@ -442,7 +442,8 @@ public class AbominationEntity extends Monster implements GeoEntity {
             return;
         }
         this.pounceLanded = true;
-        target.hurtServer((ServerLevel) level(), this.damageSources().mobAttack(this), POUNCE_DAMAGE);
+        target.hurtServer((ServerLevel) level(), this.damageSources().mobAttack(this),
+                WildscapesConfig.get(WildscapesConfig.POUNCE_DAMAGE).floatValue());
         Vec3 push = new Vec3(this.jumpVX, 0.0D, this.jumpVZ).normalize().scale(0.6D);
         target.push(push.x, 0.35D, push.z);
         target.hurtMarked = true;
@@ -599,7 +600,8 @@ public class AbominationEntity extends Monster implements GeoEntity {
             target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, TONGUE_END - TONGUE_GRAB, 6,
                     false, false, false));
         } else if (ticks == TONGUE_GRAB + 1 || ticks == TONGUE_HOLD_END - 1) {
-            target.hurtServer((ServerLevel) level(), this.damageSources().mobAttack(this), CHIP_DAMAGE);
+            target.hurtServer((ServerLevel) level(), this.damageSources().mobAttack(this),
+                    WildscapesConfig.get(WildscapesConfig.TONGUE_DAMAGE).floatValue());
         }
     }
 

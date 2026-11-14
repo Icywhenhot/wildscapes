@@ -67,6 +67,9 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook, Mir
         Vec3 hand = owner instanceof Player player ? getHandPos(player, partialTick)
                 : owner.getRopeHoldPosition(partialTick);
         state.rope = hand.subtract(hook.getPosition(partialTick));
+        if (state.rope.length() > hook.getMaxRange() + 16.0) {
+            state.rope = Vec3.ZERO;
+        }
     }
 
     @Override

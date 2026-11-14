@@ -72,10 +72,4 @@ public abstract class EntityMixin implements WildscapesEntityData {
                 entity.getBoundingBox(), entity.level(), List.of());
         cir.setReturnValue(new Vec3(movement.x, movement.y < 0.0 ? fall.y : movement.y, movement.z));
     }
-    @Inject(method = "canBeHitByProjectile", at = @At("HEAD"), cancellable = true)
-    private void intangibleProjectile(CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof Player player && Intangibility.isActive(player)) {
-            cir.setReturnValue(false);
-        }
-    }
 }

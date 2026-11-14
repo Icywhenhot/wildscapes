@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MobMixin {
     @Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
     private void intangibleTarget(LivingEntity target, CallbackInfo ci) {
-        if (target instanceof Player player && Intangibility.isActive(player)) {
+        if (target instanceof Player player && Intangibility.hiddenFrom(player, (Mob) (Object) this)) {
             ((Mob) (Object) this).setTarget(null);
             ci.cancel();
         }

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.WitchRitual;
 
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.monster.witch.WitchModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -17,11 +18,22 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchRenderState
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
     private static final Identifier EMPOWERED =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
+    private static final Identifier VANILLA = Identifier.withDefaultNamespace("textures/entity/witch/witch.png");
+
+    private final boolean vanilla;
 
     public RedesignedWitchRenderer(EntityRendererProvider.Context context) {
-        super(context, new ChantingWitchModel(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
+        this(context, MobLook.vanilla(context, "witch", WildscapesModelLayers.WITCH, VANILLA));
+    }
+
+    private RedesignedWitchRenderer(EntityRendererProvider.Context context, boolean vanilla) {
+        super(context, vanilla ? new WitchModel(context.bakeLayer(ModelLayers.WITCH))
+                : new ChantingWitchModel(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
+        this.vanilla = vanilla;
         this.addLayer(new WitchItemLayer(this));
-        this.addLayer(new EmpoweredGlowLayer<>(this, "witch_empowered_glow"));
+        if (!vanilla) {
+            this.addLayer(new EmpoweredGlowLayer<>(this, "witch_empowered_glow"));
+        }
     }
 
     @Override
@@ -41,6 +53,9 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchRenderState
 
     @Override
     public Identifier getTextureLocation(WitchRenderState state) {
+        if (vanilla) {
+            return VANILLA;
+        }
         return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
     }
 

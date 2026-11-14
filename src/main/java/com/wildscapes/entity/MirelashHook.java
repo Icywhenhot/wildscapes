@@ -211,6 +211,10 @@ public final class MirelashHook extends ThrowableProjectile {
         return entityData.get(TETHER_LENGTH);
     }
 
+    public float getMaxRange() {
+        return entityData.get(MAX_RANGE);
+    }
+
     private boolean isHeldBy(Player player) {
         return player.getMainHandItem().getItem() instanceof MirelashItem
                 || player.getOffhandItem().getItem() instanceof MirelashItem;

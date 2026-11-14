@@ -24,13 +24,18 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager, IllagerRend
 
     private final IllagerModel<IllagerRenderState> vanillaModel;
     private final IllagerModel<IllagerRenderState> swampModel;
+    private final boolean vanilla;
 
     public SwampPillagerRenderer(EntityRendererProvider.Context context) {
         super(context, new IllagerModel<>(context.bakeLayer(ModelLayers.PILLAGER)), 0.5F);
+        this.vanilla = MobLook.vanilla(context, "pillager", WildscapesModelLayers.PILLAGER_SWAMP, VANILLA);
         this.vanillaModel = this.model;
-        this.swampModel = new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.PILLAGER_SWAMP));
+        this.swampModel = vanilla ? this.model
+                : new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.PILLAGER_SWAMP));
         this.addLayer(new ItemInHandLayer<>(this));
-        this.addLayer(new EmpoweredGlowLayer<>(this, "illager/pillager_empowered_glow"));
+        if (!vanilla) {
+            this.addLayer(new EmpoweredGlowLayer<>(this, "illager/pillager_empowered_glow"));
+        }
     }
 
     @Override
@@ -46,6 +51,9 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager, IllagerRend
 
     @Override
     public Identifier getTextureLocation(IllagerRenderState state) {
+        if (vanilla) {
+            return VANILLA;
+        }
         if (state.getDataOrDefault(MobVisuals.EMPOWERED, false)) {
             return EMPOWERED;
         }
