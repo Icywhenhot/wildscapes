@@ -153,7 +153,7 @@ public final class MirelashItem extends Item {
         player.resetFallDistance();
         Vec3 pull = hook.position().subtract(player.getEyePosition());
         double distance = pull.length();
-        if (distance <= hook.getTetherLength()) {
+        if (distance <= hook.getTetherLength() || distance > hook.getMaxRange()) {
             return;
         }
         double strength = distance / hook.getTetherLength() * 0.1;

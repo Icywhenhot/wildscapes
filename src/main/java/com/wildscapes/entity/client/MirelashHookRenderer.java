@@ -58,7 +58,7 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook> {
                 : owner.getRopeHoldPosition(partialTick);
         Vec3 rope = handPos.subtract(hookPos);
         double length = rope.length();
-        if (length < 0.001) {
+        if (length < 0.001 || length > hook.getMaxRange() + 16.0) {
             return;
         }
 
