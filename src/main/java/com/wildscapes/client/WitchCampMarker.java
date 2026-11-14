@@ -44,13 +44,23 @@ public final class WitchCampMarker {
         }
     }
 
-    public static boolean render(MapItemSavedData data, MapDecoration icon, int index, PoseStack pose,
+    public static MapDecoration wrap(MapItemSavedData data, MapDecoration icon, PoseStack pose,
             MultiBufferSource buffer, int light) {
         Integer pos = markers.get(data);
         if (pos == null || icon.getType() != MapDecoration.Type.RED_X
                 || pos != ((icon.getX() & 255) << 8 | icon.getY() & 255)) {
-            return false;
+            return icon;
         }
+        return new MapDecoration(icon.getType(), icon.getX(), icon.getY(), icon.getRot(), icon.getName()) {
+            @Override
+            public boolean render(int index) {
+                draw(this, index, pose, buffer, light);
+                return true;
+            }
+        };
+    }
+
+    private static void draw(MapDecoration icon, int index, PoseStack pose, MultiBufferSource buffer, int light) {
         pose.pushPose();
         pose.translate(icon.getX() / 2.0F + 64.0F, icon.getY() / 2.0F + 64.0F, -0.02F);
         pose.mulPose(Axis.ZP.rotationDegrees(icon.getRot() * 360 / 16.0F));
@@ -64,6 +74,5 @@ public final class WitchCampMarker {
         vc.vertex(matrix, 1, -1, z).color(255, 255, 255, 255).uv(1, 1).uv2(light).endVertex();
         vc.vertex(matrix, -1, -1, z).color(255, 255, 255, 255).uv(0, 1).uv2(light).endVertex();
         pose.popPose();
-        return true;
     }
 }

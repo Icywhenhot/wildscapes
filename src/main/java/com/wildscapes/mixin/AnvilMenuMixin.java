@@ -9,18 +9,18 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(AnvilMenu.class)
 public abstract class AnvilMenuMixin {
     @Unique
     private boolean wildscapes$slimeSnare;
 
-    @Redirect(method = "createResult", at = @At(value = "INVOKE",
+    @ModifyVariable(method = "createResult", ordinal = 0, at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/item/enchantment/Enchantment;getRarity()Lnet/minecraft/world/item/enchantment/Enchantment$Rarity;"))
-    private Enchantment.Rarity rarity(Enchantment enchantment) {
+    private Enchantment rarity(Enchantment enchantment) {
         wildscapes$slimeSnare = enchantment == WildscapesEnchantments.SLIME_SNARE.get();
-        return enchantment.getRarity();
+        return enchantment;
     }
 
     @ModifyConstant(method = "createResult", constant = @Constant(intValue = 8))
