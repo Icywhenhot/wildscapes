@@ -11,6 +11,7 @@ import com.wildscapes.worldgen.TemplateTreeConfiguration.Ground;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
@@ -99,12 +100,13 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
                 .setMirror(random.nextBoolean() ? Mirror.NONE : Mirror.FRONT_BACK)
                 .setRotationPivot(anchor)
                 .setIgnoreEntities(true)
-
+                .setBoundingBox(writableArea(surface))
                 .addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR)
                 .addProcessor(SWAP_TO_CYPRESS);
 
-        BlockPos corner = surface.above(context.config().yOffset()).subtract(anchor);
-        if (!hasRoomFor(level, template, settings, corner, corner.offset(anchor))) {
+        BlockPos trunk = surface.above(context.config().yOffset());
+        BlockPos corner = trunk.subtract(StructureTemplate.calculateRelativePosition(settings, anchor));
+        if (!hasRoomFor(level, template, settings, corner, trunk)) {
             return false;
         }
         if (!template.placeInWorld(level, corner, corner, settings, random, Block.UPDATE_CLIENTS)) {
@@ -113,6 +115,12 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         repairVines(level, template, settings, corner);
         growMoss(level, template.getBoundingBox(settings, corner), random);
         return true;
+    }
+
+    private static BoundingBox writableArea(BlockPos origin) {
+        int minX = SectionPos.sectionToBlockCoord(SectionPos.blockToSectionCoord(origin.getX()) - 1);
+        int minZ = SectionPos.sectionToBlockCoord(SectionPos.blockToSectionCoord(origin.getZ()) - 1);
+        return new BoundingBox(minX, Integer.MIN_VALUE / 2, minZ, minX + 47, Integer.MAX_VALUE / 2, minZ + 47);
     }
 
     private static final float MOSS_CHANCE = 0.25F;
