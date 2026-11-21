@@ -4,16 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.WitchRitual;
 
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.monster.witch.WitchModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.layers.WitchItemLayer;
+import net.minecraft.client.renderer.entity.WitchRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.client.renderer.entity.state.WitchRenderState;
 import net.minecraft.world.entity.monster.Witch;
 
-public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchRenderState, WitchModel> {
+public class RedesignedWitchRenderer extends WitchRenderer {
     private static final Identifier TEXTURE =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
     private static final Identifier EMPOWERED =
@@ -23,31 +20,17 @@ public class RedesignedWitchRenderer extends MobRenderer<Witch, WitchRenderState
     private final boolean vanilla;
 
     public RedesignedWitchRenderer(EntityRendererProvider.Context context) {
-        this(context, MobLook.vanilla(context, "witch", WildscapesModelLayers.WITCH, VANILLA));
-    }
-
-    private RedesignedWitchRenderer(EntityRendererProvider.Context context, boolean vanilla) {
-        super(context, vanilla ? new WitchModel(context.bakeLayer(ModelLayers.WITCH))
-                : new ChantingWitchModel(context.bakeLayer(WildscapesModelLayers.WITCH)), 0.5F);
-        this.vanilla = vanilla;
-        this.addLayer(new WitchItemLayer(this));
+        super(context);
+        this.vanilla = MobLook.vanilla(context, "witch", WildscapesModelLayers.WITCH, VANILLA);
         if (!vanilla) {
+            this.model = new ChantingWitchModel(context.bakeLayer(WildscapesModelLayers.WITCH));
             this.addLayer(new EmpoweredGlowLayer<>(this, "witch_empowered_glow"));
         }
     }
 
     @Override
-    public WitchRenderState createRenderState() {
-        return new WitchRenderState();
-    }
-
-    @Override
     public void extractRenderState(Witch witch, WitchRenderState state, float partialTick) {
         super.extractRenderState(witch, state, partialTick);
-        net.minecraft.client.renderer.entity.state.HoldingEntityRenderState.extractHoldingEntityRenderState(witch, state, itemModelResolver);
-        state.entityId = witch.getId();
-        state.isHoldingItem = !witch.getMainHandItem().isEmpty();
-        state.isHoldingPotion = witch.getMainHandItem().is(net.minecraft.world.item.Items.POTION);
         state.setData(MobVisuals.CHANTING, WitchRitual.isChanting(witch));
     }
 
