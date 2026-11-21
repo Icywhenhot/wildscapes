@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.block.DrapingMossCarpetBlock;
+import com.wildscapes.block.HangingMossBlock;
+import com.wildscapes.block.ShelfMushroomBlock;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.worldgen.TemplateTreeConfiguration.Ground;
 
@@ -20,6 +22,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -106,7 +109,9 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
 
         BlockPos trunk = surface.above(context.config().yOffset());
         BlockPos corner = trunk.subtract(StructureTemplate.calculateRelativePosition(settings, anchor));
-        if (!hasRoomFor(level, template, settings, corner, trunk)) {
+        if (!hasRoomFor(level, template, settings, corner, trunk)
+                || hitsBuiltBlocks(level, template, settings, corner)
+                || overhangs(level, template, settings, corner)) {
             return false;
         }
         if (!template.placeInWorld(level, corner, corner, settings, random, Block.UPDATE_CLIENTS)) {
@@ -115,6 +120,71 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         repairVines(level, template, settings, corner);
         growMoss(level, template.getBoundingBox(settings, corner), random);
         return true;
+    }
+
+    private static boolean hitsBuiltBlocks(WorldGenLevel level, StructureTemplate template,
+            StructurePlaceSettings settings, BlockPos corner) {
+        BoundingBox writable = settings.getBoundingBox();
+        for (StructureTemplate.StructureBlockInfo info : settings.getRandomPalette(template.palettes, corner).blocks()) {
+            if (info.state().isAir() || info.state().is(Blocks.STRUCTURE_VOID)) {
+                continue;
+            }
+            BlockPos pos = StructureTemplate.calculateRelativePosition(settings, info.pos()).offset(corner);
+            if (writable != null && !writable.isInside(pos)) {
+                continue;
+            }
+            if (!isWild(level.getBlockState(pos))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean overhangs(WorldGenLevel level, StructureTemplate template,
+            StructurePlaceSettings settings, BlockPos corner) {
+        List<StructureTemplate.StructureBlockInfo> blocks = settings.getRandomPalette(template.palettes, corner).blocks();
+        int lowest = Integer.MAX_VALUE;
+        for (StructureTemplate.StructureBlockInfo info : blocks) {
+            if (isTrunk(info.state())) {
+                lowest = Math.min(lowest, info.pos().getY());
+            }
+        }
+        for (StructureTemplate.StructureBlockInfo info : blocks) {
+            if (info.pos().getY() != lowest || !isTrunk(info.state())) {
+                continue;
+            }
+            BlockPos below = StructureTemplate.calculateRelativePosition(settings, info.pos()).offset(corner).below();
+            BlockState support = level.getBlockState(below);
+            if (!support.is(Blocks.WATER) && (support.isAir() || support.canBeReplaced())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isTrunk(BlockState state) {
+        return state.is(Blocks.DARK_OAK_LOG) || state.is(Blocks.DARK_OAK_WOOD)
+                || state.is(WildscapesBlocks.CYPRESS_LOG.get()) || state.is(WildscapesBlocks.CYPRESS_WOOD.get());
+    }
+
+    private static boolean isWild(BlockState state) {
+        Block block = state.getBlock();
+        return state.isAir()
+                || state.is(Blocks.WATER)
+                || state.is(BlockTags.REPLACEABLE_BY_TREES)
+                || state.is(BlockTags.LEAVES)
+                || state.is(BlockTags.LOGS)
+                || state.is(BlockTags.DIRT)
+                || state.is(BlockTags.SAND)
+                || state.is(BlockTags.BASE_STONE_OVERWORLD)
+                || state.is(Blocks.CLAY)
+                || state.is(Blocks.GRAVEL)
+                || state.is(Blocks.MOSS_CARPET)
+                || block instanceof BushBlock
+                || block instanceof VineBlock
+                || block instanceof DrapingMossCarpetBlock
+                || block instanceof HangingMossBlock
+                || block instanceof ShelfMushroomBlock;
     }
 
     private static BoundingBox writableArea(BlockPos origin) {

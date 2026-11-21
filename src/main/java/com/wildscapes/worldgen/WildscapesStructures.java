@@ -5,6 +5,7 @@ import com.wildscapes.Wildscapes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -50,8 +51,15 @@ public final class WildscapesStructures {
     public static final RegistryObject<StructureProcessorType<OvergrowthProcessor>> OVERGROWTH =
             PROCESSORS.register("overgrowth", () -> () -> OvergrowthProcessor.CODEC);
 
+    public static final DeferredRegister<StructurePlacementType<?>> PLACEMENTS =
+            DeferredRegister.create(Registries.STRUCTURE_PLACEMENT, Wildscapes.MODID);
+
+    public static final RegistryObject<StructurePlacementType<KeepAwaySpreadPlacement>> KEEP_AWAY_SPREAD =
+            PLACEMENTS.register("keep_away_spread", () -> () -> KeepAwaySpreadPlacement.CODEC);
+
     public static void register(IEventBus bus) {
         STRUCTURE_TYPES.register(bus);
+        PLACEMENTS.register(bus);
         PIECES.register(bus);
         POOL_ELEMENTS.register(bus);
         PROCESSORS.register(bus);
