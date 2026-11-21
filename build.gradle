@@ -141,6 +141,9 @@ dependencies {
     localRuntime("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}") { transitive = false }
     localRuntime("maven.modrinth:create:${create_version}") { transitive = false }
     localRuntime("maven.modrinth:create-aeronautics:${create_aeronautics_version}") { transitive = false }
+    localRuntime("maven.modrinth:towns-and-towers:${towns_and_towers_version}") { transitive = false }
+    localRuntime("maven.modrinth:cristel-lib:${cristel_lib_version}") { transitive = false }
+    localRuntime("maven.modrinth:dungeons-and-taverns:${dungeons_and_taverns_version}") { transitive = false }
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

@@ -6,13 +6,15 @@
     }
   ],
   "placement": {
-    "type": "minecraft:random_spread",
+    "type": "wildscapes:keep_away_spread",
     "spacing": 16,
     "separation": 8,
     "salt": 1974283911,
-    "exclusion_zone": {
-      "other_set": "minecraft:villages",
-      "chunk_count": 8
-    }
+    "keep_away": [
+      { "set": "minecraft:villages", "chunk_count": 10 },
+      { "set": "towns_and_towers:towns", "chunk_count": 10 },
+      { "set": "nova_structures:villages_swamp", "chunk_count": 10 },
+      { "set": "nova_structures:swamp_structure", "chunk_count": 10 }
+    ]
   }
 }
