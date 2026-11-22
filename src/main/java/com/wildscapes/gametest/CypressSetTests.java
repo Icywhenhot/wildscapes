@@ -19,7 +19,9 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
+import net.minecraft.world.level.block.entity.ShelfBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.fabricmc.fabric.api.registry.CompostableRegistry;
@@ -29,6 +31,7 @@ public final class CypressSetTests {
 
     public static void cypressSetAndPolishHoldTogether(GameTestHelper helper) {
         signsHoldSignBlockEntities(helper);
+        shelfActsLikeAWoodenShelf(helper);
         boatsUseTheCypressType(helper);
         raidBlocksAreUnbreakable(helper);
         mirelashTakesMending(helper);
@@ -68,6 +71,21 @@ public final class CypressSetTests {
         helper.assertTrue(helper.getBlockEntity(sign, SignBlockEntity.class) != null, "cypress sign has no sign entity");
         helper.assertTrue(helper.getBlockEntity(hanging, HangingSignBlockEntity.class) != null,
                 "cypress hanging sign has no hanging sign entity");
+    }
+
+    private static void shelfActsLikeAWoodenShelf(GameTestHelper helper) {
+        BlockPos shelf = new BlockPos(2, 2, 1);
+        helper.setBlock(shelf, WildscapesBlocks.CYPRESS_SHELF);
+        helper.assertTrue(helper.getBlockEntity(shelf, ShelfBlockEntity.class) != null, "cypress shelf has no shelf entity");
+        BlockState state = WildscapesBlocks.CYPRESS_SHELF.defaultBlockState();
+        helper.assertTrue(state.is(BlockTags.WOODEN_SHELVES) && state.is(BlockTags.MINEABLE_WITH_AXE),
+                "cypress shelf missing from wooden shelves or axe tags");
+        var level = helper.getLevel();
+        var log = new ItemStack(WildscapesBlocks.STRIPPED_CYPRESS_LOG);
+        var input = CraftingInput.of(3, 3, List.of(log, log, log, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, log, log, log));
+        var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
+        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input)
+                .is(WildscapesBlocks.CYPRESS_SHELF.asItem()), "cypress shelf recipe missing");
     }
 
     private static void boatsUseTheCypressType(GameTestHelper helper) {

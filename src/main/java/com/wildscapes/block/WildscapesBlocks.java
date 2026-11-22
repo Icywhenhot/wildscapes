@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.ShelfBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
@@ -137,6 +138,14 @@ public final class WildscapesBlocks {
                     .strength(0.5F)
                     .ignitedByLava()
                     .pushReaction(PushReaction.DESTROY)));
+
+    public static final ShelfBlock CYPRESS_SHELF = register("cypress_shelf",
+            properties -> new ShelfBlock(properties
+                    .mapColor(MapColor.COLOR_BROWN)
+                    .instrument(NoteBlockInstrument.BASS)
+                    .sound(SoundType.SHELF)
+                    .ignitedByLava()
+                    .strength(2.0F, 3.0F)));
 
     public static final StandingSignBlock CYPRESS_SIGN = registerBlock("cypress_sign",
             properties -> new StandingSignBlock(CYPRESS_TYPE, signProps(properties)));
@@ -333,5 +342,6 @@ public final class WildscapesBlocks {
         FabricBlockEntityType hangingSign = (FabricBlockEntityType) BlockEntityTypes.HANGING_SIGN;
         hangingSign.addValidBlock(CYPRESS_HANGING_SIGN);
         hangingSign.addValidBlock(CYPRESS_WALL_HANGING_SIGN);
+        ((FabricBlockEntityType) BlockEntityTypes.SHELF).addValidBlock(CYPRESS_SHELF);
     }
 }

@@ -87,6 +87,7 @@ public class Wildscapes implements ModInitializer {
                         output.accept(WildscapesBlocks.CYPRESS_TRAPDOOR);
                         output.accept(WildscapesBlocks.CYPRESS_PRESSURE_PLATE);
                         output.accept(WildscapesBlocks.CYPRESS_BUTTON);
+                        output.accept(WildscapesBlocks.CYPRESS_SHELF);
                         output.accept(WildscapesItems.CYPRESS_SIGN);
                         output.accept(WildscapesItems.CYPRESS_HANGING_SIGN);
                         output.accept(WildscapesItems.CYPRESS_BOAT);
@@ -250,6 +251,7 @@ public class Wildscapes implements ModInitializer {
         fire.add(WildscapesBlocks.CYPRESS_SLAB, 5, 20);
         fire.add(WildscapesBlocks.CYPRESS_FENCE, 5, 20);
         fire.add(WildscapesBlocks.CYPRESS_FENCE_GATE, 5, 20);
+        fire.add(WildscapesBlocks.CYPRESS_SHELF, 30, 20);
         fire.add(WildscapesBlocks.CYPRESS_LEAVES, 30, 60);
     }
 }
