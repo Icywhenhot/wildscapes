@@ -29,7 +29,9 @@ public class IncendiaryBottleItem extends Item {
             level.addFreshEntity(bottle);
         }
         player.awardStat(Stats.ITEM_USED.get(this));
-        stack.consume(1, player);
+        if (!player.getAbilities().instabuild) {
+            stack.shrink(1);
+        }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 }

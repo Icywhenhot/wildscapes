@@ -36,12 +36,12 @@ public class CauldronOfSoulsBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof CauldronOfSoulsBlockEntity be) {
             be.collapse();
         }
@@ -53,7 +53,7 @@ public class CauldronOfSoulsBlock extends Block implements EntityBlock {
         if (state.getValue(PHASE) == Phase.INACTIVE || random.nextInt(4) != 0) {
             return;
         }
-        level.addParticle(WildscapesParticles.CAULDRON_SWIRL,
+        level.addParticle(WildscapesParticles.CAULDRON_SWIRL.get(),
                 pos.getX() + 0.25 + random.nextDouble() * 0.5, pos.getY() + 1.05, pos.getZ() + 0.25 + random.nextDouble() * 0.5,
                 0.0, 0.03 + random.nextDouble() * 0.02, 0.0);
     }
@@ -68,7 +68,7 @@ public class CauldronOfSoulsBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (type != WildscapesBlockEntities.CAULDRON_OF_SOULS) {
+        if (type != WildscapesBlockEntities.CAULDRON_OF_SOULS.get()) {
             return null;
         }
         BlockEntityTicker<CauldronOfSoulsBlockEntity> ticker = level.isClientSide

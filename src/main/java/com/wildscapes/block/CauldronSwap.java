@@ -1,21 +1,19 @@
 package com.wildscapes.block;
 
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.InteractionHand;
 import java.util.function.Consumer;
 
 import com.wildscapes.block.entity.CauldronBlockEntity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import com.wildscapes.item.StoredPotion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
@@ -25,9 +23,6 @@ public final class CauldronSwap {
     private CauldronSwap() {}
 
     public static void onPlace(Level level, BlockPos pos) {
-        if (level.isClientSide()) {
-            return;
-        }
         BlockState placed = level.getBlockState(pos);
 
         if (isVanillaCauldron(placed) && WildscapesCauldronBlock.hasHeatSourceBelow(level, pos)) {
@@ -72,7 +67,7 @@ public final class CauldronSwap {
 
         if (held.getItem() instanceof DyeItem dye && state.is(Blocks.WATER_CAULDRON)) {
             int waterLevel = state.getValue(LayeredCauldronBlock.LEVEL);
-            int color = dye.getDyeColor().getTextureDiffuseColor() & 0xFFFFFF;
+            int color = CauldronBlockEntity.dyeColor(dye.getDyeColor());
             boolean heat = WildscapesCauldronBlock.hasHeatSourceBelow(level, pos);
             return finish(level, () -> {
                 toOurBlock(level, pos, heat, be -> be.setDyedWater(waterLevel, color));
@@ -81,7 +76,7 @@ public final class CauldronSwap {
         }
 
         if (isStorablePotion(held) && state.is(Blocks.CAULDRON)) {
-            PotionContents pc = held.get(DataComponents.POTION_CONTENTS);
+            StoredPotion pc = StoredPotion.read(held);
             boolean heat = WildscapesCauldronBlock.hasHeatSourceBelow(level, pos);
             return finish(level, () -> {
                 toOurBlock(level, pos, heat, be -> be.addPotion(pc));
@@ -92,7 +87,7 @@ public final class CauldronSwap {
     }
 
     private static void toOurBlock(Level level, BlockPos pos, boolean boiling, Consumer<CauldronBlockEntity> init) {
-        level.setBlock(pos, WildscapesBlocks.CAULDRON.defaultBlockState()
+        level.setBlock(pos, WildscapesBlocks.CAULDRON.get().defaultBlockState()
                 .setValue(WildscapesCauldronBlock.BOILING, boiling), Block.UPDATE_ALL);
         if (level.getBlockEntity(pos) instanceof CauldronBlockEntity be) {
             init.accept(be);
@@ -100,10 +95,10 @@ public final class CauldronSwap {
     }
 
     private static InteractionResult finish(Level level, Runnable serverAction) {
-        if (!level.isClientSide()) {
+        if (!level.isClientSide) {
             serverAction.run();
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     private static void consume(Player player, ItemStack held) {
@@ -137,7 +132,7 @@ public final class CauldronSwap {
                 && stack.getItem() != Items.LINGERING_POTION) {
             return false;
         }
-        PotionContents pc = stack.get(DataComponents.POTION_CONTENTS);
-        return pc != null && !pc.is(net.minecraft.world.item.alchemy.Potions.WATER);
+        StoredPotion pc = StoredPotion.read(stack);
+        return !pc.is(net.minecraft.world.item.alchemy.Potions.WATER);
     }
 }

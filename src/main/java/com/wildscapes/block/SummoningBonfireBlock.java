@@ -40,25 +40,25 @@ public class SummoningBonfireBlock extends Block {
         double y = pos.getY() + 0.6;
         double z = pos.getZ() + 0.5;
         if (lit) {
-            level.playSound(null, pos, WildscapesSounds.SUMMONING_BONFIRE_IGNITE, SoundSource.BLOCKS, 1.0F,
+            level.playSound(null, pos, WildscapesSounds.SUMMONING_BONFIRE_IGNITE.get(), SoundSource.BLOCKS, 1.0F,
                     0.9F + level.random.nextFloat() * 0.2F);
-            level.sendParticles(WildscapesParticles.SOUL_HARVEST_SPARK, x, y, z, 14, 0.35, 0.4, 0.35, 0.06);
-            level.sendParticles(WildscapesParticles.BONFIRE_EMBER, x, y, z, 10, 0.3, 0.2, 0.3, 0.08);
+            level.sendParticles(WildscapesParticles.SOUL_HARVEST_SPARK.get(), x, y, z, 14, 0.35, 0.4, 0.35, 0.06);
+            level.sendParticles(WildscapesParticles.BONFIRE_EMBER.get(), x, y, z, 10, 0.3, 0.2, 0.3, 0.08);
         } else {
             level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 1.4F);
-            level.sendParticles(WildscapesParticles.LOST_SOUL, x, y + 0.3, z, 3, 0.2, 0.2, 0.2, 0.01);
+            level.sendParticles(WildscapesParticles.LOST_SOUL.get(), x, y + 0.3, z, 3, 0.2, 0.2, 0.2, 0.01);
         }
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (state.getValue(LIT) && entity instanceof Player) {
-            entity.hurt(level.damageSources().campfire(), 1.0F);
+            entity.hurt(level.damageSources().inFire(), 1.0F);
         }
         super.entityInside(state, level, pos, entity);
     }
@@ -74,12 +74,12 @@ public class SummoningBonfireBlock extends Block {
                     0.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.6F, false);
         }
         if (random.nextInt(3) == 0) {
-            level.addParticle(WildscapesParticles.BONFIRE_EMBER,
+            level.addParticle(WildscapesParticles.BONFIRE_EMBER.get(),
                     pos.getX() + 0.3 + random.nextDouble() * 0.4, pos.getY() + 0.5 + random.nextDouble() * 0.5,
                     pos.getZ() + 0.3 + random.nextDouble() * 0.4, 0.0, 0.04 + random.nextDouble() * 0.03, 0.0);
         }
         if (random.nextInt(4) == 0) {
-            level.addParticle(WildscapesParticles.SOUL_HARVEST_SPARK,
+            level.addParticle(WildscapesParticles.SOUL_HARVEST_SPARK.get(),
                     pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble() * 0.8,
                     pos.getZ() + random.nextDouble(), 0.0, 0.02, 0.0);
         }

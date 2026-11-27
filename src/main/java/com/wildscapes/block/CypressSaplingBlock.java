@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.grower.TreeGrower;
+import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -22,7 +22,7 @@ import net.minecraft.world.level.material.Fluids;
 public class CypressSaplingBlock extends SaplingBlock implements SimpleWaterloggedBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    public CypressSaplingBlock(TreeGrower treeGrower, Properties properties) {
+    public CypressSaplingBlock(AbstractTreeGrower treeGrower, Properties properties) {
         super(treeGrower, properties);
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(STAGE, 0)
@@ -47,7 +47,7 @@ public class CypressSaplingBlock extends SaplingBlock implements SimpleWaterlogg
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour,
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbour,
             LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
@@ -56,7 +56,7 @@ public class CypressSaplingBlock extends SaplingBlock implements SimpleWaterlogg
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 }

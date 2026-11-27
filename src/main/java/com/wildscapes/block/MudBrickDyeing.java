@@ -1,5 +1,8 @@
 package com.wildscapes.block;
 
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.BlockHitResult;
+import com.wildscapes.registry.RegistryObject;
 
 public final class MudBrickDyeing {
     private MudBrickDyeing() {}
@@ -28,26 +29,23 @@ public final class MudBrickDyeing {
     public static void buildLookup() {
         FAMILIES.clear();
         addFamily(Blocks.MUD_BRICKS, MudBrickBlocks.BRICKS);
-        addFamily(MudBrickBlocks.CHISELED_MUD_BRICKS, MudBrickBlocks.CHISELED);
+        addFamily(MudBrickBlocks.CHISELED_MUD_BRICKS.get(), MudBrickBlocks.CHISELED);
         addFamily(Blocks.MUD_BRICK_STAIRS, MudBrickBlocks.STAIRS);
         addFamily(Blocks.MUD_BRICK_SLAB, MudBrickBlocks.SLABS);
         addFamily(Blocks.MUD_BRICK_WALL, MudBrickBlocks.WALLS);
     }
 
-    private static void addFamily(Block undyed, Map<DyeColor, ? extends Block> dyed) {
+    private static void addFamily(Block undyed, Map<DyeColor, ? extends RegistryObject<? extends Block>> dyed) {
         Map<DyeColor, Block> byColor = new EnumMap<>(DyeColor.class);
-        byColor.putAll(dyed);
+        dyed.forEach((color, block) -> byColor.put(color, block.get()));
 
         FAMILIES.put(undyed, byColor);
         byColor.values().forEach(block -> FAMILIES.put(block, byColor));
     }
 
     public static InteractionResult onRightClick(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
-        if (player.isSpectator()) {
-            return InteractionResult.PASS;
-        }
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof DyeItem dye)) {
+        if (player.isSpectator() || !(stack.getItem() instanceof DyeItem dye)) {
             return InteractionResult.PASS;
         }
 
@@ -57,7 +55,7 @@ public final class MudBrickDyeing {
             return InteractionResult.PASS;
         }
 
-        if (level.isClientSide()) {
+        if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
 

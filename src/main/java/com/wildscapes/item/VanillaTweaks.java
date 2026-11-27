@@ -4,35 +4,46 @@ import java.util.List;
 
 import com.wildscapes.Wildscapes;
 
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public final class VanillaTweaks {
     private VanillaTweaks() {}
 
-    private static final float FAST_EAT_SECONDS = 0.4F;
-
     private static final List<Item> STEWS =
             List.of(Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.BEETROOT_SOUP, Items.SUSPICIOUS_STEW);
 
-    public static void register() {
-        net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents.MODIFY.register(VanillaTweaks::modifyComponents);
+    public static void setup() {
+        Items.POTION.maxStackSize = 8;
+        STEWS.forEach(stew -> stew.maxStackSize = 8);
     }
 
-    private static void modifyComponents(net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents.ModifyContext event) {
-        event.modify(Items.POTION, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 8));
+    public static boolean isFastFood(ItemStack stack) {
+        return STEWS.contains(stack.getItem()) || stack.getItem() instanceof MagicSoupItem;
+    }
 
-        for (Item stew : STEWS) {
-            FoodProperties food = stew.components().get(DataComponents.FOOD);
-            event.modify(stew, builder -> {
-                builder.set(DataComponents.MAX_STACK_SIZE, 8);
-                if (food != null) {
-                    builder.set(DataComponents.FOOD, new FoodProperties(food.nutrition(), food.saturation(),
-                            food.canAlwaysEat(), FAST_EAT_SECONDS, food.usingConvertsTo(), food.effects()));
-                }
-            });
+    public static ItemStack finishEating(LivingEntity entity, ItemStack eaten, ItemStack result) {
+        if (!isFastFood(eaten) || eaten.getCount() <= 1) {
+            return result;
         }
+        if (entity instanceof Player player && player.getAbilities().instabuild) {
+            return result;
+        }
+        ItemStack remaining = eaten.copy();
+        remaining.shrink(1);
+        if (!entity.level().isClientSide) {
+            ItemStack bowl = new ItemStack(Items.BOWL);
+            if (entity instanceof Player player) {
+                if (!player.getInventory().add(bowl)) {
+                    player.drop(bowl, false);
+                }
+            } else {
+                entity.spawnAtLocation(bowl);
+            }
+        }
+        return remaining;
     }
 }

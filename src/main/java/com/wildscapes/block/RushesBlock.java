@@ -61,7 +61,7 @@ public class RushesBlock extends DoublePlantBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour,
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbour,
             LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
@@ -70,7 +70,7 @@ public class RushesBlock extends DoublePlantBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 }

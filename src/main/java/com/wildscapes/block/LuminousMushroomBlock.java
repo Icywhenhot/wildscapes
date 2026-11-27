@@ -1,6 +1,5 @@
 package com.wildscapes.block;
 
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -13,8 +12,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class LuminousMushroomBlock extends BushBlock {
-    public static final MapCodec<LuminousMushroomBlock> CODEC = simpleCodec(LuminousMushroomBlock::new);
-
     private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 13, 14);
 
     public LuminousMushroomBlock(Properties properties) {
@@ -22,12 +19,7 @@ public class LuminousMushroomBlock extends BushBlock {
     }
 
     @Override
-    protected MapCodec<? extends BushBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
