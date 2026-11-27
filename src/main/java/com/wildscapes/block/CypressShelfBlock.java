@@ -7,9 +7,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
 import com.wildscapes.block.entity.CypressShelfBlockEntity;
-import net.minecraft.world.ItemInteractionResult;
 
-import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -23,7 +21,6 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -60,7 +57,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
-    public static final MapCodec<CypressShelfBlock> CODEC = simpleCodec(CypressShelfBlock::new);
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<ShelfPart> SIDE_CHAIN_PART = EnumProperty.create("side_chain", ShelfPart.class);
@@ -71,11 +67,6 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
         Direction.EAST, Shapes.or(Block.box(3, 12, 0, 5, 16, 16), Block.box(0, 0, 0, 3, 16, 16), Block.box(3, 0, 0, 5, 4, 16)),
         Direction.WEST, Shapes.or(Block.box(11, 12, 0, 13, 16, 16), Block.box(13, 0, 0, 16, 16, 16), Block.box(11, 0, 0, 13, 4, 16)));
 
-
-    @Override
-    public MapCodec<CypressShelfBlock> codec() {
-        return CODEC;
-    }
 
     public CypressShelfBlock(final BlockBehaviour.Properties properties) {
         super(properties);
@@ -90,17 +81,17 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    protected VoxelShape getShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
+    public VoxelShape getShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
         return SHAPES.get(state.getValue(FACING));
     }
 
     @Override
-    protected boolean useShapeForLightOcclusion(final BlockState state) {
+    public boolean useShapeForLightOcclusion(final BlockState state) {
         return true;
     }
 
     @Override
-    protected boolean isPathfindable(final BlockState state, final PathComputationType type) {
+    public boolean isPathfindable(final BlockState state, final BlockGetter level, final BlockPos pos, final PathComputationType type) {
         return type == PathComputationType.WATER && state.getFluidState().is(FluidTags.WATER);
     }
 
@@ -110,12 +101,12 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
+    public void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, POWERED, SIDE_CHAIN_PART, WATERLOGGED);
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moved) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState next, boolean moved) {
         if (!state.is(next.getBlock())) {
             if (level.getBlockEntity(pos) instanceof CypressShelfBlockEntity shelf) Containers.dropContents(level, pos, shelf);
             level.updateNeighbourForOutputSignal(pos, this);
@@ -125,12 +116,12 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected void neighborChanged(
+    public void neighborChanged(
         final BlockState state, final Level level, final BlockPos pos, final Block block, final BlockPos neighbor, final boolean movedByPiston
     ) {
         if (!level.isClientSide) {
@@ -142,7 +133,7 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
                 }
 
                 level.setBlock(pos, newState, 3);
-                this.playSound(level, pos, signal ? com.wildscapes.sound.WildscapesSounds.SHELF_ACTIVATE : com.wildscapes.sound.WildscapesSounds.SHELF_DEACTIVATE);
+                this.playSound(level, pos, signal ? com.wildscapes.sound.WildscapesSounds.SHELF_ACTIVATE.get() : com.wildscapes.sound.WildscapesSounds.SHELF_DEACTIVATE.get());
                 level.gameEvent(signal ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos, GameEvent.Context.of(newState));
             }
         }
@@ -176,14 +167,8 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        InteractionResult result = swapItems(stack, state, level, pos, player, hand, hit);
-        return result.consumesAction() ? ItemInteractionResult.sidedSuccess(level.isClientSide) : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        return swapItems(ItemStack.EMPTY, state, level, pos, player, InteractionHand.MAIN_HAND, hit);
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return swapItems(player.getItemInHand(hand), state, level, pos, player, hand, hit);
     }
 
     private InteractionResult swapItems(
@@ -209,13 +194,13 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
             if (!state.getValue(POWERED)) {
                 boolean itemRemoved = swapSingleItem(itemStack, player, shelfBlockEntity, hitSlot.getAsInt(), inventory);
                 if (itemRemoved) {
-                    this.playSound(level, pos, itemStack.isEmpty() ? com.wildscapes.sound.WildscapesSounds.SHELF_TAKE_ITEM : com.wildscapes.sound.WildscapesSounds.SHELF_SINGLE_SWAP);
+                    this.playSound(level, pos, itemStack.isEmpty() ? com.wildscapes.sound.WildscapesSounds.SHELF_TAKE_ITEM.get() : com.wildscapes.sound.WildscapesSounds.SHELF_SINGLE_SWAP.get());
                 } else {
                     if (itemStack.isEmpty()) {
                         return InteractionResult.PASS;
                     }
 
-                    this.playSound(level, pos, com.wildscapes.sound.WildscapesSounds.SHELF_PLACE_ITEM);
+                    this.playSound(level, pos, com.wildscapes.sound.WildscapesSounds.SHELF_PLACE_ITEM.get());
                 }
 
                 return InteractionResult.SUCCESS;
@@ -226,7 +211,7 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
                     return InteractionResult.CONSUME;
                 }
 
-                this.playSound(level, pos, com.wildscapes.sound.WildscapesSounds.SHELF_MULTI_SWAP);
+                this.playSound(level, pos, com.wildscapes.sound.WildscapesSounds.SHELF_MULTI_SWAP.get());
                 return previousItem == inventory.getSelected()
                     ? InteractionResult.SUCCESS
                     : InteractionResult.SUCCESS;
@@ -240,7 +225,7 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
         final ItemStack itemStack, final Player player, final CypressShelfBlockEntity shelfBlockEntity, final int hitSlot, final Inventory inventory
     ) {
         ItemStack removedItem = shelfBlockEntity.swapItemNoUpdate(hitSlot, itemStack);
-        ItemStack newInventoryItem = player.hasInfiniteMaterials() && removedItem.isEmpty() ? itemStack.copy() : removedItem;
+        ItemStack newInventoryItem = player.getAbilities().instabuild && removedItem.isEmpty() ? itemStack.copy() : removedItem;
         inventory.setItem(inventory.selected, newInventoryItem);
         inventory.setChanged();
         shelfBlockEntity.setChanged(GameEvent.ITEM_INTERACT_FINISH);
@@ -300,7 +285,7 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    protected void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
+    public void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
         if (state.getValue(POWERED)) {
             this.updateSelfAndNeighborsOnPoweringUp(level, pos, state, oldState);
         } else {
@@ -313,23 +298,23 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
     }
 
     @Override
-    protected FluidState getFluidState(final BlockState state) {
+    public FluidState getFluidState(final BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         return super.updateShape(state, direction, neighbor, level, pos, neighborPos);
     }
 
     @Override
-    protected boolean hasAnalogOutputSignal(final BlockState state) {
+    public boolean hasAnalogOutputSignal(final BlockState state) {
         return true;
     }
 
     @Override
-    protected int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos) {
+    public int getAnalogOutputSignal(final BlockState state, final Level level, final BlockPos pos) {
         if (level.isClientSide) {
             return 0;
         } else if (level.getBlockEntity(pos) instanceof CypressShelfBlockEntity blockEntity) {
@@ -348,7 +333,7 @@ public class CypressShelfBlock extends BaseEntityBlock implements SimpleWaterlog
         }
 
         CypressShelfBlock.Neighbors neighbors = this.getNeighbors(level, pos, this.getFacing(state));
-        List<BlockPos> results = new LinkedList<>();
+        LinkedList<BlockPos> results = new LinkedList<>();
         results.add(pos);
         this.addBlocksConnectingTowards(neighbors::left, ShelfPart.LEFT, results::addFirst);
         this.addBlocksConnectingTowards(neighbors::right, ShelfPart.RIGHT, results::addLast);
