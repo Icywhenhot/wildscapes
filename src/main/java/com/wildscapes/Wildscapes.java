@@ -60,9 +60,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.fabricmc.fabric.api.registry.FabricPotionBrewingBuilder;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 
 public class Wildscapes implements ModInitializer {
     public static final String MODID = "wildscapes";
@@ -207,7 +205,6 @@ public class Wildscapes implements ModInitializer {
         FabricDefaultAttributeRegistry.register(WildscapesEntities.ABOMINATION, AbominationEntity.createAttributes());
         MirelashAttackPayload.register();
         JumpPayload.register();
-        FabricPotionBrewingBuilder.BUILD.register(this::registerBrewingRecipes);
 
         ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, level) -> {
             if (blockEntity instanceof com.wildscapes.block.entity.CauldronOfSoulsBlockEntity cauldron) {
@@ -225,17 +222,6 @@ public class Wildscapes implements ModInitializer {
         UseBlockCallback.EVENT.register(CauldronSwap::onRightClick);
         UseBlockCallback.EVENT.register(MossCarpetSwap::onBonemeal);
         VanillaTweaks.register();
-    }
-
-    private void registerBrewingRecipes(PotionBrewing.Builder builder) {
-        builder.addMix(WildscapesPotions.GNASHING, Items.REDSTONE, WildscapesPotions.LONG_GNASHING);
-        builder.addMix(WildscapesPotions.GNASHING, Items.GLOWSTONE_DUST, WildscapesPotions.STRONG_GNASHING);
-        builder.addMix(Potions.AWKWARD, Items.ENDER_PEARL, WildscapesPotions.MIRAGE);
-        builder.addMix(WildscapesPotions.MIRAGE, Items.REDSTONE, WildscapesPotions.LONG_MIRAGE);
-        builder.addMix(Potions.AWKWARD, Items.TURTLE_EGG, WildscapesPotions.RESISTANCE);
-        builder.addMix(WildscapesPotions.RESISTANCE, Items.REDSTONE, WildscapesPotions.LONG_RESISTANCE);
-        builder.addMix(WildscapesPotions.RESISTANCE, Items.GLOWSTONE_DUST,
-                WildscapesPotions.STRONG_RESISTANCE);
     }
 
     private void commonSetup() {
