@@ -2,27 +2,33 @@ package com.wildscapes.worldgen;
 
 import com.wildscapes.Wildscapes;
 
-import net.minecraft.core.Registry;
-
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.SimpleBlockConfiguration;
+import com.wildscapes.registry.RegistryObject;
+import com.wildscapes.registry.DeferredRegister;
 
 public final class WildscapesFeatures {
     private WildscapesFeatures() {}
 
-    public static final CypressTreeFeature CYPRESS_TREE =
-            Registry.register(BuiltInRegistries.FEATURE, Wildscapes.id("cypress_tree"), new CypressTreeFeature(NoneFeatureConfiguration.CODEC));
+    public static final DeferredRegister<Feature<?>> FEATURES =
+            DeferredRegister.create(Registries.FEATURE, Wildscapes.MODID);
 
-    public static final TemplateTreeFeature TEMPLATE_TREE =
-            Registry.register(BuiltInRegistries.FEATURE, Wildscapes.id("template_tree"), new TemplateTreeFeature(TemplateTreeConfiguration.CODEC));
+    public static final RegistryObject<CypressTreeFeature> CYPRESS_TREE =
+            FEATURES.register("cypress_tree", () -> new CypressTreeFeature(NoneFeatureConfiguration.CODEC));
 
-    public static final WaterloggedDoublePlantFeature WATERLOGGED_DOUBLE_PLANT =
-            Registry.register(BuiltInRegistries.FEATURE, Wildscapes.id("waterlogged_double_plant"), new WaterloggedDoublePlantFeature(SimpleBlockConfiguration.CODEC));
+    public static final RegistryObject<TemplateTreeFeature> TEMPLATE_TREE =
+            FEATURES.register("template_tree", () -> new TemplateTreeFeature(TemplateTreeConfiguration.CODEC));
 
-    public static final ShelfMushroomFeature SHELF_MUSHROOM =
-            Registry.register(BuiltInRegistries.FEATURE, Wildscapes.id("shelf_mushroom"), new ShelfMushroomFeature(SimpleBlockConfiguration.CODEC));
+    public static final RegistryObject<WaterloggedDoublePlantFeature> WATERLOGGED_DOUBLE_PLANT =
+            FEATURES.register("waterlogged_double_plant",
+                    () -> new WaterloggedDoublePlantFeature(SimpleBlockConfiguration.CODEC));
 
-    public static void register() {}
+    public static final RegistryObject<ShelfMushroomFeature> SHELF_MUSHROOM =
+            FEATURES.register("shelf_mushroom", () -> new ShelfMushroomFeature(SimpleBlockConfiguration.CODEC));
+
+    public static void register() {
+        FEATURES.register();
+    }
 }

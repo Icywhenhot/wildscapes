@@ -1,6 +1,7 @@
 package com.wildscapes.particle.client;
 
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -12,6 +13,7 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.Mth;
 
 public class MultiJumpParticle extends TextureSheetParticle {
     private final SpriteSet sprites;
@@ -35,6 +37,20 @@ public class MultiJumpParticle extends TextureSheetParticle {
     public void render(VertexConsumer buffer, Camera camera, float partialTick) {
         renderRotatedQuad(buffer, camera, new Quaternionf().rotateX((float) (Math.PI / 2)), partialTick);
         renderRotatedQuad(buffer, camera, new Quaternionf().rotateX((float) (-Math.PI / 2)), partialTick);
+    }
+
+    private void renderRotatedQuad(VertexConsumer buffer, Camera camera, Quaternionf rotation, float partialTick) {
+        var pos = camera.getPosition();
+        float dx = (float) (Mth.lerp(partialTick, xo, x) - pos.x);
+        float dy = (float) (Mth.lerp(partialTick, yo, y) - pos.y);
+        float dz = (float) (Mth.lerp(partialTick, zo, z) - pos.z);
+        Vector3f[] corners = {new Vector3f(-1, -1, 0), new Vector3f(-1, 1, 0),
+                new Vector3f(1, 1, 0), new Vector3f(1, -1, 0)};
+        for (int i = 0; i < corners.length; i++) {
+            var v = corners[i].rotate(rotation).mul(getQuadSize(partialTick)).add(dx, dy, dz);
+            buffer.vertex(v.x, v.y, v.z).uv(i < 2 ? getU1() : getU0(), i == 0 || i == 3 ? getV1() : getV0())
+                    .color(rCol, gCol, bCol, alpha).uv2(getLightColor(partialTick)).endVertex();
+        }
     }
 
     @Override

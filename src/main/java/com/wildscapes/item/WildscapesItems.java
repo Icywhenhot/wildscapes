@@ -1,113 +1,109 @@
 package com.wildscapes.item;
 
-import java.util.function.Function;
-
 import com.wildscapes.Wildscapes;
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.entity.WildscapesEntities;
 
 import icy.lib.GuideBookItem;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BannerPatternItem;
+import net.minecraft.world.item.BowlFoodItem;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.HangingSignItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SignItem;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.SmithingTemplateItem;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.level.block.DispenserBlock;
+import com.wildscapes.registry.RegistryObject;
+import com.wildscapes.registry.DeferredRegister;
 
 public final class WildscapesItems {
     private WildscapesItems() {}
 
-    public static final Item SLIME_BANNER_PATTERN = bannerPattern("slime");
-    public static final Item SPIRIT_BANNER_PATTERN = bannerPattern("spirit");
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Wildscapes.MODID);
 
-    public static final SmithingTemplateItem SPELL_ARMOR_TRIM_SMITHING_TEMPLATE =
-            register("spell_armor_trim_smithing_template", properties -> SmithingTemplateItem.createArmorTrimTemplate(Wildscapes.id("spell")));
+    public static final RegistryObject<BannerPatternItem> SLIME_BANNER_PATTERN = ITEMS.register("slime_banner_pattern",
+            () -> new BannerPatternItem(TagKey.create(Registries.BANNER_PATTERN,
+                    new ResourceLocation(Wildscapes.MODID, "pattern_item/slime")), new Item.Properties().stacksTo(1)));
 
-    public static final SmithingTemplateItem VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE =
-            register("viscose_armor_trim_smithing_template", properties -> SmithingTemplateItem.createArmorTrimTemplate(Wildscapes.id("viscose")));
+    public static final RegistryObject<BannerPatternItem> SPIRIT_BANNER_PATTERN = ITEMS.register("spirit_banner_pattern",
+            () -> new BannerPatternItem(TagKey.create(Registries.BANNER_PATTERN,
+                    new ResourceLocation(Wildscapes.MODID, "pattern_item/spirit")), new Item.Properties().stacksTo(1)));
 
-    public static final Item ABOMINATION_SPAWN_EGG = register("abomination_spawn_egg",
-            properties -> new SpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, properties));
+    public static final RegistryObject<SmithingTemplateItem> SPELL_ARMOR_TRIM_SMITHING_TEMPLATE = ITEMS.register(
+            "spell_armor_trim_smithing_template", () -> SmithingTemplateItem.createArmorTrimTemplate(
+                    new ResourceLocation(Wildscapes.MODID, "spell")));
 
-    public static final Item ILLUSIONER_SPAWN_EGG = register("illusioner_spawn_egg",
-            properties -> new SpawnEggItem(EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, properties));
+    public static final RegistryObject<SmithingTemplateItem> VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE = ITEMS.register(
+            "viscose_armor_trim_smithing_template", () -> SmithingTemplateItem.createArmorTrimTemplate(
+                    new ResourceLocation(Wildscapes.MODID, "viscose")));
 
-    public static final SignItem CYPRESS_SIGN = register("cypress_sign",
-            properties -> new SignItem(properties.stacksTo(16), WildscapesBlocks.CYPRESS_SIGN, WildscapesBlocks.CYPRESS_WALL_SIGN));
+    public static final RegistryObject<Item> ABOMINATION_SPAWN_EGG = ITEMS.register("abomination_spawn_egg",
+            () -> new SpawnEggItem(WildscapesEntities.ABOMINATION.get(), 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
-    public static final HangingSignItem CYPRESS_HANGING_SIGN = register("cypress_hanging_sign",
-            properties -> new HangingSignItem(WildscapesBlocks.CYPRESS_HANGING_SIGN,
-                    WildscapesBlocks.CYPRESS_WALL_HANGING_SIGN, properties.stacksTo(16)));
+    public static final RegistryObject<Item> BOGGED_SPAWN_EGG = ITEMS.register("bogged_spawn_egg",
+            () -> new SpawnEggItem(WildscapesEntities.BOGGED.get(), 9084018, 3231003, new Item.Properties()));
 
-    public static final BoatItem CYPRESS_BOAT = register("cypress_boat",
-            properties -> new BoatItem(false, net.minecraft.world.entity.vehicle.Boat.Type.OAK, properties.stacksTo(1)));
+    public static final RegistryObject<Item> ILLUSIONER_SPAWN_EGG = ITEMS.register("illusioner_spawn_egg",
+            () -> new SpawnEggItem(EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
-    public static final BoatItem CYPRESS_CHEST_BOAT = register("cypress_chest_boat",
-            properties -> new BoatItem(true, net.minecraft.world.entity.vehicle.Boat.Type.OAK, properties.stacksTo(1)));
+    public static final RegistryObject<SignItem> CYPRESS_SIGN = ITEMS.register("cypress_sign",
+            () -> new SignItem(new Item.Properties().stacksTo(16),
+                    WildscapesBlocks.CYPRESS_SIGN.get(), WildscapesBlocks.CYPRESS_WALL_SIGN.get()));
 
-    public static final Item FROG_LEGS = register("frog_legs", Item::new);
+    public static final RegistryObject<HangingSignItem> CYPRESS_HANGING_SIGN = ITEMS.register("cypress_hanging_sign",
+            () -> new HangingSignItem(WildscapesBlocks.CYPRESS_HANGING_SIGN.get(),
+                    WildscapesBlocks.CYPRESS_WALL_HANGING_SIGN.get(), new Item.Properties().stacksTo(16)));
 
-    public static final Item FROG_LEG_STEW = register("frog_leg_stew",
-            properties -> new Item(properties.stacksTo(1).food(new FoodProperties.Builder()
-                    .nutrition(5).saturationModifier(0.6F).usingConvertsTo(Items.BOWL)
-                    .effect(new MobEffectInstance(MobEffects.JUMP, 400, 1), 1.0F).build())));
+    public static final RegistryObject<CypressBoatItem> CYPRESS_BOAT = ITEMS.register("cypress_boat",
+            () -> new CypressBoatItem(false, new Item.Properties().stacksTo(1)));
 
-    public static final Item LADLE = register("ladle", properties -> new Item(properties.durability(10)));
-    public static final Item ABOMINATION_TONGUE = register("abomination_tongue", Item::new);
+    public static final RegistryObject<CypressBoatItem> CYPRESS_CHEST_BOAT = ITEMS.register("cypress_chest_boat",
+            () -> new CypressBoatItem(true, new Item.Properties().stacksTo(1)));
 
-    public static final MirelashItem MIRELASH = register("mirelash",
-            properties -> new MirelashItem(properties.durability(64)
-                    .attributes(ItemAttributeModifiers.builder()
-                            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
-                                    5.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID,
-                                    -2.4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                            .build())));
+    public static final RegistryObject<Item> FROG_LEGS = ITEMS.register("frog_legs",
+            () -> new Item(new Item.Properties()));
 
-    public static final Item ILLUSIONIST_NECKLACE =
-            register("illusionist_necklace", properties -> new Item(properties.durability(432)));
+    public static final RegistryObject<Item> FROG_LEG_STEW = ITEMS.register("frog_leg_stew",
+            () -> new BowlFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder()
+                    .nutrition(5)
+                    .saturationMod(0.6F)
+                    .effect(new MobEffectInstance(MobEffects.JUMP, 400, 1), 1.0F)
+                    .build())));
 
-    public static final IncendiaryBottleItem INCENDIARY_BOTTLE =
-            register("incendiary_bottle", properties -> new IncendiaryBottleItem(properties.stacksTo(16)));
+    public static final RegistryObject<Item> LADLE = ITEMS.register("ladle",
+            () -> new Item(new Item.Properties().durability(10)));
 
-    public static final MagicSoupItem MAGIC_SOUP = register("magic_soup", MagicSoupItem::new);
+    public static final RegistryObject<Item> ABOMINATION_TONGUE = ITEMS.register("abomination_tongue",
+            () -> new Item(new Item.Properties()));
 
-    public static final GuideBookItem MERCHANTS_GUIDE = register("merchants_guide",
-            properties -> new GuideBookItem(properties, Wildscapes.id("merchants_guide")));
+    public static final RegistryObject<MirelashItem> MIRELASH = ITEMS.register("mirelash",
+            () -> new MirelashItem(new Item.Properties().durability(64)));
 
-    private static Item bannerPattern(String name) {
-        var tag = TagKey.create(Registries.BANNER_PATTERN, Wildscapes.id("pattern_item/" + name));
-        return register(name + "_banner_pattern", properties -> new net.minecraft.world.item.BannerPatternItem(tag, properties.stacksTo(1)));
-    }
+    public static final RegistryObject<Item> ILLUSIONIST_NECKLACE = ITEMS.register("illusionist_necklace",
+            () -> new Item(new Item.Properties().durability(432)));
 
-    private static <T extends Item> T register(String name, Function<Item.Properties, T> factory) {
-        var key = ResourceKey.create(Registries.ITEM, Wildscapes.id(name));
-        return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(new Item.Properties()));
-    }
+    public static final RegistryObject<IncendiaryBottleItem> INCENDIARY_BOTTLE = ITEMS.register("incendiary_bottle",
+            () -> new IncendiaryBottleItem(new Item.Properties().stacksTo(16)));
+
+    public static final RegistryObject<OminousBottleItem> OMINOUS_BOTTLE = ITEMS.register("ominous_bottle",
+            () -> new OminousBottleItem(new Item.Properties()));
+
+    public static final RegistryObject<MagicSoupItem> MAGIC_SOUP = ITEMS.register("magic_soup",
+            () -> new MagicSoupItem(new Item.Properties()));
+
+    public static final RegistryObject<GuideBookItem> MERCHANTS_GUIDE = ITEMS.register("merchants_guide",
+            () -> new GuideBookItem(new Item.Properties(),
+                    new ResourceLocation(Wildscapes.MODID, "merchants_guide")));
 
     public static void register() {
-        CypressBoat.register();
-        CYPRESS_SIGN.registerBlocks(Item.BY_BLOCK, CYPRESS_SIGN);
-        CYPRESS_HANGING_SIGN.registerBlocks(Item.BY_BLOCK, CYPRESS_HANGING_SIGN);
-        DispenserBlock.registerBehavior(CYPRESS_BOAT, new BoatDispenseItemBehavior(net.minecraft.world.entity.vehicle.Boat.Type.OAK));
-        DispenserBlock.registerBehavior(CYPRESS_CHEST_BOAT, new BoatDispenseItemBehavior(net.minecraft.world.entity.vehicle.Boat.Type.OAK, true));
+        ITEMS.register();
     }
 }

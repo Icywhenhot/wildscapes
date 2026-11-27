@@ -12,5 +12,5 @@ public final class WildscapesConfiguredFeatures {
 
     public static final ResourceKey<ConfiguredFeature<?, ?>> CYPRESS = ResourceKey.create(
             Registries.CONFIGURED_FEATURE,
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "cypress"));
+            new ResourceLocation(Wildscapes.MODID, "cypress"));
 }

@@ -2,40 +2,65 @@ package com.wildscapes.worldgen;
 
 import com.wildscapes.Wildscapes;
 
-import net.minecraft.core.Registry;
-
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import com.wildscapes.registry.RegistryObject;
+import com.wildscapes.registry.DeferredRegister;
 
 public final class WildscapesStructures {
     private WildscapesStructures() {}
 
-    public static final StructureType<SwampVillageStructure> SWAMP_VILLAGE =
-            Registry.register(BuiltInRegistries.STRUCTURE_TYPE, Wildscapes.id("swamp_village"), () -> SwampVillageStructure.CODEC);
+    public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES =
+            DeferredRegister.create(Registries.STRUCTURE_TYPE, Wildscapes.MODID);
 
-    public static final StructureType<WitchCampStructure> WITCH_CAMP =
-            Registry.register(BuiltInRegistries.STRUCTURE_TYPE, Wildscapes.id("witch_camp"), () -> WitchCampStructure.CODEC);
+    public static final DeferredRegister<StructureProcessorType<?>> PROCESSORS =
+            DeferredRegister.create(Registries.STRUCTURE_PROCESSOR, Wildscapes.MODID);
 
-    public static final StructurePieceType BURIED_PIECE =
-            Registry.register(BuiltInRegistries.STRUCTURE_PIECE, Wildscapes.id("buried_jigsaw"), BuriedPiece::new);
+    public static final RegistryObject<StructureType<SwampVillageStructure>> SWAMP_VILLAGE =
+            STRUCTURE_TYPES.register("swamp_village", () -> () -> SwampVillageStructure.CODEC);
 
-    public static final StructureProcessorType<StiltProcessor> STILTS =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("stilts"), () -> StiltProcessor.CODEC);
+    public static final RegistryObject<StructureType<WitchCampStructure>> WITCH_CAMP =
+            STRUCTURE_TYPES.register("witch_camp", () -> () -> WitchCampStructure.CODEC);
 
-    public static final StructureProcessorType<ConnectProcessor> CONNECT =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("connect"), () -> ConnectProcessor.CODEC);
+    public static final DeferredRegister<StructurePieceType> PIECES =
+            DeferredRegister.create(Registries.STRUCTURE_PIECE, Wildscapes.MODID);
 
-    public static final StructureProcessorType<ClearProcessor> CLEAR =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("clear"), () -> ClearProcessor.CODEC);
+    private static final DeferredRegister<StructurePoolElementType<?>> POOL_ELEMENTS =
+            DeferredRegister.create(Registries.STRUCTURE_POOL_ELEMENT, Wildscapes.MODID);
 
-    public static final StructureProcessorType<OvergrowthProcessor> OVERGROWTH =
-            Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("overgrowth"), () -> OvergrowthProcessor.CODEC);
+    public static final RegistryObject<StructurePoolElementType<DryPoolElement>> DRY_POOL_ELEMENT =
+            POOL_ELEMENTS.register("dry_pool_element", () -> () -> DryPoolElement.CODEC);
 
-    public static final StructurePlacementType<KeepAwaySpreadPlacement> KEEP_AWAY_SPREAD =
-            Registry.register(BuiltInRegistries.STRUCTURE_PLACEMENT, Wildscapes.id("keep_away_spread"), () -> KeepAwaySpreadPlacement.CODEC);
+    public static final RegistryObject<StructurePieceType> BURIED_PIECE =
+            PIECES.register("buried_jigsaw", () -> BuriedPiece::new);
 
-    public static void register() {}
+    public static final RegistryObject<StructureProcessorType<StiltProcessor>> STILTS =
+            PROCESSORS.register("stilts", () -> () -> StiltProcessor.CODEC);
+
+    public static final RegistryObject<StructureProcessorType<ConnectProcessor>> CONNECT =
+            PROCESSORS.register("connect", () -> () -> ConnectProcessor.CODEC);
+
+    public static final RegistryObject<StructureProcessorType<ClearProcessor>> CLEAR =
+            PROCESSORS.register("clear", () -> () -> ClearProcessor.CODEC);
+
+    public static final RegistryObject<StructureProcessorType<OvergrowthProcessor>> OVERGROWTH =
+            PROCESSORS.register("overgrowth", () -> () -> OvergrowthProcessor.CODEC);
+
+    public static final DeferredRegister<StructurePlacementType<?>> PLACEMENTS =
+            DeferredRegister.create(Registries.STRUCTURE_PLACEMENT, Wildscapes.MODID);
+
+    public static final RegistryObject<StructurePlacementType<KeepAwaySpreadPlacement>> KEEP_AWAY_SPREAD =
+            PLACEMENTS.register("keep_away_spread", () -> () -> KeepAwaySpreadPlacement.CODEC);
+
+    public static void register() {
+        STRUCTURE_TYPES.register();
+        PLACEMENTS.register();
+        PIECES.register();
+        POOL_ELEMENTS.register();
+        PROCESSORS.register();
+    }
 }

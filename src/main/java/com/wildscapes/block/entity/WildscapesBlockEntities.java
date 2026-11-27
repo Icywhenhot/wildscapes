@@ -1,30 +1,35 @@
 package com.wildscapes.block.entity;
 
 import com.wildscapes.Wildscapes;
-
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.minecraft.core.Registry;
 import com.wildscapes.block.WildscapesBlocks;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import com.wildscapes.registry.RegistryObject;
+import com.wildscapes.registry.DeferredRegister;
 
 public final class WildscapesBlockEntities {
     private WildscapesBlockEntities() {}
 
-    public static final BlockEntityType<CauldronBlockEntity> CAULDRON =
-            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Wildscapes.id("cauldron"), FabricBlockEntityTypeBuilder
-                    .create(CauldronBlockEntity::new, WildscapesBlocks.CAULDRON)
-                    .build());
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Wildscapes.MODID);
 
-    public static final BlockEntityType<CauldronOfSoulsBlockEntity> CAULDRON_OF_SOULS =
-            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Wildscapes.id("cauldron_of_souls"), FabricBlockEntityTypeBuilder
-                    .create(CauldronOfSoulsBlockEntity::new, WildscapesBlocks.CAULDRON_OF_SOULS)
-                    .build());
+    public static final RegistryObject<BlockEntityType<CauldronBlockEntity>> CAULDRON =
+            BLOCK_ENTITIES.register("cauldron", () -> BlockEntityType.Builder
+                    .of(CauldronBlockEntity::new, WildscapesBlocks.CAULDRON.get())
+                    .build(null));
 
-    public static final BlockEntityType<CypressShelfBlockEntity> CYPRESS_SHELF =
-            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Wildscapes.id("cypress_shelf"), FabricBlockEntityTypeBuilder
-                    .create(CypressShelfBlockEntity::new, WildscapesBlocks.CYPRESS_SHELF).build());
+    public static final RegistryObject<BlockEntityType<CauldronOfSoulsBlockEntity>> CAULDRON_OF_SOULS =
+            BLOCK_ENTITIES.register("cauldron_of_souls", () -> BlockEntityType.Builder
+                    .of(CauldronOfSoulsBlockEntity::new, WildscapesBlocks.CAULDRON_OF_SOULS.get())
+                    .build(null));
 
-    public static void register() {}
+    public static final RegistryObject<BlockEntityType<CypressShelfBlockEntity>> CYPRESS_SHELF =
+            BLOCK_ENTITIES.register("cypress_shelf", () -> BlockEntityType.Builder
+                    .of(CypressShelfBlockEntity::new, WildscapesBlocks.CYPRESS_SHELF.get())
+                    .build(null));
+
+    public static void register() {
+        BLOCK_ENTITIES.register();
+    }
 }
