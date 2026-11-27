@@ -1,11 +1,11 @@
 package com.wildscapes.block;
 
+import net.minecraft.world.level.block.BonemealSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.server.level.ServerLevel;
 
 public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableBlock {
-    public static final MapCodec<DrapingMossCarpetBlock> CODEC = simpleCodec(DrapingMossCarpetBlock::new);
 
     public enum Drape implements StringRepresentable {
         NONE("none"),
@@ -65,10 +64,6 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
         return BY_DIRECTION.get(direction);
     }
 
-    @Override
-    public MapCodec<? extends CarpetBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -95,17 +90,17 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, BonemealSource source) {
         return !unsettledSides(level, pos, state, true).isEmpty();
     }
 
     @Override
-    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) {
+    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
         return true;
     }
 
     @Override
-    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
+    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
         List<Direction> pending = unsettledSides(level, pos, state, true);
         if (!pending.isEmpty()) {
             step(level, pos, state, pending.get(random.nextInt(pending.size())));

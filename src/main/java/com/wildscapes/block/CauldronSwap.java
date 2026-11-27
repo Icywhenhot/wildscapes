@@ -1,5 +1,6 @@
 package com.wildscapes.block;
 
+import net.minecraft.util.Prediction;
 import java.util.function.Consumer;
 
 import com.wildscapes.block.entity.CauldronBlockEntity;
@@ -118,7 +119,7 @@ public final class CauldronSwap {
         }
         ItemStack bottle = new ItemStack(Items.GLASS_BOTTLE);
         if (!player.getInventory().add(bottle)) {
-            player.drop(bottle, false);
+            player.drop(bottle, false, Prediction.SERVER_ONLY);
         }
     }
 

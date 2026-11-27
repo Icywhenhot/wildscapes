@@ -1,6 +1,5 @@
 package com.wildscapes.block;
 
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -17,7 +16,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class DuckweedBlock extends VegetationBlock {
-    public static final MapCodec<DuckweedBlock> CODEC = simpleCodec(DuckweedBlock::new);
 
     private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 1.0D, 16.0D);
 
@@ -38,10 +36,6 @@ public class DuckweedBlock extends VegetationBlock {
         entity.setDeltaMovement(movement.x * drag, movement.y, movement.z * drag);
     }
 
-    @Override
-    public MapCodec<? extends VegetationBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {

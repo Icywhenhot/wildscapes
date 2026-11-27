@@ -1,5 +1,6 @@
 package com.wildscapes.block;
 
+import net.minecraft.util.Prediction;
 import org.jspecify.annotations.Nullable;
 
 import com.wildscapes.WildscapesAdvancements;
@@ -228,7 +229,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
                     be.takePotion();
                 }
                 if (!player.getInventory().add(tipped)) {
-                    player.drop(tipped, false);
+                    player.drop(tipped, false, Prediction.SERVER_ONLY);
                 }
                 level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             });

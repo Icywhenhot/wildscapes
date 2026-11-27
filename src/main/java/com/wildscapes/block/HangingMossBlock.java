@@ -3,7 +3,6 @@ package com.wildscapes.block;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,7 +22,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class HangingMossBlock extends Block {
-    public static final MapCodec<HangingMossBlock> CODEC = simpleCodec(HangingMossBlock::new);
 
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
@@ -65,10 +63,6 @@ public class HangingMossBlock extends Block {
         return BY_DIRECTION.values().stream().noneMatch(state::getValue);
     }
 
-    @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

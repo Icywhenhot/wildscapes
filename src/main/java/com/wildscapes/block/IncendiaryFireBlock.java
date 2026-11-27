@@ -1,6 +1,5 @@
 package com.wildscapes.block;
 
-import com.mojang.serialization.MapCodec;
 
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.core.BlockPos;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class IncendiaryFireBlock extends BaseFireBlock {
-    public static final MapCodec<IncendiaryFireBlock> CODEC = simpleCodec(IncendiaryFireBlock::new);
 
     public IncendiaryFireBlock(Properties properties) {
         super(properties, 1.0F);
@@ -44,10 +42,6 @@ public class IncendiaryFireBlock extends BaseFireBlock {
         }
     }
 
-    @Override
-    protected MapCodec<? extends BaseFireBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     protected boolean canBurn(BlockState state) {
