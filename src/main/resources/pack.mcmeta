@@ -1,1 +1,6 @@
-{"pack":{"pack_format":34,"supported_formats":{"min_inclusive":34,"max_inclusive":48},"description":"Wildscapes resources"}}
+{
+  "pack": {
+    "description": "Wildscapes resources",
+    "pack_format": 15
+  }
+}

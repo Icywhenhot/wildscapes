@@ -28,6 +28,10 @@ repositories {
         content { includeGroup 'icy.lib' }
     }
     maven {
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content { includeGroup 'com.eliotlash.mclib' }
+    }
+    maven {
         url = 'https://api.modrinth.com/maven'
         content { includeGroup 'maven.modrinth' }
     }
@@ -42,6 +46,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "maven.modrinth:geckolib:${geckolib_version}"
+    implementation "com.eliotlash.mclib:mclib:20"
     if (guideJar.isFile()) {
         modImplementation files(guideJar)
     } else {
@@ -50,7 +55,7 @@ dependencies {
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
 sourceSets.main.resources {

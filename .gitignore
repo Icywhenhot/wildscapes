@@ -39,3 +39,5 @@ run/
 repo/
 !**/src/**/repo/
 tools/
+
+src/generated/
