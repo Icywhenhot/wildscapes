@@ -5,6 +5,7 @@ import org.joml.Vector4f;
 import com.wildscapes.WildscapesConfig;
 import com.wildscapes.entity.SwampVariants;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.FogRenderer;
@@ -35,7 +36,11 @@ public final class SwampFog {
 
     private static float strength;
 
-    public static void onClientTick(Minecraft minecraft) {
+    public static void register() {
+        ClientTickEvents.END_CLIENT_TICK.register(SwampFog::onClientTick);
+    }
+
+    private static void onClientTick(Minecraft minecraft) {
         if (minecraft.level == null || minecraft.player == null) {
             strength = 0.0F;
             return;

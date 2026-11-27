@@ -2,13 +2,17 @@ package com.wildscapes.effect.client;
 
 import com.wildscapes.Wildscapes;
 import com.wildscapes.effect.Intangibility;
-import com.wildscapes.mixin.client.GameRendererAccessor;
+import com.wildscapes.mixin.client.PostChainAccessor;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
@@ -18,32 +22,58 @@ public final class PhaseVision {
 
     private static float veil;
     private static float lastVeil;
+    private static PostChain blur;
+    private static int width;
+    private static int height;
 
     private PhaseVision() {}
 
-    public static void register() {
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(PhaseVision::clientTick);
+    public static void reload() {
+        if (blur != null) {
+            blur.close();
+            blur = null;
+        }
+        veil = 0.0F;
+        lastVeil = 0.0F;
     }
 
-    private static void clientTick(Minecraft client) {
+    public static void register() {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> clientTick());
+    }
+
+    private static void clientTick() {
         lastVeil = veil;
         veil = Mth.clamp(veil + (insideBlock() ? 0.25F : -0.3F), 0.0F, 1.0F);
     }
 
-    public static void renderVeil(GuiGraphics graphics, net.minecraft.client.DeltaTracker delta) {
-        float partial = delta.getGameTimeDeltaPartialTick(false);
+    public static void renderVeil(GuiGraphics graphics, float partial) {
         float strength = Mth.lerp(partial, lastVeil, veil);
         if (strength <= 0.02F) {
             return;
         }
 
         Minecraft minecraft = Minecraft.getInstance();
-        PostChain blur = ((GameRendererAccessor) minecraft.gameRenderer).wildscapes$blurEffect();
-        if (blur != null) {
-            blur.setUniform("Radius", 1.0F + MAX_BLUR * strength);
-            blur.process(partial);
-            minecraft.getMainRenderTarget().bindWrite(false);
+        if (blur == null) {
+            try {
+                blur = new PostChain(minecraft.getTextureManager(), minecraft.getResourceManager(),
+                        minecraft.getMainRenderTarget(), new ResourceLocation("shaders/post/blur.json"));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            width = 0;
         }
+        int w = minecraft.getWindow().getWidth();
+        int h = minecraft.getWindow().getHeight();
+        if (width != w || height != h) {
+            blur.resize(w, h);
+            width = w;
+            height = h;
+        }
+        for (var pass : ((PostChainAccessor) blur).wildscapes$passes()) {
+            pass.getEffect().safeGetUniform("Radius").set(1.0F + MAX_BLUR * strength);
+        }
+        blur.process(partial);
+        minecraft.getMainRenderTarget().bindWrite(false);
 
         int alpha = (int) (MAX_DARKEN * strength);
         graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), alpha << 24);
