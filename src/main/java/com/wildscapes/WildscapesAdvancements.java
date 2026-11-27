@@ -11,8 +11,8 @@ public final class WildscapesAdvancements {
         if (!(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
-        var advancement = serverPlayer.level().getServer().getAdvancements()
-                .get(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, path));
+        var advancement = serverPlayer.server.getAdvancements()
+                .getAdvancement(new ResourceLocation(Wildscapes.MODID, path));
         if (advancement != null) {
             serverPlayer.getAdvancements().award(advancement, "trigger");
         }
