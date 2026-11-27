@@ -2,33 +2,6 @@
   "additional_wants": {
     "id": "minecraft:compass"
   },
-  "given_item_modifiers": [
-    {
-      "decoration": "wildscapes:witch_camp",
-      "destination": "wildscapes:on_witch_camp_maps",
-      "function": "minecraft:exploration_map",
-      "search_radius": 100
-    },
-    {
-      "function": "minecraft:set_name",
-      "name": {
-        "translate": "filled_map.wildscapes.witch_camp"
-      },
-      "target": "item_name"
-    },
-    {
-      "function": "minecraft:filtered",
-      "item_filter": {
-        "items": "minecraft:filled_map",
-        "predicates": {
-          "minecraft:map_id": {}
-        }
-      },
-      "on_fail": {
-        "function": "minecraft:discard"
-      }
-    }
-  ],
   "gives": {
     "id": "minecraft:map"
   },
@@ -38,5 +11,32 @@
     "id": "minecraft:emerald",
     "count": 14
   },
-  "xp": 30
+  "xp": 30,
+  "given_item_modifier": [
+    {
+      "type": "minecraft:exploration_map",
+      "decoration": "wildscapes:witch_camp",
+      "destination": "#wildscapes:on_witch_camp_maps",
+      "search_radius": 100
+    },
+    {
+      "type": "minecraft:set_name",
+      "name": {
+        "translate": "filled_map.wildscapes.witch_camp"
+      },
+      "target": "item_name"
+    },
+    {
+      "type": "minecraft:filtered",
+      "item_filter": {
+        "items": "minecraft:filled_map",
+        "predicates": {
+          "minecraft:map_id": {}
+        }
+      },
+      "on_fail": {
+        "type": "minecraft:discard"
+      }
+    }
+  ]
 }

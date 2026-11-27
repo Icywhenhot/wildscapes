@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:black_mud_brick_slab_from_black_mud_bricks_stonecutting"
+        "recipes": "wildscapes:black_mud_brick_slab_from_black_mud_bricks_stonecutting"
       }
     }
   },

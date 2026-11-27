@@ -10,17 +10,20 @@
           "name": "wildscapes:duckweed"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:match_tool",
-          "predicate": {
-            "items": "minecraft:shears"
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:match_tool",
+            "predicate": {
+              "items": "minecraft:shears"
+            }
+          },
+          {
+            "type": "minecraft:survives_explosion"
           }
-        },
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+        ]
+      }
     }
   ]
 }

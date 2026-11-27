@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:stripped_cypress_wood"
+        "recipes": "wildscapes:stripped_cypress_wood"
       }
     }
   },

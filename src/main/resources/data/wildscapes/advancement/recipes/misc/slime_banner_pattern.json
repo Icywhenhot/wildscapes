@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:slime_banner_pattern"
+        "recipes": "wildscapes:slime_banner_pattern"
       }
     }
   },

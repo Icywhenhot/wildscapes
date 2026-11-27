@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:chiseled_white_mud_bricks"
+        "recipes": "wildscapes:chiseled_white_mud_bricks"
       }
     }
   },

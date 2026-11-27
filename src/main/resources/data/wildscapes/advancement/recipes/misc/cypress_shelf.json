@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "wildscapes:cypress_shelf"
+        "recipes": "wildscapes:cypress_shelf"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

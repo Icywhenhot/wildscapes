@@ -10,11 +10,9 @@
           "name": "wildscapes:gray_mud_brick_stairs"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
     }
   ]
 }

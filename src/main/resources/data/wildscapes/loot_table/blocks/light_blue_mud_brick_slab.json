@@ -8,23 +8,21 @@
         {
           "type": "minecraft:item",
           "name": "wildscapes:light_blue_mud_brick_slab",
-          "functions": [
+          "modifier": [
             {
-              "function": "minecraft:set_count",
+              "type": "minecraft:set_count",
               "add": false,
               "count": 2,
-              "conditions": [
-                {
-                  "condition": "minecraft:block_state_property",
-                  "block": "wildscapes:light_blue_mud_brick_slab",
-                  "properties": {
-                    "type": "double"
-                  }
+              "condition": {
+                "type": "minecraft:match_block",
+                "blocks": "wildscapes:light_blue_mud_brick_slab",
+                "state": {
+                  "type": "double"
                 }
-              ]
+              }
             },
             {
-              "function": "minecraft:explosion_decay"
+              "type": "minecraft:explosion_decay"
             }
           ]
         }

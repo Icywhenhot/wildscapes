@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:white_mud_brick_stairs"
+        "recipes": "wildscapes:white_mud_brick_stairs"
       }
     }
   },

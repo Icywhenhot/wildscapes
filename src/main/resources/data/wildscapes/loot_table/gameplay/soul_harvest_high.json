@@ -12,14 +12,12 @@
           "type": "minecraft:item",
           "name": "minecraft:enchanted_book",
           "weight": 4,
-          "functions": [
-            {
-              "function": "minecraft:set_enchantments",
-              "enchantments": {
-                "wildscapes:empowered_jump": 1
-              }
+          "modifier": {
+            "type": "minecraft:set_enchantments",
+            "enchantments": {
+              "wildscapes:empowered_jump": 1
             }
-          ]
+          }
         }
       ]
     }

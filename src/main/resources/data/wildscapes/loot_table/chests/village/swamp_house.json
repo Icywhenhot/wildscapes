@@ -22,76 +22,66 @@
           "type": "minecraft:item",
           "name": "wildscapes:cypress_log",
           "weight": 10,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 5.0
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1.0,
+              "max": 5.0
             }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
           "name": "wildscapes:cypress_sapling",
           "weight": 8,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 3.0
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1.0,
+              "max": 3.0
             }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:lily_pad",
           "weight": 8,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 4.0
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1.0,
+              "max": 4.0
             }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:brown_mushroom",
           "weight": 7,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 3.0
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1.0,
+              "max": 3.0
             }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:red_mushroom",
           "weight": 7,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 3.0
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1.0,
+              "max": 3.0
             }
-          ]
+          }
         },
         {
           "type": "minecraft:item",
@@ -112,12 +102,10 @@
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.75
-        }
-      ],
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.75
+      },
       "entries": [
         {
           "type": "minecraft:loot_table",
@@ -127,26 +115,22 @@
     },
     {
       "rolls": 1,
-      "conditions": [
-        {
-          "condition": "minecraft:random_chance",
-          "chance": 0.65
-        }
-      ],
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.65
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "wildscapes:incendiary_bottle",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 3
-              }
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min": 1,
+              "max": 3
             }
-          ]
+          }
         }
       ]
     }

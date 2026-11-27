@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:green_mud_brick_wall_from_dye"
+        "recipes": "wildscapes:green_mud_brick_wall_from_dye"
       }
     }
   },

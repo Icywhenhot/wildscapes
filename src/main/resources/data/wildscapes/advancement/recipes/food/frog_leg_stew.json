@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:frog_leg_stew"
+        "recipes": "wildscapes:frog_leg_stew"
       }
     }
   },

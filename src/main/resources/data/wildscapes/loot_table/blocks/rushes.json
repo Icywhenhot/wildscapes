@@ -10,18 +10,21 @@
           "name": "wildscapes:rushes"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "wildscapes:rushes",
-          "properties": {
-            "half": "lower"
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:match_block",
+            "blocks": "wildscapes:rushes",
+            "state": {
+              "half": "lower"
+            }
+          },
+          {
+            "type": "minecraft:survives_explosion"
           }
-        },
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+        ]
+      }
     }
   ]
 }

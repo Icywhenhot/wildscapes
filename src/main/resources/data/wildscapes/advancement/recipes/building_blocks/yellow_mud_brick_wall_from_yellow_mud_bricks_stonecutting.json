@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:yellow_mud_brick_wall_from_yellow_mud_bricks_stonecutting"
+        "recipes": "wildscapes:yellow_mud_brick_wall_from_yellow_mud_bricks_stonecutting"
       }
     }
   },

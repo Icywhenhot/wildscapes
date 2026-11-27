@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:cypress_door"
+        "recipes": "wildscapes:cypress_door"
       }
     }
   },

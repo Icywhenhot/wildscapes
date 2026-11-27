@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wildscapes:lime_mud_brick_stairs_from_lime_mud_bricks_stonecutting"
+        "recipes": "wildscapes:lime_mud_brick_stairs_from_lime_mud_bricks_stonecutting"
       }
     }
   },

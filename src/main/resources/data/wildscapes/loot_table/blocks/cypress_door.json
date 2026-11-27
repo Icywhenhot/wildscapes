@@ -10,18 +10,21 @@
           "name": "wildscapes:cypress_door"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:block_state_property",
-          "block": "wildscapes:cypress_door",
-          "properties": {
-            "half": "lower"
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:match_block",
+            "blocks": "wildscapes:cypress_door",
+            "state": {
+              "half": "lower"
+            }
+          },
+          {
+            "type": "minecraft:survives_explosion"
           }
-        },
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+        ]
+      }
     }
   ]
 }
