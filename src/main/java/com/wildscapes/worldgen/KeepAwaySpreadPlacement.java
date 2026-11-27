@@ -1,5 +1,6 @@
 package com.wildscapes.worldgen;
 
+import net.minecraft.world.level.levelgen.structure.placement.AbstractSpreadingStructurePlacement;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,6 @@ import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
-import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 
 public class KeepAwaySpreadPlacement extends RandomSpreadStructurePlacement {
     public record KeepAway(Identifier set, int chunks) {
@@ -26,7 +26,7 @@ public class KeepAwaySpreadPlacement extends RandomSpreadStructurePlacement {
 
     public static final MapCodec<KeepAwaySpreadPlacement> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Vec3i.offsetCodec(16).optionalFieldOf("locate_offset", Vec3i.ZERO).forGetter(p -> p.locateOffset()),
-            FrequencyReductionMethod.CODEC.optionalFieldOf("frequency_reduction_method", FrequencyReductionMethod.DEFAULT)
+            AbstractSpreadingStructurePlacement.FrequencyReductionMethod.CODEC.optionalFieldOf("frequency_reduction_method", AbstractSpreadingStructurePlacement.FrequencyReductionMethod.DEFAULT)
                     .forGetter(p -> p.frequencyReductionMethod()),
             Codec.floatRange(0.0F, 1.0F).optionalFieldOf("frequency", 1.0F).forGetter(p -> p.frequency()),
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("salt").forGetter(p -> p.salt()),
@@ -39,7 +39,7 @@ public class KeepAwaySpreadPlacement extends RandomSpreadStructurePlacement {
 
     private final List<KeepAway> keepAway;
 
-    public KeepAwaySpreadPlacement(Vec3i locateOffset, FrequencyReductionMethod reduction, float frequency, int salt,
+    public KeepAwaySpreadPlacement(Vec3i locateOffset, AbstractSpreadingStructurePlacement.FrequencyReductionMethod reduction, float frequency, int salt,
             int spacing, int separation, RandomSpreadType spreadType, List<KeepAway> keepAway) {
         super(locateOffset, reduction, frequency, salt, Optional.empty(), spacing, separation, spreadType);
         this.keepAway = keepAway;
@@ -61,7 +61,8 @@ public class KeepAwaySpreadPlacement extends RandomSpreadStructurePlacement {
     }
 
     @Override
-    public StructurePlacementType<?> type() {
-        return WildscapesStructures.KEEP_AWAY_SPREAD;
+    @SuppressWarnings("unchecked")
+    public MapCodec<RandomSpreadStructurePlacement> codec() {
+        return (MapCodec<RandomSpreadStructurePlacement>) (MapCodec<?>) CODEC;
     }
 }

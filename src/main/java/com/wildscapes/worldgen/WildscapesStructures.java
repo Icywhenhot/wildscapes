@@ -8,7 +8,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 
 public final class WildscapesStructures {
     private WildscapesStructures() {}
@@ -34,8 +33,8 @@ public final class WildscapesStructures {
     public static final MapCodec<OvergrowthProcessor> OVERGROWTH =
             Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Wildscapes.id("overgrowth"), OvergrowthProcessor.CODEC);
 
-    public static final StructurePlacementType<KeepAwaySpreadPlacement> KEEP_AWAY_SPREAD =
-            Registry.register(BuiltInRegistries.STRUCTURE_PLACEMENT, Wildscapes.id("keep_away_spread"), () -> KeepAwaySpreadPlacement.CODEC);
+    public static final MapCodec<KeepAwaySpreadPlacement> KEEP_AWAY_SPREAD =
+            Registry.register(BuiltInRegistries.STRUCTURE_PLACEMENT, Wildscapes.id("keep_away_spread"), KeepAwaySpreadPlacement.CODEC);
 
     public static void register() {}
 }

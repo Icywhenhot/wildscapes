@@ -1,6 +1,11 @@
 package com.wildscapes.worldgen;
 
-import com.mojang.serialization.Codec;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.core.Holder;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.WorldGenLevel;
 import com.wildscapes.block.ShelfMushroomBlock;
 
 import net.minecraft.core.BlockPos;
@@ -9,23 +14,26 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.SimpleBlockConfiguration;
 import net.minecraft.world.level.levelgen.Heightmap;
 
-public class ShelfMushroomFeature extends Feature<SimpleBlockConfiguration> {
-    public ShelfMushroomFeature(Codec<SimpleBlockConfiguration> codec) {
-        super(codec);
+public record ShelfMushroomFeature(Holder<BlockStateProvider> toPlace) implements Feature {
+    public static final MapCodec<ShelfMushroomFeature> CODEC = BlockStateProvider.CODEC.fieldOf("to_place")
+            .xmap(ShelfMushroomFeature::new, ShelfMushroomFeature::toPlace);
+
+    @Override
+    public MapCodec<ShelfMushroomFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<SimpleBlockConfiguration> context) {
-        var level = context.level();
-        var random = context.random();
-        BlockState mushroom = context.config().toPlace().getState(context.level(), random, context.origin());
+    public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
+        BlockState mushroom = toPlace.value().getOptionalState(level, random, origin);
+        if (mushroom == null) {
+            return false;
+        }
         for (int i = 0; i < 24; i++) {
-            int x = context.origin().getX() + random.nextInt(7) - 3;
-            int z = context.origin().getZ() + random.nextInt(7) - 3;
+            int x = origin.getX() + random.nextInt(7) - 3;
+            int z = origin.getZ() + random.nextInt(7) - 3;
             BlockPos ground = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
             while (ground.getY() > level.getMinY()
                     && (level.getBlockState(ground).is(BlockTags.LOGS) || level.getBlockState(ground).is(BlockTags.LEAVES))) {

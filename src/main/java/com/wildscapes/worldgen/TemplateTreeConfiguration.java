@@ -1,5 +1,6 @@
 package com.wildscapes.worldgen;
 
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
@@ -7,10 +8,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 public record TemplateTreeConfiguration(List<Identifier> templates, Ground ground, int yOffset,
-        int maxWaterDepth) implements FeatureConfiguration {
+        int maxWaterDepth) {
     public enum Ground implements StringRepresentable {
         LAND("land"),
 
@@ -30,7 +30,7 @@ public record TemplateTreeConfiguration(List<Identifier> templates, Ground groun
         }
     }
 
-    public static final Codec<TemplateTreeConfiguration> CODEC = RecordCodecBuilder.create(
+    public static final MapCodec<TemplateTreeConfiguration> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     Identifier.CODEC.listOf().fieldOf("templates")
                             .forGetter(TemplateTreeConfiguration::templates),

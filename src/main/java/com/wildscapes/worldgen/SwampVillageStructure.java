@@ -188,9 +188,8 @@ public class SwampVillageStructure extends Structure {
     }
 
     private static boolean inBiome(GenerationContext context, int x, int y, int z) {
-        return context.validBiome().test(context.chunkGenerator().getBiomeSource().getNoiseBiome(
-                QuartPos.fromBlock(x), QuartPos.fromBlock(y), QuartPos.fromBlock(z),
-                context.randomState().sampler()));
+        return context.validBiome().test(context.biomeResolver().getNoiseBiome(
+                QuartPos.fromBlock(x), QuartPos.fromBlock(y), QuartPos.fromBlock(z)));
     }
 
     private boolean isOpenWater(GenerationContext context) {

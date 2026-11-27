@@ -1,6 +1,7 @@
 package com.wildscapes.worldgen;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import com.wildscapes.block.WildscapesBlocks;
 
 import net.minecraft.core.BlockPos;
@@ -15,19 +16,17 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
-public class CypressTreeFeature extends Feature<NoneFeatureConfiguration> {
-    public CypressTreeFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+public record CypressTreeFeature() implements Feature {
+    public static final MapCodec<CypressTreeFeature> CODEC = MapCodec.unit(CypressTreeFeature::new);
+
+    @Override
+    public MapCodec<CypressTreeFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        BlockPos origin = context.origin();
-        RandomSource random = context.random();
+    public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
 
         BlockState below = level.getBlockState(origin.below());
         boolean overWater = below.getFluidState().is(FluidTags.WATER)

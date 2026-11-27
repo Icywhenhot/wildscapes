@@ -15,9 +15,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementFilter;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
-public class ShoreDensityFilter extends PlacementFilter {
+public class ShoreDensityFilter implements PlacementFilter {
     public static final MapCodec<ShoreDensityFilter> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     Codec.intRange(1, 16).fieldOf("max_distance").forGetter(filter -> filter.maxDistance),
@@ -46,7 +45,7 @@ public class ShoreDensityFilter extends PlacementFilter {
     }
 
     @Override
-    protected boolean shouldPlace(PlacementContext context, RandomSource random, BlockPos pos) {
+    public boolean shouldPlace(PlacementContext context, RandomSource random, BlockPos pos) {
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         boolean onLand = isLand(context, cursor, pos.getX(), pos.getZ());
         if (onLand && !includeLand) {
@@ -76,7 +75,7 @@ public class ShoreDensityFilter extends PlacementFilter {
     }
 
     @Override
-    public PlacementModifierType<?> type() {
-        return WildscapesPlacementModifiers.SHORE_DENSITY;
+    public MapCodec<ShoreDensityFilter> codec() {
+        return CODEC;
     }
 }

@@ -1,9 +1,10 @@
 package com.wildscapes.worldgen;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import java.util.List;
 import java.util.Optional;
 
-import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
 import com.wildscapes.block.DrapingMossCarpetBlock;
 import com.wildscapes.block.HangingMossBlock;
@@ -30,7 +31,6 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
@@ -42,7 +42,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
-public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
+public record TemplateTreeFeature(TemplateTreeConfiguration config) implements Feature {
+    public static final MapCodec<TemplateTreeFeature> CODEC = TemplateTreeConfiguration.CODEC
+            .xmap(TemplateTreeFeature::new, TemplateTreeFeature::config);
     private static final RuleProcessor SWAP_TO_CYPRESS = new RuleProcessor(buildRules());
 
     private static List<ProcessorRule> buildRules() {
@@ -69,25 +71,25 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         }
     }
 
-    public TemplateTreeFeature(Codec<TemplateTreeConfiguration> codec) {
-        super(codec);
+
+    @Override
+    public MapCodec<TemplateTreeFeature> codec() {
+        return CODEC;
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<TemplateTreeConfiguration> context) {
-        List<Identifier> templates = context.config().templates();
+    public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
+        List<Identifier> templates = config.templates();
         if (templates.isEmpty()) {
             return false;
         }
-        WorldGenLevel level = context.level();
-        RandomSource random = context.random();
 
-        BlockPos surface = context.origin();
-        if (!hasFooting(level, surface, context.config().ground(), context.config().maxWaterDepth())) {
+        BlockPos surface = origin;
+        if (!hasFooting(level, surface, config.ground(), config.maxWaterDepth())) {
             return false;
         }
 
-        StructureTemplateManager manager = level.getLevel().getStructureManager();
+        StructureTemplateManager manager = level.getLevel().getStructureTemplateManager();
         Identifier id = templates.get(random.nextInt(templates.size()));
         Optional<StructureTemplate> found = manager.get(id);
         if (found.isEmpty()) {
@@ -107,7 +109,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
                 .addProcessor(BlockIgnoreProcessor.STRUCTURE_AND_AIR)
                 .addProcessor(SWAP_TO_CYPRESS);
 
-        BlockPos trunk = surface.above(context.config().yOffset());
+        BlockPos trunk = surface.above(config.yOffset());
         BlockPos corner = trunk.subtract(StructureTemplate.calculateRelativePosition(settings, anchor));
         if (!hasRoomFor(level, template, settings, corner, trunk)
                 || hitsBuiltBlocks(level, template, settings, corner)
