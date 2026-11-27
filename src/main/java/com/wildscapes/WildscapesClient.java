@@ -34,6 +34,9 @@ import com.wildscapes.particle.client.SoulTrailParticle;
 import com.wildscapes.particle.client.MultiJumpParticle;
 
 import net.fabricmc.api.ClientModInitializer;
+import com.wildscapes.block.WildscapesBlocks;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
@@ -55,10 +58,21 @@ public final class WildscapesClient implements ClientModInitializer {
         registerLayerDefinitions();
         registerRenderers();
         registerParticleProviders();
+        registerRenderLayers();
         WildscapesItemCondition.register();
         PhaseVision.register();
         SwampMossModel.register();
         ClientTickEvents.END_CLIENT_TICK.register(SwampFog::onClientTick);
+    }
+
+    private static void registerRenderLayers() {
+        BlockRenderLayerMap.putBlocks(ChunkSectionLayer.CUTOUT,
+                WildscapesBlocks.CYPRESS_SAPLING, WildscapesBlocks.CYPRESS_DOOR, WildscapesBlocks.CYPRESS_TRAPDOOR,
+                WildscapesBlocks.DUCKWEED, WildscapesBlocks.RUSHES, WildscapesBlocks.SHORT_RUSHES,
+                WildscapesBlocks.LUMINOUS_MUSHROOM, WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM,
+                WildscapesBlocks.MOSS_CARPET, WildscapesBlocks.HANGING_MOSS,
+                WildscapesBlocks.BONFIRE, WildscapesBlocks.SOUL_BONFIRE, WildscapesBlocks.SUMMONING_BONFIRE,
+                WildscapesBlocks.INCENDIARY_FIRE, WildscapesBlocks.CAULDRON, WildscapesBlocks.CAULDRON_OF_SOULS);
     }
 
     private static void registerLayerDefinitions() {
