@@ -139,7 +139,7 @@ public final class MirelashItem extends Item {
         Vec3 tug = pull.normalize().multiply(strength, strength * 1.1, strength);
         player.setDeltaMovement(movement.add(tug));
         player.needsSync = true;
-        player.hurtMarked = true;
+        player.needsSync = true;
     }
 
     public static void clearHook(Player player, UUID hookId) {

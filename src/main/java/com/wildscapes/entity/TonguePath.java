@@ -102,7 +102,7 @@ public final class TonguePath {
     }
 
     private static boolean passable(Level level, BlockPos pos) {
-        return !level.getBlockState(pos).blocksMotion();
+        return !level.getBlockState(pos).isSolid();
     }
 
     private static List<BlockPos> trace(Map<BlockPos, BlockPos> came, BlockPos start, BlockPos end) {

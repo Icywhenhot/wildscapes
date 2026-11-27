@@ -323,7 +323,7 @@ public final class WitchRitual {
     }
 
     private static boolean standable(ServerLevel level, BlockPos p) {
-        return !level.getBlockState(p).blocksMotion() && !level.getBlockState(p.above()).blocksMotion()
+        return !level.getBlockState(p).isSolid() && !level.getBlockState(p.above()).isSolid()
                 && level.getBlockState(p.below()).isFaceSturdy(level, p.below(), Direction.UP);
     }
 

@@ -114,7 +114,11 @@ public final class WitchGoals {
     }
 
     private static void findCauldron(Witch witch) {
-        BlockPos.findClosestMatch(witch.blockPosition(), 8, 4, pos -> isCauldron(witch, pos))
+        BlockPos center = witch.blockPosition();
+        BlockPos.betweenClosedStream(center.offset(-8, -4, -8), center.offset(8, 4, 8))
+                .filter(pos -> isCauldron(witch, pos))
+                .map(BlockPos::immutable)
+                .min(java.util.Comparator.comparingDouble(pos -> pos.distSqr(center)))
                 .ifPresent(pos -> {
                     witch.setHomeTo(pos, 12);
                     ((WildscapesEntityData) witch).wildscapes$data().putLong(HOME, pos.asLong());

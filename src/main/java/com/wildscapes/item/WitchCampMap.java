@@ -19,7 +19,7 @@ public final class WitchCampMap {
 
     public static final Holder.Reference<MapDecorationType> WITCH_CAMP =
             Registry.registerForHolder(BuiltInRegistries.MAP_DECORATION_TYPE, Wildscapes.id("witch_camp"),
-                    new MapDecorationType(Wildscapes.id("witch_camp"), true, -1, true, false));
+                    new MapDecorationType(Wildscapes.id("witch_camp"), true, false));
 
     public static final TagKey<Structure> DESTINATION = TagKey.create(Registries.STRUCTURE,
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "on_witch_camp_maps"));

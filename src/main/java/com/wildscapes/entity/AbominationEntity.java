@@ -446,7 +446,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
                 WildscapesConfig.get(WildscapesConfig.POUNCE_DAMAGE).floatValue());
         Vec3 push = new Vec3(this.jumpVX, 0.0D, this.jumpVZ).normalize().scale(0.6D);
         target.push(push.x, 0.35D, push.z);
-        target.hurtMarked = true;
+        target.needsSync = true;
     }
 
     private void launch(@Nullable LivingEntity target) {
@@ -592,7 +592,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         Vec3 want = TonguePath.pointAt(path, Math.max(MOUTH_HOLD, tongueReach(1.0F)));
         Vec3 delta = want.subtract(target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D));
         target.setDeltaMovement(delta.scale(0.8D));
-        target.hurtMarked = true;
+        target.needsSync = true;
         target.needsSync = true;
         target.fallDistance = 0.0F;
 
@@ -640,7 +640,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     private boolean isDryStandable(BlockPos pos) {
         Level level = this.level();
-        if (!level.getFluidState(pos).isEmpty() || level.getBlockState(pos).blocksMotion()) {
+        if (!level.getFluidState(pos).isEmpty() || level.getBlockState(pos).isSolid()) {
             return false;
         }
         BlockState below = level.getBlockState(pos.below());

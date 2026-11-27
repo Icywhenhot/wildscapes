@@ -17,7 +17,7 @@ public final class SlimeboundEffect extends MobEffect {
         Vec3 movement = entity.getDeltaMovement();
         entity.setDeltaMovement(0.0, Math.min(movement.y, 0.0), 0.0);
         entity.needsSync = true;
-        entity.hurtMarked = true;
+        entity.needsSync = true;
         if (entity instanceof Mob mob) {
             mob.getNavigation().stop();
         }
