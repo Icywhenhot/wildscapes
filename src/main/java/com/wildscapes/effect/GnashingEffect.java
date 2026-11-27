@@ -19,14 +19,14 @@ public class GnashingEffect extends MobEffect {
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return duration > WARNING && duration % every(amplifier) == 0;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier) {
         if (!(entity.level() instanceof ServerLevel level)) {
-            return true;
+            return;
         }
         double x = entity.getBlockX() + 0.5;
         double y = entity.getBlockY();
@@ -34,6 +34,6 @@ public class GnashingEffect extends MobEffect {
         level.addFreshEntity(new EvokerFangs(level, x, y, z, entity.getYRot() * ((float) Math.PI / 180F), WARNING, null));
         level.sendParticles(ParticleTypes.ENCHANT, x, y + 0.1, z, 24, 0.3, 0.05, 0.3, 0.6);
         level.sendParticles(ParticleTypes.WITCH, x, y + 0.1, z, 6, 0.3, 0.05, 0.3, 0.0);
-        return true;
+
     }
 }
