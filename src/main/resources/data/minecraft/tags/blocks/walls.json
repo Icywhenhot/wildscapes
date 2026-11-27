@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "wildscapes:white_mud_brick_wall",
+    "wildscapes:orange_mud_brick_wall",
+    "wildscapes:magenta_mud_brick_wall",
+    "wildscapes:light_blue_mud_brick_wall",
+    "wildscapes:yellow_mud_brick_wall",
+    "wildscapes:lime_mud_brick_wall",
+    "wildscapes:pink_mud_brick_wall",
+    "wildscapes:gray_mud_brick_wall",
+    "wildscapes:light_gray_mud_brick_wall",
+    "wildscapes:cyan_mud_brick_wall",
+    "wildscapes:purple_mud_brick_wall",
+    "wildscapes:blue_mud_brick_wall",
+    "wildscapes:brown_mud_brick_wall",
+    "wildscapes:green_mud_brick_wall",
+    "wildscapes:red_mud_brick_wall",
+    "wildscapes:black_mud_brick_wall"
+  ]
+}

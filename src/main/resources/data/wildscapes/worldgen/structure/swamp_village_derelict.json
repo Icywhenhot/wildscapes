@@ -64,68 +64,6 @@
       ]
     }
   ],
-  "pool_aliases": [
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/animals",
-      "target": "wildscapes:village/swamp/derelict/animals"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/corrals",
-      "target": "wildscapes:village/swamp/derelict/corrals"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/decor",
-      "target": "wildscapes:village/swamp/derelict/decor"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/docks",
-      "target": "wildscapes:village/swamp/derelict/docks"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/houses",
-      "target": "wildscapes:village/swamp/derelict/houses"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/lights",
-      "target": "wildscapes:village/swamp/derelict/lights"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/street_ends",
-      "target": "wildscapes:village/swamp/derelict/street_ends"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/street_features",
-      "target": "wildscapes:village/swamp/derelict/street_features"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/street_spacers",
-      "target": "wildscapes:village/swamp/derelict/street_spacers"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/streets",
-      "target": "wildscapes:village/swamp/derelict/streets"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/town_centers",
-      "target": "wildscapes:village/swamp/derelict/town_centers"
-    },
-    {
-      "type": "minecraft:direct",
-      "alias": "wildscapes:village/swamp/villagers",
-      "target": "wildscapes:village/swamp/derelict/villagers"
-    }
-  ],
   "derelict_start_height": {
     "absolute": 62
   },
@@ -168,5 +106,20 @@
         "wildscapes:village/swamp/weaponsmithhouse"
       ]
     }
-  ]
+  ],
+  "derelict_chance": 1,
+  "derelict_pools": {
+    "wildscapes:village/swamp/animals": "wildscapes:village/swamp/derelict/animals",
+    "wildscapes:village/swamp/corrals": "wildscapes:village/swamp/derelict/corrals",
+    "wildscapes:village/swamp/decor": "wildscapes:village/swamp/derelict/decor",
+    "wildscapes:village/swamp/docks": "wildscapes:village/swamp/derelict/docks",
+    "wildscapes:village/swamp/houses": "wildscapes:village/swamp/derelict/houses",
+    "wildscapes:village/swamp/lights": "wildscapes:village/swamp/derelict/lights",
+    "wildscapes:village/swamp/street_ends": "wildscapes:village/swamp/derelict/street_ends",
+    "wildscapes:village/swamp/street_features": "wildscapes:village/swamp/derelict/street_features",
+    "wildscapes:village/swamp/street_spacers": "wildscapes:village/swamp/derelict/street_spacers",
+    "wildscapes:village/swamp/streets": "wildscapes:village/swamp/derelict/streets",
+    "wildscapes:village/swamp/town_centers": "wildscapes:village/swamp/derelict/town_centers",
+    "wildscapes:village/swamp/villagers": "wildscapes:village/swamp/derelict/villagers"
+  }
 }

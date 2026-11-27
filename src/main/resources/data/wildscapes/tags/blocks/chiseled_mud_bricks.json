@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "wildscapes:chiseled_mud_bricks",
+    "wildscapes:chiseled_white_mud_bricks",
+    "wildscapes:chiseled_orange_mud_bricks",
+    "wildscapes:chiseled_magenta_mud_bricks",
+    "wildscapes:chiseled_light_blue_mud_bricks",
+    "wildscapes:chiseled_yellow_mud_bricks",
+    "wildscapes:chiseled_lime_mud_bricks",
+    "wildscapes:chiseled_pink_mud_bricks",
+    "wildscapes:chiseled_gray_mud_bricks",
+    "wildscapes:chiseled_light_gray_mud_bricks",
+    "wildscapes:chiseled_cyan_mud_bricks",
+    "wildscapes:chiseled_purple_mud_bricks",
+    "wildscapes:chiseled_blue_mud_bricks",
+    "wildscapes:chiseled_brown_mud_bricks",
+    "wildscapes:chiseled_green_mud_bricks",
+    "wildscapes:chiseled_red_mud_bricks",
+    "wildscapes:chiseled_black_mud_bricks"
+  ]
+}

@@ -259,6 +259,114 @@
       }
     ]
   },
+  "entity.bogged.ambient": {
+    "sounds": [
+      "wildscapes:mob/bogged/ambient1",
+      "wildscapes:mob/bogged/ambient2",
+      "wildscapes:mob/bogged/ambient3",
+      "wildscapes:mob/bogged/ambient4"
+    ],
+    "subtitle": "subtitles.entity.bogged.ambient"
+  },
+  "entity.bogged.hurt": {
+    "sounds": [
+      "wildscapes:mob/bogged/hurt1",
+      "wildscapes:mob/bogged/hurt2",
+      "wildscapes:mob/bogged/hurt3",
+      "wildscapes:mob/bogged/hurt4"
+    ],
+    "subtitle": "subtitles.entity.bogged.hurt"
+  },
+  "entity.bogged.death": {
+    "sounds": [
+      "wildscapes:mob/bogged/death"
+    ],
+    "subtitle": "subtitles.entity.bogged.death"
+  },
+  "entity.bogged.step": {
+    "sounds": [
+      "wildscapes:mob/bogged/step1",
+      "wildscapes:mob/bogged/step2",
+      "wildscapes:mob/bogged/step3",
+      "wildscapes:mob/bogged/step4"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "entity.bogged.shear": {
+    "sounds": [
+      "wildscapes:mob/sheep/shear"
+    ],
+    "subtitle": "subtitles.item.shears.shear"
+  },
+  "block.trial_spawner.break": {
+    "sounds": [
+      {
+        "name": "wildscapes:block/trial_spawner/break1",
+        "volume": 0.9
+      },
+      {
+        "name": "wildscapes:block/trial_spawner/break2",
+        "volume": 0.9
+      },
+      {
+        "name": "wildscapes:block/trial_spawner/break3",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.trial_spawner.step": {
+    "sounds": [
+      "wildscapes:block/trial_spawner/step1",
+      "wildscapes:block/trial_spawner/step2",
+      "wildscapes:block/trial_spawner/step3",
+      "wildscapes:block/trial_spawner/step4",
+      "wildscapes:block/trial_spawner/step5"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "block.trial_spawner.place": {
+    "sounds": [
+      "wildscapes:block/trial_spawner/place1",
+      "wildscapes:block/trial_spawner/place2",
+      "wildscapes:block/trial_spawner/place3"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.trial_spawner.hit": {
+    "sounds": [
+      "wildscapes:block/trial_spawner/step1",
+      "wildscapes:block/trial_spawner/step2",
+      "wildscapes:block/trial_spawner/step3",
+      "wildscapes:block/trial_spawner/step4",
+      "wildscapes:block/trial_spawner/step5"
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "block.trial_spawner.fall": {
+    "sounds": [
+      "wildscapes:block/trial_spawner/step1",
+      "wildscapes:block/trial_spawner/step2",
+      "wildscapes:block/trial_spawner/step3",
+      "wildscapes:block/trial_spawner/step4",
+      "wildscapes:block/trial_spawner/step5"
+    ]
+  },
+  "block.trial_spawner.spawn_mob": {
+    "sounds": [
+      "wildscapes:block/trial_spawner/spawn1",
+      "wildscapes:block/trial_spawner/spawn2",
+      "wildscapes:block/trial_spawner/spawn3",
+      "wildscapes:block/trial_spawner/spawn4"
+    ],
+    "subtitle": "subtitles.block.trial_spawner.spawn_mob"
+  },
+  "item.ominous_bottle.dispose": {
+    "sounds": [
+      "wildscapes:item/ominous_bottle/dispose"
+    ],
+    "subtitle": "subtitles.item.ominous_bottle.dispose"
+  },
   "shelf.activate": {
     "sounds": [
       "wildscapes:block/shelf/activate1",

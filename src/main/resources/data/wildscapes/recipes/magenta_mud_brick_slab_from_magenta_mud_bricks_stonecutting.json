@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "wildscapes:magenta_mud_bricks"
+  },
+  "result": "wildscapes:magenta_mud_brick_slab",
+  "count": 2
+}

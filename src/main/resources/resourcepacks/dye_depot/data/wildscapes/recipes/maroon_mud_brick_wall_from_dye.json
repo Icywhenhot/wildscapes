@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyed_mud_brick_walls",
+  "ingredients": [
+    {
+      "tag": "wildscapes:mud_brick_walls"
+    },
+    {
+      "item": "dye_depot:maroon_dye"
+    }
+  ],
+  "result": {
+    "item": "wildscapes:maroon_mud_brick_wall",
+    "count": 1
+  }
+}

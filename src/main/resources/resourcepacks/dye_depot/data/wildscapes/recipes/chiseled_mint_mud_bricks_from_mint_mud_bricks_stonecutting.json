@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "wildscapes:mint_mud_bricks"
+  },
+  "result": "wildscapes:chiseled_mint_mud_bricks",
+  "count": 1
+}

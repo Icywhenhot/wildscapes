@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:mud_brick_slab",
+    "wildscapes:white_mud_brick_slab",
+    "wildscapes:orange_mud_brick_slab",
+    "wildscapes:magenta_mud_brick_slab",
+    "wildscapes:light_blue_mud_brick_slab",
+    "wildscapes:yellow_mud_brick_slab",
+    "wildscapes:lime_mud_brick_slab",
+    "wildscapes:pink_mud_brick_slab",
+    "wildscapes:gray_mud_brick_slab",
+    "wildscapes:light_gray_mud_brick_slab",
+    "wildscapes:cyan_mud_brick_slab",
+    "wildscapes:purple_mud_brick_slab",
+    "wildscapes:blue_mud_brick_slab",
+    "wildscapes:brown_mud_brick_slab",
+    "wildscapes:green_mud_brick_slab",
+    "wildscapes:red_mud_brick_slab",
+    "wildscapes:black_mud_brick_slab"
+  ]
+}

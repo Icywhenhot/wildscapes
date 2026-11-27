@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "wildscapes:cypress_planks"
+    }
+  },
+  "result": {
+    "count": 2,
+    "item": "wildscapes:cypress_trapdoor"
+  }
+}
