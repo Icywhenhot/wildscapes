@@ -26,7 +26,7 @@ public class EmpoweredGlowLayer<S extends LivingEntityRenderState, M extends Ent
     public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, S state, float yaw, float pitch) {
         if (state.getDataOrDefault(MobVisuals.EMPOWERED, false) && (!state.isInvisible || state instanceof IllusionerRenderState)) {
             nodes.order(1).submitModel(getParentModel(), state, pose, glow, LightCoordsUtil.FULL_BRIGHT,
-                    OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+                    OverlayTexture.NO_OVERLAY, state.outlineColor);
         }
     }
 }

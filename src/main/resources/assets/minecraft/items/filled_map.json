@@ -9,17 +9,7 @@
     },
     "on_false": {
       "type": "minecraft:model",
-      "model": "minecraft:item/filled_map",
-      "tints": [
-        {
-          "type": "minecraft:constant",
-          "value": -1
-        },
-        {
-          "type": "minecraft:map_color",
-          "default": 4603950
-        }
-      ]
+      "model": "minecraft:item/filled_map"
     }
   }
 }

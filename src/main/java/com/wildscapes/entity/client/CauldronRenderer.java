@@ -89,7 +89,7 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
             pose.pushPose();
             pose.translate(0.5F, state.itemY, 0.5F);
             pose.scale(state.itemScale, state.itemScale, state.itemScale);
-            pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(state.spin));
+            pose.rotate(com.mojang.math.Axis.YP.rotationDegrees(state.spin));
             state.ingredient.submit(pose, nodes, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             pose.popPose();
         }

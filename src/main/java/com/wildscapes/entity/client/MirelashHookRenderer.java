@@ -40,10 +40,10 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook, Mir
     }
 
     @Override
-    public boolean shouldRender(MirelashHook hook, Frustum frustum, double x, double y, double z) {
+    public boolean shouldRender(MirelashHook hook, Frustum frustum, double x, double y, double z, float partialTicks) {
         Entity owner = hook.getOwner();
         return owner != null && frustum.isVisible(hook.getBoundingBox().minmax(owner.getBoundingBox()))
-                || super.shouldRender(hook, frustum, x, y, z);
+                || super.shouldRender(hook, frustum, x, y, z, partialTicks);
     }
 
     public static class State extends EntityRenderState {
@@ -88,14 +88,14 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook, Mir
             Vec3 center = step.scale(from + partLength * 0.5);
             poseStack.pushPose();
             poseStack.translate(center.x, center.y, center.z);
-            poseStack.mulPose(pointAlong(step));
+            poseStack.rotate(pointAlong(step));
             poseStack.scale(1F, 1F, (float) (partLength / SEGMENT_LENGTH));
             nodes.submitModelPart(segmentModel, poseStack, RenderTypes.entityCutout(SEGMENT_TEXTURE), state.lightCoords, OverlayTexture.NO_OVERLAY, null);
             poseStack.popPose();
         }
 
         poseStack.pushPose();
-        poseStack.mulPose(pointAlong(step));
+        poseStack.rotate(pointAlong(step));
         nodes.submitModelPart(hookModel, poseStack, RenderTypes.entityCutout(HOOK_TEXTURE), state.lightCoords, OverlayTexture.NO_OVERLAY, null);
         poseStack.popPose();
         super.submit(state, poseStack, nodes, camera);
@@ -108,7 +108,7 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook, Mir
             side = -side;
         }
 
-        float swing = player.getAttackAnim(partialTick);
+        float swing = player.getSwingAnimation(partialTick);
         float swingOffset = Mth.sin(Mth.sqrt(swing) * Mth.PI);
         if (Minecraft.getInstance().options.getCameraType().isFirstPerson()
                 && player == Minecraft.getInstance().player) {

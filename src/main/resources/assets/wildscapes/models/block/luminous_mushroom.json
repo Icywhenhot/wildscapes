@@ -27,7 +27,6 @@
         "angle": 45,
         "rescale": true
       },
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -47,7 +46,8 @@
           ],
           "texture": "#cross"
         }
-      }
+      },
+      "shade_direction_override": "up"
     },
     {
       "from": [
@@ -70,7 +70,6 @@
         "angle": 45,
         "rescale": true
       },
-      "shade": false,
       "faces": {
         "west": {
           "uv": [
@@ -90,7 +89,8 @@
           ],
           "texture": "#cross"
         }
-      }
+      },
+      "shade_direction_override": "up"
     },
     {
       "from": [
@@ -113,7 +113,6 @@
         "angle": 45,
         "rescale": true
       },
-      "shade": false,
       "faces": {
         "north": {
           "uv": [
@@ -129,7 +128,8 @@
         "block_light": 15,
         "sky_light": 15,
         "ambient_occlusion": false
-      }
+      },
+      "shade_direction_override": "up"
     },
     {
       "from": [
@@ -152,7 +152,6 @@
         "angle": 45,
         "rescale": true
       },
-      "shade": false,
       "faces": {
         "south": {
           "uv": [
@@ -168,7 +167,8 @@
         "block_light": 15,
         "sky_light": 15,
         "ambient_occlusion": false
-      }
+      },
+      "shade_direction_override": "up"
     },
     {
       "from": [
@@ -191,7 +191,6 @@
         "angle": 45,
         "rescale": true
       },
-      "shade": false,
       "faces": {
         "west": {
           "uv": [
@@ -207,7 +206,8 @@
         "block_light": 15,
         "sky_light": 15,
         "ambient_occlusion": false
-      }
+      },
+      "shade_direction_override": "up"
     },
     {
       "from": [
@@ -230,7 +230,6 @@
         "angle": 45,
         "rescale": true
       },
-      "shade": false,
       "faces": {
         "east": {
           "uv": [
@@ -246,7 +245,8 @@
         "block_light": 15,
         "sky_light": 15,
         "ambient_occlusion": false
-      }
+      },
+      "shade_direction_override": "up"
     }
   ],
   "render_type": "minecraft:cutout"

@@ -36,6 +36,6 @@ public class RedesignedSlimeOuterLayer extends RenderLayer<SlimeRenderState, Sli
         RenderType type = glowing ? RenderTypes.outline(texture) : RenderTypes.entityTranslucent(texture);
         SlimeModel outer = outerModels[RedesignedSlimeRenderer.modelIndex(state)];
         nodes.order(1).submitModel(outer, state, pose, type, light, LivingEntityRenderer.getOverlayCoords(state, 0.0F),
-                renderer.getModelTint(state), null, state.outlineColor, null);
+                renderer.getModelTint(state), null, state.outlineColor);
     }
 }

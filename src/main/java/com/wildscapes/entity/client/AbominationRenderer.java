@@ -50,8 +50,8 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity, Ab
     }
 
     @Override
-    public boolean shouldRender(AbominationEntity abomination, Frustum frustum, double x, double y, double z) {
-        if (super.shouldRender(abomination, frustum, x, y, z)) {
+    public boolean shouldRender(AbominationEntity abomination, Frustum frustum, double x, double y, double z, float partialTicks) {
+        if (super.shouldRender(abomination, frustum, x, y, z, partialTicks)) {
             return true;
         }
         Entity target = abomination.level().getEntity(abomination.getTongueTargetId());
@@ -146,7 +146,7 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity, Ab
 
             pose.pushPose();
             pose.translate(mid.x, mid.y, mid.z);
-            pose.mulPose(pointAlong(dir));
+            pose.rotate(pointAlong(dir));
             pose.scale(1.0F, 1.0F, (float) (len / SEG));
             nodes.submitModelPart(segment, pose, RenderTypes.entityCutout(SEGMENT), state.lightCoords, OverlayTexture.NO_OVERLAY, null);
             pose.popPose();
@@ -158,7 +158,7 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity, Ab
         Vec3 head = last.subtract(base);
         pose.pushPose();
         pose.translate(head.x, head.y, head.z);
-        pose.mulPose(pointAlong(dir));
+        pose.rotate(pointAlong(dir));
         nodes.submitModelPart(tip, pose, RenderTypes.entityCutout(TIP), state.lightCoords, OverlayTexture.NO_OVERLAY, null);
         pose.popPose();
     }
@@ -170,7 +170,7 @@ public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity, Ab
 
         pose.pushPose();
         pose.translate(state.grasp.x, state.grasp.y, state.grasp.z);
-        pose.mulPose(new Quaternionf().rotateY((180.0F - state.targetYaw) * Mth.DEG_TO_RAD));
+        pose.rotate(new Quaternionf().rotateY((180.0F - state.targetYaw) * Mth.DEG_TO_RAD));
         pose.scale(-1.0F, -1.0F, 1.0F);
         pose.scale(state.targetWidth / 0.6F, state.targetHeight / 1.8F, state.targetWidth / 0.6F);
         nodes.submitModelPart(grasp, pose, RenderTypes.entityCutout(GRASP), state.lightCoords, OverlayTexture.NO_OVERLAY, null);

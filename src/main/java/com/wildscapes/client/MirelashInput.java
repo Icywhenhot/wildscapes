@@ -3,6 +3,7 @@ package com.wildscapes.client;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.network.MirelashAttackPayload;
 
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +25,7 @@ public final class MirelashInput {
         }
         ClientPlayNetworking.send(new MirelashAttackPayload(target.getId()));
         minecraft.player.resetAttackStrengthTicker();
-        minecraft.player.swing(InteractionHand.MAIN_HAND);
+        minecraft.player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
         return true;
     }
 }

@@ -55,7 +55,7 @@ public class CauldronOfSoulsRenderer implements BlockEntityRenderer<CauldronOfSo
 
         pose.pushPose();
         pose.translate(15.01F / 16.0F, 18.01F / 16.0F, 0.0F);
-        pose.mulPose(Axis.ZP.rotationDegrees(-state.lidAngle));
+        pose.rotate(Axis.ZP.rotationDegrees(-state.lidAngle));
 
         float x0 = -14.02F / 16.0F;
         float z0 = 0.99F / 16.0F;
