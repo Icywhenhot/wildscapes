@@ -12,10 +12,10 @@ import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.sprite.SpriteId;
-import net.minecraft.client.resources.model.sprite.SpriteGetter;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.MaterialSet;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -27,19 +27,19 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity, CauldronRenderer.State> {
-    private static final SpriteId WATER = surface(Identifier.withDefaultNamespace("block/water_still"));
-    private static final SpriteId CONCOCTION = surface(Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/concoction"));
-    private static final SpriteId JUMBLE = surface(Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/jumble_concoction"));
+    private static final Material WATER = surface(Identifier.withDefaultNamespace("block/water_still"));
+    private static final Material CONCOCTION = surface(Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/concoction"));
+    private static final Material JUMBLE = surface(Identifier.fromNamespaceAndPath(Wildscapes.MODID, "block/jumble_concoction"));
 
-    private static SpriteId surface(Identifier texture) {
-        return new SpriteId(TextureAtlas.LOCATION_BLOCKS, texture);
+    private static Material surface(Identifier texture) {
+        return new Material(TextureAtlas.LOCATION_BLOCKS, texture);
     }
 
-    private final SpriteGetter sprites;
+    private final MaterialSet sprites;
     private final ItemModelResolver items;
 
     public CauldronRenderer(BlockEntityRendererProvider.Context context) {
-        sprites = context.sprites();
+        sprites = context.materials();
         items = context.itemModelResolver();
     }
 
@@ -97,7 +97,7 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
 
     private void renderSurface(State state, PoseStack pose, SubmitNodeCollector nodes) {
         boolean brew = state.brew;
-        SpriteId material = brew ? (state.mixing ? JUMBLE : CONCOCTION) : WATER;
+        Material material = brew ? (state.mixing ? JUMBLE : CONCOCTION) : WATER;
         TextureAtlasSprite sprite = sprites.get(material);
         int color = brew ? 0xFFFFFF : state.color;
         float r = ((color >> 16) & 0xFF) / 255.0F;

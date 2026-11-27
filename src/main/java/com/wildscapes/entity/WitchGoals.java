@@ -1,6 +1,6 @@
 package com.wildscapes.entity;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import java.util.List;
 
 import com.wildscapes.block.WildscapesBlocks;
@@ -13,7 +13,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
@@ -28,7 +27,6 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 
 public final class WitchGoals {
     private static final String CHECKED = "wildscapes:cauldron_checked";
@@ -97,19 +95,19 @@ public final class WitchGoals {
     }
 
     private static void addGoals(Witch witch) {
-        if (witch.getGoalSelector().getAvailableGoals().stream()
+        if (witch.goalSelector.getAvailableGoals().stream()
                 .anyMatch(wrapped -> wrapped.getGoal() instanceof WitchCombatGoal)) {
             return;
         }
 
-        List.copyOf(witch.getGoalSelector().getAvailableGoals()).stream()
+        List.copyOf(witch.goalSelector.getAvailableGoals()).stream()
                 .filter(wrapped -> wrapped.getGoal() instanceof RangedAttackGoal)
-                .forEach(wrapped -> witch.getGoalSelector().removeGoal(wrapped.getGoal()));
-        witch.getGoalSelector().addGoal(0, new WitchRitual.Gather(witch));
-        witch.getGoalSelector().addGoal(1, new MoveTowardsRestrictionGoal(witch, 1.0D));
-        witch.getGoalSelector().addGoal(2, new WitchCombatGoal(witch));
+                .forEach(wrapped -> witch.goalSelector.removeGoal(wrapped.getGoal()));
+        witch.goalSelector.addGoal(0, new WitchRitual.Gather(witch));
+        witch.goalSelector.addGoal(1, new MoveTowardsRestrictionGoal(witch, 1.0D));
+        witch.goalSelector.addGoal(2, new WitchCombatGoal(witch));
         witch.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witch, Raider.class, 10, true, false,
-                (target, server) -> target != witch && target.getType() != EntityTypes.WITCH
+                (target, server) -> target != witch && target.getType() != EntityType.WITCH
                         && target.getHealth() < target.getMaxHealth()));
     }
 

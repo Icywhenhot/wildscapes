@@ -1,13 +1,12 @@
 package com.wildscapes.gametest;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import com.wildscapes.effect.Intangibility;
 import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.InteractionHand;
@@ -25,7 +24,7 @@ public final class IntangibilityTests {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 5))));
         player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
-        var zombie = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(6, 3, 5));
+        var zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(6, 3, 5));
         zombie.setTarget(player);
         helper.assertTrue(zombie.getTarget() == player, "zombie did not acquire visible player");
         player.setShiftKeyDown(true);
@@ -35,7 +34,7 @@ public final class IntangibilityTests {
         helper.assertTrue(zombie.getTarget() == null, "zombie reacquired intangible target");
         helper.assertTrue(!TargetingConditions.forNonCombat().test(helper.getLevel(), zombie, player), "passive detection found player");
         helper.assertTrue(!zombie.hasLineOfSight(player), "mob could see intangible player");
-        var warden = helper.spawn(EntityTypes.WARDEN, new BlockPos(8, 3, 5));
+        var warden = helper.spawn(EntityType.WARDEN, new BlockPos(8, 3, 5));
         helper.assertTrue(!warden.canTargetEntity(player), "warden detected intangible player");
         player.setShiftKeyDown(false);
         zombie.setTarget(player);

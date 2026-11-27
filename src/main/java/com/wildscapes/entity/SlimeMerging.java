@@ -2,7 +2,7 @@ package com.wildscapes.entity;
 
 import com.wildscapes.WildscapesConfig;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -17,13 +17,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.cubemob.MagmaCube;
-import net.minecraft.world.entity.monster.cubemob.Slime;
+import net.minecraft.world.entity.monster.MagmaCube;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -164,7 +163,7 @@ public final class SlimeMerging {
         if (!(a.level() instanceof ServerLevel level)) {
             return;
         }
-        Slime merged = EntityTypes.SLIME.create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
+        Slime merged = EntityType.SLIME.create(level, net.minecraft.world.entity.EntitySpawnReason.EVENT);
         if (merged == null) {
             return;
         }

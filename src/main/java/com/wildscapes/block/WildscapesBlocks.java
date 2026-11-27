@@ -9,7 +9,7 @@ import com.wildscapes.worldgen.WildscapesTreeGrowers;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityType;
 import net.fabricmc.fabric.api.object.builder.v1.block.type.BlockSetTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.block.type.WoodTypeBuilder;
-import net.fabricmc.fabric.api.registry.CompostableRegistry;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -39,7 +39,7 @@ import net.minecraft.world.level.block.TintedParticleLeavesBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallHangingSignBlock;
 import net.minecraft.world.level.block.WallSignBlock;
-import net.minecraft.world.level.block.entity.BlockEntityTypes;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -327,7 +327,7 @@ public final class WildscapesBlocks {
 
     public static void register() {
         MudBrickBlocks.init();
-        CompostableRegistry compostables = CompostableRegistry.INSTANCE;
+        CompostingChanceRegistry compostables = CompostingChanceRegistry.INSTANCE;
         compostables.add(CYPRESS_LEAVES, 0.3F);
         compostables.add(CYPRESS_SAPLING, 0.3F);
         compostables.add(DUCKWEED, 0.3F);
@@ -336,12 +336,12 @@ public final class WildscapesBlocks {
         compostables.add(LUMINOUS_MUSHROOM, 0.65F);
         StrippableBlockRegistry.register(CYPRESS_LOG, STRIPPED_CYPRESS_LOG);
         StrippableBlockRegistry.register(CYPRESS_WOOD, STRIPPED_CYPRESS_WOOD);
-        FabricBlockEntityType sign = (FabricBlockEntityType) BlockEntityTypes.SIGN;
-        sign.addValidBlock(CYPRESS_SIGN);
-        sign.addValidBlock(CYPRESS_WALL_SIGN);
-        FabricBlockEntityType hangingSign = (FabricBlockEntityType) BlockEntityTypes.HANGING_SIGN;
-        hangingSign.addValidBlock(CYPRESS_HANGING_SIGN);
-        hangingSign.addValidBlock(CYPRESS_WALL_HANGING_SIGN);
-        ((FabricBlockEntityType) BlockEntityTypes.SHELF).addValidBlock(CYPRESS_SHELF);
+        FabricBlockEntityType sign = (FabricBlockEntityType) BlockEntityType.SIGN;
+        sign.addSupportedBlock(CYPRESS_SIGN);
+        sign.addSupportedBlock(CYPRESS_WALL_SIGN);
+        FabricBlockEntityType hangingSign = (FabricBlockEntityType) BlockEntityType.HANGING_SIGN;
+        hangingSign.addSupportedBlock(CYPRESS_HANGING_SIGN);
+        hangingSign.addSupportedBlock(CYPRESS_WALL_HANGING_SIGN);
+        ((FabricBlockEntityType) BlockEntityType.SHELF).addSupportedBlock(CYPRESS_SHELF);
     }
 }

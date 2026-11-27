@@ -22,7 +22,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class ClearProcessor implements StructureProcessor {
+public class ClearProcessor extends StructureProcessor {
     public static final MapCodec<ClearProcessor> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
 
@@ -46,8 +46,8 @@ public class ClearProcessor implements StructureProcessor {
     }
 
     @Override
-    public MapCodec<ClearProcessor> codec() {
-        return CODEC;
+    protected net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType<?> getType() {
+        return WildscapesStructures.CLEAR;
     }
 
     @Override

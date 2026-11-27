@@ -20,15 +20,15 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class StiltProcessor implements StructureProcessor {
+public class StiltProcessor extends StructureProcessor {
     public static final StiltProcessor INSTANCE = new StiltProcessor();
     public static final MapCodec<StiltProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
 
     private static final int MAX_DEPTH = 24;
 
     @Override
-    public MapCodec<StiltProcessor> codec() {
-        return CODEC;
+    protected net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType<?> getType() {
+        return WildscapesStructures.STILTS;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class StiltProcessor implements StructureProcessor {
                 continue;
             }
             BlockPos at = info.pos();
-            long column = ChunkPos.pack(at.getX(), at.getZ());
+            long column = ChunkPos.asLong(at.getX(), at.getZ());
             StructureTemplate.StructureBlockInfo held = lowest.get(column);
             if (held == null || at.getY() < held.pos().getY()) {
                 lowest.put(column, info);

@@ -1,6 +1,6 @@
 package com.wildscapes.entity.client;
 
-import com.geckolib.renderer.layer.builtin.AutoGlowingGeoLayer;
+import software.bernie.geckolib.renderer.layer.builtin.AutoGlowingGeoLayer;
 import com.wildscapes.entity.AbominationEntity;
 
 import net.minecraft.resources.Identifier;

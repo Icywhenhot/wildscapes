@@ -21,7 +21,7 @@ public final class JumpInput {
         Input input = player.input.keyPresses;
         boolean pressed = input.jump() && !held;
         held = input.jump();
-        boolean charging = mc.gui.screen() == null && input.shift() && JumpEnchantments.canCharge(player);
+        boolean charging = mc.screen == null && input.shift() && JumpEnchantments.canCharge(player);
         if (charging && sound == null) {
             sound = new JumpChargeSound(mc.player);
             mc.getSoundManager().play(sound);
@@ -29,7 +29,7 @@ public final class JumpInput {
             mc.getSoundManager().stop(sound);
             sound = null;
         }
-        if (mc.gui.screen() != null || !JumpEnchantments.canJump(player)) {
+        if (mc.screen != null || !JumpEnchantments.canJump(player)) {
             return;
         }
         if (charging) {

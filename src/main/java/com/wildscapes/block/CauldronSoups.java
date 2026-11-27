@@ -70,7 +70,7 @@ public final class CauldronSoups {
     public static MobEffectInstance instanceOf(Holder<MobEffect> effect, int amplifier) {
         boolean harmful = effect == MobEffects.POISON || effect == MobEffects.WEAKNESS
                 || effect == MobEffects.SLOWNESS;
-        int duration = effect.value().isInstantaneous() ? 1 : (harmful ? SHORT_DURATION : EFFECT_DURATION);
+        int duration = effect.value().isInstantenous() ? 1 : (harmful ? SHORT_DURATION : EFFECT_DURATION);
         return new MobEffectInstance(effect, duration, Math.min(amplifier, maxAmplifier(effect)));
     }
 

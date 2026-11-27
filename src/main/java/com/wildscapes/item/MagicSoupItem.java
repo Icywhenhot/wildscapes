@@ -42,7 +42,7 @@ public class MagicSoupItem extends Item {
     }
 
     private static MobEffectInstance stackOnto(MobEffectInstance current, MobEffectInstance added) {
-        if (current == null || added.getEffect().value().isInstantaneous()) {
+        if (current == null || added.getEffect().value().isInstantenous()) {
             return new MobEffectInstance(added);
         }
 
@@ -73,7 +73,7 @@ public class MagicSoupItem extends Item {
             name = Component.translatable("potion.withAmplifier", name,
                     Component.translatable("potion.potency." + effect.getAmplifier()));
         }
-        if (!effect.getEffect().value().isInstantaneous()) {
+        if (!effect.getEffect().value().isInstantenous()) {
             name = Component.translatable("potion.withDuration", name,
                     net.minecraft.util.StringUtil.formatTickDuration(effect.getDuration(), 20.0F));
         }

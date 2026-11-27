@@ -3,7 +3,7 @@ package com.wildscapes.client;
 import com.wildscapes.Wildscapes;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.Identifier;
@@ -21,7 +21,7 @@ public final class SoulHarvestBossBar {
         return event.getName().getContents() instanceof TranslatableContents name && name.getKey().startsWith(NAME);
     }
 
-    public static int extract(GuiGraphicsExtractor gui, BossEvent event, int y) {
+    public static int extract(GuiGraphics gui, BossEvent event, int y) {
         int x = gui.guiWidth() / 2 - 105;
         y -= 9;
         int width = Mth.floor(Mth.clamp(event.getProgress(), 0.0F, 1.0F) * 187);
@@ -32,7 +32,7 @@ public final class SoulHarvestBossBar {
         if (((TranslatableContents) event.getName().getContents()).getKey().equals(NAME)) {
             return 40;
         }
-        gui.centeredText(Minecraft.getInstance().font, event.getName(), gui.guiWidth() / 2, y + 38, -1);
+        gui.drawCenteredString(Minecraft.getInstance().font, event.getName(), gui.guiWidth() / 2, y + 38, -1);
         return 52;
     }
 }

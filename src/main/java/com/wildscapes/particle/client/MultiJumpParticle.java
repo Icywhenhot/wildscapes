@@ -2,7 +2,7 @@ package com.wildscapes.particle.client;
 
 import org.joml.Quaternionf;
 
-import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.client.renderer.state.QuadParticleRenderState;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -38,7 +38,7 @@ public class MultiJumpParticle extends SingleQuadParticle {
     }
 
     @Override
-    public int getLightCoords(float partialTick) {
+    public int getLightColor(float partialTick) {
         return 0xF000F0;
     }
 

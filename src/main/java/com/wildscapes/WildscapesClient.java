@@ -35,16 +35,16 @@ import com.wildscapes.particle.client.MultiJumpParticle;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.object.boat.BoatModel;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 
 public final class WildscapesClient implements ClientModInitializer {
     private static final ModelLayerLocation CYPRESS_BOAT = new ModelLayerLocation(Wildscapes.id("boat/cypress"), "main");
@@ -62,25 +62,25 @@ public final class WildscapesClient implements ClientModInitializer {
     }
 
     private static void registerLayerDefinitions() {
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.PILLAGER_SWAMP, SwampIllagerModels::createPillagerLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.VINDICATOR, SwampIllagerModels::createVindicatorLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.ILLUSIONER, RedesignedIllusionerModel::createBodyLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.WITCH, RedesignedWitchModel::createBodyLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.BOGGED, RedesignedBoggedModel::createBodyLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_SMALL, RedesignedSlimeModels::createSmallInnerLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_SMALL_OUTER, RedesignedSlimeModels::createSmallOuterLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_MEDIUM, RedesignedSlimeModels::createMediumInnerLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_MEDIUM_OUTER, RedesignedSlimeModels::createMediumOuterLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_LARGE, RedesignedSlimeModels::createLargeInnerLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_LARGE_OUTER, RedesignedSlimeModels::createLargeOuterLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.MIRELASH_HOOK, MirelashModels::createHookLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.MIRELASH_SEGMENT, MirelashModels::createSegmentLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_BUBBLE, MirelashModels::createSlimeBubbleLayer);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.TONGUE_SEGMENT, AbominationModels::createTongueSegment);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.TONGUE_TIP, AbominationModels::createTongueTip);
-        ModelLayerRegistry.registerModelLayer(WildscapesModelLayers.ABOMINATION_GRASP, AbominationModels::createGrasp);
-        ModelLayerRegistry.registerModelLayer(CYPRESS_BOAT, BoatModel::createBoatModel);
-        ModelLayerRegistry.registerModelLayer(CYPRESS_CHEST_BOAT, BoatModel::createChestBoatModel);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.PILLAGER_SWAMP, SwampIllagerModels::createPillagerLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.VINDICATOR, SwampIllagerModels::createVindicatorLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.ILLUSIONER, RedesignedIllusionerModel::createBodyLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.WITCH, RedesignedWitchModel::createBodyLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.BOGGED, RedesignedBoggedModel::createBodyLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_SMALL, RedesignedSlimeModels::createSmallInnerLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_SMALL_OUTER, RedesignedSlimeModels::createSmallOuterLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_MEDIUM, RedesignedSlimeModels::createMediumInnerLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_MEDIUM_OUTER, RedesignedSlimeModels::createMediumOuterLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_LARGE, RedesignedSlimeModels::createLargeInnerLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_LARGE_OUTER, RedesignedSlimeModels::createLargeOuterLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.MIRELASH_HOOK, MirelashModels::createHookLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.MIRELASH_SEGMENT, MirelashModels::createSegmentLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.SLIME_BUBBLE, MirelashModels::createSlimeBubbleLayer);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.TONGUE_SEGMENT, AbominationModels::createTongueSegment);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.TONGUE_TIP, AbominationModels::createTongueTip);
+        EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.ABOMINATION_GRASP, AbominationModels::createGrasp);
+        EntityModelLayerRegistry.registerModelLayer(CYPRESS_BOAT, BoatModel::createBoatModel);
+        EntityModelLayerRegistry.registerModelLayer(CYPRESS_CHEST_BOAT, BoatModel::createChestBoatModel);
     }
 
     private static void registerRenderers() {
@@ -89,13 +89,13 @@ public final class WildscapesClient implements ClientModInitializer {
         EntityRendererRegistry.register(WildscapesEntities.RESIDUE_CLOUD, NoopRenderer::new);
         EntityRendererRegistry.register(WildscapesEntities.INCENDIARY_BOTTLE, ThrownItemRenderer::new);
 
-        EntityRendererRegistry.register(EntityTypes.PILLAGER, SwampPillagerRenderer::new);
-        EntityRendererRegistry.register(EntityTypes.VINDICATOR, SwampVindicatorRenderer::new);
-        EntityRendererRegistry.register(EntityTypes.ILLUSIONER, RedesignedIllusionerRenderer::new);
-        EntityRendererRegistry.register(EntityTypes.WITCH, RedesignedWitchRenderer::new);
-        EntityRendererRegistry.register(EntityTypes.BOGGED, RedesignedBoggedRenderer::new);
-        EntityRendererRegistry.register(EntityTypes.EVOKER, EmpoweredEvokerRenderer::new);
-        EntityRendererRegistry.register(EntityTypes.SLIME, RedesignedSlimeRenderer::new);
+        EntityRendererRegistry.register(EntityType.PILLAGER, SwampPillagerRenderer::new);
+        EntityRendererRegistry.register(EntityType.VINDICATOR, SwampVindicatorRenderer::new);
+        EntityRendererRegistry.register(EntityType.ILLUSIONER, RedesignedIllusionerRenderer::new);
+        EntityRendererRegistry.register(EntityType.WITCH, RedesignedWitchRenderer::new);
+        EntityRendererRegistry.register(EntityType.BOGGED, RedesignedBoggedRenderer::new);
+        EntityRendererRegistry.register(EntityType.EVOKER, EmpoweredEvokerRenderer::new);
+        EntityRendererRegistry.register(EntityType.SLIME, RedesignedSlimeRenderer::new);
 
         BlockEntityRendererRegistry.register(WildscapesBlockEntities.CAULDRON, CauldronRenderer::new);
         BlockEntityRendererRegistry.register(WildscapesBlockEntities.CAULDRON_OF_SOULS, CauldronOfSoulsRenderer::new);
@@ -104,7 +104,7 @@ public final class WildscapesClient implements ClientModInitializer {
     }
 
     private static void registerParticleProviders() {
-        var particles = ParticleProviderRegistry.getInstance();
+        var particles = ParticleFactoryRegistry.getInstance();
         particles.register(WildscapesParticles.BREW_BUBBLE, BrewBubbleParticle.Provider::new);
         particles.register(WildscapesParticles.INGREDIENT_STEAM, IngredientSteamParticle.Provider::new);
         particles.register(WildscapesParticles.RESIDUE_SPLAT,

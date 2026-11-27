@@ -2,7 +2,7 @@ package com.wildscapes.block.entity;
 
 import com.wildscapes.WildscapesConfig;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +53,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -134,8 +133,8 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     @Nullable
     public static CauldronOfSoulsBlockEntity harvesting(ServerLevel level, LivingEntity dead) {
         EntityType<?> type = dead.getType();
-        if (type != EntityTypes.PILLAGER && type != EntityTypes.VINDICATOR && type != EntityTypes.WITCH
-                && type != EntityTypes.EVOKER && type != EntityTypes.ILLUSIONER && type != WildscapesEntities.ABOMINATION) {
+        if (type != EntityType.PILLAGER && type != EntityType.VINDICATOR && type != EntityType.WITCH
+                && type != EntityType.EVOKER && type != EntityType.ILLUSIONER && type != WildscapesEntities.ABOMINATION) {
             return null;
         }
         Set<BlockPos> here = LOADED.get(level.dimension());
@@ -256,7 +255,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
     }
 
     private ServerBossEvent newBar() {
-        return new ServerBossEvent(UUID.randomUUID(), Component.translatable("event.wildscapes.soul_harvest"),
+        return new ServerBossEvent(Component.translatable("event.wildscapes.soul_harvest"),
                 BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
     }
 
@@ -449,7 +448,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         int bosses = 0;
         for (UUID id : mobs) {
             Entity e = level.getEntity(id);
-            if (e != null && (e.getType() == EntityTypes.ILLUSIONER || e.getType() == WildscapesEntities.ABOMINATION)) {
+            if (e != null && (e.getType() == EntityType.ILLUSIONER || e.getType() == WildscapesEntities.ABOMINATION)) {
                 bosses++;
             }
         }
@@ -457,18 +456,18 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         int illusioner = room ? 2 + omen : 0;
         int r = level.getRandom().nextInt(30 + 30 + 12 + 10 + illusioner);
         if ((r -= 30) < 0) {
-            return EntityTypes.PILLAGER;
+            return EntityType.PILLAGER;
         }
         if ((r -= 30) < 0) {
-            return EntityTypes.VINDICATOR;
+            return EntityType.VINDICATOR;
         }
         if ((r -= 12) < 0) {
-            return EntityTypes.WITCH;
+            return EntityType.WITCH;
         }
         if ((r -= 10) < 0) {
-            return EntityTypes.EVOKER;
+            return EntityType.EVOKER;
         }
-        return EntityTypes.ILLUSIONER;
+        return EntityType.ILLUSIONER;
     }
 
     @Nullable

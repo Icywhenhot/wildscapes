@@ -1,11 +1,10 @@
 package com.wildscapes.gametest;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import com.wildscapes.effect.WildscapesEffects;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.GameType;
@@ -18,8 +17,8 @@ public final class IllusionerMirageTests {
     public static void zombieGetsMirage(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 9))));
-        var illusioner = helper.spawn(EntityTypes.ILLUSIONER, new BlockPos(5, 3, 5));
-        var zombie = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(7, 3, 5));
+        var illusioner = helper.spawn(EntityType.ILLUSIONER, new BlockPos(5, 3, 5));
+        var zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(7, 3, 5));
         zombie.setNoAi(true);
         illusioner.setTarget(player);
         zombie.setTarget(player);
@@ -37,9 +36,9 @@ public final class IllusionerMirageTests {
     public static void cloneCooldownAndMemory(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 9))));
-        var illusioner = helper.spawn(EntityTypes.ILLUSIONER, new BlockPos(5, 3, 5));
-        var first = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(7, 3, 5));
-        var second = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(8, 3, 5));
+        var illusioner = helper.spawn(EntityType.ILLUSIONER, new BlockPos(5, 3, 5));
+        var first = helper.spawn(EntityType.ZOMBIE, new BlockPos(7, 3, 5));
+        var second = helper.spawn(EntityType.ZOMBIE, new BlockPos(8, 3, 5));
         first.setNoAi(true);
         second.setNoAi(true);
         first.setInvulnerable(true);

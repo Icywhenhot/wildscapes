@@ -22,7 +22,7 @@ public class ShelfMushroomFeature extends Feature<SimpleBlockConfiguration> {
     public boolean place(FeaturePlaceContext<SimpleBlockConfiguration> context) {
         var level = context.level();
         var random = context.random();
-        BlockState mushroom = context.config().toPlace().getState(context.level(), random, context.origin());
+        BlockState mushroom = context.config().toPlace().getState(random, context.origin());
         for (int i = 0; i < 24; i++) {
             int x = context.origin().getX() + random.nextInt(7) - 3;
             int z = context.origin().getZ() + random.nextInt(7) - 3;

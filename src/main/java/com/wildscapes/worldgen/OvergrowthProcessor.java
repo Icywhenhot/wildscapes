@@ -23,7 +23,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class OvergrowthProcessor implements StructureProcessor {
+public class OvergrowthProcessor extends StructureProcessor {
     public static final MapCodec<OvergrowthProcessor> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                     Codec.floatRange(0.0F, 1.0F).optionalFieldOf("vines", 0.12F)
@@ -41,8 +41,8 @@ public class OvergrowthProcessor implements StructureProcessor {
     }
 
     @Override
-    public MapCodec<OvergrowthProcessor> codec() {
-        return CODEC;
+    protected net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType<?> getType() {
+        return WildscapesStructures.OVERGROWTH;
     }
 
     @Override

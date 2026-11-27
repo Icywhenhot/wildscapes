@@ -37,7 +37,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.entity.monster.Witch;
@@ -83,7 +83,7 @@ public final class WitchRitual {
     }
 
     public static void register() {
-        ServerTickEvents.END_LEVEL_TICK.register(WitchRitual::tickAll);
+        ServerTickEvents.END_WORLD_TICK.register(WitchRitual::tickAll);
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> List.copyOf(running).forEach(WitchRitual::abort));
         ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
             if (entity instanceof Frog frog && frog.hasAttached(TOAD) && running.stream().noneMatch(r -> r.toad == frog)) {
@@ -109,7 +109,7 @@ public final class WitchRitual {
             for (int i = 0; i < 4; i++) {
                 double a = Math.PI * 0.5D * i;
                 BlockPos p = ground(level, BlockPos.containing(at.x + Math.cos(a) * 4.0D, at.y, at.z + Math.sin(a) * 4.0D));
-                Witch witch = EntityTypes.WITCH.spawn(level, p, EntitySpawnReason.COMMAND);
+                Witch witch = EntityType.WITCH.spawn(level, p, EntitySpawnReason.COMMAND);
                 if (witch != null) {
                     witches.add(witch);
                 }
@@ -151,7 +151,7 @@ public final class WitchRitual {
 
     @Nullable
     public static WitchRitual start(ServerLevel level, Vec3 at, List<Witch> witches) {
-        Frog toad = EntityTypes.FROG.create(level, EntitySpawnReason.EVENT);
+        Frog toad = EntityType.FROG.create(level, EntitySpawnReason.EVENT);
         if (toad == null) {
             return null;
         }

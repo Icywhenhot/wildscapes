@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.ShelfBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.fabricmc.fabric.api.registry.CompostableRegistry;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 
 public final class CypressSetTests {
     private CypressSetTests() {}
@@ -47,7 +47,7 @@ public final class CypressSetTests {
                 new ItemStack(WildscapesBlocks.LUMINOUS_MUSHROOM), ItemStack.EMPTY, new ItemStack(Items.CARROT)));
         var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
         helper.assertTrue(recipe.isPresent(), "frog leg stew recipe missing");
-        var stew = recipe.get().value().assemble(input);
+        var stew = recipe.get().value().assemble(input, helper.getLevel().registryAccess());
         helper.assertTrue(stew.is(WildscapesItems.FROG_LEG_STEW), "wrong stew recipe result");
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.getFoodData().setFoodLevel(10);
@@ -84,7 +84,7 @@ public final class CypressSetTests {
         var log = new ItemStack(WildscapesBlocks.STRIPPED_CYPRESS_LOG);
         var input = CraftingInput.of(3, 3, List.of(log, log, log, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, log, log, log));
         var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
-        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input)
+        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, helper.getLevel().registryAccess())
                 .is(WildscapesBlocks.CYPRESS_SHELF.asItem()), "cypress shelf recipe missing");
     }
 
@@ -94,7 +94,7 @@ public final class CypressSetTests {
         helper.assertTrue(boat != null && boat.getType() == CypressBoat.BOAT, "wrong cypress boat entity type");
         var input = CraftingInput.of(2, 1, List.of(new ItemStack(Items.CHEST), new ItemStack(WildscapesItems.CYPRESS_BOAT)));
         var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
-        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input)
+        helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, helper.getLevel().registryAccess())
                 .is(WildscapesItems.CYPRESS_CHEST_BOAT), "chest boat recipe missing");
     }
 
@@ -115,7 +115,7 @@ public final class CypressSetTests {
     private static void swampPlantsCompost(GameTestHelper helper) {
         for (var item : List.of(WildscapesBlocks.DUCKWEED.asItem(), WildscapesBlocks.RUSHES.asItem(),
                 WildscapesBlocks.CYPRESS_LEAVES.asItem(), WildscapesBlocks.LUMINOUS_MUSHROOM.asItem())) {
-            helper.assertTrue(CompostableRegistry.INSTANCE.get(item) != null,
+            helper.assertTrue(CompostingChanceRegistry.INSTANCE.get(item) != null,
                     item + " is not compostable");
         }
         var advancement = helper.getLevel().getServer().getAdvancements()

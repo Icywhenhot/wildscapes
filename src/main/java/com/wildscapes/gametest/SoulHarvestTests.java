@@ -1,6 +1,6 @@
 package com.wildscapes.gametest;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
@@ -24,7 +24,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.monster.illager.Vindicator;
@@ -117,7 +116,7 @@ public final class SoulHarvestTests {
 
         helper.runAfterDelay(320, () -> {
             for (int i = 0; i < 10; i++) {
-                Vindicator local = helper.spawn(EntityTypes.VINDICATOR, new BlockPos(6 + i, 2, 18));
+                Vindicator local = helper.spawn(EntityType.VINDICATOR, new BlockPos(6 + i, 2, 18));
                 local.hurt(level.damageSources().playerAttack(player), 10000.0F);
             }
         });
@@ -133,7 +132,7 @@ public final class SoulHarvestTests {
     }
 
     public static void gnashingRaisesFangs(GameTestHelper helper) {
-        Pig pig = helper.spawn(EntityTypes.PIG, new BlockPos(8, 2, 8));
+        Pig pig = helper.spawn(EntityType.PIG, new BlockPos(8, 2, 8));
         pig.setNoAi(true);
         pig.addEffect(new MobEffectInstance(WildscapesEffects.GNASHING, 200, 2));
         helper.succeedWhen(() -> helper.assertTrue(
@@ -205,7 +204,7 @@ public final class SoulHarvestTests {
                 helper.assertBlockPresent(WildscapesBlocks.INCENDIARY_FIRE, mid.offset(dx, 0, dz));
             }
         }
-        Pig pig = helper.spawn(EntityTypes.PIG, mid);
+        Pig pig = helper.spawn(EntityType.PIG, mid);
         pig.setNoAi(true);
         helper.runAfterDelay(40, () -> {
             helper.assertTrue(pig.getHealth() == pig.getMaxHealth() && !pig.isOnFire(), "the fire burned a pig");

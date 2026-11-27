@@ -72,7 +72,7 @@ public final class CauldronSwap {
 
         if (held.getItem() instanceof DyeItem dye && state.is(Blocks.WATER_CAULDRON)) {
             int waterLevel = state.getValue(LayeredCauldronBlock.LEVEL);
-            int color = held.getOrDefault(DataComponents.DYE, net.minecraft.world.item.DyeColor.WHITE).getTextureDiffuseColor() & 0xFFFFFF;
+            int color = dye.getDyeColor().getTextureDiffuseColor() & 0xFFFFFF;
             boolean heat = WildscapesCauldronBlock.hasHeatSourceBelow(level, pos);
             return finish(level, () -> {
                 toOurBlock(level, pos, heat, be -> be.setDyedWater(waterLevel, color));

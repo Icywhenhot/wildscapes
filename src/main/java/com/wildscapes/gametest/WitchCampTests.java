@@ -1,6 +1,6 @@
 package com.wildscapes.gametest;
 
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +12,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -112,8 +111,8 @@ public class WitchCampTests {
         }
         for (StructurePiece prison : prisons) {
             AABB inside = AABB.of(prison.getBoundingBox());
-            helper.assertTrue(level.getEntities(EntityTypes.VILLAGER, inside, e -> true).size() == 1
-                    && level.getEntities(EntityTypes.ZOMBIE_VILLAGER, inside, e -> true).size() >= 1,
+            helper.assertTrue(level.getEntities(EntityType.VILLAGER, inside, e -> true).size() == 1
+                    && level.getEntities(EntityType.ZOMBIE_VILLAGER, inside, e -> true).size() >= 1,
                     "the first dungeon path should hold one villager and a zombie villager");
         }
     }

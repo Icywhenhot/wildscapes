@@ -33,7 +33,7 @@ public final class WitchCampMapTests {
         helper.assertTrue(WitchCampMap.isWitchCampMap(saved), "saved map lost witch camp icon");
         var input = CraftingInput.of(2, 1, List.of(saved, new ItemStack(Items.MAP)));
         var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level).orElseThrow();
-        ItemStack copies = recipe.value().assemble(input);
+        ItemStack copies = recipe.value().assemble(input, helper.getLevel().registryAccess());
         helper.assertTrue(copies.getCount() == 2 && WitchCampMap.isWitchCampMap(copies), "copied maps lost witch camp icon");
         helper.assertTrue(copies.get(DataComponents.MAP_DECORATIONS).equals(map.get(DataComponents.MAP_DECORATIONS)),
                 "copied maps changed destination");

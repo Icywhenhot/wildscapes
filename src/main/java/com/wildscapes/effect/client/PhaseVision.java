@@ -3,7 +3,7 @@ package com.wildscapes.effect.client;
 import com.wildscapes.effect.Intangibility;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.DeltaTracker;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
@@ -32,7 +32,7 @@ public final class PhaseVision {
         veil = Mth.clamp(veil + (insideBlock() ? 0.25F : -0.3F), 0.0F, 1.0F);
     }
 
-    private static void renderVeil(GuiGraphicsExtractor graphics, DeltaTracker delta) {
+    private static void renderVeil(GuiGraphics graphics, DeltaTracker delta) {
         float partial = delta.getGameTimeDeltaPartialTick(false);
         float strength = Mth.lerp(partial, lastVeil, veil);
         if (strength <= 0.02F) {
@@ -51,7 +51,7 @@ public final class PhaseVision {
             return false;
         }
         Level level = player.level();
-        BlockPos pos = BlockPos.containing(minecraft.gameRenderer.mainCamera().position());
+        BlockPos pos = BlockPos.containing(minecraft.gameRenderer.getMainCamera().position());
         return !level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
     }
 }

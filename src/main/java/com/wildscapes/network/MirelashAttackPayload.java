@@ -20,7 +20,7 @@ public record MirelashAttackPayload(int targetId) implements CustomPacketPayload
             ByteBufCodecs.VAR_INT, MirelashAttackPayload::targetId, MirelashAttackPayload::new);
 
     public static void register() {
-        PayloadTypeRegistry.serverboundPlay().register(TYPE, STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(TYPE, STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(TYPE, MirelashAttackPayload::handle);
     }
 

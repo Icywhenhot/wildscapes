@@ -20,7 +20,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
@@ -167,7 +166,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
 
         if (item instanceof DyeItem dye && contents == CauldronBlockEntity.Contents.WATER) {
             return act(level, () -> {
-                be.mixInDye(stack.getOrDefault(DataComponents.DYE, DyeColor.WHITE).getTextureDiffuseColor() & 0xFFFFFF);
+                be.mixInDye(dye.getDyeColor().getTextureDiffuseColor() & 0xFFFFFF);
                 consume(player, stack);
                 level.playSound(null, pos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
             });
@@ -261,7 +260,7 @@ public class WildscapesCauldronBlock extends Block implements EntityBlock {
             double x = pos.getX() + 0.5;
             double y = pos.getY() + be.getSurfaceHeight() + 0.05;
             double z = pos.getZ() + 0.5;
-            server.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, ingredient.getItem()),
+            server.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, ingredient),
                     x, y, z, 8, 0.2, 0.1, 0.2, 0.05);
             if (base) {
                 server.sendParticles(WildscapesParticles.BREW_BUBBLE, x, y, z, 10, 0.22, 0.02, 0.22, 0.02);

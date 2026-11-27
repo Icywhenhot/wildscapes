@@ -5,9 +5,9 @@ import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.resources.Identifier;
-import com.geckolib.constant.dataticket.DataTicket;
-import com.geckolib.renderer.base.GeoRenderState;
-import com.geckolib.model.GeoModel;
+import software.bernie.geckolib.constant.dataticket.DataTicket;
+import software.bernie.geckolib.renderer.base.GeoRenderState;
+import software.bernie.geckolib.model.GeoModel;
 
 public class AbominationModel extends GeoModel<AbominationEntity> {
     private static final DataTicket<Integer> PHASE = DataTicket.create("wildscapes_phase", Integer.class);

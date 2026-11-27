@@ -45,7 +45,7 @@ public final class Intangibility {
             return true;
         }
         if (!WildscapesConfig.get(WildscapesConfig.NECKLACE_HIDES_FROM_BOSSES)
-                && observer.typeHolder().is(ConventionalEntityTypeTags.BOSSES)) {
+                && observer.getType().builtInRegistryHolder().is(ConventionalEntityTypeTags.BOSSES)) {
             return false;
         }
         CompoundTag seen = ((WildscapesEntityData) observer).wildscapes$data().getCompoundOrEmpty(REVEALED_KEY);

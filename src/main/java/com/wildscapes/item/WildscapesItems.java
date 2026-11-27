@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.HangingSignItem;
@@ -50,7 +50,7 @@ public final class WildscapesItems {
             properties -> new SpawnEggItem(properties.spawnEgg(WildscapesEntities.ABOMINATION)));
 
     public static final Item ILLUSIONER_SPAWN_EGG = register("illusioner_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(EntityTypes.ILLUSIONER)));
+            properties -> new SpawnEggItem(properties.spawnEgg(EntityType.ILLUSIONER)));
 
     public static final SignItem CYPRESS_SIGN = register("cypress_sign",
             properties -> new SignItem(WildscapesBlocks.CYPRESS_SIGN, WildscapesBlocks.CYPRESS_WALL_SIGN,
@@ -100,7 +100,7 @@ public final class WildscapesItems {
     private static Item bannerPattern(String name) {
         var tag = TagKey.create(Registries.BANNER_PATTERN, Wildscapes.id("pattern_item/" + name));
         return register(name + "_banner_pattern", properties -> new Item(properties.stacksTo(1)
-                .delayedComponent(DataComponents.PROVIDES_BANNER_PATTERNS, context -> context.getOrThrow(tag))));
+                .component(DataComponents.PROVIDES_BANNER_PATTERNS, tag)));
     }
 
     private static <T extends Item> T register(String name, Function<Item.Properties, T> factory) {

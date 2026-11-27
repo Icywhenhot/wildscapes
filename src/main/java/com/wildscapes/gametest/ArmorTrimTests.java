@@ -41,11 +41,11 @@ public final class ArmorTrimTests {
                     var input = new SmithingRecipeInput(new ItemStack(template), base, new ItemStack(material));
                     var recipe = recipes.getRecipeFor(RecipeType.SMITHING, input, level);
                     helper.assertTrue(recipe.isPresent(), "missing smithing recipe for " + name);
-                    ItemStack result = recipe.orElseThrow().value().assemble(input);
+                    ItemStack result = recipe.orElseThrow().value().assemble(input, helper.getLevel().registryAccess());
                     var trim = result.get(DataComponents.TRIM);
                     helper.assertTrue(result.is(armor) && result.getDamageValue() == 12, "smithing changed the armor");
                     helper.assertTrue(trim != null && trim.pattern().is(pattern), "wrong trim pattern for " + name);
-                    helper.assertTrue(trim.material().equals(new ItemStack(material).get(DataComponents.PROVIDES_TRIM_MATERIAL)), "wrong trim material");
+                    helper.assertTrue(trim.material().equals(new ItemStack(material).get(DataComponents.PROVIDES_TRIM_MATERIAL).unwrap(level.registryAccess()).orElseThrow()), "wrong trim material");
                     helper.assertTrue(!base.has(DataComponents.TRIM), "smithing changed the input armor");
                 }
             }
@@ -55,7 +55,7 @@ public final class ArmorTrimTests {
                     diamond, diamond, diamond));
             var recipe = recipes.getRecipeFor(RecipeType.CRAFTING, input, level);
             helper.assertTrue(recipe.isPresent(), "missing duplication recipe for " + name);
-            ItemStack result = recipe.orElseThrow().value().assemble(input);
+            ItemStack result = recipe.orElseThrow().value().assemble(input, helper.getLevel().registryAccess());
             helper.assertTrue(result.is(template) && result.getCount() == 2, "template did not duplicate");
         }
         helper.succeed();

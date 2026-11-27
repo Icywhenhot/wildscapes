@@ -7,7 +7,7 @@ import com.wildscapes.item.WildscapesItems;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -32,11 +32,11 @@ public abstract class LivingEntityMixin {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity.hasAttached(SoulHarvest.ORIGIN)) {
             ci.cancel();
-        } else if (entity.getType() == EntityTypes.ILLUSIONER) {
+        } else if (entity.getType() == EntityType.ILLUSIONER) {
             if (entity.getRandom().nextDouble() < WildscapesConfig.get(WildscapesConfig.NECKLACE_DROP_CHANCE)) {
                 entity.spawnAtLocation(level, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
             }
-        } else if (entity.getType() == EntityTypes.FROG && WildscapesConfig.get(WildscapesConfig.FROG_LEGS)) {
+        } else if (entity.getType() == EntityType.FROG && WildscapesConfig.get(WildscapesConfig.FROG_LEGS)) {
             entity.spawnAtLocation(level, new ItemStack(WildscapesItems.FROG_LEGS, 1 + entity.getRandom().nextInt(2)));
         }
     }

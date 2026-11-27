@@ -9,14 +9,13 @@ import com.wildscapes.entity.SwampVariants;
 
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.model.loading.v1.wrapper.WrapperBlockStateModel;
-import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.sprite.Material;
-import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.AtlasIds;
@@ -58,7 +57,7 @@ public final class SwampMossModel extends WrapperBlockStateModel {
             TextureAtlasSprite old = finder.find(quad);
             Identifier id = TEXTURES.get(old.contents().name());
             if (id != null) {
-                TextureAtlasSprite sprite = atlases.get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, id));
+                TextureAtlasSprite sprite = atlases.get(new Material(TextureAtlas.LOCATION_BLOCKS, id));
                 for (int i = 0; i < 4; i++) {
                     float u = (quad.u(i) - old.getU0()) / (old.getU1() - old.getU0());
                     float v = (quad.v(i) - old.getV0()) / (old.getV1() - old.getV0());
@@ -81,11 +80,11 @@ public final class SwampMossModel extends WrapperBlockStateModel {
     }
 
     @Override
-    public Material.Baked particleMaterial(BlockAndTintGetter view, BlockPos pos, BlockState state) {
-        Material.Baked base = super.particleMaterial(view, pos, state);
-        Identifier id = isSwamp(pos) ? TEXTURES.get(base.sprite().contents().name()) : null;
-        return id == null ? base : new Material.Baked(Minecraft.getInstance().getAtlasManager()
-                .get(new SpriteId(TextureAtlas.LOCATION_BLOCKS, id)), base.forceTranslucent());
+    public TextureAtlasSprite particleSprite(BlockAndTintGetter view, BlockPos pos, BlockState state) {
+        TextureAtlasSprite base = super.particleSprite(view, pos, state);
+        Identifier id = isSwamp(pos) ? TEXTURES.get(base.contents().name()) : null;
+        return id == null ? base : Minecraft.getInstance().getAtlasManager()
+                .get(new Material(TextureAtlas.LOCATION_BLOCKS, id));
     }
 
     private static boolean isSwamp(BlockPos pos) {

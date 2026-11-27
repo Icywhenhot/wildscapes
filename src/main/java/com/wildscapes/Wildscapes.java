@@ -60,7 +60,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.fabricmc.fabric.api.registry.FabricPotionBrewingBuilder;
+import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 
@@ -207,7 +207,7 @@ public class Wildscapes implements ModInitializer {
         FabricDefaultAttributeRegistry.register(WildscapesEntities.ABOMINATION, AbominationEntity.createAttributes());
         MirelashAttackPayload.register();
         JumpPayload.register();
-        FabricPotionBrewingBuilder.BUILD.register(this::registerBrewingRecipes);
+        FabricBrewingRecipeRegistryBuilder.BUILD.register(this::registerBrewingRecipes);
 
         ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, level) -> {
             if (blockEntity instanceof com.wildscapes.block.entity.CauldronOfSoulsBlockEntity cauldron) {

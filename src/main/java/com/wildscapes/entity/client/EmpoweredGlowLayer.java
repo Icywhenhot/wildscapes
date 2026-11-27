@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.LightTexture;
 
 public class EmpoweredGlowLayer<S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends RenderLayer<S, M> {
     private final RenderType glow;
@@ -25,7 +25,7 @@ public class EmpoweredGlowLayer<S extends LivingEntityRenderState, M extends Ent
     @Override
     public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, S state, float yaw, float pitch) {
         if (state.getDataOrDefault(MobVisuals.EMPOWERED, false) && (!state.isInvisible || state instanceof IllusionerRenderState)) {
-            nodes.order(1).submitModel(getParentModel(), state, pose, glow, LightCoordsUtil.FULL_BRIGHT,
+            nodes.order(1).submitModel(getParentModel(), state, pose, glow, LightTexture.FULL_BRIGHT,
                     OverlayTexture.NO_OVERLAY, state.outlineColor, null);
         }
     }

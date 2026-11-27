@@ -11,9 +11,9 @@ import com.wildscapes.entity.TonguePath;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import com.geckolib.renderer.base.RenderPassInfo;
-import com.geckolib.renderer.base.BoneSnapshots;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import software.bernie.geckolib.renderer.base.RenderPassInfo;
+import software.bernie.geckolib.renderer.base.BoneSnapshots;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -26,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
 
 import org.joml.Quaternionf;
 
-import com.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity, AbominationRenderer.State> {
     private static final Identifier SEGMENT = Identifier.fromNamespaceAndPath(Wildscapes.MODID,

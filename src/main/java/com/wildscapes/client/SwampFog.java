@@ -1,5 +1,7 @@
 package com.wildscapes.client;
 
+import org.joml.Vector4f;
+
 import com.wildscapes.WildscapesConfig;
 import com.wildscapes.entity.SwampVariants;
 
@@ -68,9 +70,11 @@ public final class SwampFog {
         float near = Mth.lerp(strength, vanillaNear, Math.min(vanillaNear, thick * NEAR_FRACTION));
         fog.environmentalEnd = far;
         fog.environmentalStart = Math.min(near, far);
+    }
 
+    public static void tint(Vector4f color) {
         float blend = strength * MAX_TINT;
-        fog.color.set(Mth.lerp(blend, fog.color.x, TINT_R),
-                Mth.lerp(blend, fog.color.y, TINT_G), Mth.lerp(blend, fog.color.z, TINT_B), fog.color.w);
+        color.set(Mth.lerp(blend, color.x, TINT_R),
+                Mth.lerp(blend, color.y, TINT_G), Mth.lerp(blend, color.z, TINT_B), color.w);
     }
 }

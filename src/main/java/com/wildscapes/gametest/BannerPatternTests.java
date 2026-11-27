@@ -34,11 +34,11 @@ public final class BannerPatternTests {
                     new ItemStack(i == 0 ? Items.SLIME_BALL : Items.GHAST_TEAR)));
             var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
             helper.assertTrue(recipe.isPresent(), "missing pattern recipe for " + name);
-            helper.assertTrue(recipe.orElseThrow().value().assemble(input).is(item), "wrong pattern item");
+            helper.assertTrue(recipe.orElseThrow().value().assemble(input, helper.getLevel().registryAccess()).is(item), "wrong pattern item");
             for (DyeColor color : DyeColor.values()) {
                 LoomMenu menu = new LoomMenu(0, player.getInventory());
-                menu.getSlot(0).set(new ItemStack(Items.BANNER.white()));
-                menu.getSlot(1).set(new ItemStack(Items.DYE.pick(color)));
+                menu.getSlot(0).set(new ItemStack(Items.WHITE_BANNER));
+                menu.getSlot(1).set(new ItemStack(net.minecraft.world.item.DyeItem.byColor(color)));
                 menu.getSlot(2).set(new ItemStack(item));
                 ItemStack banner = menu.getSlot(3).getItem().copy();
                 helper.assertTrue(!banner.isEmpty(), "loom produced no banner for " + name);
@@ -50,7 +50,7 @@ public final class BannerPatternTests {
                 var shieldInput = CraftingInput.of(2, 1, List.of(new ItemStack(Items.SHIELD), banner));
                 var shieldRecipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, shieldInput, level);
                 helper.assertTrue(shieldRecipe.isPresent(), "patterned banner could not decorate a shield");
-                ItemStack shield = shieldRecipe.orElseThrow().value().assemble(shieldInput);
+                ItemStack shield = shieldRecipe.orElseThrow().value().assemble(shieldInput, helper.getLevel().registryAccess());
                 helper.assertTrue(shield.get(DataComponents.BANNER_PATTERNS).layers().equals(layers), "shield lost its pattern");
             }
         }

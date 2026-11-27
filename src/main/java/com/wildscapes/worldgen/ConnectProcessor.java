@@ -21,13 +21,13 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-public class ConnectProcessor implements StructureProcessor {
+public class ConnectProcessor extends StructureProcessor {
     public static final ConnectProcessor INSTANCE = new ConnectProcessor();
     public static final MapCodec<ConnectProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
 
     @Override
-    public MapCodec<ConnectProcessor> codec() {
-        return CODEC;
+    protected net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType<?> getType() {
+        return WildscapesStructures.CONNECT;
     }
 
     @Override

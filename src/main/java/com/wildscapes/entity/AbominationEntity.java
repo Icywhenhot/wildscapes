@@ -19,7 +19,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityDataRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricTrackedDataRegistry;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -57,15 +57,15 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
-import com.geckolib.animatable.GeoEntity;
-import com.geckolib.animatable.instance.AnimatableInstanceCache;
-import com.geckolib.animatable.manager.AnimatableManager;
-import com.geckolib.animation.AnimationController;
-import com.geckolib.animation.state.AnimationTest;
-import com.geckolib.animation.object.PlayState;
-import com.geckolib.animation.RawAnimation;
-import com.geckolib.animation.keyframehandler.AutoPlayingSoundKeyframeHandler;
-import com.geckolib.util.GeckoLibUtil;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animatable.manager.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.state.AnimationTest;
+import software.bernie.geckolib.animation.object.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.animation.keyframehandler.AutoPlayingSoundKeyframeHandler;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class AbominationEntity extends Monster implements GeoEntity {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.abomination.static");
@@ -99,7 +99,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
             SynchedEntityData.defineId(AbominationEntity.class, PATH_SERIALIZER);
 
     public static void registerData() {
-        FabricEntityDataRegistry.register(Wildscapes.id("tongue_path"), PATH_SERIALIZER);
+        FabricTrackedDataRegistry.register(Wildscapes.id("tongue_path"), PATH_SERIALIZER);
     }
 
     private static final int PRE_JUMP_LAUNCH = 17;

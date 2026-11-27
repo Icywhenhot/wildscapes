@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -113,7 +113,7 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook, Mir
         if (Minecraft.getInstance().options.getCameraType().isFirstPerson()
                 && player == Minecraft.getInstance().player) {
             double fovScale = 960.0 / Minecraft.getInstance().options.fov().get();
-            Vec3 offset = Minecraft.getInstance().gameRenderer.mainCamera().getNearPlane(Minecraft.getInstance().options.fov().get()).getPointOnPlane(side * 0.6F, -1F)
+            Vec3 offset = Minecraft.getInstance().gameRenderer.getMainCamera().getNearPlane().getPointOnPlane(side * 0.6F, -1F)
                     .scale(fovScale)
                     .yRot(swingOffset * 0.25F)
                     .xRot(-swingOffset * 0.35F);

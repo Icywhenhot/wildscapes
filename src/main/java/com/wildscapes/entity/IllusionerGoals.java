@@ -12,15 +12,15 @@ public final class IllusionerGoals {
     public static void onJoinLevel(Entity entity, ServerLevel level) {
         if (entity instanceof Illusioner illusioner
                 && !hasMirageGoal(illusioner)) {
-            var goals = List.copyOf(illusioner.getGoalSelector().getAvailableGoals());
-            goals.forEach(goal -> illusioner.getGoalSelector().removeGoal(goal.getGoal()));
-            illusioner.getGoalSelector().addGoal(1, new IllusionerMirageGoal(illusioner));
-            goals.forEach(goal -> illusioner.getGoalSelector().addGoal(goal.getPriority(), goal.getGoal()));
+            var goals = List.copyOf(illusioner.goalSelector.getAvailableGoals());
+            goals.forEach(goal -> illusioner.goalSelector.removeGoal(goal.getGoal()));
+            illusioner.goalSelector.addGoal(1, new IllusionerMirageGoal(illusioner));
+            goals.forEach(goal -> illusioner.goalSelector.addGoal(goal.getPriority(), goal.getGoal()));
         }
     }
 
     private static boolean hasMirageGoal(Illusioner illusioner) {
-        return illusioner.getGoalSelector().getAvailableGoals().stream()
+        return illusioner.goalSelector.getAvailableGoals().stream()
                 .anyMatch(wrapped -> wrapped.getGoal() instanceof IllusionerMirageGoal);
     }
 }

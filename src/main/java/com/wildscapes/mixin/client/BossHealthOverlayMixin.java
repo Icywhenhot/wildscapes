@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.wildscapes.client.SoulHarvestBossBar;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.world.BossEvent;
@@ -23,12 +23,12 @@ public abstract class BossHealthOverlayMixin {
     private Map<UUID, LerpingBossEvent> events;
 
     @Shadow
-    private void extractBar(GuiGraphicsExtractor gui, int x, int y, BossEvent event) {
+    private void drawBar(GuiGraphics gui, int x, int y, BossEvent event) {
         throw new AssertionError();
     }
 
-    @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
-    private void extractSoulHarvest(GuiGraphicsExtractor gui, CallbackInfo ci) {
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    private void extractSoulHarvest(GuiGraphics gui, CallbackInfo ci) {
         if (events.values().stream().noneMatch(SoulHarvestBossBar::matches)) {
             return;
         }
@@ -40,8 +40,8 @@ public abstract class BossHealthOverlayMixin {
             if (SoulHarvestBossBar.matches(event)) {
                 y += SoulHarvestBossBar.extract(gui, event, y);
             } else {
-                extractBar(gui, center - 91, y, event);
-                gui.centeredText(Minecraft.getInstance().font, event.getName(), center, y - 9, -1);
+                drawBar(gui, center - 91, y, event);
+                gui.drawCenteredString(Minecraft.getInstance().font, event.getName(), center, y - 9, -1);
                 y += 19;
             }
             if (y >= gui.guiHeight() / 3) {

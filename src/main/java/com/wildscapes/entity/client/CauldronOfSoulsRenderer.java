@@ -9,11 +9,11 @@ import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.sprite.SpriteGetter;
-import net.minecraft.client.resources.model.sprite.SpriteId;
+import net.minecraft.client.resources.model.MaterialSet;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -22,13 +22,13 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 
 public class CauldronOfSoulsRenderer implements BlockEntityRenderer<CauldronOfSoulsBlockEntity, CauldronOfSoulsRenderer.State> {
-    private static final SpriteId LID = new SpriteId(TextureAtlas.LOCATION_BLOCKS,
+    private static final Material LID = new Material(TextureAtlas.LOCATION_BLOCKS,
             Wildscapes.id("block/cauldron_of_souls_lid"));
 
-    private final SpriteGetter sprites;
+    private final MaterialSet sprites;
 
     public CauldronOfSoulsRenderer(BlockEntityRendererProvider.Context context) {
-        sprites = context.sprites();
+        sprites = context.materials();
     }
 
     public static class State extends BlockEntityRenderState {

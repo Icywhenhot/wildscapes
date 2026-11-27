@@ -17,7 +17,7 @@ public record JumpPayload() implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, JumpPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     public static void register() {
-        PayloadTypeRegistry.serverboundPlay().register(TYPE, STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(TYPE, STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(TYPE, JumpPayload::handle);
     }
 

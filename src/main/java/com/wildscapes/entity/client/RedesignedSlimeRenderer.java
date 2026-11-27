@@ -9,16 +9,16 @@ import net.minecraft.client.model.monster.slime.SlimeModel;
 import net.minecraft.client.renderer.entity.layers.SlimeOuterLayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.SlimeRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.AbstractCubeMobRenderer;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.monster.cubemob.Slime;
+import net.minecraft.world.entity.monster.Slime;
 
-public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, SlimeRenderState, SlimeModel> {
+public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeRenderState, SlimeModel> {
     static final int[] MODELLED_SIZES = {1, 2, 4};
 
     private static final Identifier[] TEXTURES = {
@@ -36,7 +36,7 @@ public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, Slim
 
     private RedesignedSlimeRenderer(EntityRendererProvider.Context context, boolean vanilla) {
         super(context, new SlimeModel(context.bakeLayer(vanilla ? ModelLayers.SLIME
-                : WildscapesModelLayers.SLIME_SMALL)));
+                : WildscapesModelLayers.SLIME_SMALL)), 0.25F);
         this.vanilla = vanilla;
         if (vanilla) {
             this.innerModels = new SlimeModel[] {this.model, this.model, this.model};
@@ -67,6 +67,8 @@ public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, Slim
     @Override
     public void extractRenderState(Slime slime, SlimeRenderState state, float partialTick) {
         super.extractRenderState(slime, state, partialTick);
+        state.squish = Mth.lerp(partialTick, slime.oSquish, slime.squish);
+        state.size = slime.getSize();
         state.setData(MobVisuals.MERGE_ALPHA, SlimeMerging.mergeAlpha(slime));
     }
 

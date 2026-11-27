@@ -160,7 +160,7 @@ public final class MirelashHook extends ThrowableProjectile {
         if (entityData.get(SLIME_SNARE)) {
             target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND, 80, 0, false, true, false));
             ServerLevel level = (ServerLevel) level();
-            ItemParticleOption slime = new ItemParticleOption(ParticleTypes.ITEM, Items.SLIME_BALL);
+            ItemParticleOption slime = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SLIME_BALL));
             level.sendParticles(slime, target.getX(), target.getY(0.55), target.getZ(), 28,
                     target.getBbWidth() * 0.45, target.getBbHeight() * 0.35, target.getBbWidth() * 0.45, 0.08);
         }

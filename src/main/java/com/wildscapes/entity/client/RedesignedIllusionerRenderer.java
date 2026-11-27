@@ -5,7 +5,7 @@ import java.util.WeakHashMap;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import com.wildscapes.Wildscapes;
 
 import net.minecraft.client.model.geom.ModelLayers;
