@@ -1,5 +1,7 @@
 package com.wildscapes.gametest;
 
+import com.wildscapes.worldgen.TemplateTreeFeature;
+import com.wildscapes.worldgen.CypressTreeFeature;
 import java.util.Optional;
 
 import com.wildscapes.block.DrapingMossCarpetBlock;
@@ -17,8 +19,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 public class TreePlacementTests {
     private static final String PLATFORM = "gametest/tree_platform";
@@ -82,9 +82,8 @@ public class TreePlacementTests {
 
     public static void saplingTreeHangsNoFlatVines(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        boolean placed = WildscapesFeatures.CYPRESS_TREE.place(new FeaturePlaceContext<>(
-                Optional.empty(), level, level.getChunkSource().getGenerator(), level.getRandom(),
-                helper.absolutePos(GROUND), NoneFeatureConfiguration.INSTANCE));
+        boolean placed = new CypressTreeFeature().place(level, level.getChunkSource().getGenerator(),
+                level.getRandom(), helper.absolutePos(GROUND));
         helper.assertTrue(placed, "the sapling tree refused to grow on dirt");
         helper.succeedWhen(() -> forEachVine(helper, (pos, vine) -> {
             if (vine.getValue(VineBlock.UP) && !anySideFace(vine)) {
@@ -216,15 +215,9 @@ public class TreePlacementTests {
             TemplateTreeConfiguration.Ground ground, int yOffset, int maxWaterDepth) {
         ServerLevel level = helper.getLevel();
         BlockPos origin = helper.absolutePos(relative);
-        return WildscapesFeatures.TEMPLATE_TREE.place(new FeaturePlaceContext<>(
-                Optional.empty(),
-                level,
-                level.getChunkSource().getGenerator(),
-                level.getRandom(),
-                origin,
-                new TemplateTreeConfiguration(
-                        java.util.List.of(Identifier.parse(template)), ground, yOffset,
-                        maxWaterDepth)));
+        return new TemplateTreeFeature(new TemplateTreeConfiguration(
+                java.util.List.of(Identifier.parse(template)), ground, yOffset, maxWaterDepth))
+                .place(level, level.getChunkSource().getGenerator(), level.getRandom(), origin);
     }
 
     private static void assertPresent(GameTestHelper helper, BlockState state, String what) {

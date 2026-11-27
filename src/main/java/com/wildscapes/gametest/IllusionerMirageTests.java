@@ -42,8 +42,8 @@ public final class IllusionerMirageTests {
         var second = helper.spawn(EntityTypes.ZOMBIE, new BlockPos(8, 3, 5));
         first.setNoAi(true);
         second.setNoAi(true);
-        first.setInvulnerable(true);
-        second.setInvulnerable(true);
+        first.setPermanentlyInvulnerable(true);
+        second.setPermanentlyInvulnerable(true);
         first.setTarget(player);
         second.setTarget(player);
         int[] casts = {-1, -1};

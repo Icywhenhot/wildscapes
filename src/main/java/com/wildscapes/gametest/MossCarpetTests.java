@@ -1,5 +1,6 @@
 package com.wildscapes.gametest;
 
+import net.minecraft.world.level.block.BonemealSource;
 import com.wildscapes.block.DrapingMossCarpetBlock;
 import com.wildscapes.block.DrapingMossCarpetBlock.Drape;
 import com.wildscapes.block.WildscapesBlocks;
@@ -25,10 +26,10 @@ public class MossCarpetTests {
 
         DrapingMossCarpetBlock carpet = WildscapesBlocks.MOSS_CARPET;
         helper.assertTrue(
-                carpet.isValidBonemealTarget(helper.getLevel(), helper.absolutePos(CARPET), bare),
+                carpet.isValidBonemealTarget(helper.getLevel(), helper.absolutePos(CARPET), bare, BonemealSource.INTERACTION),
                 "a bare carpet with open air all round it refused bone meal");
         carpet.performBonemeal(helper.getLevel(), helper.getLevel().getRandom(),
-                helper.absolutePos(CARPET), bare);
+                helper.absolutePos(CARPET), bare, BonemealSource.INTERACTION);
 
         helper.succeedWhen(() -> {
             BlockState grown = helper.getBlockState(CARPET);

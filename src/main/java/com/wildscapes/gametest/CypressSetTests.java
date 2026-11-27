@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
 import net.minecraft.world.level.block.entity.ShelfBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.fabricmc.fabric.api.registry.CompostableRegistry;
 
 public final class CypressSetTests {
     private CypressSetTests() {}
@@ -115,7 +114,7 @@ public final class CypressSetTests {
     private static void swampPlantsCompost(GameTestHelper helper) {
         for (var item : List.of(WildscapesBlocks.DUCKWEED.asItem(), WildscapesBlocks.RUSHES.asItem(),
                 WildscapesBlocks.CYPRESS_LEAVES.asItem(), WildscapesBlocks.LUMINOUS_MUSHROOM.asItem())) {
-            helper.assertTrue(CompostableRegistry.INSTANCE.get(item) != null,
+            helper.assertTrue(item.components().has(net.minecraft.core.component.DataComponents.COMPOSTABLE),
                     item + " is not compostable");
         }
         var advancement = helper.getLevel().getServer().getAdvancements()

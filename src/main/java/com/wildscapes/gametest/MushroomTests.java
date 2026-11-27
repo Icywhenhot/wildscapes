@@ -1,5 +1,7 @@
 package com.wildscapes.gametest;
 
+import net.minecraft.core.Holder;
+import com.wildscapes.worldgen.ShelfMushroomFeature;
 import com.wildscapes.block.ShelfMushroomBlock;
 import com.wildscapes.block.PavShrooms;
 import com.wildscapes.block.WildscapesBlocks;
@@ -22,8 +24,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.SimpleBlockConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.util.RandomSource;
 import java.util.Optional;
@@ -121,7 +121,7 @@ public class MushroomTests {
         }
         for (int y = 3; y <= 12; y++) helper.setBlock(new BlockPos(10, y, 10), WildscapesBlocks.CYPRESS_LOG);
         var level = helper.getLevel();
-        var config = new SimpleBlockConfiguration(BlockStateProvider.simple(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM));
+        var feature = new ShelfMushroomFeature(Holder.direct(BlockStateProvider.of(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM)));
         var random = RandomSource.create(1234);
         BlockPos beside = helper.absolutePos(new BlockPos(9, 3, 10));
         helper.assertTrue(level.getBiome(beside).is(Biomes.SWAMP), "test biome is not swamp at " + beside);
@@ -132,8 +132,7 @@ public class MushroomTests {
         int low = 0;
         int high = 0;
         for (int i = 0; i < 160; i++) {
-            boolean placed = WildscapesFeatures.SHELF_MUSHROOM.place(new FeaturePlaceContext<>(Optional.empty(), level,
-                    level.getChunkSource().getGenerator(), random, helper.absolutePos(new BlockPos(10, 3, 10)), config));
+            boolean placed = feature.place(level, level.getChunkSource().getGenerator(), random, helper.absolutePos(new BlockPos(10, 3, 10)));
             if (!placed) continue;
             for (Direction face : Direction.Plane.HORIZONTAL) {
                 for (int y = 3; y <= 12; y++) {
@@ -147,8 +146,7 @@ public class MushroomTests {
         }
         helper.assertTrue(low > 30 && low > high * 2, "mushrooms did not favor the lower trunk: " + low + "/" + high);
         helper.setBiome(Biomes.MANGROVE_SWAMP);
-        helper.assertTrue(!WildscapesFeatures.SHELF_MUSHROOM.place(new FeaturePlaceContext<>(Optional.empty(), level,
-                level.getChunkSource().getGenerator(), random, helper.absolutePos(new BlockPos(10, 3, 10)), config)),
+        helper.assertTrue(!feature.place(level, level.getChunkSource().getGenerator(), random, helper.absolutePos(new BlockPos(10, 3, 10))),
                 "shelf mushroom generated in mangrove swamp");
         helper.succeed();
     }

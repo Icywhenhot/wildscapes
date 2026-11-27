@@ -1,5 +1,6 @@
 package com.wildscapes.gametest;
 
+import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 import net.minecraft.world.entity.EntityTypes;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,7 +125,8 @@ public class WitchCampTests {
                         Identifier.fromNamespaceAndPath("wildscapes", "witch_camp")));
         ChunkGenerator generator = level.getChunkSource().getGenerator();
         return camp.value().generate(camp, level.dimension(), level.registryAccess(), generator, generator.getBiomeSource(),
-                level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(),
+                level.getChunkSource().randomState().createClimateSampler(SamplerContext.builder().build()),
+                level.getChunkSource().randomState(), level.getStructureTemplateManager(), level.getSeed(),
                 chunk, 0, level, biome -> true);
     }
 

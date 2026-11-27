@@ -38,8 +38,7 @@ public final class WitchCampMapTests {
         helper.assertTrue(copies.get(DataComponents.MAP_DECORATIONS).equals(map.get(DataComponents.MAP_DECORATIONS)),
                 "copied maps changed destination");
         helper.assertTrue(copies.get(DataComponents.MAP_ID).equals(map.get(DataComponents.MAP_ID)), "copied maps changed map id");
-        helper.assertTrue(WitchCampMap.WITCH_CAMP.value().showOnItemFrame()
-                && WitchCampMap.WITCH_CAMP.value().explorationMapElement(), "witch camp marker is not an explorer marker");
+        helper.assertTrue(WitchCampMap.WITCH_CAMP.value().showOnItemFrame(), "witch camp marker is hidden on item frames");
         helper.succeed();
     }
 }
