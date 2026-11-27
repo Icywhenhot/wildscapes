@@ -1,9 +1,9 @@
 package com.wildscapes.item;
 
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import java.util.List;
 
 
-import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.Item;
@@ -17,17 +17,13 @@ public final class VanillaTweaks {
     private static final List<Item> STEWS =
             List.of(Items.MUSHROOM_STEW, Items.RABBIT_STEW, Items.BEETROOT_SOUP, Items.SUSPICIOUS_STEW);
 
-    public static void register() {
-        DefaultItemComponentEvents.MODIFY.register(VanillaTweaks::modifyComponents);
-    }
-
-    private static void modifyComponents(DefaultItemComponentEvents.ModifyContext event) {
-        event.modify(Items.POTION, (builder, registries, item) -> builder.set(DataComponents.MAX_STACK_SIZE, 8));
+    public static void modifyComponents(ModifyDefaultComponentsEvent event) {
+        event.modify(Items.POTION, (builder, lookup, id) -> builder.set(DataComponents.MAX_STACK_SIZE, 8));
 
         for (Item stew : STEWS) {
-            Consumable food = stew.components().get(DataComponents.CONSUMABLE);
-            event.modify(stew, (builder, registries, item) -> {
+            event.modify(stew, (builder, lookup, id) -> {
                 builder.set(DataComponents.MAX_STACK_SIZE, 8);
+                Consumable food = builder.get(DataComponents.CONSUMABLE);
                 if (food != null) {
                     builder.set(DataComponents.CONSUMABLE, new Consumable(FAST_EAT_SECONDS, food.animation(),
                             food.sound(), food.hasConsumeParticles(), food.onConsumeEffects()));

@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public final class JumpInput {
     private static boolean held;
@@ -37,9 +37,7 @@ public final class JumpInput {
                     input.right(), false, input.shift(), input.sprint());
         } else if (pressed && !player.onGround() && MirelashItem.enchantmentLevel(player.level(),
                 player.getItemBySlot(EquipmentSlot.FEET), JumpEnchantments.MULTI_JUMP) > 0) {
-            if (ClientPlayNetworking.canSend(JumpPayload.TYPE)) {
-                ClientPlayNetworking.send(JumpPayload.INSTANCE);
-            }
+            ClientPacketDistributor.sendToServer(JumpPayload.INSTANCE);
         }
     }
 }

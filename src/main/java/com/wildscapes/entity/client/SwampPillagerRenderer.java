@@ -40,7 +40,7 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager, IllagerRend
 
     @Override
     public void submit(IllagerRenderState state, PoseStack poseStack, SubmitNodeCollector nodes, CameraRenderState camera) {
-        this.model = state.getDataOrDefault(MobVisuals.SWAMP, false) || state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? this.swampModel : this.vanillaModel;
+        this.model = state.getRenderDataOrDefault(MobVisuals.SWAMP, false) || state.getRenderDataOrDefault(MobVisuals.EMPOWERED, false) ? this.swampModel : this.vanillaModel;
         super.submit(state, poseStack, nodes, camera);
     }
 
@@ -54,9 +54,9 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager, IllagerRend
         if (vanilla) {
             return VANILLA;
         }
-        if (state.getDataOrDefault(MobVisuals.EMPOWERED, false)) {
+        if (state.getRenderDataOrDefault(MobVisuals.EMPOWERED, false)) {
             return EMPOWERED;
         }
-        return state.getDataOrDefault(MobVisuals.SWAMP, false) ? SWAMP : VANILLA;
+        return state.getRenderDataOrDefault(MobVisuals.SWAMP, false) ? SWAMP : VANILLA;
     }
 }

@@ -7,7 +7,6 @@ import com.wildscapes.effect.Intangibility;
 import com.wildscapes.entity.JumpEnchantments;
 import com.wildscapes.item.MirelashItem;
 import com.wildscapes.item.WitchCampMap;
-import com.wildscapes.mixin.client.ItemConditionsAccessor;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
@@ -18,13 +17,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent;
 
 public record WildscapesItemCondition(String kind) implements ConditionalItemModelProperty {
     private static final MapCodec<WildscapesItemCondition> CODEC =
             Codec.STRING.fieldOf("kind").xmap(WildscapesItemCondition::new, WildscapesItemCondition::kind);
 
-    public static void register() {
-        ItemConditionsAccessor.wildscapes$conditions().put(Wildscapes.id("item_condition"), CODEC);
+    public static void register(RegisterConditionalItemModelPropertyEvent event) {
+        event.register(Wildscapes.id("item_condition"), CODEC);
     }
 
     @Override

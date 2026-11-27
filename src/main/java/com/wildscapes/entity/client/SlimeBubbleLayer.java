@@ -28,7 +28,7 @@ public final class SlimeBubbleLayer<S extends LivingEntityRenderState, M extends
 
     @Override
     public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, S state, float yaw, float pitch) {
-        if (!state.getDataOrDefault(MobVisuals.BUBBLE, false)) {
+        if (!state.getRenderDataOrDefault(MobVisuals.BUBBLE, false)) {
             return;
         }
 

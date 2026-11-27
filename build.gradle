@@ -1,26 +1,20 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+    id 'java-library'
     id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.149'
+    id 'idea'
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/wildscapes.accesswidener")
-    runs {
-        client {
-            runDir 'run/fabric-client'
-        }
-        server {
-            runDir 'run/fabric-server'
-            programArg 'nogui'
-        }
-    }
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 version = mod_version
 group = mod_group_id
 
-base {
-    archivesName = mod_id
+sourceSets.main.resources {
+    srcDir('src/generated/resources')
+    exclude('**/*.bbmodel', '**/.cache/**')
 }
 
 repositories {
@@ -33,34 +27,97 @@ repositories {
     }
 }
 
-def guideJar = file(providers.gradleProperty('icys_lib_jar').getOrElse(
-        "../Icy's lib/build/libs/icys_lib-fabric-${minecraft_version}-${icys_lib_version}.jar"))
+base {
+    archivesName = mod_id
+}
 
-dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    implementation "net.fabricmc:fabric-loader:${loader_version}"
-    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-    implementation "maven.modrinth:geckolib:${geckolib_version}"
-    if (guideJar.isFile()) {
-        implementation files(guideJar)
-    } else {
-        implementation "icy.lib:icys_lib-fabric-${minecraft_version}:${icys_lib_version}"
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+neoForge {
+    version = project.neo_version
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run/neo263-client')
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            gameDirectory = project.file('run/neo263-server')
+        }
+
+        gameTestServer {
+            type = 'gameTestServer'
+            gameDirectory = project.file('run/neo263-tests')
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.INFO
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+
+    interfaceInjectionData {
+        from(provider {
+            zipTree(configurations.geckolibInjections.singleFile).matching { include 'META-INF/interface_injections.json' }
+        })
     }
 }
 
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+    geckolibInjections {
+        canBeConsumed = false
+        transitive = false
+    }
 }
 
-sourceSets.main.resources {
-    srcDir 'src/generated/resources'
-    exclude '**/*.bbmodel', '**/.cache/**'
+def guideJar = file(providers.gradleProperty('icys_lib_jar').getOrElse(
+        "../Icy's lib/build/libs/icys_lib-neoforge-${minecraft_version}-${icys_lib_version}.jar"))
+
+dependencies {
+    implementation "maven.modrinth:geckolib:${geckolib_version}"
+    geckolibInjections "maven.modrinth:geckolib:${geckolib_version}"
+    if (guideJar.isFile()) {
+        implementation files(guideJar)
+    } else {
+        implementation "icy.lib:icys_lib-neoforge-${minecraft_version}:${icys_lib_version}"
+    }
 }
 
-processResources {
-    inputs.property 'version', project.version
-    filesMatching('fabric.mod.json') {
-        expand version: project.version
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            icys_lib_version       : icys_lib_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
     }
 }
 
@@ -68,10 +125,9 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            from components.java
-        }
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
     }
 }

@@ -1,4 +1,0 @@
-accessWidener v2 official
-accessible field net/minecraft/world/entity/monster/Witch usingTime I
-accessible field net/minecraft/world/entity/Mob targetSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
-accessible field net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate palettes Ljava/util/List;

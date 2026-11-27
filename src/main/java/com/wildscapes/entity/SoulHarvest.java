@@ -1,5 +1,8 @@
 package com.wildscapes.entity;
 
+import net.minecraft.core.Registry;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import com.wildscapes.WildscapesConfig;
 
 import com.mojang.serialization.Codec;
@@ -7,9 +10,6 @@ import com.wildscapes.Wildscapes;
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.particle.WildscapesParticles;
 
-import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -32,20 +32,26 @@ public final class SoulHarvest {
     private static final Identifier HEALTH_BOOST =
             Identifier.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
 
-    public static final AttachmentType<Boolean> EMPOWERED = AttachmentRegistry.<Boolean>builder()
-            .persistent(Codec.BOOL)
-            .syncWith(ByteBufCodecs.BOOL, AttachmentSyncPredicate.all())
-            .buildAndRegister(Wildscapes.id("empowered"));
+    public static final AttachmentType<Boolean> EMPOWERED = AttachmentType.builder(() -> false)
+            .serialize(Codec.BOOL.fieldOf("value"))
+            .sync(ByteBufCodecs.BOOL)
+            .build();
 
-    public static final AttachmentType<BlockPos> ORIGIN =
-            AttachmentRegistry.createPersistent(Wildscapes.id("soul_harvest_origin"), BlockPos.CODEC);
+    public static final AttachmentType<BlockPos> ORIGIN = AttachmentType.builder(() -> BlockPos.ZERO)
+            .serialize(BlockPos.CODEC.fieldOf("value"))
+            .build();
+
+    public static void registerAttachments() {
+        Registry.register(NeoForgeRegistries.ATTACHMENT_TYPES, Wildscapes.id("empowered"), EMPOWERED);
+        Registry.register(NeoForgeRegistries.ATTACHMENT_TYPES, Wildscapes.id("soul_harvest_origin"), ORIGIN);
+    }
 
     public static boolean isEmpowered(Entity entity) {
-        return entity.getAttachedOrElse(EMPOWERED, false);
+        return entity.getExistingData(EMPOWERED).orElse(false);
     }
 
     public static void empower(Mob mob) {
-        mob.setAttached(EMPOWERED, true);
+        mob.setData(EMPOWERED, true);
         AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
             health.addOrReplacePermanentModifier(new AttributeModifier(HEALTH_BOOST,
@@ -64,14 +70,14 @@ public final class SoulHarvest {
         if (!(dead.level() instanceof ServerLevel level)) {
             return;
         }
-        if (!dead.hasAttached(ORIGIN)) {
+        if (!dead.hasData(ORIGIN)) {
             CauldronOfSoulsBlockEntity running = CauldronOfSoulsBlockEntity.harvesting(level, dead);
             if (running != null) {
                 running.onMobDeath(dead, source);
             }
             return;
         }
-        if (level.getBlockEntity(dead.getAttachedOrThrow(ORIGIN)) instanceof CauldronOfSoulsBlockEntity cauldron) {
+        if (level.getBlockEntity(dead.getData(ORIGIN)) instanceof CauldronOfSoulsBlockEntity cauldron) {
             cauldron.onMobDeath(dead, source);
         } else if (isEmpowered(dead)) {
             level.sendParticles(WildscapesParticles.LOST_SOUL, dead.getX(), dead.getY(0.6), dead.getZ(),

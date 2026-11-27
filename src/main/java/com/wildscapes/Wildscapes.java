@@ -1,5 +1,26 @@
 package com.wildscapes;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +53,6 @@ import com.wildscapes.particle.WildscapesParticles;
 import com.wildscapes.network.MirelashAttackPayload;
 import com.wildscapes.network.JumpPayload;
 import com.wildscapes.sound.WildscapesSounds;
-import com.wildscapes.worldgen.SwampBiomes;
 import com.wildscapes.worldgen.WildscapesFeatures;
 import com.wildscapes.worldgen.WildscapesPlacementModifiers;
 import com.wildscapes.worldgen.WildscapesStructures;
@@ -51,18 +71,11 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import com.wildscapes.gametest.WildscapesTests;
 import com.wildscapes.item.VanillaTweaks;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 
-public class Wildscapes implements ModInitializer {
+@Mod(Wildscapes.MODID)
+public class Wildscapes {
     public static final String MODID = "wildscapes";
     public static final Logger LOGGER = LogUtils.getLogger();
 
@@ -181,9 +194,47 @@ public class Wildscapes implements ModInitializer {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
-    @Override
-    public void onInitialize() {
+    public Wildscapes(IEventBus modBus) {
         WildscapesConfig.load();
+        modBus.addListener(Wildscapes::registerAll);
+        modBus.addListener(FMLCommonSetupEvent.class, event -> event.enqueueWork(Wildscapes::commonSetup));
+        modBus.addListener(EntityAttributeCreationEvent.class,
+                event -> event.put(WildscapesEntities.ABOMINATION, AbominationEntity.createAttributes().build()));
+        modBus.addListener(RegisterPayloadHandlersEvent.class, event -> {
+            MirelashAttackPayload.register(event);
+            JumpPayload.register(event);
+        });
+        modBus.addListener(BlockEntityTypeAddBlocksEvent.class, WildscapesBlocks::addSignBlocks);
+        modBus.addListener(ModifyDefaultComponentsEvent.class, WildscapesBlocks::compostables);
+        modBus.addListener(ModifyDefaultComponentsEvent.class, VanillaTweaks::modifyComponents);
+
+        NeoForge.EVENT_BUS.addListener(EntityJoinLevelEvent.class, event -> {
+            if (event.getLevel() instanceof ServerLevel level) {
+                IllusionerGoals.onJoinLevel(event.getEntity(), level);
+                WitchGoals.onJoinLevel(event.getEntity(), level);
+                SwampVariants.onEntityJoinLevel(event.getEntity(), level);
+            }
+        });
+        NeoForge.EVENT_BUS.addListener(PlayerEvent.StartTracking.class, event -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                MirageSync.onStartTracking(event.getTarget(), player);
+            }
+        });
+        NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEvent.class, event -> {
+            if (!Intangibility.allowDamage(event.getEntity(), event.getSource(), event.getAmount())) {
+                event.setCanceled(true);
+            }
+        });
+        NeoForge.EVENT_BUS.addListener(LivingDeathEvent.class,
+                event -> SoulHarvest.onDeath(event.getEntity(), event.getSource()));
+        NeoForge.EVENT_BUS.addListener(PlayerInteractEvent.RightClickBlock.class, Wildscapes::onRightClickBlock);
+        WitchRitual.register();
+    }
+
+    private static void registerAll(RegisterEvent event) {
+        if (!event.getRegistryKey().equals(Registries.BLOCK)) {
+            return;
+        }
         WildscapesBlocks.register();
         WildscapesBlockEntities.register();
         WildscapesDataComponents.register();
@@ -198,46 +249,29 @@ public class Wildscapes implements ModInitializer {
         WildscapesPlacementModifiers.register();
         WildscapesStructures.register();
         WildscapesTests.register();
-        SwampBiomes.register();
+        SoulHarvest.registerAttachments();
+        SwampVariants.registerAttachments();
+        WitchRitual.registerAttachments();
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id("wildscapes"), WILDSCAPES_TAB);
-
-        commonSetup();
-        FabricDefaultAttributeRegistry.register(WildscapesEntities.ABOMINATION, AbominationEntity.createAttributes());
-        MirelashAttackPayload.register();
-        JumpPayload.register();
-
-        ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, level) -> {
-            if (blockEntity instanceof com.wildscapes.block.entity.CauldronOfSoulsBlockEntity cauldron) {
-                cauldron.onLoad();
-            }
-        });
-        ServerEntityEvents.ENTITY_LOAD.register(IllusionerGoals::onJoinLevel);
-        ServerEntityEvents.ENTITY_LOAD.register(WitchGoals::onJoinLevel);
-        SwampVariants.register();
-        WitchRitual.register();
-        EntityTrackingEvents.START_TRACKING.register(MirageSync::onStartTracking);
-        ServerLivingEntityEvents.ALLOW_DAMAGE.register(Intangibility::allowDamage);
-        ServerLivingEntityEvents.AFTER_DEATH.register(SoulHarvest::onDeath);
-        UseBlockCallback.EVENT.register(MudBrickDyeing::onRightClick);
-        UseBlockCallback.EVENT.register(CauldronSwap::onRightClick);
-        UseBlockCallback.EVENT.register(MossCarpetSwap::onBonemeal);
-        VanillaTweaks.register();
     }
 
-    private void commonSetup() {
-        MudBrickDyeing.buildLookup();
+    private static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        for (UseBlockHandler handler : new UseBlockHandler[] {
+                MudBrickDyeing::onRightClick, CauldronSwap::onRightClick, MossCarpetSwap::onBonemeal}) {
+            InteractionResult result = handler.use(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec());
+            if (result != InteractionResult.PASS) {
+                event.setCanceled(true);
+                event.setCancellationResult(result);
+                return;
+            }
+        }
+    }
 
-        FlammableBlockRegistry fire = FlammableBlockRegistry.getDefaultInstance();
-        fire.add(WildscapesBlocks.CYPRESS_LOG, 5, 5);
-        fire.add(WildscapesBlocks.STRIPPED_CYPRESS_LOG, 5, 5);
-        fire.add(WildscapesBlocks.CYPRESS_WOOD, 5, 5);
-        fire.add(WildscapesBlocks.STRIPPED_CYPRESS_WOOD, 5, 5);
-        fire.add(WildscapesBlocks.CYPRESS_PLANKS, 5, 20);
-        fire.add(WildscapesBlocks.CYPRESS_STAIRS, 5, 20);
-        fire.add(WildscapesBlocks.CYPRESS_SLAB, 5, 20);
-        fire.add(WildscapesBlocks.CYPRESS_FENCE, 5, 20);
-        fire.add(WildscapesBlocks.CYPRESS_FENCE_GATE, 5, 20);
-        fire.add(WildscapesBlocks.CYPRESS_SHELF, 30, 20);
-        fire.add(WildscapesBlocks.CYPRESS_LEAVES, 30, 60);
+    private interface UseBlockHandler {
+        InteractionResult use(Player player, Level level, InteractionHand hand, BlockHitResult hit);
+    }
+
+    private static void commonSetup() {
+        MudBrickDyeing.buildLookup();
     }
 }

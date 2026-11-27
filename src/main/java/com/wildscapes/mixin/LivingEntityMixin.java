@@ -30,7 +30,7 @@ public abstract class LivingEntityMixin {
     @Inject(method = "dropAllDeathLoot", at = @At("HEAD"), cancellable = true)
     private void wildscapesDrops(ServerLevel level, DamageSource source, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (entity.hasAttached(SoulHarvest.ORIGIN)) {
+        if (entity.hasData(SoulHarvest.ORIGIN)) {
             ci.cancel();
         } else if (entity.getType() == EntityTypes.ILLUSIONER) {
             if (entity.getRandom().nextDouble() < WildscapesConfig.get(WildscapesConfig.NECKLACE_DROP_CHANCE)) {

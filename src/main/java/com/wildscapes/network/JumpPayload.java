@@ -7,8 +7,9 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record JumpPayload() implements CustomPacketPayload {
     public static final Type<JumpPayload> TYPE = new Type<>(
@@ -16,13 +17,12 @@ public record JumpPayload() implements CustomPacketPayload {
     public static final JumpPayload INSTANCE = new JumpPayload();
     public static final StreamCodec<RegistryFriendlyByteBuf, JumpPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    public static void register() {
-        PayloadTypeRegistry.serverboundPlay().register(TYPE, STREAM_CODEC);
-        ServerPlayNetworking.registerGlobalReceiver(TYPE, JumpPayload::handle);
+    public static void register(RegisterPayloadHandlersEvent event) {
+        event.registrar("2").playToServer(TYPE, STREAM_CODEC, JumpPayload::handle);
     }
 
-    private static void handle(JumpPayload payload, ServerPlayNetworking.Context context) {
-        JumpEnchantments.jump(context.player());
+    private static void handle(JumpPayload payload, IPayloadContext context) {
+        JumpEnchantments.jump((ServerPlayer) context.player());
     }
 
     @Override

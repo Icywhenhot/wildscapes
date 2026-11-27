@@ -67,7 +67,7 @@ public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, Slim
     @Override
     public void extractRenderState(Slime slime, SlimeRenderState state, float partialTick) {
         super.extractRenderState(slime, state, partialTick);
-        state.setData(MobVisuals.MERGE_ALPHA, SlimeMerging.mergeAlpha(slime));
+        state.setRenderData(MobVisuals.MERGE_ALPHA, SlimeMerging.mergeAlpha(slime));
     }
 
     @Override
@@ -83,12 +83,12 @@ public class RedesignedSlimeRenderer extends AbstractCubeMobRenderer<Slime, Slim
 
     @Override
     protected int getModelTint(SlimeRenderState state) {
-        return ((int) (255 * state.getDataOrDefault(MobVisuals.MERGE_ALPHA, 1.0F)) << 24) | 0xFFFFFF;
+        return ((int) (255 * state.getRenderDataOrDefault(MobVisuals.MERGE_ALPHA, 1.0F)) << 24) | 0xFFFFFF;
     }
 
     @Override
     protected RenderType getRenderType(SlimeRenderState state, boolean bodyVisible, boolean translucent, boolean glowing) {
-        return state.getDataOrDefault(MobVisuals.MERGE_ALPHA, 1.0F) < 1.0F
+        return state.getRenderDataOrDefault(MobVisuals.MERGE_ALPHA, 1.0F) < 1.0F
                 ? RenderTypes.entityTranslucent(getTextureLocation(state))
                 : super.getRenderType(state, bodyVisible, translucent, glowing);
     }

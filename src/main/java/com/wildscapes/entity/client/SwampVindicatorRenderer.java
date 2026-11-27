@@ -58,9 +58,9 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, Illager
         if (vanilla) {
             return VANILLA;
         }
-        if (state.getDataOrDefault(MobVisuals.EMPOWERED, false)) {
+        if (state.getRenderDataOrDefault(MobVisuals.EMPOWERED, false)) {
             return EMPOWERED;
         }
-        return state.getDataOrDefault(MobVisuals.SWAMP, false) ? SWAMP : DEFAULT;
+        return state.getRenderDataOrDefault(MobVisuals.SWAMP, false) ? SWAMP : DEFAULT;
     }
 }

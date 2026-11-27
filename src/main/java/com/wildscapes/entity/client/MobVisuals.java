@@ -1,16 +1,18 @@
 package com.wildscapes.entity.client;
 
-import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
+import com.wildscapes.Wildscapes;
+
+import net.minecraft.util.context.ContextKey;
 
 public final class MobVisuals {
-    public static final RenderStateDataKey<Boolean> EMPOWERED = RenderStateDataKey.create();
-    public static final RenderStateDataKey<Boolean> SWAMP = RenderStateDataKey.create();
-    public static final RenderStateDataKey<Boolean> MIRAGE = RenderStateDataKey.create();
-    public static final RenderStateDataKey<Boolean> BUBBLE = RenderStateDataKey.create();
-    public static final RenderStateDataKey<Boolean> PHASED = RenderStateDataKey.create();
-    public static final RenderStateDataKey<Boolean> LOCAL = RenderStateDataKey.create();
-    public static final RenderStateDataKey<Boolean> CHANTING = RenderStateDataKey.create();
-    public static final RenderStateDataKey<Float> MERGE_ALPHA = RenderStateDataKey.create();
+    public static final ContextKey<Boolean> EMPOWERED = new ContextKey<>(Wildscapes.id("empowered"));
+    public static final ContextKey<Boolean> SWAMP = new ContextKey<>(Wildscapes.id("swamp"));
+    public static final ContextKey<Boolean> MIRAGE = new ContextKey<>(Wildscapes.id("mirage"));
+    public static final ContextKey<Boolean> BUBBLE = new ContextKey<>(Wildscapes.id("bubble"));
+    public static final ContextKey<Boolean> PHASED = new ContextKey<>(Wildscapes.id("phased"));
+    public static final ContextKey<Boolean> LOCAL = new ContextKey<>(Wildscapes.id("local"));
+    public static final ContextKey<Boolean> CHANTING = new ContextKey<>(Wildscapes.id("chanting"));
+    public static final ContextKey<Float> MERGE_ALPHA = new ContextKey<>(Wildscapes.id("merge_alpha"));
 
     private MobVisuals() {}
 }

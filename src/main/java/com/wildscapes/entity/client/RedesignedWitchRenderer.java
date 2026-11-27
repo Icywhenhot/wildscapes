@@ -31,7 +31,7 @@ public class RedesignedWitchRenderer extends WitchRenderer {
     @Override
     public void extractRenderState(Witch witch, WitchRenderState state, float partialTick) {
         super.extractRenderState(witch, state, partialTick);
-        state.setData(MobVisuals.CHANTING, WitchRitual.isChanting(witch));
+        state.setRenderData(MobVisuals.CHANTING, WitchRitual.isChanting(witch));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class RedesignedWitchRenderer extends WitchRenderer {
         if (vanilla) {
             return VANILLA;
         }
-        return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
+        return state.getRenderDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.wildscapes.block;
 
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
 import com.wildscapes.item.WildscapesItems;
 import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
 import net.minecraft.world.item.component.CookingFuel;
@@ -7,17 +9,12 @@ import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntPr
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.item.component.Compostable;
-import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
-import net.fabricmc.fabric.api.item.v1.BlockTransformerHelper;
 import java.util.function.Function;
 import java.util.function.BiFunction;
 
 import com.wildscapes.Wildscapes;
 import com.wildscapes.worldgen.WildscapesTreeGrowers;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityType;
-import net.fabricmc.fabric.api.object.builder.v1.block.type.BlockSetTypeBuilder;
-import net.fabricmc.fabric.api.object.builder.v1.block.type.WoodTypeBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -59,8 +56,8 @@ public final class WildscapesBlocks {
 
     public static final TagKey<Block> SOIL = TagKey.create(Registries.BLOCK, Wildscapes.id("soil"));
 
-    public static final BlockSetType CYPRESS_SET = BlockSetTypeBuilder.copyOf(BlockSetType.OAK).register(Wildscapes.id("cypress"));
-    public static final WoodType CYPRESS_TYPE = WoodTypeBuilder.copyOf(WoodType.OAK).register(Wildscapes.id("cypress"), CYPRESS_SET);
+    public static final BlockSetType CYPRESS_SET = BlockSetType.register(new BlockSetType("wildscapes:cypress"));
+    public static final WoodType CYPRESS_TYPE = WoodType.register(new WoodType("wildscapes:cypress", CYPRESS_SET));
 
     public static final RotatedPillarBlock STRIPPED_CYPRESS_LOG = register("stripped_cypress_log",
             properties -> new RotatedPillarBlock(logProps(properties)));
@@ -334,19 +331,15 @@ public final class WildscapesBlocks {
 
     public static void register() {
         MudBrickBlocks.init();
-        DefaultItemComponentEvents.MODIFY.register(WildscapesBlocks::compostables);
-        BlockTransformerHelper.registerStripping(CYPRESS_LOG, STRIPPED_CYPRESS_LOG);
-        BlockTransformerHelper.registerStripping(CYPRESS_WOOD, STRIPPED_CYPRESS_WOOD);
-        FabricBlockEntityType sign = (FabricBlockEntityType) BlockEntityTypes.SIGN;
-        sign.addValidBlock(CYPRESS_SIGN);
-        sign.addValidBlock(CYPRESS_WALL_SIGN);
-        FabricBlockEntityType hangingSign = (FabricBlockEntityType) BlockEntityTypes.HANGING_SIGN;
-        hangingSign.addValidBlock(CYPRESS_HANGING_SIGN);
-        hangingSign.addValidBlock(CYPRESS_WALL_HANGING_SIGN);
-        ((FabricBlockEntityType) BlockEntityTypes.SHELF).addValidBlock(CYPRESS_SHELF);
     }
 
-    private static void compostables(DefaultItemComponentEvents.ModifyContext event) {
+    public static void addSignBlocks(BlockEntityTypeAddBlocksEvent event) {
+        event.modify(BlockEntityTypes.SIGN, CYPRESS_SIGN, CYPRESS_WALL_SIGN);
+        event.modify(BlockEntityTypes.HANGING_SIGN, CYPRESS_HANGING_SIGN, CYPRESS_WALL_HANGING_SIGN);
+        event.modify(BlockEntityTypes.SHELF, CYPRESS_SHELF);
+    }
+
+    public static void compostables(ModifyDefaultComponentsEvent event) {
         compost(event, ContextIntProviders.COMPOSTABLE_LOW, CYPRESS_LEAVES, CYPRESS_SAPLING, DUCKWEED, SHORT_RUSHES);
         compost(event, ContextIntProviders.COMPOSTABLE_LOW_MEDIUM, RUSHES);
         compost(event, ContextIntProviders.COMPOSTABLE_MEDIUM, LUMINOUS_MUSHROOM);
@@ -362,17 +355,17 @@ public final class WildscapesBlocks {
         fuel(event, ContextIntProviders.COOKING_TIME_DRY_PLANTS, CYPRESS_SAPLING.asItem());
     }
 
-    private static void fuel(DefaultItemComponentEvents.ModifyContext event, ResourceKey<ContextIntProvider> time,
+    private static void fuel(ModifyDefaultComponentsEvent event, ResourceKey<ContextIntProvider> time,
             Item... items) {
         for (Item fuel : items) {
-            event.modify(fuel, (builder, registries, item) -> builder.set(DataComponents.COOKING_FUEL, new CookingFuel(time, ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER)));
+            event.modify(fuel, (builder, lookup, id) -> builder.set(DataComponents.COOKING_FUEL, new CookingFuel(time, ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER)));
         }
     }
 
-    private static void compost(DefaultItemComponentEvents.ModifyContext event,
+    private static void compost(ModifyDefaultComponentsEvent event,
             ResourceKey<ContextIntProvider> chance, Block... blocks) {
         for (Block block : blocks) {
-            event.modify(block.asItem(), (builder, registries, item) -> builder.set(DataComponents.COMPOSTABLE, new Compostable(chance)));
+            event.modify(block, (builder, lookup, id) -> builder.set(DataComponents.COMPOSTABLE, new Compostable(chance)));
         }
     }
 }

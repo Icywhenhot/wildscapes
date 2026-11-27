@@ -19,6 +19,6 @@ public class EmpoweredEvokerRenderer extends EvokerRenderer<Evoker> {
 
     @Override
     public Identifier getTextureLocation(EvokerRenderState state) {
-        return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : super.getTextureLocation(state);
+        return state.getRenderDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : super.getTextureLocation(state);
     }
 }

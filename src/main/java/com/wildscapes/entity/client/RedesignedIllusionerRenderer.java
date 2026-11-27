@@ -65,7 +65,7 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
         if (vanilla) {
             return VANILLA;
         }
-        return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
+        return state.getRenderDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
     }
 
     @Override

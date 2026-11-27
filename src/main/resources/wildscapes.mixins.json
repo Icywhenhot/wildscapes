@@ -24,8 +24,7 @@
     "client.ScreenEffectRendererMixin",
     "client.MinecraftMixin",
     "client.FogRendererMixin",
-    "client.BossHealthOverlayMixin",
-    "client.ItemConditionsAccessor"
+    "client.BossHealthOverlayMixin"
   ],
   "injectors": {
     "defaultRequire": 1

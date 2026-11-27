@@ -7,13 +7,14 @@ import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public final class MirelashInput {
     private MirelashInput() {}
 
     public static boolean onAttack(Minecraft minecraft) {
-        if (!ClientPlayNetworking.canSend(MirelashAttackPayload.TYPE) || minecraft.player == null || minecraft.gui.screen() != null
+        if (minecraft.player == null || !canSend(minecraft) || minecraft.gui.screen() != null
                 || !(minecraft.player.getMainHandItem().getItem() instanceof MirelashItem)
                 || minecraft.player.getCooldowns().isOnCooldown(minecraft.player.getMainHandItem())
                 || minecraft.player.getAttackStrengthScale(0.5F) < 0.9F) {
@@ -23,9 +24,14 @@ public final class MirelashInput {
         if (target == null) {
             return false;
         }
-        ClientPlayNetworking.send(new MirelashAttackPayload(target.getId()));
+        ClientPacketDistributor.sendToServer(new MirelashAttackPayload(target.getId()));
         minecraft.player.resetAttackStrengthTicker();
         minecraft.player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
         return true;
+    }
+
+    private static boolean canSend(Minecraft minecraft) {
+        ClientPacketListener connection = minecraft.getConnection();
+        return connection != null && connection.hasChannel(MirelashAttackPayload.TYPE.id());
     }
 }

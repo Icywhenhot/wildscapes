@@ -19,7 +19,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityDataRegistry;
+import net.minecraft.core.Registry;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -99,7 +100,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
             SynchedEntityData.defineId(AbominationEntity.class, PATH_SERIALIZER);
 
     public static void registerData() {
-        FabricEntityDataRegistry.register(Wildscapes.id("tongue_path"), PATH_SERIALIZER);
+        Registry.register(NeoForgeRegistries.ENTITY_DATA_SERIALIZERS, Wildscapes.id("tongue_path"), PATH_SERIALIZER);
     }
 
     private static final int PRE_JUMP_LAUNCH = 17;

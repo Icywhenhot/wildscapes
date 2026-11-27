@@ -20,7 +20,7 @@ public class ChantingWitchModel extends WitchModel {
     @Override
     public void setupAnim(WitchRenderState state) {
         super.setupAnim(state);
-        boolean chanting = state.getDataOrDefault(MobVisuals.CHANTING, false);
+        boolean chanting = state.getRenderDataOrDefault(MobVisuals.CHANTING, false);
         this.arms.visible = !chanting;
         this.rightArm.visible = chanting;
         this.leftArm.visible = chanting;

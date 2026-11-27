@@ -1,0 +1,48 @@
+{
+  "values": {
+    "wildscapes:cypress_log": {
+      "ignite_odds": 5,
+      "burn_odds": 5
+    },
+    "wildscapes:stripped_cypress_log": {
+      "ignite_odds": 5,
+      "burn_odds": 5
+    },
+    "wildscapes:cypress_wood": {
+      "ignite_odds": 5,
+      "burn_odds": 5
+    },
+    "wildscapes:stripped_cypress_wood": {
+      "ignite_odds": 5,
+      "burn_odds": 5
+    },
+    "wildscapes:cypress_planks": {
+      "ignite_odds": 5,
+      "burn_odds": 20
+    },
+    "wildscapes:cypress_stairs": {
+      "ignite_odds": 5,
+      "burn_odds": 20
+    },
+    "wildscapes:cypress_slab": {
+      "ignite_odds": 5,
+      "burn_odds": 20
+    },
+    "wildscapes:cypress_fence": {
+      "ignite_odds": 5,
+      "burn_odds": 20
+    },
+    "wildscapes:cypress_fence_gate": {
+      "ignite_odds": 5,
+      "burn_odds": 20
+    },
+    "wildscapes:cypress_shelf": {
+      "ignite_odds": 30,
+      "burn_odds": 20
+    },
+    "wildscapes:cypress_leaves": {
+      "ignite_odds": 30,
+      "burn_odds": 60
+    }
+  }
+}

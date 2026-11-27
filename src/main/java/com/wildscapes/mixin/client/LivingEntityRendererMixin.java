@@ -41,24 +41,24 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 
     @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V", at = @At("TAIL"))
     private void extractWildscapesState(T entity, S state, float partialTick, CallbackInfo ci) {
-        state.setData(MobVisuals.EMPOWERED, SoulHarvest.isEmpowered(entity));
-        state.setData(MobVisuals.SWAMP, SwampVariants.isSwampBorn(entity));
-        state.setData(MobVisuals.MIRAGE, entity.hasEffect(WildscapesEffects.MIRAGE));
-        state.setData(MobVisuals.BUBBLE, entity.hasEffect(WildscapesEffects.SLIMEBOUND));
-        state.setData(MobVisuals.PHASED, entity.hasEffect(WildscapesEffects.INTANGIBILITY));
-        state.setData(MobVisuals.LOCAL, Minecraft.getInstance().player == entity);
+        state.setRenderData(MobVisuals.EMPOWERED, SoulHarvest.isEmpowered(entity));
+        state.setRenderData(MobVisuals.SWAMP, SwampVariants.isSwampBorn(entity));
+        state.setRenderData(MobVisuals.MIRAGE, entity.hasEffect(WildscapesEffects.MIRAGE));
+        state.setRenderData(MobVisuals.BUBBLE, entity.hasEffect(WildscapesEffects.SLIMEBOUND));
+        state.setRenderData(MobVisuals.PHASED, entity.hasEffect(WildscapesEffects.INTANGIBILITY));
+        state.setRenderData(MobVisuals.LOCAL, Minecraft.getInstance().player == entity);
     }
 
     @Inject(method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At("HEAD"), cancellable = true)
     private void intangiblePlayer(S state, PoseStack pose, SubmitNodeCollector nodes, CameraRenderState camera, CallbackInfo ci) {
-        if (state.getDataOrDefault(MobVisuals.PHASED, false) && !state.getDataOrDefault(MobVisuals.LOCAL, false)) {
+        if (state.getRenderDataOrDefault(MobVisuals.PHASED, false) && !state.getRenderDataOrDefault(MobVisuals.LOCAL, false)) {
             ci.cancel();
         }
     }
 
     @Inject(method = "isBodyVisible", at = @At("HEAD"), cancellable = true)
     private void intangibleBody(S state, CallbackInfoReturnable<Boolean> cir) {
-        if (state.getDataOrDefault(MobVisuals.PHASED, false)) {
+        if (state.getRenderDataOrDefault(MobVisuals.PHASED, false)) {
             cir.setReturnValue(false);
         }
     }
@@ -66,6 +66,6 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
     @ModifyConstant(method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
             constant = @Constant(intValue = 654311423))
     private int intangibleOpacity(int color, S state) {
-        return state.getDataOrDefault(MobVisuals.PHASED, false) ? 0x80FFFFFF : color;
+        return state.getRenderDataOrDefault(MobVisuals.PHASED, false) ? 0x80FFFFFF : color;
     }
 }

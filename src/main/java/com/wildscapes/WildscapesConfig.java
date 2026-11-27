@@ -17,7 +17,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
-import net.fabricmc.loader.api.FabricLoader;
+import net.neoforged.fml.loading.FMLPaths;
 import net.minecraft.util.Mth;
 
 public final class WildscapesConfig {
@@ -73,7 +73,7 @@ public final class WildscapesConfig {
     }
 
     public static void load() {
-        Path file = FabricLoader.getInstance().getConfigDir().resolve(Wildscapes.MODID + ".json");
+        Path file = FMLPaths.CONFIGDIR.get().resolve(Wildscapes.MODID + ".json");
         JsonObject root = new JsonObject();
         if (Files.exists(file)) {
             try (Reader in = Files.newBufferedReader(file)) {

@@ -24,7 +24,7 @@ public final class MirageLayer<S extends LivingEntityRenderState, M extends Enti
 
     @Override
     public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, S state, float yaw, float pitch) {
-        if (!state.getDataOrDefault(MobVisuals.MIRAGE, false)) {
+        if (!state.getRenderDataOrDefault(MobVisuals.MIRAGE, false)) {
             return;
         }
         float phase = state.ageInTicks * SPEED;

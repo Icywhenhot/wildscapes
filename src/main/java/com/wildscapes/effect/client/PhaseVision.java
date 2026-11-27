@@ -5,9 +5,11 @@ import com.wildscapes.effect.Intangibility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.DeltaTracker;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.NeoForge;
 import com.wildscapes.Wildscapes;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -22,12 +24,13 @@ public final class PhaseVision {
 
     private PhaseVision() {}
 
-    public static void register() {
-        ClientTickEvents.END_CLIENT_TICK.register(PhaseVision::clientTick);
-        HudElementRegistry.attachElementBefore(VanillaHudElements.CROSSHAIR, Wildscapes.id("phase_vision"), PhaseVision::renderVeil);
+    public static void register(IEventBus modBus) {
+        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> clientTick());
+        modBus.addListener(RegisterGuiLayersEvent.class,
+                event -> event.registerBelow(VanillaGuiLayers.CROSSHAIR, Wildscapes.id("phase_vision"), PhaseVision::renderVeil));
     }
 
-    private static void clientTick(Minecraft minecraft) {
+    private static void clientTick() {
         lastVeil = veil;
         veil = Mth.clamp(veil + (insideBlock() ? 0.25F : -0.3F), 0.0F, 1.0F);
     }

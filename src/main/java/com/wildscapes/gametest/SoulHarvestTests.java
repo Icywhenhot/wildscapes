@@ -73,7 +73,7 @@ public final class SoulHarvestTests {
         boolean[] paid = {false};
         int[] abominations = {0};
         helper.onEachTick(() -> {
-            for (Mob mob : level.getEntitiesOfClass(Mob.class, area, m -> m.hasAttached(SoulHarvest.ORIGIN) && m.isAlive())) {
+            for (Mob mob : level.getEntitiesOfClass(Mob.class, area, m -> m.hasData(SoulHarvest.ORIGIN) && m.isAlive())) {
                 if (mob instanceof AbominationEntity) {
                     abominations[0]++;
                 }

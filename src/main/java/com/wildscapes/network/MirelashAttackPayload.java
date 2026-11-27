@@ -10,8 +10,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record MirelashAttackPayload(int targetId) implements CustomPacketPayload {
     public static final Type<MirelashAttackPayload> TYPE = new Type<>(
@@ -19,15 +20,15 @@ public record MirelashAttackPayload(int targetId) implements CustomPacketPayload
     public static final StreamCodec<RegistryFriendlyByteBuf, MirelashAttackPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, MirelashAttackPayload::targetId, MirelashAttackPayload::new);
 
-    public static void register() {
-        PayloadTypeRegistry.serverboundPlay().register(TYPE, STREAM_CODEC);
-        ServerPlayNetworking.registerGlobalReceiver(TYPE, MirelashAttackPayload::handle);
+    public static void register(RegisterPayloadHandlersEvent event) {
+        event.registrar("2").playToServer(TYPE, STREAM_CODEC, MirelashAttackPayload::handle);
     }
 
-    private static void handle(MirelashAttackPayload payload, ServerPlayNetworking.Context context) {
-        Entity target = context.player().level().getEntity(payload.targetId());
+    private static void handle(MirelashAttackPayload payload, IPayloadContext context) {
+        ServerPlayer player = (ServerPlayer) context.player();
+        Entity target = player.level().getEntity(payload.targetId());
         if (target instanceof LivingEntity living) {
-            MirelashItem.launchAttack(context.player(), living);
+            MirelashItem.launchAttack(player, living);
         }
     }
 

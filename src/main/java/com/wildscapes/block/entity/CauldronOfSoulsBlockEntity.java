@@ -421,7 +421,7 @@ public class CauldronOfSoulsBlockEntity extends BlockEntity {
         mob.snapTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, level.getRandom().nextFloat() * 360.0F, 0.0F);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(spot), EntitySpawnReason.EVENT, null);
         mob.setPersistenceRequired();
-        mob.setAttached(SoulHarvest.ORIGIN, worldPosition);
+        mob.setData(SoulHarvest.ORIGIN, worldPosition);
         if (sinceEmpowered >= 3 || level.getRandom().nextFloat() < 0.15F) {
             SoulHarvest.empower(mob);
             sinceEmpowered = 0;

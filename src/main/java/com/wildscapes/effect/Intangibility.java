@@ -24,7 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.nbt.CompoundTag;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
+import net.neoforged.neoforge.common.Tags;
 
 public final class Intangibility {
     private static final String ACTIVE_KEY = "wildscapes:necklace_active";
@@ -45,7 +45,7 @@ public final class Intangibility {
             return true;
         }
         if (!WildscapesConfig.get(WildscapesConfig.NECKLACE_HIDES_FROM_BOSSES)
-                && observer.typeHolder().is(ConventionalEntityTypeTags.BOSSES)) {
+                && observer.typeHolder().is(Tags.EntityTypes.BOSSES)) {
             return false;
         }
         CompoundTag seen = ((WildscapesEntityData) observer).wildscapes$data().getCompoundOrEmpty(REVEALED_KEY);
