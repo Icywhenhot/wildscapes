@@ -2,9 +2,6 @@ package com.wildscapes.block;
 
 import com.mojang.serialization.MapCodec;
 
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
-import net.minecraft.util.RandomSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -53,10 +50,10 @@ public class ShelfMushroomBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos,
-            Direction direction, BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbour,
+            LevelAccessor level, BlockPos pos, BlockPos neighbourPos) {
         return direction == state.getValue(FACING).getOpposite() && !state.canSurvive(level, pos)
-                ? Blocks.AIR.defaultBlockState() : super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighbour, random);
+                ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighbour, level, pos, neighbourPos);
     }
 
     @Override

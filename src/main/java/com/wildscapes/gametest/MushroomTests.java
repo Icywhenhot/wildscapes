@@ -106,7 +106,7 @@ public class MushroomTests {
                 "pav shroom changed potion regeneration");
         player.removeEffect(MobEffects.REGENERATION);
         player.setHealth(10.0F);
-        MobEffects.REGENERATION.value().applyEffectTick(helper.getLevel(), player, 0);
+        MobEffects.REGENERATION.value().applyEffectTick(player, 0);
         helper.assertTrue(player.getHealth() == 11.0F, "pav shroom healing was not half vanilla regeneration");
         helper.succeed();
     }
@@ -192,13 +192,13 @@ public class MushroomTests {
         helper.assertTrue(!mangrove.is(SwampVariants.SWAMP_BIOMES), "mangrove is in biome tag");
         for (var step : mangrove.value().getGenerationSettings().features()) {
             for (var feature : step) {
-                helper.assertTrue(feature.unwrapKey().orElseThrow().identifier().getNamespace().equals("minecraft"),
+                helper.assertTrue(feature.unwrapKey().orElseThrow().location().getNamespace().equals("minecraft"),
                         "mangrove contains a modded feature: " + feature);
             }
         }
-        var structures = helper.getLevel().registryAccess().lookupOrThrow(Registries.STRUCTURE);
+        var structures = helper.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE);
         for (var entry : structures.entrySet()) {
-            if (entry.getKey().identifier().getNamespace().equals("wildscapes")) {
+            if (entry.getKey().location().getNamespace().equals("wildscapes")) {
                 helper.assertTrue(entry.getValue().biomes().contains(swamp), "structure excludes swamp: " + entry.getKey());
                 helper.assertTrue(!entry.getValue().biomes().contains(mangrove), "structure includes mangrove: " + entry.getKey());
             }

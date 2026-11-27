@@ -1,14 +1,14 @@
 # Wildscapes
 
-A Fabric mod for Minecraft **1.21.11** that adds wetland-themed nature content.
+A Fabric mod for Minecraft **1.21.1** that adds wetland-themed nature content.
 
 ## Build
 
 Use Java 21 and run `./gradlew build` (or `gradlew.bat build` on Windows). The jar is in `build/libs`.
 
-The build uses the Fabric 1.21.11 build of Icy’s Lib from the adjacent `Icy's lib` project or Maven Local. To supply a jar directly, pass `-Picys_lib_jar=/path/to/icys_lib-fabric-1.21.11-1.1.0.jar`.
+The build uses the Fabric 1.21.1 build of Icy’s Lib from the adjacent `Icy's lib` project or Maven Local. To supply a jar directly, pass `-Picys_lib_jar=/path/to/icys_lib-fabric-1.21.1-1.1.0.jar`.
 
-Install Fabric API, GeckoLib 5, and Icy’s Lib for Minecraft 1.21.11 alongside Wildscapes. Use `./gradlew runClient` to launch the development client.
+Install Fabric API, GeckoLib 4, and Icy’s Lib for Minecraft 1.21.1 alongside Wildscapes. Use `./gradlew runClient` to launch the development client.
 
 ## Project layout
 

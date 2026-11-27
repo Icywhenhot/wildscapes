@@ -6,7 +6,9 @@
     "##"
   ],
   "key": {
-    "#": "wildscapes:cypress_log"
+    "#": {
+      "item": "wildscapes:cypress_log"
+    }
   },
   "result": {
     "id": "wildscapes:cypress_wood",

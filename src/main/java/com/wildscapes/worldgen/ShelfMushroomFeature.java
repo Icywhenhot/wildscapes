@@ -27,7 +27,7 @@ public class ShelfMushroomFeature extends Feature<SimpleBlockConfiguration> {
             int x = context.origin().getX() + random.nextInt(7) - 3;
             int z = context.origin().getZ() + random.nextInt(7) - 3;
             BlockPos ground = new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
-            while (ground.getY() > level.getMinY()
+            while (ground.getY() > level.getMinBuildHeight()
                     && (level.getBlockState(ground).is(BlockTags.LOGS) || level.getBlockState(ground).is(BlockTags.LEAVES))) {
                 ground = ground.below();
             }

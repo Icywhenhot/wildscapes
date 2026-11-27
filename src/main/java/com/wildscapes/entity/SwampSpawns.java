@@ -9,9 +9,9 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.monster.skeleton.Bogged;
-import net.minecraft.world.entity.monster.zombie.Drowned;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.monster.Bogged;
+import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.entity.monster.MagmaCube;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Slime;
@@ -21,7 +21,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 public final class SwampSpawns {
     private SwampSpawns() {}
 
-    public static boolean check(EntityType<?> type, ServerLevelAccessor level, EntitySpawnReason reason,
+    public static boolean check(EntityType<?> type, ServerLevelAccessor level, MobSpawnType reason,
             BlockPos pos, RandomSource random, boolean vanilla) {
         if (type == EntityType.BOGGED) {
             return vanilla && nightSwampBogged(level, reason, pos);
@@ -35,13 +35,13 @@ public final class SwampSpawns {
         return vanilla;
     }
 
-    private static boolean nightSwampBogged(ServerLevelAccessor level, EntitySpawnReason spawnType, BlockPos pos) {
-        return spawnType != EntitySpawnReason.NATURAL || !isSwamp(level, pos) || level.getLevel().isDarkOutside();
+    private static boolean nightSwampBogged(ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos) {
+        return spawnType != MobSpawnType.NATURAL || !isSwamp(level, pos) || level.getLevel().isNight();
     }
 
     private static boolean swampDrowned(ServerLevelAccessor level,
-            EntitySpawnReason spawnType, BlockPos pos, RandomSource random) {
-        if (spawnType != EntitySpawnReason.NATURAL || !isSwamp(level, pos)) {
+            MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        if (spawnType != MobSpawnType.NATURAL || !isSwamp(level, pos)) {
             return false;
         }
         if (level.getDifficulty() == Difficulty.PEACEFUL) {
@@ -56,15 +56,15 @@ public final class SwampSpawns {
     }
 
     private static boolean daylightSwampSlime(ServerLevelAccessor level,
-            EntitySpawnReason spawnType, BlockPos pos, RandomSource random) {
-        if (spawnType != EntitySpawnReason.NATURAL || !isSwamp(level, pos)) {
+            MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        if (spawnType != MobSpawnType.NATURAL || !isSwamp(level, pos)) {
             return false;
         }
         if (level.getDifficulty() == Difficulty.PEACEFUL) {
             return false;
         }
 
-        if (!level.getLevel().isBrightOutside() || !level.canSeeSky(pos)) {
+        if (!level.getLevel().isDay() || !level.canSeeSky(pos)) {
             return false;
         }
         int rarity = WildscapesConfig.get(WildscapesConfig.DAY_SLIME_RARITY);
@@ -72,9 +72,9 @@ public final class SwampSpawns {
                 && Mob.checkMobSpawnRules(EntityType.SLIME, level, spawnType, pos, random);
     }
 
-    public static void sizeSlime(Slime slime, ServerLevelAccessor level, EntitySpawnReason reason) {
+    public static void sizeSlime(Slime slime, ServerLevelAccessor level, MobSpawnType reason) {
         BlockPos pos = slime.blockPosition();
-        if (reason == EntitySpawnReason.NATURAL && level.getLevel().isBrightOutside()
+        if (reason == MobSpawnType.NATURAL && level.getLevel().isDay()
                 && level.canSeeSky(pos) && isSwamp(level, pos)) {
             slime.setSize(1, true);
         }

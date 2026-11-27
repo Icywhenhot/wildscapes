@@ -9,7 +9,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
@@ -23,7 +23,7 @@ public final class WitchCampMapTests {
     public static void mapKeepsItsDestinationWhenSavedAndCopied(GameTestHelper helper) {
         var level = helper.getLevel();
         var camp = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(
-                ResourceKey.create(Registries.STRUCTURE, Identifier.parse("wildscapes:witch_camp")));
+                ResourceKey.create(Registries.STRUCTURE, ResourceLocation.parse("wildscapes:witch_camp")));
         helper.assertTrue(camp.is(WitchCampMap.DESTINATION), "witch camp missing from map destinations");
         ItemStack map = MapItem.create(level, 0, 0, (byte) 2, true, true);
         helper.assertTrue(!WitchCampMap.isWitchCampMap(map), "ordinary map has witch camp icon");
@@ -32,7 +32,7 @@ public final class WitchCampMapTests {
         ItemStack saved = ItemStack.CODEC.parse(ops, ItemStack.CODEC.encodeStart(ops, map).getOrThrow()).getOrThrow();
         helper.assertTrue(WitchCampMap.isWitchCampMap(saved), "saved map lost witch camp icon");
         var input = CraftingInput.of(2, 1, List.of(saved, new ItemStack(Items.MAP)));
-        var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level).orElseThrow();
+        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level).orElseThrow();
         ItemStack copies = recipe.value().assemble(input, helper.getLevel().registryAccess());
         helper.assertTrue(copies.getCount() == 2 && WitchCampMap.isWitchCampMap(copies), "copied maps lost witch camp icon");
         helper.assertTrue(copies.get(DataComponents.MAP_DECORATIONS).equals(map.get(DataComponents.MAP_DECORATIONS)),

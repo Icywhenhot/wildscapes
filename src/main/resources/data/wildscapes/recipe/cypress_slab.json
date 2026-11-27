@@ -5,7 +5,9 @@
     "###"
   ],
   "key": {
-    "#": "wildscapes:cypress_planks"
+    "#": {
+      "item": "wildscapes:cypress_planks"
+    }
   },
   "result": {
     "id": "wildscapes:cypress_slab",

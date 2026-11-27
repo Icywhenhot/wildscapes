@@ -30,12 +30,11 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
-import net.minecraft.world.level.block.ShelfBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.StandingSignBlock;
-import net.minecraft.world.level.block.TintedParticleLeavesBlock;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallHangingSignBlock;
 import net.minecraft.world.level.block.WallSignBlock;
@@ -49,6 +48,8 @@ import net.minecraft.world.level.material.PushReaction;
 
 public final class WildscapesBlocks {
     private WildscapesBlocks() {}
+
+    public static final TagKey<Block> WOODEN_SHELVES = TagKey.create(Registries.BLOCK, Wildscapes.id("wooden_shelves"));
 
     public static final TagKey<Block> SOIL = TagKey.create(Registries.BLOCK, Wildscapes.id("soil"));
 
@@ -73,7 +74,7 @@ public final class WildscapesBlocks {
                     .ignitedByLava()));
 
     public static final LeavesBlock CYPRESS_LEAVES = register("cypress_leaves",
-            properties -> new TintedParticleLeavesBlock(0.01F, properties
+            properties -> new LeavesBlock( properties
                     .mapColor(MapColor.PLANT)
                     .strength(0.2F)
                     .randomTicks()
@@ -89,7 +90,7 @@ public final class WildscapesBlocks {
     public static final CypressSaplingBlock CYPRESS_SAPLING = register("cypress_sapling",
             properties -> new CypressSaplingBlock(WildscapesTreeGrowers.CYPRESS, properties
                     .mapColor(MapColor.PLANT)
-                    .noCollision()
+                    .noCollission()
                     .randomTicks()
                     .instabreak()
                     .sound(SoundType.GRASS)
@@ -125,7 +126,7 @@ public final class WildscapesBlocks {
 
     public static final ButtonBlock CYPRESS_BUTTON = register("cypress_button",
             properties -> new ButtonBlock(CYPRESS_SET, 30, properties
-                    .noCollision()
+                    .noCollission()
                     .strength(0.5F)
                     .pushReaction(PushReaction.DESTROY)));
 
@@ -134,16 +135,16 @@ public final class WildscapesBlocks {
                     .mapColor(MapColor.COLOR_BROWN)
                     .forceSolidOn()
                     .instrument(NoteBlockInstrument.BASS)
-                    .noCollision()
+                    .noCollission()
                     .strength(0.5F)
                     .ignitedByLava()
                     .pushReaction(PushReaction.DESTROY)));
 
-    public static final ShelfBlock CYPRESS_SHELF = register("cypress_shelf",
-            properties -> new ShelfBlock(properties
+    public static final CypressShelfBlock CYPRESS_SHELF = register("cypress_shelf",
+            properties -> new CypressShelfBlock(properties
                     .mapColor(MapColor.COLOR_BROWN)
                     .instrument(NoteBlockInstrument.BASS)
-                    .sound(SoundType.SHELF)
+                    .sound(SoundType.CHISELED_BOOKSHELF)
                     .ignitedByLava()
                     .strength(2.0F, 3.0F)));
 
@@ -162,7 +163,7 @@ public final class WildscapesBlocks {
     public static final DuckweedBlock DUCKWEED = register("duckweed",
             properties -> new DuckweedBlock(properties
                     .mapColor(MapColor.PLANT)
-                    .noCollision()
+                    .noCollission()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .pushReaction(PushReaction.DESTROY)),
@@ -172,7 +173,7 @@ public final class WildscapesBlocks {
     public static final RushesBlock RUSHES = register("rushes",
             properties -> new RushesBlock(properties
                     .mapColor(MapColor.PLANT)
-                    .noCollision()
+                    .noCollission()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
@@ -181,7 +182,7 @@ public final class WildscapesBlocks {
     public static final ShortRushesBlock SHORT_RUSHES = register("short_rushes",
             properties -> new ShortRushesBlock(properties
                     .mapColor(MapColor.PLANT)
-                    .noCollision()
+                    .noCollission()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
@@ -190,7 +191,7 @@ public final class WildscapesBlocks {
     public static final ShelfMushroomBlock SHELF_LUMINOUS_MUSHROOM = registerBlock("shelf_luminous_mushroom",
             properties -> new ShelfMushroomBlock(properties
                     .mapColor(MapColor.COLOR_YELLOW)
-                    .noCollision()
+                    .noCollission()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .lightLevel(state -> 7)
@@ -199,12 +200,12 @@ public final class WildscapesBlocks {
     public static final LuminousMushroomBlock LUMINOUS_MUSHROOM = register("luminous_mushroom",
             properties -> new LuminousMushroomBlock(properties
                     .mapColor(MapColor.COLOR_YELLOW)
-                    .noCollision()
+                    .noCollission()
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .lightLevel(state -> 7)
                     .pushReaction(PushReaction.DESTROY)),
-            (block, properties) -> new StandingAndWallBlockItem(block, SHELF_LUMINOUS_MUSHROOM, Direction.DOWN, properties));
+            (block, properties) -> new StandingAndWallBlockItem(block, SHELF_LUMINOUS_MUSHROOM, properties, Direction.DOWN));
 
     public static final DrapingMossCarpetBlock MOSS_CARPET = registerBlock("moss_carpet",
             properties -> new DrapingMossCarpetBlock(properties
@@ -217,7 +218,7 @@ public final class WildscapesBlocks {
     public static final HangingMossBlock HANGING_MOSS = registerBlock("hanging_moss",
             properties -> new HangingMossBlock(properties
                     .mapColor(MapColor.COLOR_GREEN)
-                    .noCollision()
+                    .noCollission()
                     .instabreak()
                     .randomTicks()
                     .sound(SoundType.MOSS_CARPET)
@@ -264,7 +265,7 @@ public final class WildscapesBlocks {
             properties -> new IncendiaryFireBlock(properties
                     .mapColor(MapColor.COLOR_PURPLE)
                     .replaceable()
-                    .noCollision()
+                    .noCollission()
                     .instabreak()
                     .lightLevel(state -> 12)
                     .sound(SoundType.WOOL)
@@ -293,7 +294,7 @@ public final class WildscapesBlocks {
                 .mapColor(MapColor.COLOR_BROWN)
                 .forceSolidOn()
                 .instrument(NoteBlockInstrument.BASS)
-                .noCollision()
+                .noCollission()
                 .strength(1.0F)
                 .ignitedByLava();
     }
@@ -314,7 +315,7 @@ public final class WildscapesBlocks {
             BiFunction<T, Item.Properties, ? extends BlockItem> itemFactory) {
         T block = registerBlock(name, factory);
         var key = ResourceKey.create(Registries.ITEM, Wildscapes.id(name));
-        BlockItem item = itemFactory.apply(block, new Item.Properties().setId(key).useBlockDescriptionPrefix());
+        BlockItem item = itemFactory.apply(block, new Item.Properties());
         Registry.register(BuiltInRegistries.ITEM, key, item);
         item.registerBlocks(Item.BY_BLOCK, item);
         return block;
@@ -322,7 +323,7 @@ public final class WildscapesBlocks {
 
     private static <T extends Block> T registerBlock(String name, Function<BlockBehaviour.Properties, T> factory) {
         var key = ResourceKey.create(Registries.BLOCK, Wildscapes.id(name));
-        return Registry.register(BuiltInRegistries.BLOCK, key, factory.apply(BlockBehaviour.Properties.of().setId(key)));
+        return Registry.register(BuiltInRegistries.BLOCK, key, factory.apply(BlockBehaviour.Properties.of()));
     }
 
     public static void register() {
@@ -342,6 +343,5 @@ public final class WildscapesBlocks {
         FabricBlockEntityType hangingSign = (FabricBlockEntityType) BlockEntityType.HANGING_SIGN;
         hangingSign.addSupportedBlock(CYPRESS_HANGING_SIGN);
         hangingSign.addSupportedBlock(CYPRESS_WALL_HANGING_SIGN);
-        ((FabricBlockEntityType) BlockEntityType.SHELF).addSupportedBlock(CYPRESS_SHELF);
     }
 }

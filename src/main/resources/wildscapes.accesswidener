@@ -3,6 +3,8 @@ accessible field net/minecraft/world/entity/monster/Witch usingTime I
 accessible field net/minecraft/world/entity/Mob targetSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
 accessible field net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate palettes Ljava/util/List;
 accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
-accessible class net/minecraft/world/entity/monster/illager/SpellcasterIllager$IllagerSpell
-accessible field net/minecraft/world/entity/monster/illager/SpellcasterIllager spellCastingTickCount I
-accessible class net/minecraft/world/entity/npc/villager/VillagerTrades$TreasureMapForEmeralds
+accessible class net/minecraft/world/entity/monster/SpellcasterIllager$IllagerSpell
+accessible field net/minecraft/world/entity/monster/SpellcasterIllager spellCastingTickCount I
+accessible class net/minecraft/world/entity/npc/VillagerTrades$TreasureMapForEmeralds
+accessible field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;
+mutable field net/minecraft/client/renderer/entity/BoatRenderer boatResources Ljava/util/Map;

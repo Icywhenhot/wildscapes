@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
@@ -75,7 +75,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
 
     @Override
     public boolean place(FeaturePlaceContext<TemplateTreeConfiguration> context) {
-        List<Identifier> templates = context.config().templates();
+        List<ResourceLocation> templates = context.config().templates();
         if (templates.isEmpty()) {
             return false;
         }
@@ -88,7 +88,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         }
 
         StructureTemplateManager manager = level.getLevel().getStructureManager();
-        Identifier id = templates.get(random.nextInt(templates.size()));
+        ResourceLocation id = templates.get(random.nextInt(templates.size()));
         Optional<StructureTemplate> found = manager.get(id);
         if (found.isEmpty()) {
             Wildscapes.LOGGER.warn("Tree structure {} is missing; expected it in data/{}/structure/{}.nbt",
@@ -285,7 +285,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
             }
             return waterDepth(level, origin, maxWaterDepth) <= maxWaterDepth;
         }
-        return (below.is(WildscapesBlocks.SOIL) || below.is(Blocks.MUD)
+        return (below.is(BlockTags.DIRT) || below.is(Blocks.MUD)
                         || below.is(Blocks.CLAY) || below.is(Blocks.SAND))
                 && !below.getFluidState().is(FluidTags.WATER)
                 && (here.isAir() || here.canBeReplaced())

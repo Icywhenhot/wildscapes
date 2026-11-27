@@ -8,7 +8,7 @@ import com.wildscapes.sound.WildscapesSounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -18,9 +18,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 
 public final class JumpEnchantments {
     public static final ResourceKey<Enchantment> MULTI_JUMP = ResourceKey.create(Registries.ENCHANTMENT,
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"));
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "multi_jump"));
     public static final ResourceKey<Enchantment> EMPOWERED_JUMP = ResourceKey.create(Registries.ENCHANTMENT,
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"));
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_jump"));
     private static final String USED = "wildscapes:air_jumps";
     public static final int FULL_CHARGE = 181;
     private static final String CHARGE = "wildscapes:jump_charge";
@@ -46,7 +46,7 @@ public final class JumpEnchantments {
         if (player.onGround() || !canJump(player)) {
             data.remove(USED);
         }
-        int charge = data.getIntOr(CHARGE, 0);
+        int charge = data.getInt(CHARGE);
         if (!player.isShiftKeyDown() || !canCharge(player)) {
             data.remove(CHARGE);
             if (charge >= 60 && canCharge(player)) {
@@ -78,7 +78,7 @@ public final class JumpEnchantments {
         var data = ((WildscapesEntityData) player).wildscapes$data();
         int level = Math.min(2, MirelashItem.enchantmentLevel(player.level(),
                 player.getItemBySlot(EquipmentSlot.FEET), MULTI_JUMP));
-        int used = data.getIntOr(USED, 0);
+        int used = data.getInt(USED);
         if (player.onGround() || used >= level) {
             return false;
         }
@@ -86,7 +86,7 @@ public final class JumpEnchantments {
         data.putInt(USED, used + 1);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 WildscapesSounds.MULTI_JUMP, SoundSource.PLAYERS, 1.0F, 1.0F);
-        player.level().sendParticles(WildscapesParticles.MULTI_JUMP, player.getX(),
+        player.serverLevel().sendParticles(WildscapesParticles.MULTI_JUMP, player.getX(),
                 player.getY() + 0.02, player.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
         push(player);
         return true;
@@ -95,7 +95,7 @@ public final class JumpEnchantments {
     private static void push(ServerPlayer player) {
         player.fallDistance = 0.0F;
         player.setOnGround(false);
-        player.needsSync = true;
+        player.hurtMarked = true;
         player.connection.send(new ClientboundSetEntityMotionPacket(player));
     }
 }

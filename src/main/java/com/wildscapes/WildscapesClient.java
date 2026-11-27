@@ -34,13 +34,16 @@ import com.wildscapes.particle.client.SoulTrailParticle;
 import com.wildscapes.particle.client.MultiJumpParticle;
 
 import net.fabricmc.api.ClientModInitializer;
+import com.wildscapes.block.WildscapesBlocks;
+import net.minecraft.client.renderer.RenderType;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.object.boat.BoatModel;
+import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -55,10 +58,21 @@ public final class WildscapesClient implements ClientModInitializer {
         registerLayerDefinitions();
         registerRenderers();
         registerParticleProviders();
+        registerRenderLayers();
         WildscapesItemCondition.register();
         PhaseVision.register();
         SwampMossModel.register();
         ClientTickEvents.END_CLIENT_TICK.register(SwampFog::onClientTick);
+    }
+
+    private static void registerRenderLayers() {
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(),
+                WildscapesBlocks.CYPRESS_SAPLING, WildscapesBlocks.CYPRESS_DOOR, WildscapesBlocks.CYPRESS_TRAPDOOR,
+                WildscapesBlocks.DUCKWEED, WildscapesBlocks.RUSHES, WildscapesBlocks.SHORT_RUSHES,
+                WildscapesBlocks.LUMINOUS_MUSHROOM, WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM,
+                WildscapesBlocks.MOSS_CARPET, WildscapesBlocks.HANGING_MOSS,
+                WildscapesBlocks.BONFIRE, WildscapesBlocks.SOUL_BONFIRE, WildscapesBlocks.SUMMONING_BONFIRE,
+                WildscapesBlocks.INCENDIARY_FIRE, WildscapesBlocks.CAULDRON, WildscapesBlocks.CAULDRON_OF_SOULS);
     }
 
     private static void registerLayerDefinitions() {
@@ -79,8 +93,6 @@ public final class WildscapesClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.TONGUE_SEGMENT, AbominationModels::createTongueSegment);
         EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.TONGUE_TIP, AbominationModels::createTongueTip);
         EntityModelLayerRegistry.registerModelLayer(WildscapesModelLayers.ABOMINATION_GRASP, AbominationModels::createGrasp);
-        EntityModelLayerRegistry.registerModelLayer(CYPRESS_BOAT, BoatModel::createBoatModel);
-        EntityModelLayerRegistry.registerModelLayer(CYPRESS_CHEST_BOAT, BoatModel::createChestBoatModel);
     }
 
     private static void registerRenderers() {
@@ -97,10 +109,11 @@ public final class WildscapesClient implements ClientModInitializer {
         EntityRendererRegistry.register(EntityType.EVOKER, EmpoweredEvokerRenderer::new);
         EntityRendererRegistry.register(EntityType.SLIME, RedesignedSlimeRenderer::new);
 
+        BlockEntityRendererRegistry.register(WildscapesBlockEntities.CYPRESS_SHELF, com.wildscapes.entity.client.CypressShelfRenderer::new);
         BlockEntityRendererRegistry.register(WildscapesBlockEntities.CAULDRON, CauldronRenderer::new);
         BlockEntityRendererRegistry.register(WildscapesBlockEntities.CAULDRON_OF_SOULS, CauldronOfSoulsRenderer::new);
-        EntityRendererRegistry.register(CypressBoat.BOAT, context -> new BoatRenderer(context, CYPRESS_BOAT));
-        EntityRendererRegistry.register(CypressBoat.CHEST_BOAT, context -> new BoatRenderer(context, CYPRESS_CHEST_BOAT));
+        EntityRendererRegistry.register(CypressBoat.BOAT, context -> new com.wildscapes.entity.client.CypressBoatRenderer(context, false));
+        EntityRendererRegistry.register(CypressBoat.CHEST_BOAT, context -> new com.wildscapes.entity.client.CypressBoatRenderer(context, true));
     }
 
     private static void registerParticleProviders() {

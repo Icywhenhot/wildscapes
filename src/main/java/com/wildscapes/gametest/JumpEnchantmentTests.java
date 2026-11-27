@@ -5,7 +5,7 @@ import com.wildscapes.entity.JumpEnchantments;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -118,7 +118,7 @@ public final class JumpEnchantmentTests {
                 .create(LootContextParamSets.VAULT);
         for (String tier : new String[] {"low", "high"}) {
             ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
-                    Identifier.fromNamespaceAndPath("wildscapes", "gameplay/soul_harvest_" + tier));
+                    ResourceLocation.fromNamespaceAndPath("wildscapes", "gameplay/soul_harvest_" + tier));
             LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(key);
             int books = 0;
             for (int i = 0; i < 100; i++) {

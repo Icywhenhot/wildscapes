@@ -1,29 +1,29 @@
 package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.SoulHarvest;
+import com.wildscapes.entity.SwampVariants;
 
-import net.minecraft.client.model.monster.illager.IllagerModel;
+import net.minecraft.client.model.IllagerModel;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.Identifier;
-import net.minecraft.client.renderer.entity.state.IllagerRenderState;
-import net.minecraft.world.entity.monster.illager.Pillager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.monster.Pillager;
 
-public class SwampPillagerRenderer extends IllagerRenderer<Pillager, IllagerRenderState> {
-    private static final Identifier VANILLA =
-            Identifier.withDefaultNamespace("textures/entity/illager/pillager.png");
-    private static final Identifier SWAMP =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_swamp.png");
-    private static final Identifier EMPOWERED =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_empowered.png");
+public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
+    private static final ResourceLocation VANILLA =
+            ResourceLocation.withDefaultNamespace("textures/entity/illager/pillager.png");
+    private static final ResourceLocation SWAMP =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_swamp.png");
+    private static final ResourceLocation EMPOWERED =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_empowered.png");
 
-    private final IllagerModel<IllagerRenderState> vanillaModel;
-    private final IllagerModel<IllagerRenderState> swampModel;
+    private final IllagerModel<Pillager> vanillaModel;
+    private final IllagerModel<Pillager> swampModel;
     private final boolean vanilla;
 
     public SwampPillagerRenderer(EntityRendererProvider.Context context) {
@@ -32,31 +32,27 @@ public class SwampPillagerRenderer extends IllagerRenderer<Pillager, IllagerRend
         this.vanillaModel = this.model;
         this.swampModel = vanilla ? this.model
                 : new IllagerModel<>(context.bakeLayer(WildscapesModelLayers.PILLAGER_SWAMP));
-        this.addLayer(new ItemInHandLayer<>(this));
+        this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
         if (!vanilla) {
             this.addLayer(new EmpoweredGlowLayer<>(this, "illager/pillager_empowered_glow"));
         }
     }
 
     @Override
-    public void submit(IllagerRenderState state, PoseStack poseStack, SubmitNodeCollector nodes, CameraRenderState camera) {
-        this.model = state.getDataOrDefault(MobVisuals.SWAMP, false) || state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? this.swampModel : this.vanillaModel;
-        super.submit(state, poseStack, nodes, camera);
+    public void render(Pillager entity, float entityYaw, float partialTicks, PoseStack poseStack,
+            MultiBufferSource buffer, int packedLight) {
+        this.model = SwampVariants.isSwampBorn(entity) || SoulHarvest.isEmpowered(entity) ? this.swampModel : this.vanillaModel;
+        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
     @Override
-    public IllagerRenderState createRenderState() {
-        return new IllagerRenderState();
-    }
-
-    @Override
-    public Identifier getTextureLocation(IllagerRenderState state) {
+    public ResourceLocation getTextureLocation(Pillager entity) {
         if (vanilla) {
             return VANILLA;
         }
-        if (state.getDataOrDefault(MobVisuals.EMPOWERED, false)) {
+        if (SoulHarvest.isEmpowered(entity)) {
             return EMPOWERED;
         }
-        return state.getDataOrDefault(MobVisuals.SWAMP, false) ? SWAMP : VANILLA;
+        return SwampVariants.isSwampBorn(entity) ? SWAMP : VANILLA;
     }
 }

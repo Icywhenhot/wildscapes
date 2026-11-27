@@ -3,7 +3,9 @@
   "category": "misc",
   "group": "mud_brick_walls",
   "key": {
-    "#": "wildscapes:yellow_mud_bricks"
+    "#": {
+      "item": "wildscapes:yellow_mud_bricks"
+    }
   },
   "pattern": [
     "###",

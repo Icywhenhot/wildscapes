@@ -3,7 +3,9 @@
   "category": "redstone",
   "group": "wooden_button",
   "ingredients": [
-    "wildscapes:cypress_planks"
+    {
+      "item": "wildscapes:cypress_planks"
+    }
   ],
   "result": {
     "count": 1,

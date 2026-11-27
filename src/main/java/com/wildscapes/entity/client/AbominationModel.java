@@ -4,25 +4,27 @@ import com.wildscapes.Wildscapes;
 import com.wildscapes.entity.AbominationEntity;
 import com.wildscapes.entity.SoulHarvest;
 
-import net.minecraft.resources.Identifier;
-import software.bernie.geckolib.constant.dataticket.DataTicket;
-import software.bernie.geckolib.renderer.base.GeoRenderState;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.model.data.EntityModelData;
 
 public class AbominationModel extends GeoModel<AbominationEntity> {
-    private static final DataTicket<Integer> PHASE = DataTicket.create("wildscapes_phase", Integer.class);
-    private static final DataTicket<Boolean> EMPOWERED_STATE = DataTicket.create("wildscapes_empowered", Boolean.class);
     private static final int FRAME_TICKS = 3;
-    private static final Identifier[] FRAMES = strip("abomination_", 10);
-    private static final Identifier[] GLOW = strip("abomination_glow_", 10);
-    private static final Identifier[] EMPOWERED = strip("abomination_empowered_", 10);
-    private static final Identifier[] EMPOWERED_GLOW = strip("abomination_empowered_glow_", 10);
+    private static final ResourceLocation[] FRAMES = strip("abomination_", 10);
+    private static final ResourceLocation[] GLOW = strip("abomination_glow_", 10);
+    private static final ResourceLocation[] EMPOWERED = strip("abomination_empowered_", 10);
+    private static final ResourceLocation[] EMPOWERED_GLOW = strip("abomination_empowered_glow_", 10);
     private static final int CYCLE = FRAMES.length * FRAME_TICKS;
 
-    private static Identifier[] strip(String prefix, int count) {
-        Identifier[] out = new Identifier[count];
+    private static ResourceLocation[] strip(String prefix, int count) {
+        ResourceLocation[] out = new ResourceLocation[count];
         for (int i = 0; i < count; i++) {
-            out[i] = Identifier.fromNamespaceAndPath(Wildscapes.MODID,
+            out[i] = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
                     "textures/entity/" + prefix + i + ".png");
         }
         return out;
@@ -33,33 +35,43 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
         return t < 0 ? t + CYCLE : t;
     }
 
-    @Override
-    public void addAdditionalStateData(AbominationEntity entity, Object unused, GeoRenderState state) {
-        state.addGeckolibData(PHASE, phase(entity));
-        state.addGeckolibData(EMPOWERED_STATE, SoulHarvest.isEmpowered(entity));
-    }
-
-    public static Identifier glowFrame(GeoRenderState state) {
-        Identifier[] glow = state.getOrDefaultGeckolibData(EMPOWERED_STATE, false) ? EMPOWERED_GLOW : GLOW;
-        return glow[state.getOrDefaultGeckolibData(PHASE, 0) * glow.length / CYCLE];
+    public static ResourceLocation glowFrame(AbominationEntity animatable) {
+        ResourceLocation[] glow = SoulHarvest.isEmpowered(animatable) ? EMPOWERED_GLOW : GLOW;
+        return glow[phase(animatable) * glow.length / CYCLE];
     }
 
     @Override
-    public Identifier getModelResource(GeoRenderState state) {
-        return Wildscapes.id("abomination");
+    public ResourceLocation getModelResource(AbominationEntity animatable) {
+        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "geo/abomination.geo.json");
     }
 
     @Override
-    public Identifier getTextureResource(GeoRenderState state) {
-        int phase = state.getOrDefaultGeckolibData(PHASE, 0);
-        if (state.getOrDefaultGeckolibData(EMPOWERED_STATE, false)) {
-            return EMPOWERED[phase * EMPOWERED.length / CYCLE];
+    public ResourceLocation getTextureResource(AbominationEntity animatable) {
+        if (SoulHarvest.isEmpowered(animatable)) {
+            return EMPOWERED[phase(animatable) * EMPOWERED.length / CYCLE];
         }
-        return FRAMES[phase / FRAME_TICKS];
+        return FRAMES[phase(animatable) / FRAME_TICKS];
     }
 
     @Override
-    public Identifier getAnimationResource(AbominationEntity animatable) {
-        return Wildscapes.id("abomination");
+    public ResourceLocation getAnimationResource(AbominationEntity animatable) {
+        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "animations/abomination.animation.json");
+    }
+
+    @Override
+    public void setCustomAnimations(AbominationEntity animatable, long instanceId, AnimationState<AbominationEntity> state) {
+        super.setCustomAnimations(animatable, instanceId, state);
+
+        GeoBone head = getAnimationProcessor().getBone("head");
+        EntityModelData data = state.getData(DataTickets.ENTITY_MODEL_DATA);
+        if (head != null && data != null) {
+            head.setRotX(head.getRotX() + data.headPitch() * Mth.DEG_TO_RAD);
+            head.setRotY(head.getRotY() + data.netHeadYaw() * Mth.DEG_TO_RAD);
+        }
+
+        GeoBone tongue = getAnimationProcessor().getBone("tongue");
+        if (tongue != null) {
+            tongue.setHidden(animatable.getTongueTicks() >= 0);
+        }
     }
 }

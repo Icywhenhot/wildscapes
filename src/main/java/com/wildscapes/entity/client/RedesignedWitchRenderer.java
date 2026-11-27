@@ -1,21 +1,19 @@
 package com.wildscapes.entity.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.entity.WitchRitual;
+import com.wildscapes.entity.SoulHarvest;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.WitchRenderer;
-import net.minecraft.resources.Identifier;
-import net.minecraft.client.renderer.entity.state.WitchRenderState;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Witch;
 
 public class RedesignedWitchRenderer extends WitchRenderer {
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
-    private static final Identifier EMPOWERED =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
-    private static final Identifier VANILLA = Identifier.withDefaultNamespace("textures/entity/witch/witch.png");
+    private static final ResourceLocation TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
+    private static final ResourceLocation EMPOWERED =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
+    private static final ResourceLocation VANILLA = ResourceLocation.withDefaultNamespace("textures/entity/witch.png");
 
     private final boolean vanilla;
 
@@ -29,21 +27,10 @@ public class RedesignedWitchRenderer extends WitchRenderer {
     }
 
     @Override
-    public void extractRenderState(Witch witch, WitchRenderState state, float partialTick) {
-        super.extractRenderState(witch, state, partialTick);
-        state.setData(MobVisuals.CHANTING, WitchRitual.isChanting(witch));
-    }
-
-    @Override
-    public Identifier getTextureLocation(WitchRenderState state) {
+    public ResourceLocation getTextureLocation(Witch entity) {
         if (vanilla) {
             return VANILLA;
         }
-        return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
-    }
-
-    @Override
-    protected void scale(WitchRenderState state, PoseStack poseStack) {
-        poseStack.scale(0.9375F, 0.9375F, 0.9375F);
+        return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 }

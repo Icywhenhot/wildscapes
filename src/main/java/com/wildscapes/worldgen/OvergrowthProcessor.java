@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class OvergrowthProcessor extends StructureProcessor {
@@ -41,7 +42,7 @@ public class OvergrowthProcessor extends StructureProcessor {
     }
 
     @Override
-    protected net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return WildscapesStructures.OVERGROWTH;
     }
 

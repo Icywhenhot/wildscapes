@@ -1,28 +1,28 @@
 package com.wildscapes.entity.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.SoulHarvest;
+import com.wildscapes.entity.SwampVariants;
 
+import net.minecraft.client.model.IllagerModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.monster.illager.IllagerModel;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.Identifier;
-import net.minecraft.client.renderer.entity.state.IllagerRenderState;
-import net.minecraft.world.entity.monster.illager.Vindicator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.monster.Vindicator;
 
-public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, IllagerRenderState> {
-    private static final Identifier DEFAULT =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator.png");
-    private static final Identifier SWAMP =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_swamp.png");
-    private static final Identifier EMPOWERED =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_empowered.png");
-    private static final Identifier VANILLA =
-            Identifier.withDefaultNamespace("textures/entity/illager/vindicator.png");
+public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
+    private static final ResourceLocation DEFAULT =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator.png");
+    private static final ResourceLocation SWAMP =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_swamp.png");
+    private static final ResourceLocation EMPOWERED =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_empowered.png");
+    private static final ResourceLocation VANILLA =
+            ResourceLocation.withDefaultNamespace("textures/entity/illager/vindicator.png");
 
     private final boolean vanilla;
 
@@ -35,11 +35,14 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, Illager
                 : WildscapesModelLayers.VINDICATOR)), 0.5F);
         this.vanilla = vanilla;
 
-        this.addLayer(new ItemInHandLayer<>(this) {
+        this.addLayer(new ItemInHandLayer<Vindicator, IllagerModel<Vindicator>>(this, context.getItemInHandRenderer()) {
             @Override
-            public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, IllagerRenderState state, float yaw, float pitch) {
-                if (state.isAggressive) {
-                    super.submit(pose, nodes, light, state, yaw, pitch);
+            public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, Vindicator entity,
+                    float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks,
+                    float netHeadYaw, float headPitch) {
+                if (entity.isAggressive()) {
+                    super.render(poseStack, buffer, packedLight, entity, limbSwing, limbSwingAmount,
+                            partialTicks, ageInTicks, netHeadYaw, headPitch);
                 }
             }
         });
@@ -49,18 +52,13 @@ public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator, Illager
     }
 
     @Override
-    public IllagerRenderState createRenderState() {
-        return new IllagerRenderState();
-    }
-
-    @Override
-    public Identifier getTextureLocation(IllagerRenderState state) {
+    public ResourceLocation getTextureLocation(Vindicator entity) {
         if (vanilla) {
             return VANILLA;
         }
-        if (state.getDataOrDefault(MobVisuals.EMPOWERED, false)) {
+        if (SoulHarvest.isEmpowered(entity)) {
             return EMPOWERED;
         }
-        return state.getDataOrDefault(MobVisuals.SWAMP, false) ? SWAMP : DEFAULT;
+        return SwampVariants.isSwampBorn(entity) ? SWAMP : DEFAULT;
     }
 }

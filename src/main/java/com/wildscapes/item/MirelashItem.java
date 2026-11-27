@@ -11,13 +11,13 @@ import com.wildscapes.sound.WildscapesSounds;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,9 +35,9 @@ import net.minecraft.world.phys.Vec3;
 
 public final class MirelashItem extends Item {
     public static final ResourceKey<Enchantment> ELASTICITY = ResourceKey.create(Registries.ENCHANTMENT,
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"));
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "elasticity"));
     public static final ResourceKey<Enchantment> SLIME_SNARE = ResourceKey.create(Registries.ENCHANTMENT,
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"));
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "slime_snare"));
     private static final String HOOK_KEY = "wildscapes:mirelash_hook";
     public static final double ATTACK_RANGE = 10.0;
 
@@ -46,10 +46,10 @@ public final class MirelashItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!(level instanceof ServerLevel serverLevel)) {
-            return InteractionResult.SUCCESS;
+            return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
         }
         MirelashHook hook = findHook(serverLevel, player);
         if (hook != null) {
@@ -59,13 +59,13 @@ public final class MirelashItem extends Item {
         } else {
             hook = new MirelashHook(serverLevel, player, stack);
             serverLevel.addFreshEntity(hook);
-            ((WildscapesEntityData) player).wildscapes$data().store(HOOK_KEY, net.minecraft.core.UUIDUtil.CODEC, hook.getUUID());
+            ((WildscapesEntityData) player).wildscapes$data().putUUID(HOOK_KEY, hook.getUUID());
             stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW,
                     SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         player.awardStat(Stats.ITEM_USED.get(this));
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 
     public static int enchantmentLevel(Level level, ItemStack stack, ResourceKey<Enchantment> key) {
@@ -104,13 +104,13 @@ public final class MirelashItem extends Item {
     public static boolean launchAttack(Player player, LivingEntity target) {
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof MirelashItem) || player.getAttackStrengthScale(0.5F) < 0.9F
-                || player.getCooldowns().isOnCooldown(stack)
+                || player.getCooldowns().isOnCooldown(stack.getItem())
                 || findAttackTarget(player.level(), player) != target) {
             return false;
         }
         if (player.level() instanceof ServerLevel level) {
             level.addFreshEntity(new MirelashHook(level, player, stack, target));
-            player.getCooldowns().addCooldown(stack, 40);
+            player.getCooldowns().addCooldown(stack.getItem(), 40);
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), WildscapesSounds.MIRELASH_THROW,
                     SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -138,13 +138,13 @@ public final class MirelashItem extends Item {
         Vec3 movement = player.getDeltaMovement().multiply(0.99, 0.995, 0.99);
         Vec3 tug = pull.normalize().multiply(strength, strength * 1.1, strength);
         player.setDeltaMovement(movement.add(tug));
-        player.needsSync = true;
         player.hurtMarked = true;
     }
 
     public static void clearHook(Player player, UUID hookId) {
         if (((WildscapesEntityData) player).wildscapes$data().contains(HOOK_KEY)
-                && ((WildscapesEntityData) player).wildscapes$data().read(HOOK_KEY, net.minecraft.core.UUIDUtil.CODEC).filter(hookId::equals).isPresent()) {
+                && ((WildscapesEntityData) player).wildscapes$data().hasUUID(HOOK_KEY)
+                && ((WildscapesEntityData) player).wildscapes$data().getUUID(HOOK_KEY).equals(hookId)) {
             ((WildscapesEntityData) player).wildscapes$data().remove(HOOK_KEY);
         }
     }
@@ -158,12 +158,27 @@ public final class MirelashItem extends Item {
         if (!((WildscapesEntityData) player).wildscapes$data().contains(HOOK_KEY)) {
             return null;
         }
-        UUID hookId = ((WildscapesEntityData) player).wildscapes$data().read(HOOK_KEY, net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+        UUID hookId = ((WildscapesEntityData) player).wildscapes$data().hasUUID(HOOK_KEY)
+                ? ((WildscapesEntityData) player).wildscapes$data().getUUID(HOOK_KEY) : null;
         Entity entity = hookId == null ? null : level.getEntity(hookId);
         if (entity instanceof MirelashHook hook && hook.getOwner() == player) {
             return hook;
         }
         ((WildscapesEntityData) player).wildscapes$data().remove(HOOK_KEY);
         return null;
+    }
+    @Override
+    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
+        return repairCandidate.is(WildscapesItems.ABOMINATION_TONGUE);
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        return 12;
     }
 }

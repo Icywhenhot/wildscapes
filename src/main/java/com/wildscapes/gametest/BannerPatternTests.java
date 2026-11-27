@@ -8,7 +8,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.LoomMenu;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -29,10 +29,10 @@ public final class BannerPatternTests {
         for (int i = 0; i < templates.size(); i++) {
             var item = templates.get(i);
             String name = i == 0 ? "slime" : "spirit";
-            var key = ResourceKey.create(Registries.BANNER_PATTERN, Identifier.fromNamespaceAndPath("wildscapes", name));
+            var key = ResourceKey.create(Registries.BANNER_PATTERN, ResourceLocation.fromNamespaceAndPath("wildscapes", name));
             var input = CraftingInput.of(2, 1, List.of(new ItemStack(Items.PAPER),
                     new ItemStack(i == 0 ? Items.SLIME_BALL : Items.GHAST_TEAR)));
-            var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
+            var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
             helper.assertTrue(recipe.isPresent(), "missing pattern recipe for " + name);
             helper.assertTrue(recipe.orElseThrow().value().assemble(input, helper.getLevel().registryAccess()).is(item), "wrong pattern item");
             for (DyeColor color : DyeColor.values()) {
@@ -48,7 +48,7 @@ public final class BannerPatternTests {
                 menu.getSlot(3).onTake(player, banner);
                 helper.assertTrue(menu.getSlot(2).getItem().is(item), "loom consumed the pattern item");
                 var shieldInput = CraftingInput.of(2, 1, List.of(new ItemStack(Items.SHIELD), banner));
-                var shieldRecipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, shieldInput, level);
+                var shieldRecipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, shieldInput, level);
                 helper.assertTrue(shieldRecipe.isPresent(), "patterned banner could not decorate a shield");
                 ItemStack shield = shieldRecipe.orElseThrow().value().assemble(shieldInput, helper.getLevel().registryAccess());
                 helper.assertTrue(shield.get(DataComponents.BANNER_PATTERNS).layers().equals(layers), "shield lost its pattern");

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "wildscapes:block/tan_mud_bricks",
+    "side": "wildscapes:block/tan_mud_bricks",
+    "top": "wildscapes:block/tan_mud_bricks"
+  }
+}

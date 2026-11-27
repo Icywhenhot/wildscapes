@@ -1,7 +1,7 @@
 package com.wildscapes.entity.client;
 
-import net.minecraft.client.model.npc.VillagerModel;
-import net.minecraft.client.model.monster.witch.WitchModel;
+import net.minecraft.client.model.VillagerModel;
+import net.minecraft.client.model.WitchModel;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;

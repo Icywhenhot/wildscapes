@@ -9,7 +9,7 @@ import com.wildscapes.item.WildscapesItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -71,7 +71,7 @@ public final class AdvancementTests {
     }
 
     private static boolean earned(ServerPlayer player, String path) {
-        var advancement = player.level().getServer().getAdvancements().get(Identifier.fromNamespaceAndPath("wildscapes", path));
+        var advancement = player.level().getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath("wildscapes", path));
         return player.getAdvancements().getOrStartProgress(advancement).isDone();
     }
 }

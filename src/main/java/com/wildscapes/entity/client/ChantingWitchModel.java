@@ -1,11 +1,13 @@
 package com.wildscapes.entity.client;
 
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.monster.witch.WitchModel;
-import net.minecraft.client.renderer.entity.state.WitchRenderState;
-import net.minecraft.util.Mth;
+import com.wildscapes.entity.WitchRitual;
 
-public class ChantingWitchModel extends WitchModel {
+import net.minecraft.client.model.WitchModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.monster.Witch;
+
+public class ChantingWitchModel extends WitchModel<Witch> {
     private final ModelPart arms;
     private final ModelPart rightArm;
     private final ModelPart leftArm;
@@ -18,16 +20,16 @@ public class ChantingWitchModel extends WitchModel {
     }
 
     @Override
-    public void setupAnim(WitchRenderState state) {
-        super.setupAnim(state);
-        boolean chanting = state.getDataOrDefault(MobVisuals.CHANTING, false);
+    public void setupAnim(Witch witch, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        super.setupAnim(witch, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        boolean chanting = WitchRitual.isChanting(witch);
         this.arms.visible = !chanting;
         this.rightArm.visible = chanting;
         this.leftArm.visible = chanting;
         if (!chanting) {
             return;
         }
-        float sway = Mth.cos(state.ageInTicks * 0.6662F) * 0.25F;
+        float sway = Mth.cos(ageInTicks * 0.6662F) * 0.25F;
         this.rightArm.xRot = sway;
         this.leftArm.xRot = sway;
         this.rightArm.zRot = Mth.PI * 0.75F;

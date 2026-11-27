@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
@@ -25,10 +25,10 @@ public final class CauldronSoups {
     public static final int SHORT_DURATION = 160;
 
     private static final Map<Item, Holder<MobEffect>> EFFECTS = Map.ofEntries(
-            Map.entry(Items.SUGAR, MobEffects.SPEED),
-            Map.entry(Items.RABBIT_FOOT, MobEffects.JUMP_BOOST),
-            Map.entry(Items.BLAZE_POWDER, MobEffects.STRENGTH),
-            Map.entry(Items.GLISTERING_MELON_SLICE, MobEffects.INSTANT_HEALTH),
+            Map.entry(Items.SUGAR, MobEffects.MOVEMENT_SPEED),
+            Map.entry(Items.RABBIT_FOOT, MobEffects.JUMP),
+            Map.entry(Items.BLAZE_POWDER, MobEffects.DAMAGE_BOOST),
+            Map.entry(Items.GLISTERING_MELON_SLICE, MobEffects.HEAL),
             Map.entry(Items.SPIDER_EYE, MobEffects.POISON),
             Map.entry(Items.GHAST_TEAR, MobEffects.REGENERATION),
             Map.entry(Items.MAGMA_CREAM, MobEffects.FIRE_RESISTANCE),
@@ -36,17 +36,17 @@ public final class CauldronSoups {
             Map.entry(Items.GOLDEN_CARROT, MobEffects.NIGHT_VISION),
             Map.entry(Items.PHANTOM_MEMBRANE, MobEffects.SLOW_FALLING),
             Map.entry(Items.FERMENTED_SPIDER_EYE, MobEffects.WEAKNESS),
-            Map.entry(Items.SLIME_BALL, MobEffects.SLOWNESS),
+            Map.entry(Items.SLIME_BALL, MobEffects.MOVEMENT_SLOWDOWN),
             Map.entry(Items.GLOWSTONE_DUST, MobEffects.GLOWING));
 
     private static final Set<Holder<MobEffect>> STACKABLE = Set.of(
-            MobEffects.SPEED,
-            MobEffects.JUMP_BOOST,
-            MobEffects.STRENGTH,
-            MobEffects.INSTANT_HEALTH,
+            MobEffects.MOVEMENT_SPEED,
+            MobEffects.JUMP,
+            MobEffects.DAMAGE_BOOST,
+            MobEffects.HEAL,
             MobEffects.POISON,
             MobEffects.REGENERATION,
-            MobEffects.SLOWNESS);
+            MobEffects.MOVEMENT_SLOWDOWN);
 
     public static boolean isEffectIngredient(Item item) {
         return EFFECTS.containsKey(item);
@@ -69,7 +69,7 @@ public final class CauldronSoups {
 
     public static MobEffectInstance instanceOf(Holder<MobEffect> effect, int amplifier) {
         boolean harmful = effect == MobEffects.POISON || effect == MobEffects.WEAKNESS
-                || effect == MobEffects.SLOWNESS;
+                || effect == MobEffects.MOVEMENT_SLOWDOWN;
         int duration = effect.value().isInstantenous() ? 1 : (harmful ? SHORT_DURATION : EFFECT_DURATION);
         return new MobEffectInstance(effect, duration, Math.min(amplifier, maxAmplifier(effect)));
     }

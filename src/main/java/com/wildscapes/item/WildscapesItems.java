@@ -30,8 +30,6 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.component.Consumables;
-import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.level.block.DispenserBlock;
 
 public final class WildscapesItems {
@@ -41,44 +39,42 @@ public final class WildscapesItems {
     public static final Item SPIRIT_BANNER_PATTERN = bannerPattern("spirit");
 
     public static final SmithingTemplateItem SPELL_ARMOR_TRIM_SMITHING_TEMPLATE =
-            register("spell_armor_trim_smithing_template", SmithingTemplateItem::createArmorTrimTemplate);
+            register("spell_armor_trim_smithing_template", properties -> SmithingTemplateItem.createArmorTrimTemplate(Wildscapes.id("spell")));
 
     public static final SmithingTemplateItem VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE =
-            register("viscose_armor_trim_smithing_template", SmithingTemplateItem::createArmorTrimTemplate);
+            register("viscose_armor_trim_smithing_template", properties -> SmithingTemplateItem.createArmorTrimTemplate(Wildscapes.id("viscose")));
 
     public static final Item ABOMINATION_SPAWN_EGG = register("abomination_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(WildscapesEntities.ABOMINATION)));
+            properties -> new SpawnEggItem(WildscapesEntities.ABOMINATION, 0xFFFFFF, 0xFFFFFF, properties));
 
     public static final Item ILLUSIONER_SPAWN_EGG = register("illusioner_spawn_egg",
-            properties -> new SpawnEggItem(properties.spawnEgg(EntityType.ILLUSIONER)));
+            properties -> new SpawnEggItem(EntityType.ILLUSIONER, 0xFFFFFF, 0xFFFFFF, properties));
 
     public static final SignItem CYPRESS_SIGN = register("cypress_sign",
-            properties -> new SignItem(WildscapesBlocks.CYPRESS_SIGN, WildscapesBlocks.CYPRESS_WALL_SIGN,
-                    properties.stacksTo(16)));
+            properties -> new SignItem(properties.stacksTo(16), WildscapesBlocks.CYPRESS_SIGN, WildscapesBlocks.CYPRESS_WALL_SIGN));
 
     public static final HangingSignItem CYPRESS_HANGING_SIGN = register("cypress_hanging_sign",
             properties -> new HangingSignItem(WildscapesBlocks.CYPRESS_HANGING_SIGN,
                     WildscapesBlocks.CYPRESS_WALL_HANGING_SIGN, properties.stacksTo(16)));
 
     public static final BoatItem CYPRESS_BOAT = register("cypress_boat",
-            properties -> new BoatItem(CypressBoat.BOAT, properties.stacksTo(1)));
+            properties -> new BoatItem(false, net.minecraft.world.entity.vehicle.Boat.Type.OAK, properties.stacksTo(1)));
 
     public static final BoatItem CYPRESS_CHEST_BOAT = register("cypress_chest_boat",
-            properties -> new BoatItem(CypressBoat.CHEST_BOAT, properties.stacksTo(1)));
+            properties -> new BoatItem(true, net.minecraft.world.entity.vehicle.Boat.Type.OAK, properties.stacksTo(1)));
 
     public static final Item FROG_LEGS = register("frog_legs", Item::new);
 
     public static final Item FROG_LEG_STEW = register("frog_leg_stew",
-            properties -> new Item(properties.stacksTo(1).usingConvertsTo(Items.BOWL)
-                    .food(new FoodProperties.Builder().nutrition(5).saturationModifier(0.6F).build(),
-                            Consumables.defaultFood().onConsume(new ApplyStatusEffectsConsumeEffect(
-                                    new MobEffectInstance(MobEffects.JUMP_BOOST, 400, 1))).build())));
+            properties -> new Item(properties.stacksTo(1).food(new FoodProperties.Builder()
+                    .nutrition(5).saturationModifier(0.6F).usingConvertsTo(Items.BOWL)
+                    .effect(new MobEffectInstance(MobEffects.JUMP, 400, 1), 1.0F).build())));
 
     public static final Item LADLE = register("ladle", properties -> new Item(properties.durability(10)));
     public static final Item ABOMINATION_TONGUE = register("abomination_tongue", Item::new);
 
     public static final MirelashItem MIRELASH = register("mirelash",
-            properties -> new MirelashItem(properties.durability(64).enchantable(12).repairable(ABOMINATION_TONGUE)
+            properties -> new MirelashItem(properties.durability(64)
                     .attributes(ItemAttributeModifiers.builder()
                             .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
                                     5.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
@@ -99,19 +95,19 @@ public final class WildscapesItems {
 
     private static Item bannerPattern(String name) {
         var tag = TagKey.create(Registries.BANNER_PATTERN, Wildscapes.id("pattern_item/" + name));
-        return register(name + "_banner_pattern", properties -> new Item(properties.stacksTo(1)
-                .component(DataComponents.PROVIDES_BANNER_PATTERNS, tag)));
+        return register(name + "_banner_pattern", properties -> new net.minecraft.world.item.BannerPatternItem(tag, properties.stacksTo(1)));
     }
 
     private static <T extends Item> T register(String name, Function<Item.Properties, T> factory) {
         var key = ResourceKey.create(Registries.ITEM, Wildscapes.id(name));
-        return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(new Item.Properties().setId(key)));
+        return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(new Item.Properties()));
     }
 
     public static void register() {
+        CypressBoat.register();
         CYPRESS_SIGN.registerBlocks(Item.BY_BLOCK, CYPRESS_SIGN);
         CYPRESS_HANGING_SIGN.registerBlocks(Item.BY_BLOCK, CYPRESS_HANGING_SIGN);
-        DispenserBlock.registerBehavior(CYPRESS_BOAT, new BoatDispenseItemBehavior(CypressBoat.BOAT));
-        DispenserBlock.registerBehavior(CYPRESS_CHEST_BOAT, new BoatDispenseItemBehavior(CypressBoat.CHEST_BOAT));
+        DispenserBlock.registerBehavior(CYPRESS_BOAT, new BoatDispenseItemBehavior(net.minecraft.world.entity.vehicle.Boat.Type.OAK));
+        DispenserBlock.registerBehavior(CYPRESS_CHEST_BOAT, new BoatDispenseItemBehavior(net.minecraft.world.entity.vehicle.Boat.Type.OAK, true));
     }
 }

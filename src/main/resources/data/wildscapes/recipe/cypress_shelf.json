@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "group": "shelf",
   "key": {
-    "#": "wildscapes:stripped_cypress_log"
+    "#": {
+      "item": "wildscapes:stripped_cypress_log"
+    }
   },
   "pattern": [
     "###",

@@ -22,5 +22,9 @@ public final class WildscapesBlockEntities {
                     .create(CauldronOfSoulsBlockEntity::new, WildscapesBlocks.CAULDRON_OF_SOULS)
                     .build());
 
+    public static final BlockEntityType<CypressShelfBlockEntity> CYPRESS_SHELF =
+            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Wildscapes.id("cypress_shelf"), FabricBlockEntityTypeBuilder
+                    .create(CypressShelfBlockEntity::new, WildscapesBlocks.CYPRESS_SHELF).build());
+
     public static void register() {}
 }

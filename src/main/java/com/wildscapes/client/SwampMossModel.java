@@ -1,63 +1,62 @@
 package com.wildscapes.client;
 
 import java.util.Map;
-import java.util.function.Predicate;
-
+import java.util.function.Supplier;
 import com.wildscapes.Wildscapes;
-import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.entity.SwampVariants;
-
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.fabricmc.fabric.api.client.model.loading.v1.wrapper.WrapperBlockStateModel;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.renderer.v1.model.ForwardingBakedModel;
+import net.fabricmc.fabric.api.renderer.v1.model.SpriteFinder;
+import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.data.AtlasIds;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final class SwampMossModel extends WrapperBlockStateModel {
-    private static final Map<Identifier, Identifier> TEXTURES = Map.of(
-            Identifier.withDefaultNamespace("block/moss_block"), Wildscapes.id("block/swamp_moss_block"),
+public final class SwampMossModel extends ForwardingBakedModel {
+    private static final Map<ResourceLocation, ResourceLocation> TEXTURES = Map.of(
+            ResourceLocation.withDefaultNamespace("block/moss_block"), Wildscapes.id("block/swamp_moss_block"),
             Wildscapes.id("block/moss_drape"), Wildscapes.id("block/swamp_moss_drape"),
             Wildscapes.id("block/moss_drape_end"), Wildscapes.id("block/swamp_moss_drape_end"));
 
-    private SwampMossModel(BlockStateModel model) {
+    private SwampMossModel(BakedModel model) {
         super(model);
     }
 
     public static void register() {
-        ModelLoadingPlugin.register(plugin -> plugin.modifyBlockModelAfterBake().register((model, context) -> {
-            var block = context.state().getBlock();
-            return block == Blocks.MOSS_BLOCK || block == Blocks.MOSS_CARPET
-                    || block == WildscapesBlocks.MOSS_CARPET || block == WildscapesBlocks.HANGING_MOSS
+        ModelLoadingPlugin.register(plugin -> plugin.modifyModelAfterBake().register((model, context) -> {
+            if (context.topLevelId() == null) return model;
+            var id = context.topLevelId().id();
+            return id.equals(ResourceLocation.withDefaultNamespace("moss_block"))
+                    || id.equals(ResourceLocation.withDefaultNamespace("moss_carpet"))
+                    || id.equals(Wildscapes.id("moss_carpet")) || id.equals(Wildscapes.id("hanging_moss"))
                     ? new SwampMossModel(model) : model;
         }));
     }
 
     @Override
-    public void emitQuads(QuadEmitter emitter, BlockAndTintGetter view, BlockPos pos, BlockState state,
-            RandomSource random, Predicate<Direction> cull) {
-        if (!isSwamp(pos)) {
-            super.emitQuads(emitter, view, pos, state, random, cull);
+    public boolean isVanillaAdapter() {
+        return false;
+    }
+
+    @Override
+    public void emitBlockQuads(BlockAndTintGetter view, BlockState state, BlockPos pos,
+            Supplier<RandomSource> random, RenderContext context) {
+        if (Minecraft.getInstance().level == null || !Minecraft.getInstance().level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES)) {
+            super.emitBlockQuads(view, state, pos, random, context);
             return;
         }
-
-        var atlases = Minecraft.getInstance().getAtlasManager();
-        var finder = atlases.getAtlasOrThrow(AtlasIds.BLOCKS).spriteFinder();
-        emitter.pushTransform(quad -> {
-            TextureAtlasSprite old = finder.find(quad);
-            Identifier id = TEXTURES.get(old.contents().name());
+        var atlas = Minecraft.getInstance().getModelManager().getAtlas(TextureAtlas.LOCATION_BLOCKS);
+        var finder = SpriteFinder.get(atlas);
+        context.pushTransform(quad -> {
+            var old = finder.find(quad);
+            var id = TEXTURES.get(old.contents().name());
             if (id != null) {
-                TextureAtlasSprite sprite = atlases.get(new Material(TextureAtlas.LOCATION_BLOCKS, id));
+                var sprite = atlas.getSprite(id);
                 for (int i = 0; i < 4; i++) {
                     float u = (quad.u(i) - old.getU0()) / (old.getU1() - old.getU0());
                     float v = (quad.v(i) - old.getV0()) / (old.getV1() - old.getV0());
@@ -67,30 +66,9 @@ public final class SwampMossModel extends WrapperBlockStateModel {
             return true;
         });
         try {
-            super.emitQuads(emitter, view, pos, state, random, cull);
+            super.emitBlockQuads(view, state, pos, random, context);
         } finally {
-            emitter.popTransform();
+            context.popTransform();
         }
     }
-
-    @Override
-    public Object createGeometryKey(BlockAndTintGetter view, BlockPos pos, BlockState state, RandomSource random) {
-        Object key = super.createGeometryKey(view, pos, state, random);
-        return key != null && isSwamp(pos) ? new SwampKey(key) : key;
-    }
-
-    @Override
-    public TextureAtlasSprite particleSprite(BlockAndTintGetter view, BlockPos pos, BlockState state) {
-        TextureAtlasSprite base = super.particleSprite(view, pos, state);
-        Identifier id = isSwamp(pos) ? TEXTURES.get(base.contents().name()) : null;
-        return id == null ? base : Minecraft.getInstance().getAtlasManager()
-                .get(new Material(TextureAtlas.LOCATION_BLOCKS, id));
-    }
-
-    private static boolean isSwamp(BlockPos pos) {
-        var level = Minecraft.getInstance().level;
-        return level != null && level.getBiome(pos).is(SwampVariants.SWAMP_BIOMES);
-    }
-
-    private record SwampKey(Object base) {}
 }

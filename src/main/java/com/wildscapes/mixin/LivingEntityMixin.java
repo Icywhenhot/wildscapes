@@ -22,8 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-    @ModifyVariable(method = "hurtServer", at = @At("HEAD"), argsOnly = true)
-    private float empoweredDamage(float amount, ServerLevel level, DamageSource source) {
+    @ModifyVariable(method = "hurt", at = @At("HEAD"), argsOnly = true)
+    private float empoweredDamage(float amount, DamageSource source) {
         return SoulHarvest.damage(source, amount);
     }
 
@@ -34,10 +34,10 @@ public abstract class LivingEntityMixin {
             ci.cancel();
         } else if (entity.getType() == EntityType.ILLUSIONER) {
             if (entity.getRandom().nextDouble() < WildscapesConfig.get(WildscapesConfig.NECKLACE_DROP_CHANCE)) {
-                entity.spawnAtLocation(level, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
+                entity.spawnAtLocation(new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
             }
         } else if (entity.getType() == EntityType.FROG && WildscapesConfig.get(WildscapesConfig.FROG_LEGS)) {
-            entity.spawnAtLocation(level, new ItemStack(WildscapesItems.FROG_LEGS, 1 + entity.getRandom().nextInt(2)));
+            entity.spawnAtLocation(new ItemStack(WildscapesItems.FROG_LEGS, 1 + entity.getRandom().nextInt(2)));
         }
     }
 

@@ -10,7 +10,7 @@ import com.wildscapes.worldgen.BuriedPiece;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -120,9 +120,9 @@ public class WitchCampTests {
     private static StructureStart generate(ServerLevel level, ChunkPos chunk) {
         var camp = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(
                 net.minecraft.resources.ResourceKey.create(Registries.STRUCTURE,
-                        Identifier.fromNamespaceAndPath("wildscapes", "witch_camp")));
+                        ResourceLocation.fromNamespaceAndPath("wildscapes", "witch_camp")));
         ChunkGenerator generator = level.getChunkSource().getGenerator();
-        return camp.value().generate(camp, level.dimension(), level.registryAccess(), generator, generator.getBiomeSource(),
+        return camp.value().generate(level.registryAccess(), generator, generator.getBiomeSource(),
                 level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(),
                 chunk, 0, level, biome -> true);
     }
@@ -138,8 +138,8 @@ public class WitchCampTests {
             for (int cz = all.minZ() >> 4; cz <= all.maxZ() >> 4; cz++) {
                 ChunkPos chunk = new ChunkPos(cx, cz);
                 level.getChunk(cx, cz);
-                BoundingBox box = new BoundingBox(chunk.getMinBlockX(), level.getMinY(), chunk.getMinBlockZ(),
-                        chunk.getMaxBlockX(), level.getMaxY() + 1, chunk.getMaxBlockZ());
+                BoundingBox box = new BoundingBox(chunk.getMinBlockX(), level.getMinBuildHeight(), chunk.getMinBlockZ(),
+                        chunk.getMaxBlockX(), level.getMaxBuildHeight(), chunk.getMaxBlockZ());
                 start.placeInChunk(level, level.structureManager(), level.getChunkSource().getGenerator(),
                         level.getRandom(), box, chunk);
             }

@@ -4,33 +4,21 @@ import com.wildscapes.Wildscapes;
 
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.AbstractSkeletonRenderer;
-import net.minecraft.resources.Identifier;
-import net.minecraft.client.renderer.entity.state.BoggedRenderState;
-import net.minecraft.world.entity.monster.skeleton.Bogged;
+import net.minecraft.client.renderer.entity.SkeletonRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.monster.Bogged;
 
-public class RedesignedBoggedRenderer extends AbstractSkeletonRenderer<Bogged, BoggedRenderState> {
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/bogged.png");
+public class RedesignedBoggedRenderer extends SkeletonRenderer<Bogged> {
+    private static final ResourceLocation TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/bogged.png");
 
     public RedesignedBoggedRenderer(EntityRendererProvider.Context context) {
-        super(context, ModelLayers.BOGGED_ARMOR,
+        super(context, ModelLayers.BOGGED_INNER_ARMOR, ModelLayers.BOGGED_OUTER_ARMOR,
                 new RedesignedBoggedModel(context.bakeLayer(WildscapesModelLayers.BOGGED)));
     }
 
     @Override
-    public BoggedRenderState createRenderState() {
-        return new BoggedRenderState();
-    }
-
-    @Override
-    public void extractRenderState(Bogged bogged, BoggedRenderState state, float partialTick) {
-        super.extractRenderState(bogged, state, partialTick);
-        state.isSheared = bogged.isSheared();
-    }
-
-    @Override
-    public Identifier getTextureLocation(BoggedRenderState state) {
+    public ResourceLocation getTextureLocation(Bogged entity) {
         return TEXTURE;
     }
 }

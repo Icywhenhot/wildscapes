@@ -1,42 +1,40 @@
 package com.wildscapes.mixin.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.wildscapes.client.SwampFog;
-
 import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.fog.FogData;
-import net.minecraft.client.renderer.fog.FogRenderer;
+import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.world.level.material.FogType;
-import com.llamalad7.mixinextras.sugar.Local;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FogRenderer.class)
 public abstract class FogRendererMixin {
-    @Shadow
-    private FogType getFogType(Camera camera) {
-        throw new AssertionError();
+    @Shadow private static float fogRed;
+    @Shadow private static float fogGreen;
+    @Shadow private static float fogBlue;
+
+    @Inject(method = "setupFog", at = @At("TAIL"))
+    private static void swampFog(Camera camera, FogRenderer.FogMode mode, float distance, boolean thick,
+            float partialTick, CallbackInfo ci) {
+        SwampFog.apply(camera, mode, partialTick);
     }
 
-    @Inject(method = "setupFog", at = @At(value = "FIELD",
-            target = "Lnet/minecraft/client/renderer/fog/FogData;renderDistanceEnd:F", shift = At.Shift.AFTER))
-    private void swampFog(Camera camera, int chunks, DeltaTracker delta, float darken,
-            ClientLevel level, CallbackInfoReturnable<Vector4f> cir, @Local FogData fog) {
-        if (getFogType(camera) == FogType.NONE) {
-            SwampFog.apply(fog, level, delta.getGameTimeDeltaPartialTick(false));
-        }
-    }
-
-    @Inject(method = "computeFogColor", at = @At("RETURN"))
-    private void swampColor(Camera camera, float partialTick, ClientLevel level, int chunks, float darken,
-            CallbackInfoReturnable<Vector4f> cir) {
-        if (getFogType(camera) == FogType.NONE) {
-            SwampFog.tint(cir.getReturnValue());
+    @Inject(method = "setupColor", at = @At("TAIL"))
+    private static void swampColor(Camera camera, float partialTick, ClientLevel level, int chunks,
+            float darken, CallbackInfo ci) {
+        if (camera.getFluidInCamera() == FogType.NONE) {
+            Vector4f color = new Vector4f(fogRed, fogGreen, fogBlue, 0);
+            SwampFog.tint(color);
+            fogRed = color.x;
+            fogGreen = color.y;
+            fogBlue = color.z;
+            RenderSystem.clearColor(fogRed, fogGreen, fogBlue, 0);
         }
     }
 }

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Beardifier.class)
 public abstract class BeardifierMixin {
-    @WrapOperation(method = "forStructuresInChunk", at = @At(value = "INVOKE",
+    @WrapOperation(method = "method_42694", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/levelgen/structure/StructurePiece;isCloseToChunk(Lnet/minecraft/world/level/ChunkPos;I)Z"))
     private static boolean skipBuriedPiece(StructurePiece piece, ChunkPos pos, int distance, Operation<Boolean> original) {
         return !(piece instanceof BuriedPiece) && original.call(piece, pos, distance);

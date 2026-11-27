@@ -3,8 +3,12 @@
   "category": "misc",
   "group": "dyed_mud_brick_walls",
   "ingredients": [
-    "#wildscapes:mud_brick_walls",
-    "minecraft:purple_dye"
+    {
+      "tag": "wildscapes:mud_brick_walls"
+    },
+    {
+      "item": "minecraft:purple_dye"
+    }
   ],
   "result": {
     "id": "wildscapes:purple_mud_brick_wall",

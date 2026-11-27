@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/filled_map",
+    "layer1": "minecraft:item/filled_map_markings"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "wildscapes:witch_camp": 1.0
+      },
+      "model": "wildscapes:item/witch_camp_map"
+    }
+  ]
+}

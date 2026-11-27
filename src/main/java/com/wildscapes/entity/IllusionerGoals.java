@@ -2,7 +2,7 @@ package com.wildscapes.entity;
 
 import java.util.List;
 
-import net.minecraft.world.entity.monster.illager.Illusioner;
+import net.minecraft.world.entity.monster.Illusioner;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 

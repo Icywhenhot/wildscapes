@@ -7,7 +7,6 @@ import com.wildscapes.block.CauldronSwap;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.redstone.Orientation;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.wildscapes.effect.Intangibility;
@@ -27,8 +26,8 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin {
-    @Inject(method = "updateNeighborsAt(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;Lnet/minecraft/world/level/redstone/Orientation;)V", at = @At("TAIL"))
-    private void checkCauldronHeat(BlockPos pos, Block source, Orientation orientation, CallbackInfo ci) {
+    @Inject(method = "updateNeighborsAt", at = @At("TAIL"))
+    private void checkCauldronHeat(BlockPos pos, Block source, CallbackInfo ci) {
         CauldronSwap.onNeighborNotify((ServerLevel) (Object) this, pos);
     }
 

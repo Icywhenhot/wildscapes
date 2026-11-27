@@ -17,7 +17,7 @@ import com.wildscapes.entity.SoulHarvest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
@@ -25,8 +25,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.pig.Pig;
-import net.minecraft.world.entity.monster.illager.Vindicator;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.EvokerFangs;
 import net.minecraft.world.level.block.Blocks;
@@ -59,7 +59,7 @@ public final class SoulHarvestTests {
             helper.assertFalse(player.hasEffect(MobEffects.BAD_OMEN), "the cauldron did not take the omen");
             helper.assertTrue(player.hasEffect(WildscapesEffects.SOUL_HARVEST), "no soul_harvest icon while it runs");
             var advancement = level.getServer().getAdvancements()
-                    .get(Identifier.fromNamespaceAndPath("wildscapes", "its_time_to_harvest"));
+                    .get(ResourceLocation.fromNamespaceAndPath("wildscapes", "its_time_to_harvest"));
             helper.assertTrue(player.getAdvancements().getOrStartProgress(advancement).isDone(),
                     "starting soul harvest did not award advancement");
             helper.assertBlockProperty(cauldron, CauldronOfSoulsBlock.PHASE, CauldronOfSoulsBlock.Phase.ACTIVE);

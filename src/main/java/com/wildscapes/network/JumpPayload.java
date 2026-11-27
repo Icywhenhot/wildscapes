@@ -6,13 +6,13 @@ import com.wildscapes.entity.JumpEnchantments;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public record JumpPayload() implements CustomPacketPayload {
     public static final Type<JumpPayload> TYPE = new Type<>(
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "jump"));
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "jump"));
     public static final JumpPayload INSTANCE = new JumpPayload();
     public static final StreamCodec<RegistryFriendlyByteBuf, JumpPayload> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 

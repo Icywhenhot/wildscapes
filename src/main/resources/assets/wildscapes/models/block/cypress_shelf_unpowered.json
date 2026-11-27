@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/template_shelf_unpowered",
+  "parent": "wildscapes:block/template_shelf_unpowered",
   "textures": {
     "all": "wildscapes:block/cypress_shelf",
     "particle": "wildscapes:block/stripped_cypress_log"

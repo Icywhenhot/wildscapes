@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "wildscapes:amber_mud_bricks"
+  },
+  "result": {
+    "id": "wildscapes:chiseled_amber_mud_bricks",
+    "count": 1
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "dye_depot"
+      ]
+    }
+  ]
+}

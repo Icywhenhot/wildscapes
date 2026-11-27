@@ -4,31 +4,29 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.CameraRenderState;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.SoulHarvest;
 
+import net.minecraft.client.model.IllagerModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.monster.illager.IllagerModel;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IllagerRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
-import net.minecraft.resources.Identifier;
-import net.minecraft.client.renderer.entity.state.IllusionerRenderState;
-import net.minecraft.world.entity.monster.illager.Illusioner;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.monster.Illusioner;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, IllusionerRenderState> {
-    private static final Identifier TEXTURE =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
-    private static final Identifier EMPOWERED =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
-
-    private static final Identifier VANILLA =
-            Identifier.withDefaultNamespace("textures/entity/illager/illusioner.png");
+public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
+    private static final ResourceLocation TEXTURE =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
+    private static final ResourceLocation EMPOWERED =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
+    private static final ResourceLocation VANILLA =
+            ResourceLocation.withDefaultNamespace("textures/entity/illager/illusioner.png");
 
     private final Map<Illusioner, Trail> trails = new WeakHashMap<>();
     private final boolean vanilla;
@@ -41,11 +39,12 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
         super(context, new IllagerModel<>(context.bakeLayer(vanilla ? ModelLayers.ILLUSIONER
                 : WildscapesModelLayers.ILLUSIONER)), 0.5F);
         this.vanilla = vanilla;
-        this.addLayer(new ItemInHandLayer<>(this) {
+        this.addLayer(new ItemInHandLayer<Illusioner, IllagerModel<Illusioner>>(this, context.getItemInHandRenderer()) {
             @Override
-            public void submit(PoseStack pose, SubmitNodeCollector nodes, int light, IllusionerRenderState state, float yaw, float pitch) {
-                if (state.isCastingSpell || state.isAggressive) {
-                    super.submit(pose, nodes, light, state, yaw, pitch);
+            public void render(PoseStack pose, MultiBufferSource buf, int light, Illusioner entity, float limbSwing,
+                    float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+                if (entity.isCastingSpell() || entity.isAggressive()) {
+                    super.render(pose, buf, light, entity, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
                 }
             }
         });
@@ -56,30 +55,23 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
     }
 
     @Override
-    public IllusionerRenderState createRenderState() {
-        return new IllusionerRenderState();
-    }
-
-    @Override
-    public Identifier getTextureLocation(IllusionerRenderState state) {
+    public ResourceLocation getTextureLocation(Illusioner entity) {
         if (vanilla) {
             return VANILLA;
         }
-        return state.getDataOrDefault(MobVisuals.EMPOWERED, false) ? EMPOWERED : TEXTURE;
+        return SoulHarvest.isEmpowered(entity) ? EMPOWERED : TEXTURE;
     }
 
     @Override
-    protected boolean isBodyVisible(IllusionerRenderState state) {
+    protected boolean isBodyVisible(Illusioner entity) {
         return true;
     }
 
     @Override
-    public void extractRenderState(Illusioner entity, IllusionerRenderState state, float partialTicks) {
-        super.extractRenderState(entity, state, partialTicks);
-        state.isCastingSpell = entity.isCastingSpell();
-        state.illusionOffsets = new Vec3[0];
+    public void render(Illusioner entity, float yaw, float partialTicks, PoseStack pose, MultiBufferSource buf, int light) {
         if (!entity.isInvisible()) {
             trails.remove(entity);
+            super.render(entity, yaw, partialTicks, pose, buf, light);
             return;
         }
 
@@ -103,11 +95,10 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
         double a = tr.seen ? 1.0 - Math.pow(0.55, Math.max(0.0F, now - tr.t)) : 1.0;
         tr.t = now;
 
-        state.illusionOffsets = new Vec3[offs.length];
         for (int i = 0; i < offs.length; i++) {
             if (i == tr.real) {
                 tr.y[i] = 0.0;
-                state.illusionOffsets[i] = Vec3.ZERO;
+                super.render(entity, yaw, partialTicks, pose, buf, light);
                 continue;
             }
 
@@ -118,25 +109,13 @@ public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner, Il
             double want = Double.isNaN(g) || Double.isNaN(base) ? 0.0 : g - base;
             tr.y[i] += (want - tr.y[i]) * a;
 
-            state.illusionOffsets[i] = new Vec3(dx, tr.y[i], dz);
+            pose.pushPose();
+            pose.translate(dx, tr.y[i], dz);
+            super.render(entity, yaw, partialTicks, pose, buf, light);
+            pose.popPose();
         }
 
         tr.seen = true;
-    }
-
-    @Override
-    public void submit(IllusionerRenderState state, PoseStack pose, SubmitNodeCollector nodes, CameraRenderState camera) {
-        if (state.illusionOffsets.length == 0) {
-            super.submit(state, pose, nodes, camera);
-            return;
-        }
-
-        for (Vec3 offset : state.illusionOffsets) {
-            pose.pushPose();
-            pose.translate(offset.x, offset.y, offset.z);
-            super.submit(state, pose, nodes, camera);
-            pose.popPose();
-        }
     }
 
     private static final class Trail {

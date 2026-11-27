@@ -6,7 +6,10 @@ import com.wildscapes.WildscapesConfig;
 import com.wildscapes.entity.SwampVariants;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.fog.FogData;
+import net.minecraft.client.Camera;
+import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.world.level.material.FogType;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -56,20 +59,22 @@ public final class SwampFog {
         return height * weather * WildscapesConfig.SWAMP_FOG_STRENGTH.get().floatValue();
     }
 
-    public static void apply(FogData fog, ClientLevel level, float partialTick) {
-        if (strength <= 0.001F) {
+    public static void apply(Camera camera, FogRenderer.FogMode mode, float partialTick) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (strength <= 0.001F || level == null || camera.getFluidInCamera() != FogType.NONE
+                || mode == FogRenderer.FogMode.FOG_SKY) {
             return;
         }
 
         float rain = level.getRainLevel(partialTick);
         float range = Mth.lerp(rain, CLEAR_RANGE, RAIN_RANGE);
-        float vanillaFar = fog.environmentalEnd;
-        float vanillaNear = fog.environmentalStart;
+        float vanillaFar = RenderSystem.getShaderFogEnd();
+        float vanillaNear = RenderSystem.getShaderFogStart();
         float thick = Math.min(vanillaFar, range);
         float far = 1.0F / Mth.lerp(strength, 1.0F / vanillaFar, 1.0F / thick);
         float near = Mth.lerp(strength, vanillaNear, Math.min(vanillaNear, thick * NEAR_FRACTION));
-        fog.environmentalEnd = far;
-        fog.environmentalStart = Math.min(near, far);
+        RenderSystem.setShaderFogEnd(far);
+        RenderSystem.setShaderFogStart(Math.min(near, far));
     }
 
     public static void tint(Vector4f color) {

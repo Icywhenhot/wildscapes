@@ -35,7 +35,7 @@ public final class MirageSync {
         MobEffectInstance previous = effects.get(entity);
         if (effect == null) {
             if (effects.remove(entity) != null) {
-                level.getChunkSource().sendToTrackingPlayersAndSelf(entity,
+                level.getChunkSource().broadcastAndSend(entity,
                         new ClientboundRemoveMobEffectPacket(entity.getId(), type));
             }
             return;
@@ -44,7 +44,7 @@ public final class MirageSync {
                 || effect.isAmbient() != previous.isAmbient() || effect.isVisible() != previous.isVisible()
                 || effect.showIcon() != previous.showIcon()
                 || effect.getDuration() != (previous.isInfiniteDuration() ? -1 : previous.getDuration() - 1)) {
-            level.getChunkSource().sendToTrackingPlayersAndSelf(entity,
+            level.getChunkSource().broadcastAndSend(entity,
                     new ClientboundUpdateMobEffectPacket(entity.getId(), effect, false));
         }
         effects.put(entity, new MobEffectInstance(effect));

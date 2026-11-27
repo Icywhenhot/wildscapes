@@ -6,7 +6,7 @@ import com.wildscapes.network.JumpPayload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.player.Input;
+import net.minecraft.client.player.Input;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
@@ -18,10 +18,10 @@ public final class JumpInput {
 
     public static void onInput(LocalPlayer player) {
         Minecraft mc = Minecraft.getInstance();
-        Input input = player.input.keyPresses;
-        boolean pressed = input.jump() && !held;
-        held = input.jump();
-        boolean charging = mc.screen == null && input.shift() && JumpEnchantments.canCharge(player);
+        Input input = player.input;
+        boolean pressed = input.jumping && !held;
+        held = input.jumping;
+        boolean charging = mc.screen == null && input.shiftKeyDown && JumpEnchantments.canCharge(player);
         if (charging && sound == null) {
             sound = new JumpChargeSound(mc.player);
             mc.getSoundManager().play(sound);
@@ -33,8 +33,7 @@ public final class JumpInput {
             return;
         }
         if (charging) {
-            player.input.keyPresses = new Input(input.forward(), input.backward(), input.left(),
-                    input.right(), false, input.shift(), input.sprint());
+            player.input.jumping = false;
         } else if (pressed && !player.onGround() && MirelashItem.enchantmentLevel(player.level(),
                 player.getItemBySlot(EquipmentSlot.FEET), JumpEnchantments.MULTI_JUMP) > 0) {
             if (ClientPlayNetworking.canSend(JumpPayload.TYPE)) {

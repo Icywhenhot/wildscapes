@@ -39,7 +39,7 @@ import com.wildscapes.worldgen.WildscapesStructures;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -160,15 +160,15 @@ public class Wildscapes implements ModInitializer {
                         output.accept(PotionContents.createItemStack(Items.TIPPED_ARROW, WildscapesPotions.INCENDIARY));
                         var enchantments = parameters.holders().lookupOrThrow(Registries.ENCHANTMENT);
                         List<ItemStack> books = new ArrayList<>();
-                        books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                        books.add(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 enchantments.getOrThrow(MirelashItem.ELASTICITY), 1)));
-                        books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                        books.add(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 enchantments.getOrThrow(MirelashItem.SLIME_SNARE), 1)));
                         for (int i = 1; i <= 2; i++) {
-                            books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                            books.add(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                     enchantments.getOrThrow(JumpEnchantments.MULTI_JUMP), i)));
                         }
-                        books.add(EnchantmentHelper.createBook(new EnchantmentInstance(
+                        books.add(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(new EnchantmentInstance(
                                 enchantments.getOrThrow(JumpEnchantments.EMPOWERED_JUMP), 1)));
                         List<ItemStack> added = new ArrayList<>();
                         for (ItemStack book : books) {
@@ -179,8 +179,8 @@ public class Wildscapes implements ModInitializer {
                         }
                     }).build();
 
-    public static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MODID, path);
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
     @Override
@@ -199,7 +199,6 @@ public class Wildscapes implements ModInitializer {
         WildscapesFeatures.register();
         WildscapesPlacementModifiers.register();
         WildscapesStructures.register();
-        WildscapesTests.register();
         SwampBiomes.register();
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id("wildscapes"), WILDSCAPES_TAB);
 

@@ -1,0 +1,9 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:swamp",
+  "features": [
+    "wildscapes:huge_brown_mushroom_swamp",
+    "wildscapes:huge_red_mushroom_swamp"
+  ],
+  "step": "vegetal_decoration"
+}

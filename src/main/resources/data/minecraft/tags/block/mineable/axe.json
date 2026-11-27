@@ -16,6 +16,7 @@
     "wildscapes:cypress_sign",
     "wildscapes:cypress_wall_sign",
     "wildscapes:cypress_hanging_sign",
-    "wildscapes:cypress_wall_hanging_sign"
+    "wildscapes:cypress_wall_hanging_sign",
+    "wildscapes:cypress_shelf"
   ]
 }

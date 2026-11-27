@@ -140,13 +140,15 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
     }
 
     @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        for (Direction side : BY_DIRECTION.keySet()) {
-            if (state.getValue(sideFacing(side)) == Drape.LONG) {
-                clearTail(level, pos, side);
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!newState.is(this)) {
+            for (Direction side : BY_DIRECTION.keySet()) {
+                if (state.getValue(sideFacing(side)) == Drape.LONG) {
+                    clearTail(level, pos, side);
+                }
             }
         }
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     private static Drape allowedDrape(LevelReader level, BlockPos pos, Direction side) {
@@ -215,7 +217,7 @@ public class DrapingMossCarpetBlock extends CarpetBlock implements BonemealableB
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         return new ItemStack(Items.MOSS_CARPET);
     }
 }

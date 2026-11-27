@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class StiltProcessor extends StructureProcessor {
@@ -27,7 +28,7 @@ public class StiltProcessor extends StructureProcessor {
     private static final int MAX_DEPTH = 24;
 
     @Override
-    protected net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType<?> getType() {
+    protected StructureProcessorType<?> getType() {
         return WildscapesStructures.STILTS;
     }
 

@@ -4,20 +4,31 @@
   "version": "${version}",
   "name": "Wildscapes",
   "description": "Wetland wildlife, cypress woods, swamp villages, and witchcraft.",
-  "authors": ["dtech"],
+  "authors": [
+    "dtech"
+  ],
   "license": "MIT",
   "entrypoints": {
-    "main": ["com.wildscapes.Wildscapes"],
-    "client": ["com.wildscapes.WildscapesClient"]
+    "main": [
+      "com.wildscapes.Wildscapes"
+    ],
+    "client": [
+      "com.wildscapes.WildscapesClient"
+    ],
+    "fabric-gametest": [
+      "com.wildscapes.gametest.WildscapesTests"
+    ]
   },
   "accessWidener": "wildscapes.accesswidener",
-  "mixins": ["wildscapes.mixins.json"],
+  "mixins": [
+    "wildscapes.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.19.3",
-    "minecraft": "1.21.11",
+    "minecraft": "1.21.1",
     "java": ">=21",
     "fabric-api": "*",
-    "geckolib": ">=5.4.5",
+    "geckolib": ">=4.8.3",
     "icys_lib": ">=1.1.0"
   }
 }

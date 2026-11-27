@@ -1,13 +1,12 @@
 package com.wildscapes.block;
 
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.block.entity.WildscapesBlockEntities;
 import com.wildscapes.particle.WildscapesParticles;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.BlockGetter;
@@ -42,11 +41,11 @@ public class CauldronOfSoulsBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean moved) {
-        if (level.getBlockEntity(pos) instanceof CauldronOfSoulsBlockEntity be) {
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof CauldronOfSoulsBlockEntity be) {
             be.collapse();
         }
-        super.affectNeighborsAfterRemoval(state, level, pos, moved);
+        super.onRemove(state, level, pos, newState, moved);
     }
 
     @Override
@@ -72,7 +71,7 @@ public class CauldronOfSoulsBlock extends Block implements EntityBlock {
         if (type != WildscapesBlockEntities.CAULDRON_OF_SOULS) {
             return null;
         }
-        BlockEntityTicker<CauldronOfSoulsBlockEntity> ticker = level.isClientSide()
+        BlockEntityTicker<CauldronOfSoulsBlockEntity> ticker = level.isClientSide
                 ? CauldronOfSoulsBlockEntity::clientTick
                 : CauldronOfSoulsBlockEntity::serverTick;
         return (BlockEntityTicker<T>) ticker;

@@ -33,7 +33,6 @@ public abstract class BossHealthOverlayMixin {
             return;
         }
         ci.cancel();
-        gui.nextStratum();
         int center = gui.guiWidth() / 2;
         int y = 12;
         for (LerpingBossEvent event : events.values()) {

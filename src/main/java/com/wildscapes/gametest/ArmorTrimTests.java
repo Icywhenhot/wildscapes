@@ -8,7 +8,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -25,14 +25,14 @@ public final class ArmorTrimTests {
 
     public static void templatesApplyBothPatternsAndDuplicate(GameTestHelper helper) {
         var level = helper.getLevel();
-        var recipes = level.recipeAccess();
+        var recipes = level.getRecipeManager();
         var templates = List.of(WildscapesItems.SPELL_ARMOR_TRIM_SMITHING_TEMPLATE,
                 WildscapesItems.VISCOSE_ARMOR_TRIM_SMITHING_TEMPLATE);
         for (int i = 0; i < templates.size(); i++) {
             var template = templates.get(i);
             String name = i == 0 ? "spell" : "viscose";
             var pattern = ResourceKey.create(Registries.TRIM_PATTERN,
-                    Identifier.fromNamespaceAndPath("wildscapes", name));
+                    ResourceLocation.fromNamespaceAndPath("wildscapes", name));
             for (var armor : List.of(Items.DIAMOND_HELMET, Items.DIAMOND_CHESTPLATE, Items.DIAMOND_LEGGINGS, Items.DIAMOND_BOOTS)) {
                 for (var material : List.of(Items.QUARTZ, Items.IRON_INGOT, Items.GOLD_INGOT, Items.DIAMOND,
                         Items.NETHERITE_INGOT, Items.REDSTONE, Items.COPPER_INGOT, Items.EMERALD, Items.LAPIS_LAZULI, Items.AMETHYST_SHARD)) {
@@ -45,7 +45,7 @@ public final class ArmorTrimTests {
                     var trim = result.get(DataComponents.TRIM);
                     helper.assertTrue(result.is(armor) && result.getDamageValue() == 12, "smithing changed the armor");
                     helper.assertTrue(trim != null && trim.pattern().is(pattern), "wrong trim pattern for " + name);
-                    helper.assertTrue(trim.material().equals(new ItemStack(material).get(DataComponents.PROVIDES_TRIM_MATERIAL).unwrap(level.registryAccess()).orElseThrow()), "wrong trim material");
+                    helper.assertTrue(trim.material().equals(net.minecraft.world.item.armortrim.TrimMaterials.getFromIngredient(level.registryAccess(), new ItemStack(material)).orElseThrow()), "wrong trim material");
                     helper.assertTrue(!base.has(DataComponents.TRIM), "smithing changed the input armor");
                 }
             }
@@ -68,7 +68,7 @@ public final class ArmorTrimTests {
             var params = new LootParams.Builder(helper.getLevel())
                     .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
                     .create(harvest ? LootContextParamSets.VAULT : LootContextParamSets.CHEST);
-            var key = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath("wildscapes", path));
+            var key = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath("wildscapes", path));
             LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(key);
             int spell = 0;
             int viscose = 0;

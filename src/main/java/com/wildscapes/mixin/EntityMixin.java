@@ -6,8 +6,6 @@ import com.wildscapes.effect.Intangibility;
 import com.wildscapes.entity.WildscapesEntityData;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Unique;
 
 import net.minecraft.world.entity.Entity;
@@ -32,16 +30,15 @@ public abstract class EntityMixin implements WildscapesEntityData {
     }
 
     @Inject(method = "saveWithoutId", at = @At("TAIL"))
-    private void saveWildscapesData(ValueOutput output, CallbackInfo ci) {
+    private void saveWildscapesData(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
         if (!wildscapes$data.isEmpty()) {
-            output.store("wildscapes_data", CompoundTag.CODEC, wildscapes$data);
+            tag.put("wildscapes_data", wildscapes$data);
         }
     }
 
     @Inject(method = "load", at = @At("TAIL"))
-    private void loadWildscapesData(ValueInput input, CallbackInfo ci) {
-        wildscapes$data = input.read("wildscapes_data", CompoundTag.CODEC)
-                .or(() -> input.read("NeoForgeData", CompoundTag.CODEC)).orElseGet(CompoundTag::new);
+    private void loadWildscapesData(CompoundTag tag, CallbackInfo ci) {
+        wildscapes$data = tag.getCompound(tag.contains("wildscapes_data") ? "wildscapes_data" : "NeoForgeData");
     }
 
     @Shadow
@@ -54,7 +51,7 @@ public abstract class EntityMixin implements WildscapesEntityData {
         }
     }
 
-    @Inject(method = "checkInsideBlocks(Ljava/util/List;Lnet/minecraft/world/entity/InsideBlockEffectApplier$StepBasedCollector;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "checkInsideBlocks", at = @At("HEAD"), cancellable = true)
     private void intangibleBlocks(CallbackInfo ci) {
         if ((Object) this instanceof Player player && Intangibility.isActive(player)) {
             ci.cancel();

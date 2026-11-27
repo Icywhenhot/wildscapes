@@ -36,7 +36,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.frog.Frog;
@@ -93,7 +93,7 @@ public final class WitchRitual {
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, ctx, selection) -> dispatcher.register(
                 Commands.literal(Wildscapes.MODID)
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(source -> source.hasPermission(2))
                         .then(Commands.literal("ritual").executes(cmd -> fromCommand(cmd.getSource())))));
     }
 
@@ -109,7 +109,7 @@ public final class WitchRitual {
             for (int i = 0; i < 4; i++) {
                 double a = Math.PI * 0.5D * i;
                 BlockPos p = ground(level, BlockPos.containing(at.x + Math.cos(a) * 4.0D, at.y, at.z + Math.sin(a) * 4.0D));
-                Witch witch = EntityType.WITCH.spawn(level, p, EntitySpawnReason.COMMAND);
+                Witch witch = EntityType.WITCH.spawn(level, p, MobSpawnType.COMMAND);
                 if (witch != null) {
                     witches.add(witch);
                 }
@@ -129,7 +129,7 @@ public final class WitchRitual {
             return;
         }
         ServerLevel level = (ServerLevel) witch.level();
-        if (!level.isDarkOutside() || witch.getTarget() != null || of(witch) != null
+        if (!level.isNight() || witch.getTarget() != null || of(witch) != null
                 || level.getNearestPlayer(witch, 48.0D) == null
                 || !inWitchCamp(level, witch.blockPosition())
                 || near(level, witch.position(), 32.0D) != null
@@ -151,12 +151,12 @@ public final class WitchRitual {
 
     @Nullable
     public static WitchRitual start(ServerLevel level, Vec3 at, List<Witch> witches) {
-        Frog toad = EntityType.FROG.create(level, EntitySpawnReason.EVENT);
+        Frog toad = EntityType.FROG.create(level);
         if (toad == null) {
             return null;
         }
-        toad.snapTo(at.x, at.y, at.z, level.getRandom().nextFloat() * 360.0F, 0.0F);
-        toad.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(at)), EntitySpawnReason.EVENT, null);
+        toad.moveTo(at.x, at.y, at.z, level.getRandom().nextFloat() * 360.0F, 0.0F);
+        toad.finalizeSpawn(level, level.getCurrentDifficultyAt(BlockPos.containing(at)), MobSpawnType.EVENT, null);
         level.addFreshEntity(toad);
         toad.setNoAi(true);
         toad.setAttached(TOAD, true);
@@ -239,11 +239,11 @@ public final class WitchRitual {
         this.level.playSound(null, x, y, z, SoundEvents.EVOKER_CAST_SPELL, SoundSource.HOSTILE, 1.5F, 0.6F);
         this.level.playSound(null, x, y, z, WildscapesSounds.ABOMINATION_AMBIENT, SoundSource.HOSTILE, 1.5F, 0.9F);
 
-        AbominationEntity mob = WildscapesEntities.ABOMINATION.create(this.level, EntitySpawnReason.EVENT);
+        AbominationEntity mob = WildscapesEntities.ABOMINATION.create(this.level);
         if (mob != null) {
-            mob.snapTo(x, y, z, this.toad.getYRot(), 0.0F);
+            mob.moveTo(x, y, z, this.toad.getYRot(), 0.0F);
             mob.finalizeSpawn(this.level, this.level.getCurrentDifficultyAt(this.toad.blockPosition()),
-                    EntitySpawnReason.EVENT, null);
+                    MobSpawnType.EVENT, null);
             this.level.addFreshEntity(mob);
         }
         this.toad.discard();
@@ -307,7 +307,7 @@ public final class WitchRitual {
     }
 
     private static boolean inWitchCamp(ServerLevel level, BlockPos pos) {
-        return level.registryAccess().lookupOrThrow(Registries.STRUCTURE).stream()
+        return level.registryAccess().lookupOrThrow(Registries.STRUCTURE).listElements().map(net.minecraft.core.Holder::value)
                 .filter(s -> s.type() == WildscapesStructures.WITCH_CAMP)
                 .anyMatch(s -> level.structureManager().getStructureAt(pos, s).isValid());
     }

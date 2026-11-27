@@ -2,5 +2,13 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "wildscapes:item/illusionist_necklace"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "wildscapes:active": 1.0
+      },
+      "model": "wildscapes:item/illusionist_necklace_active"
+    }
+  ]
 }

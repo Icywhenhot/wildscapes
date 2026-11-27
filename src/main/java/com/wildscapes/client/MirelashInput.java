@@ -14,7 +14,7 @@ public final class MirelashInput {
     public static boolean onAttack(Minecraft minecraft) {
         if (!ClientPlayNetworking.canSend(MirelashAttackPayload.TYPE) || minecraft.player == null || minecraft.screen != null
                 || !(minecraft.player.getMainHandItem().getItem() instanceof MirelashItem)
-                || minecraft.player.getCooldowns().isOnCooldown(minecraft.player.getMainHandItem())
+                || minecraft.player.getCooldowns().isOnCooldown(minecraft.player.getMainHandItem().getItem())
                 || minecraft.player.getAttackStrengthScale(0.5F) < 0.9F) {
             return false;
         }

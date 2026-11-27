@@ -4,7 +4,7 @@ import com.wildscapes.Wildscapes;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
 public final class WildscapesSounds {
@@ -48,8 +48,15 @@ public final class WildscapesSounds {
     public static final SoundEvent EMPOWERED_JUMP_READY = register("empowered_jump.ready");
     public static final SoundEvent MULTI_JUMP = register("multi_jump");
 
+    public static final SoundEvent SHELF_ACTIVATE = register("shelf.activate");
+    public static final SoundEvent SHELF_DEACTIVATE = register("shelf.deactivate");
+    public static final SoundEvent SHELF_TAKE_ITEM = register("shelf.take_item");
+    public static final SoundEvent SHELF_SINGLE_SWAP = register("shelf.single_swap");
+    public static final SoundEvent SHELF_PLACE_ITEM = register("shelf.place_item");
+    public static final SoundEvent SHELF_MULTI_SWAP = register("shelf.multi_swap");
+
     private static SoundEvent register(String name) {
-        Identifier id = Wildscapes.id(name);
+        ResourceLocation id = Wildscapes.id(name);
         return Registry.register(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));
     }
 

@@ -3,8 +3,12 @@
   "category": "misc",
   "group": "hanging_sign",
   "key": {
-    "#": "wildscapes:stripped_cypress_log",
-    "X": "minecraft:iron_chain"
+    "#": {
+      "item": "wildscapes:stripped_cypress_log"
+    },
+    "X": {
+      "item": "minecraft:chain"
+    }
   },
   "pattern": [
     "X X",

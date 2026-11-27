@@ -3,7 +3,9 @@
   "category": "building",
   "group": "chiseled_mud_bricks",
   "key": {
-    "#": "minecraft:mud_brick_slab"
+    "#": {
+      "item": "minecraft:mud_brick_slab"
+    }
   },
   "pattern": [
     "#",

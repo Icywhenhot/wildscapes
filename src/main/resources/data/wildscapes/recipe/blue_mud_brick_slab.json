@@ -3,7 +3,9 @@
   "category": "building",
   "group": "mud_brick_slabs",
   "key": {
-    "#": "wildscapes:blue_mud_bricks"
+    "#": {
+      "item": "wildscapes:blue_mud_bricks"
+    }
   },
   "pattern": [
     "###"

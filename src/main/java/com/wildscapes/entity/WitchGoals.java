@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,7 +20,7 @@ import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownSplashPotion;
+import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -31,7 +31,7 @@ import net.minecraft.server.level.ServerLevel;
 public final class WitchGoals {
     private static final String CHECKED = "wildscapes:cauldron_checked";
     private static final String HOME = "wildscapes:cauldron_home";
-    private static final Identifier DRINKING_SPEED = Identifier.withDefaultNamespace("drinking");
+    private static final ResourceLocation DRINKING_SPEED = ResourceLocation.withDefaultNamespace("drinking");
 
     private WitchGoals() {}
 
@@ -40,9 +40,9 @@ public final class WitchGoals {
             addGoals(witch);
             CompoundTag data = ((WildscapesEntityData) witch).wildscapes$data();
             if (data.contains(HOME)) {
-                witch.setHomeTo(BlockPos.of(data.getLongOr(HOME, 0)), 12);
+                witch.restrictTo(BlockPos.of(data.getLong(HOME)), 12);
             }
-        } else if (entity instanceof ThrownSplashPotion potion
+        } else if (entity instanceof ThrownPotion potion
                 && potion.getOwner() instanceof Witch witch
                 && witch.getTarget() instanceof Player player
                 && player.getHealth() <= player.getMaxHealth() * 0.4F) {
@@ -63,19 +63,19 @@ public final class WitchGoals {
         }
 
         CompoundTag data = ((WildscapesEntityData) witch).wildscapes$data();
-        if (!data.getBooleanOr(CHECKED, false)) {
+        if (!data.getBoolean(CHECKED)) {
             findCauldron(witch);
             data.putBoolean(CHECKED, true);
         }
         if (data.contains(HOME) && witch.tickCount % 100 == 0) {
-            BlockPos home = BlockPos.of(data.getLongOr(HOME, 0));
+            BlockPos home = BlockPos.of(data.getLong(HOME));
             if (!isCauldron(witch, home)) {
-                witch.clearHome();
+                witch.restrictTo(BlockPos.ZERO, -1);
                 data.remove(HOME);
             }
         }
 
-        if (witch.isDrinkingPotion() || witch.hasEffect(MobEffects.RESISTANCE)
+        if (witch.isDrinkingPotion() || witch.hasEffect(MobEffects.DAMAGE_RESISTANCE)
                 || !(witch.getTarget() instanceof Player player)
                 || !witch.getSensing().hasLineOfSight(player)
                 || witch.distanceToSqr(player) < 36.0D
@@ -107,14 +107,14 @@ public final class WitchGoals {
         witch.goalSelector.addGoal(1, new MoveTowardsRestrictionGoal(witch, 1.0D));
         witch.goalSelector.addGoal(2, new WitchCombatGoal(witch));
         witch.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witch, Raider.class, 10, true, false,
-                (target, server) -> target != witch && target.getType() != EntityType.WITCH
+                target -> target != witch && target.getType() != EntityType.WITCH
                         && target.getHealth() < target.getMaxHealth()));
     }
 
     private static void findCauldron(Witch witch) {
         BlockPos.findClosestMatch(witch.blockPosition(), 8, 4, pos -> isCauldron(witch, pos))
                 .ifPresent(pos -> {
-                    witch.setHomeTo(pos, 12);
+                    witch.restrictTo(pos, 12);
                     ((WildscapesEntityData) witch).wildscapes$data().putLong(HOME, pos.asLong());
                 });
     }

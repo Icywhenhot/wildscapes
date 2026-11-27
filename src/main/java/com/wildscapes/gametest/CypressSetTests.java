@@ -9,8 +9,8 @@ import com.wildscapes.item.WildscapesItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +21,7 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
-import net.minecraft.world.level.block.entity.ShelfBlockEntity;
+import com.wildscapes.block.entity.CypressShelfBlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
@@ -45,7 +45,7 @@ public final class CypressSetTests {
         var input = CraftingInput.of(3, 2, List.of(new ItemStack(Items.POTATO),
                 new ItemStack(WildscapesItems.FROG_LEGS), new ItemStack(Items.BOWL),
                 new ItemStack(WildscapesBlocks.LUMINOUS_MUSHROOM), ItemStack.EMPTY, new ItemStack(Items.CARROT)));
-        var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
+        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
         helper.assertTrue(recipe.isPresent(), "frog leg stew recipe missing");
         var stew = recipe.get().value().assemble(input, helper.getLevel().registryAccess());
         helper.assertTrue(stew.is(WildscapesItems.FROG_LEG_STEW), "wrong stew recipe result");
@@ -53,12 +53,12 @@ public final class CypressSetTests {
         player.getFoodData().setFoodLevel(10);
         var bowl = stew.finishUsingItem(level, player);
         helper.assertTrue(bowl.is(Items.BOWL), "stew did not return a bowl");
-        var effect = player.getEffect(MobEffects.JUMP_BOOST);
+        var effect = player.getEffect(MobEffects.JUMP);
         helper.assertTrue(effect != null && effect.getAmplifier() == 1 && effect.getDuration() == 400,
                 "stew did not give jump boost ii for 20 seconds");
         var legs = new SingleRecipeInput(new ItemStack(WildscapesItems.FROG_LEGS));
         for (var type : List.of(RecipeType.SMELTING, RecipeType.SMOKING, RecipeType.CAMPFIRE_COOKING)) {
-            helper.assertTrue(level.recipeAccess().getRecipeFor(type, legs, level).isEmpty(),
+            helper.assertTrue(level.getRecipeManager().getRecipeFor(type, legs, level).isEmpty(),
                     "frog legs still cook in " + type);
         }
     }
@@ -68,32 +68,32 @@ public final class CypressSetTests {
         BlockPos hanging = new BlockPos(3, 2, 1);
         helper.setBlock(sign, WildscapesBlocks.CYPRESS_SIGN);
         helper.setBlock(hanging, WildscapesBlocks.CYPRESS_HANGING_SIGN);
-        helper.assertTrue(helper.getBlockEntity(sign, SignBlockEntity.class) != null, "cypress sign has no sign entity");
-        helper.assertTrue(helper.getBlockEntity(hanging, HangingSignBlockEntity.class) != null,
+        helper.assertTrue(helper.getBlockEntity(sign) instanceof SignBlockEntity, "cypress sign has no sign entity");
+        helper.assertTrue(helper.getBlockEntity(hanging) instanceof HangingSignBlockEntity,
                 "cypress hanging sign has no hanging sign entity");
     }
 
     private static void shelfActsLikeAWoodenShelf(GameTestHelper helper) {
         BlockPos shelf = new BlockPos(2, 2, 1);
         helper.setBlock(shelf, WildscapesBlocks.CYPRESS_SHELF);
-        helper.assertTrue(helper.getBlockEntity(shelf, ShelfBlockEntity.class) != null, "cypress shelf has no shelf entity");
+        helper.assertTrue(helper.getBlockEntity(shelf) instanceof CypressShelfBlockEntity, "cypress shelf has no shelf entity");
         BlockState state = WildscapesBlocks.CYPRESS_SHELF.defaultBlockState();
-        helper.assertTrue(state.is(BlockTags.WOODEN_SHELVES) && state.is(BlockTags.MINEABLE_WITH_AXE),
+        helper.assertTrue(state.is(WildscapesBlocks.WOODEN_SHELVES) && state.is(BlockTags.MINEABLE_WITH_AXE),
                 "cypress shelf missing from wooden shelves or axe tags");
         var level = helper.getLevel();
         var log = new ItemStack(WildscapesBlocks.STRIPPED_CYPRESS_LOG);
         var input = CraftingInput.of(3, 3, List.of(log, log, log, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, log, log, log));
-        var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
+        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
         helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, helper.getLevel().registryAccess())
                 .is(WildscapesBlocks.CYPRESS_SHELF.asItem()), "cypress shelf recipe missing");
     }
 
     private static void boatsUseTheCypressType(GameTestHelper helper) {
         var level = helper.getLevel();
-        Boat boat = CypressBoat.BOAT.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        Boat boat = CypressBoat.BOAT.create(level);
         helper.assertTrue(boat != null && boat.getType() == CypressBoat.BOAT, "wrong cypress boat entity type");
         var input = CraftingInput.of(2, 1, List.of(new ItemStack(Items.CHEST), new ItemStack(WildscapesItems.CYPRESS_BOAT)));
-        var recipe = level.recipeAccess().getRecipeFor(RecipeType.CRAFTING, input, level);
+        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level);
         helper.assertTrue(recipe.isPresent() && recipe.get().value().assemble(input, helper.getLevel().registryAccess())
                 .is(WildscapesItems.CYPRESS_CHEST_BOAT), "chest boat recipe missing");
     }
@@ -119,7 +119,7 @@ public final class CypressSetTests {
                     item + " is not compostable");
         }
         var advancement = helper.getLevel().getServer().getAdvancements()
-                .get(Identifier.fromNamespaceAndPath("wildscapes", "recipes/building_blocks/cypress_planks"));
+                .get(ResourceLocation.fromNamespaceAndPath("wildscapes", "recipes/building_blocks/cypress_planks"));
         helper.assertTrue(advancement != null, "cypress planks recipe has no unlock advancement");
     }
 }

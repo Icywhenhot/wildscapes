@@ -14,7 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffects;
@@ -29,8 +29,8 @@ import net.minecraft.world.entity.player.Player;
 public final class SoulHarvest {
     private SoulHarvest() {}
 
-    private static final Identifier HEALTH_BOOST =
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
+    private static final ResourceLocation HEALTH_BOOST =
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
 
     public static final AttachmentType<Boolean> EMPOWERED = AttachmentRegistry.<Boolean>builder()
             .persistent(Codec.BOOL)

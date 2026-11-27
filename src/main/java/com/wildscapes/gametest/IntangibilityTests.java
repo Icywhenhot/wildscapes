@@ -32,7 +32,7 @@ public final class IntangibilityTests {
         helper.assertTrue(zombie.getTarget() == null, "zombie retained intangible target");
         zombie.setTarget(player);
         helper.assertTrue(zombie.getTarget() == null, "zombie reacquired intangible target");
-        helper.assertTrue(!TargetingConditions.forNonCombat().test(helper.getLevel(), zombie, player), "passive detection found player");
+        helper.assertTrue(!TargetingConditions.forNonCombat().test(zombie, player), "passive detection found player");
         helper.assertTrue(!zombie.hasLineOfSight(player), "mob could see intangible player");
         var warden = helper.spawn(EntityType.WARDEN, new BlockPos(8, 3, 5));
         helper.assertTrue(!warden.canTargetEntity(player), "warden detected intangible player");

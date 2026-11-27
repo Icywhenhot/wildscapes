@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "dyed_mud_brick_walls",
+  "ingredients": [
+    {
+      "tag": "wildscapes:mud_brick_walls"
+    },
+    {
+      "item": "dye_depot:aqua_dye"
+    }
+  ],
+  "result": {
+    "id": "wildscapes:aqua_mud_brick_wall",
+    "count": 1
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "dye_depot"
+      ]
+    }
+  ]
+}

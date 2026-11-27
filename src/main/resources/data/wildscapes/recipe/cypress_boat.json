@@ -3,7 +3,9 @@
   "category": "misc",
   "group": "boat",
   "key": {
-    "#": "wildscapes:cypress_planks"
+    "#": {
+      "item": "wildscapes:cypress_planks"
+    }
   },
   "pattern": [
     "# #",

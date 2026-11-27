@@ -11,7 +11,7 @@ import com.wildscapes.worldgen.WildscapesFeatures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
@@ -223,7 +223,7 @@ public class TreePlacementTests {
                 level.getRandom(),
                 origin,
                 new TemplateTreeConfiguration(
-                        java.util.List.of(Identifier.parse(template)), ground, yOffset,
+                        java.util.List.of(ResourceLocation.parse(template)), ground, yOffset,
                         maxWaterDepth)));
     }
 

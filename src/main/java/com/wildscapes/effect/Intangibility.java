@@ -48,8 +48,8 @@ public final class Intangibility {
                 && observer.getType().builtInRegistryHolder().is(ConventionalEntityTypeTags.BOSSES)) {
             return false;
         }
-        CompoundTag seen = ((WildscapesEntityData) observer).wildscapes$data().getCompoundOrEmpty(REVEALED_KEY);
-        return seen.getLongOr(player.getStringUUID(), Long.MIN_VALUE) < observer.level().getGameTime();
+        CompoundTag seen = ((WildscapesEntityData) observer).wildscapes$data().getCompound(REVEALED_KEY);
+        return (seen.contains(player.getStringUUID()) ? seen.getLong(player.getStringUUID()) : Long.MIN_VALUE) < observer.level().getGameTime();
     }
 
     private static void reveal(Entity victim, Player player) {
@@ -59,9 +59,9 @@ public final class Intangibility {
         }
         long now = victim.level().getGameTime();
         CompoundTag data = ((WildscapesEntityData) victim).wildscapes$data();
-        CompoundTag seen = data.getCompoundOrEmpty(REVEALED_KEY);
-        for (String key : seen.keySet().toArray(String[]::new)) {
-            if (seen.getLongOr(key, 0L) < now) {
+        CompoundTag seen = data.getCompound(REVEALED_KEY);
+        for (String key : seen.getAllKeys().toArray(String[]::new)) {
+            if (seen.getLong(key) < now) {
                 seen.remove(key);
             }
         }
@@ -100,7 +100,7 @@ public final class Intangibility {
         boolean active = isActive(player);
         if (active && !player.level().isClientSide() && !player.getAbilities().instabuild) {
             var data = ((WildscapesEntityData) player).wildscapes$data();
-            int ticks = data.getIntOr("wildscapes:necklace_ticks", 0) + 1;
+            int ticks = data.getInt("wildscapes:necklace_ticks") + 1;
             if (ticks >= WildscapesConfig.get(WildscapesConfig.NECKLACE_DRAIN_TICKS)) {
                 EquipmentSlot slot = canUse(player.getMainHandItem()) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
                 player.getItemBySlot(slot).hurtAndBreak(1, player, slot);
@@ -111,7 +111,7 @@ public final class Intangibility {
         }
         if (player.level() instanceof ServerLevel level) {
             var data = ((WildscapesEntityData) player).wildscapes$data();
-            boolean wasActive = data.getBooleanOr(ACTIVE_KEY, false);
+            boolean wasActive = data.getBoolean(ACTIVE_KEY);
             if (active) {
                 if (!player.isInvisible()) {
                     player.setInvisible(true);
@@ -126,7 +126,7 @@ public final class Intangibility {
                     level.sendParticles(ParticleTypes.LARGE_SMOKE, player.getX(), player.getY() + 0.6,
                             player.getZ(), 1, 0.2, 0.35, 0.2, 0.01);
                 }
-            } else if (data.getBooleanOr(INVISIBLE_KEY, false)) {
+            } else if (data.getBoolean(INVISIBLE_KEY)) {
                 if (!player.hasEffect(MobEffects.INVISIBILITY) && !player.isSpectator()) {
                     player.setInvisible(false);
                 }

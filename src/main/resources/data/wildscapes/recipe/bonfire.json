@@ -3,9 +3,15 @@
   "category": "misc",
   "group": "bonfire",
   "key": {
-    "N": "minecraft:iron_nugget",
-    "C": "minecraft:coal",
-    "I": "minecraft:iron_ingot"
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "C": {
+      "item": "minecraft:coal"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
   },
   "pattern": [
     "N N",

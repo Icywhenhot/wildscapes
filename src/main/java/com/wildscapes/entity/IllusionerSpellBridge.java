@@ -1,7 +1,7 @@
 package com.wildscapes.entity;
 
-import net.minecraft.world.entity.monster.illager.Illusioner;
-import net.minecraft.world.entity.monster.illager.SpellcasterIllager.IllagerSpell;
+import net.minecraft.world.entity.monster.Illusioner;
+import net.minecraft.world.entity.monster.SpellcasterIllager.IllagerSpell;
 
 final class IllusionerSpellBridge {
     private IllusionerSpellBridge() {}

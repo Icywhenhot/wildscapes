@@ -10,18 +10,18 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.monster.illager.Pillager;
-import net.minecraft.world.entity.monster.illager.Vindicator;
+import net.minecraft.world.entity.monster.Pillager;
+import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.level.biome.Biome;
 
 public final class SwampVariants {
     private SwampVariants() {}
 
     public static final TagKey<Biome> SWAMP_BIOMES = TagKey.create(Registries.BIOME,
-            Identifier.fromNamespaceAndPath(Wildscapes.MODID, "swamp_variant_biomes"));
+            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "swamp_variant_biomes"));
 
     private static final byte UNDECIDED = 0;
     private static final byte SWAMP = 1;

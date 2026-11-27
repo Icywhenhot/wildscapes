@@ -3,7 +3,9 @@
   "category": "building",
   "group": "mud_brick_stairs",
   "key": {
-    "#": "wildscapes:light_gray_mud_bricks"
+    "#": {
+      "item": "wildscapes:light_gray_mud_bricks"
+    }
   },
   "pattern": [
     "#  ",

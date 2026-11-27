@@ -9,7 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.chunk.ChunkGeneratorStructureState;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
@@ -17,9 +17,9 @@ import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
 
 public class KeepAwaySpreadPlacement extends RandomSpreadStructurePlacement {
-    public record KeepAway(Identifier set, int chunks) {
+    public record KeepAway(ResourceLocation set, int chunks) {
         public static final Codec<KeepAway> CODEC = RecordCodecBuilder.create(i -> i.group(
-                Identifier.CODEC.fieldOf("set").forGetter(KeepAway::set),
+                ResourceLocation.CODEC.fieldOf("set").forGetter(KeepAway::set),
                 Codec.intRange(1, 16).fieldOf("chunk_count").forGetter(KeepAway::chunks)
         ).apply(i, KeepAway::new));
     }

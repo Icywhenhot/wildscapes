@@ -20,7 +20,6 @@ import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
 import net.minecraft.world.level.levelgen.structure.StructureType;
@@ -127,7 +126,7 @@ public class SwampVillageStructure extends Structure {
                     start,
                     false,
                     Optional.empty(),
-                    new JigsawStructure.MaxDistance(maxDistanceFromCenter),
+                    maxDistanceFromCenter,
                     aliases,
                     DimensionPadding.ZERO,
                     liquids);

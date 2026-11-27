@@ -4,15 +4,15 @@ import com.wildscapes.Wildscapes;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 
 public final class SoulHarvestBossBar {
-    private static final Identifier FRAME = Wildscapes.id("textures/gui/soul_harvest.png");
-    private static final Identifier FILL = Wildscapes.id("textures/gui/soul_harvest_fill.png");
+    private static final ResourceLocation FRAME = Wildscapes.id("textures/gui/soul_harvest.png");
+    private static final ResourceLocation FILL = Wildscapes.id("textures/gui/soul_harvest_fill.png");
     private static final String NAME = "event.wildscapes.soul_harvest";
 
     private SoulHarvestBossBar() {}
@@ -25,10 +25,12 @@ public final class SoulHarvestBossBar {
         int x = gui.guiWidth() / 2 - 105;
         y -= 9;
         int width = Mth.floor(Mth.clamp(event.getProgress(), 0.0F, 1.0F) * 187);
-        gui.blit(RenderPipelines.GUI_TEXTURED, FRAME, x, y, 0, 0, 211, 36, 211, 36);
+        RenderSystem.enableBlend();
+        gui.blit(FRAME, x, y, 0, 0, 211, 36, 211, 36);
         if (width > 0) {
-            gui.blit(RenderPipelines.GUI_TEXTURED, FILL, x + 12, y + 17, 0, 0, width, 5, 187, 5);
+            gui.blit(FILL, x + 12, y + 17, 0, 0, width, 5, 187, 5);
         }
+        RenderSystem.disableBlend();
         if (((TranslatableContents) event.getName().getContents()).getKey().equals(NAME)) {
             return 40;
         }

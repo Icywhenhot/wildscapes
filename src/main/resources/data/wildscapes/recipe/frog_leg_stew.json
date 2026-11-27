@@ -1,12 +1,22 @@
 {
   "type": "minecraft:crafting_shapeless",
-  "category": "misc",
+  "category": "food",
   "ingredients": [
-    "wildscapes:luminous_mushroom",
-    "wildscapes:frog_legs",
-    "minecraft:carrot",
-    "minecraft:potato",
-    "minecraft:bowl"
+    {
+      "item": "wildscapes:luminous_mushroom"
+    },
+    {
+      "item": "wildscapes:frog_legs"
+    },
+    {
+      "item": "minecraft:carrot"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:bowl"
+    }
   ],
   "result": {
     "id": "wildscapes:frog_leg_stew",

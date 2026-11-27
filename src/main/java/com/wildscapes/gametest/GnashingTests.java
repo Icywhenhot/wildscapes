@@ -7,7 +7,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -46,7 +46,7 @@ public final class GnashingTests {
                     .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
                     .create(path.startsWith("gameplay/") ? LootContextParamSets.VAULT : LootContextParamSets.CHEST);
             ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
-                    Identifier.fromNamespaceAndPath("wildscapes", path));
+                    ResourceLocation.fromNamespaceAndPath("wildscapes", path));
             LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(key);
             int found = 0;
             int splashes = 0;

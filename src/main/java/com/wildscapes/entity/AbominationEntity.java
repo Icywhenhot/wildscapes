@@ -2,8 +2,6 @@ package com.wildscapes.entity;
 
 import com.wildscapes.WildscapesConfig;
 
-import com.wildscapes.Wildscapes;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +13,9 @@ import com.wildscapes.sound.WildscapesSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializer;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricTrackedDataRegistry;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -34,7 +28,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -59,12 +53,12 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animatable.manager.AnimatableManager;
+import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.state.AnimationTest;
-import software.bernie.geckolib.animation.object.PlayState;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.animation.keyframehandler.AutoPlayingSoundKeyframeHandler;
+import software.bernie.geckolib.animation.keyframe.event.builtin.AutoPlayingSoundKeyframeHandler;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class AbominationEntity extends Monster implements GeoEntity {
@@ -93,14 +87,8 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private static final EntityDataAccessor<Integer> TONGUE_TICKS =
             SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataSerializer<CompoundTag> PATH_SERIALIZER =
-            EntityDataSerializer.forValueType(ByteBufCodecs.COMPOUND_TAG);
     private static final EntityDataAccessor<CompoundTag> TONGUE_PATH =
-            SynchedEntityData.defineId(AbominationEntity.class, PATH_SERIALIZER);
-
-    public static void registerData() {
-        FabricTrackedDataRegistry.register(Wildscapes.id("tongue_path"), PATH_SERIALIZER);
-    }
+            SynchedEntityData.defineId(AbominationEntity.class, EntityDataSerializers.COMPOUND_TAG);
 
     private static final int PRE_JUMP_LAUNCH = 17;
     private static final float PREJUMP_TURN = 18.0F;
@@ -130,9 +118,9 @@ public class AbominationEntity extends Monster implements GeoEntity {
     @SuppressWarnings("unchecked")
     private static Holder<MobEffect>[] residueEffects() {
         return new Holder[] {
-                MobEffects.POISON, MobEffects.SLOWNESS, MobEffects.WEAKNESS,
-                MobEffects.NAUSEA, MobEffects.BLINDNESS, MobEffects.HUNGER,
-                MobEffects.MINING_FATIGUE, MobEffects.WITHER
+                MobEffects.POISON, MobEffects.MOVEMENT_SLOWDOWN, MobEffects.WEAKNESS,
+                MobEffects.CONFUSION, MobEffects.BLINDNESS, MobEffects.HUNGER,
+                MobEffects.DIG_SLOWDOWN, MobEffects.WITHER
         };
     }
 
@@ -208,7 +196,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
     }
 
     public List<Vec3> tonguePath() {
-        int[] v = this.entityData.get(TONGUE_PATH).getIntArray("p").orElseGet(() -> new int[0]);
+        int[] v = this.entityData.get(TONGUE_PATH).getIntArray("p");
         if (v.length < 6) {
             return List.of();
         }
@@ -257,23 +245,23 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            EntitySpawnReason spawnType, @Nullable SpawnGroupData groupData) {
-        this.setHomeTo(this.blockPosition(), ANCHOR_RADIUS);
+            MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+        this.restrictTo(this.blockPosition(), ANCHOR_RADIUS);
         return super.finalizeSpawn(level, difficulty, spawnType, groupData);
     }
 
     @Override
-    public void addAdditionalSaveData(ValueOutput tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        if (this.hasHome()) {
-            tag.store("Anchor", BlockPos.CODEC, this.getHomePosition());
+        if (this.hasRestriction()) {
+            tag.put("Anchor", NbtUtils.writeBlockPos(this.getRestrictCenter()));
         }
     }
 
     @Override
-    public void readAdditionalSaveData(ValueInput tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        tag.read("Anchor", BlockPos.CODEC).ifPresent(anchor -> this.setHomeTo(anchor, ANCHOR_RADIUS));
+        NbtUtils.readBlockPos(tag, "Anchor").ifPresent(anchor -> this.restrictTo(anchor, ANCHOR_RADIUS));
     }
 
     @Override
@@ -282,18 +270,18 @@ public class AbominationEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    public boolean causeFallDamage(double fallDistance, float multiplier, DamageSource source) {
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
         return false;
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
-        if (this.level().isClientSide()) {
+        if (this.level().isClientSide) {
             return;
         }
 
-        boolean wet = this.isInWater();
+        boolean wet = this.isInWaterOrBubble();
         if (wet && this.getJumpState() != ST_NONE) {
             endLeap();
         }
@@ -343,7 +331,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         if (dist > TONGUE_RANGE) {
             return false;
         }
-        if (target.isInWater() || dist > TONGUE_FAR || this.isInWater()) {
+        if (target.isInWaterOrBubble() || dist > TONGUE_FAR || this.isInWaterOrBubble()) {
             return true;
         }
         return baitable(target);
@@ -442,8 +430,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
             return;
         }
         this.pounceLanded = true;
-        target.hurtServer((ServerLevel) level(), this.damageSources().mobAttack(this),
-                WildscapesConfig.get(WildscapesConfig.POUNCE_DAMAGE).floatValue());
+        target.hurt(this.damageSources().mobAttack(this), WildscapesConfig.get(WildscapesConfig.POUNCE_DAMAGE).floatValue());
         Vec3 push = new Vec3(this.jumpVX, 0.0D, this.jumpVZ).normalize().scale(0.6D);
         target.push(push.x, 0.35D, push.z);
         target.hurtMarked = true;
@@ -513,7 +500,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
     private void cloud(double x, double y, double z, float radius, int duration, Holder<MobEffect> effect) {
         ResidueCloud cloud = new ResidueCloud(this.level(), x, y, z);
         cloud.setOwner(this);
-        cloud.setCustomParticle(WildscapesParticles.RESIDUE_WISP);
+        cloud.setParticle(WildscapesParticles.RESIDUE_WISP);
         cloud.setRadius(radius);
         cloud.setDuration(duration);
         cloud.setWaitTime(10);
@@ -593,15 +580,14 @@ public class AbominationEntity extends Monster implements GeoEntity {
         Vec3 delta = want.subtract(target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D));
         target.setDeltaMovement(delta.scale(0.8D));
         target.hurtMarked = true;
-        target.needsSync = true;
+        target.hasImpulse = true;
         target.fallDistance = 0.0F;
 
         if (ticks == TONGUE_GRAB) {
-            target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, TONGUE_END - TONGUE_GRAB, 6,
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, TONGUE_END - TONGUE_GRAB, 6,
                     false, false, false));
         } else if (ticks == TONGUE_GRAB + 1 || ticks == TONGUE_HOLD_END - 1) {
-            target.hurtServer((ServerLevel) level(), this.damageSources().mobAttack(this),
-                    WildscapesConfig.get(WildscapesConfig.TONGUE_DAMAGE).floatValue());
+            target.hurt(this.damageSources().mobAttack(this), WildscapesConfig.get(WildscapesConfig.TONGUE_DAMAGE).floatValue());
         }
     }
 
@@ -666,18 +652,18 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<AbominationEntity>("movement", 5, this::movementController)
+        controllers.add(new AnimationController<>(this, "movement", 5, this::movementController)
+                .setAnimationSpeedHandler(a -> a.getJumpState() != ST_NONE ? (double) a.getJumpSpeed() : 1.0D)
                 .setSoundKeyframeHandler(new AutoPlayingSoundKeyframeHandler<>()));
 
-        controllers.add(new AnimationController<AbominationEntity>("special", 0, state -> PlayState.STOP)
+        controllers.add(new AnimationController<AbominationEntity>(this, "special", 0, state -> PlayState.STOP)
                 .triggerableAnim("croak", CROAK)
                 .triggerableAnim("entertainment", ENTERTAINMENT)
                 .setSoundKeyframeHandler(new AutoPlayingSoundKeyframeHandler<>()));
     }
 
-    private PlayState movementController(AnimationTest<AbominationEntity> state) {
-        state.setControllerSpeed(this.getJumpState() != ST_NONE ? this.getJumpSpeed() : 1.0F);
-        if (this.isInWater()) {
+    private PlayState movementController(AnimationState<AbominationEntity> state) {
+        if (this.isInWaterOrBubble()) {
             state.setAnimation(SWIM);
             return PlayState.CONTINUE;
         }

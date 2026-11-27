@@ -8,8 +8,7 @@ import com.wildscapes.sound.WildscapesSounds;
 
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -178,7 +177,7 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     @Override
-    public void addAdditionalSaveData(ValueOutput tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         tag.putBoolean("anchored", isAnchored());
         tag.putFloat("tether_length", getTetherLength());
         tag.putFloat("max_range", entityData.get(MAX_RANGE));
@@ -188,13 +187,13 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     @Override
-    public void readAdditionalSaveData(ValueInput tag) {
-        entityData.set(ANCHORED, tag.getBooleanOr("anchored", false));
-        entityData.set(TETHER_LENGTH, tag.getFloatOr("tether_length", 0));
-        entityData.set(MAX_RANGE, tag.getFloatOr("max_range", 0));
-        entityData.set(SLIME_SNARE, tag.getBooleanOr("slime_snare", false));
-        entityData.set(ATTACK, tag.getBooleanOr("attack", false));
-        entityData.set(TARGET, tag.getIntOr("target", 0));
+    public void readAdditionalSaveData(CompoundTag tag) {
+        entityData.set(ANCHORED, tag.getBoolean("anchored"));
+        entityData.set(TETHER_LENGTH, tag.getFloat("tether_length"));
+        entityData.set(MAX_RANGE, tag.getFloat("max_range"));
+        entityData.set(SLIME_SNARE, tag.getBoolean("slime_snare"));
+        entityData.set(ATTACK, tag.getBoolean("attack"));
+        entityData.set(TARGET, tag.getInt("target"));
     }
 
     @Override
