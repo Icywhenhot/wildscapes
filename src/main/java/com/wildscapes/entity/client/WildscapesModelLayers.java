@@ -31,6 +31,6 @@ public final class WildscapesModelLayers {
     }
 
     private static ModelLayerLocation create(String name, String layer) {
-        return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, name), layer);
+        return new ModelLayerLocation(new ResourceLocation(Wildscapes.MODID, name), layer);
     }
 }

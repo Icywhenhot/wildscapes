@@ -3,8 +3,10 @@ package com.wildscapes.entity.client;
 import java.util.Map;
 import com.mojang.datafixers.util.Pair;
 import com.wildscapes.Wildscapes;
+import net.minecraft.client.model.ListModel;
 import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.vehicle.Boat;
 
 public class CypressBoatRenderer extends BoatRenderer {

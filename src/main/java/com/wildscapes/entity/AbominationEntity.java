@@ -46,19 +46,18 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.animation.PlayState;
-import software.bernie.geckolib.animation.RawAnimation;
-import software.bernie.geckolib.animation.keyframe.event.builtin.AutoPlayingSoundKeyframeHandler;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class AbominationEntity extends Monster implements GeoEntity {
@@ -113,11 +112,10 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     public static final int ANCHOR_RADIUS = 10;
 
-    private static final Holder<MobEffect>[] RESIDUE_EFFECTS = residueEffects();
+    private static final MobEffect[] RESIDUE_EFFECTS = residueEffects();
 
-    @SuppressWarnings("unchecked")
-    private static Holder<MobEffect>[] residueEffects() {
-        return new Holder[] {
+    private static MobEffect[] residueEffects() {
+        return new MobEffect[] {
                 MobEffects.POISON, MobEffects.MOVEMENT_SLOWDOWN, MobEffects.WEAKNESS,
                 MobEffects.CONFUSION, MobEffects.BLINDNESS, MobEffects.HUNGER,
                 MobEffects.DIG_SLOWDOWN, MobEffects.WITHER
@@ -137,7 +135,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     public AbominationEntity(EntityType<? extends Monster> type, Level level) {
         super(type, level);
-        this.setPathfindingMalus(PathType.WATER, 16.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, 16.0F);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -150,13 +148,13 @@ public class AbominationEntity extends Monster implements GeoEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(JUMP_STATE, 0);
-        builder.define(JUMP_SPEED, 1.0F);
-        builder.define(TONGUE_TARGET, -1);
-        builder.define(TONGUE_TICKS, -1);
-        builder.define(TONGUE_PATH, new CompoundTag());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(JUMP_STATE, 0);
+        entityData.define(JUMP_SPEED, 1.0F);
+        entityData.define(TONGUE_TARGET, -1);
+        entityData.define(TONGUE_TICKS, -1);
+        entityData.define(TONGUE_PATH, new CompoundTag());
     }
 
     public int getTongueTargetId() {
@@ -245,9 +243,9 @@ public class AbominationEntity extends Monster implements GeoEntity {
 
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
-            MobSpawnType spawnType, @Nullable SpawnGroupData groupData) {
+            MobSpawnType spawnType, @Nullable SpawnGroupData groupData, @Nullable CompoundTag tag) {
         this.restrictTo(this.blockPosition(), ANCHOR_RADIUS);
-        return super.finalizeSpawn(level, difficulty, spawnType, groupData);
+        return super.finalizeSpawn(level, difficulty, spawnType, groupData, tag);
     }
 
     @Override
@@ -261,7 +259,9 @@ public class AbominationEntity extends Monster implements GeoEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        NbtUtils.readBlockPos(tag, "Anchor").ifPresent(anchor -> this.restrictTo(anchor, ANCHOR_RADIUS));
+        if (tag.contains("Anchor")) {
+            this.restrictTo(NbtUtils.readBlockPos(tag.getCompound("Anchor")), ANCHOR_RADIUS);
+        }
     }
 
     @Override
@@ -462,7 +462,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
         this.setDeltaMovement(this.jumpVX, this.jumpVY0, this.jumpVZ);
 
         if (this.level() instanceof ServerLevel server) {
-            server.sendParticles(WildscapesParticles.RESIDUE_SWIRL, this.getX(), this.getY() + 0.4D, this.getZ(),
+            server.sendParticles(WildscapesParticles.RESIDUE_SWIRL.get(), this.getX(), this.getY() + 0.4D, this.getZ(),
                     24, 0.7D, 0.3D, 0.7D, 0.06D);
         }
     }
@@ -481,7 +481,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
     }
 
     private void spawnResidue() {
-        Holder<MobEffect> effect = RESIDUE_EFFECTS[this.random.nextInt(RESIDUE_EFFECTS.length)];
+        MobEffect effect = RESIDUE_EFFECTS[this.random.nextInt(RESIDUE_EFFECTS.length)];
         for (Vec3 sample : this.arc) {
             BlockPos ground = groundUnder(sample);
             if (ground != null) {
@@ -491,16 +491,16 @@ public class AbominationEntity extends Monster implements GeoEntity {
         cloud(this.getX(), this.getY(), this.getZ(), 6.0F, 200, effect);
 
         if (this.level() instanceof ServerLevel server) {
-            server.sendParticles(WildscapesParticles.RESIDUE_SPLAT, this.getX(), this.getY() + 0.15D, this.getZ(),
+            server.sendParticles(WildscapesParticles.RESIDUE_SPLAT.get(), this.getX(), this.getY() + 0.15D, this.getZ(),
                     30, 1.4D, 0.1D, 1.4D, 0.12D);
         }
         this.arc.clear();
     }
 
-    private void cloud(double x, double y, double z, float radius, int duration, Holder<MobEffect> effect) {
+    private void cloud(double x, double y, double z, float radius, int duration, MobEffect effect) {
         ResidueCloud cloud = new ResidueCloud(this.level(), x, y, z);
         cloud.setOwner(this);
-        cloud.setParticle(WildscapesParticles.RESIDUE_WISP);
+        cloud.setParticle(WildscapesParticles.RESIDUE_WISP.get());
         cloud.setRadius(radius);
         cloud.setDuration(duration);
         cloud.setWaitTime(10);
@@ -513,8 +513,7 @@ public class AbominationEntity extends Monster implements GeoEntity {
     @Nullable
     private BlockPos groundUnder(Vec3 from) {
         Vec3 to = from.subtract(0.0D, 6.0D, 0.0D);
-        HitResult hit = this.level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
-                CollisionContext.empty()));
+        HitResult hit = this.level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
         return hit.getType() == HitResult.Type.MISS ? null : BlockPos.containing(hit.getLocation()).below();
     }
 
@@ -637,32 +636,32 @@ public class AbominationEntity extends Monster implements GeoEntity {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return WildscapesSounds.ABOMINATION_AMBIENT;
+        return WildscapesSounds.ABOMINATION_AMBIENT.get();
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return WildscapesSounds.ABOMINATION_HURT;
+        return WildscapesSounds.ABOMINATION_HURT.get();
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return WildscapesSounds.ABOMINATION_DEATH;
+        return WildscapesSounds.ABOMINATION_DEATH.get();
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "movement", 5, this::movementController)
-                .setAnimationSpeedHandler(a -> a.getJumpState() != ST_NONE ? (double) a.getJumpSpeed() : 1.0D)
-                .setSoundKeyframeHandler(new AutoPlayingSoundKeyframeHandler<>()));
+                .setSoundKeyframeHandler(this::soundKeyframe));
 
         controllers.add(new AnimationController<AbominationEntity>(this, "special", 0, state -> PlayState.STOP)
                 .triggerableAnim("croak", CROAK)
                 .triggerableAnim("entertainment", ENTERTAINMENT)
-                .setSoundKeyframeHandler(new AutoPlayingSoundKeyframeHandler<>()));
+                .setSoundKeyframeHandler(this::soundKeyframe));
     }
 
     private PlayState movementController(AnimationState<AbominationEntity> state) {
+        state.getController().setAnimationSpeed(this.getJumpState() != ST_NONE ? this.getJumpSpeed() : 1.0D);
         if (this.isInWaterOrBubble()) {
             state.setAnimation(SWIM);
             return PlayState.CONTINUE;
@@ -687,5 +686,15 @@ public class AbominationEntity extends Monster implements GeoEntity {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
+    }
+
+    private void soundKeyframe(software.bernie.geckolib.core.keyframe.event.SoundKeyframeEvent<AbominationEntity> event) {
+        if (level().isClientSide) {
+            SoundEvent sound = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(
+                    new net.minecraft.resources.ResourceLocation(event.getKeyframeData().getSound()));
+            if (sound != null) {
+                level().playLocalSound(getX(), getY(), getZ(), sound, getSoundSource(), 1.0F, 1.0F, false);
+            }
+        }
     }
 }

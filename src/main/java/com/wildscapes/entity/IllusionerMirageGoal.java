@@ -76,7 +76,7 @@ final class IllusionerMirageGoal extends Goal {
     public void tick() {
         illusioner.getLookControl().setLookAt(ally, 30.0F, 30.0F);
         if (--warmup == 0) {
-            if (ally.addEffect(new MobEffectInstance(WildscapesEffects.MIRAGE, EFFECT_DURATION), illusioner)) {
+            if (ally.addEffect(new MobEffectInstance(WildscapesEffects.MIRAGE.get(), EFFECT_DURATION), illusioner)) {
                 rememberClone(ally);
             }
             illusioner.level().playSound(null, illusioner.getX(), illusioner.getY(), illusioner.getZ(),
@@ -92,17 +92,17 @@ final class IllusionerMirageGoal extends Goal {
                         && mob.getTarget() == target
                         && mob.distanceToSqr(illusioner) <= RANGE * RANGE
                         && illusioner.hasLineOfSight(mob)
-                        && !mob.hasEffect(WildscapesEffects.MIRAGE)
+                        && !mob.hasEffect(WildscapesEffects.MIRAGE.get())
                         && !wasCloned(mob));
         return nearby.stream().min((a, b) -> Double.compare(illusioner.distanceToSqr(a), illusioner.distanceToSqr(b))).orElse(null);
     }
 
     private boolean wasCloned(LivingEntity entity) {
-        return ((WildscapesEntityData) illusioner).wildscapes$data().getBoolean(clonedMobKey(entity.getUUID()));
+        return WildscapesEntityData.of(illusioner).getBoolean(clonedMobKey(entity.getUUID()));
     }
 
     private void rememberClone(LivingEntity entity) {
-        ((WildscapesEntityData) illusioner).wildscapes$data().putBoolean(clonedMobKey(entity.getUUID()), true);
+        WildscapesEntityData.of(illusioner).putBoolean(clonedMobKey(entity.getUUID()), true);
     }
 
     private static String clonedMobKey(UUID uuid) {

@@ -27,11 +27,11 @@ import org.joml.Quaternionf;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class AbominationRenderer extends GeoEntityRenderer<AbominationEntity> {
-    private static final ResourceLocation SEGMENT = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final ResourceLocation SEGMENT = new ResourceLocation(Wildscapes.MODID,
             "textures/entity/tongue_segment.png");
-    private static final ResourceLocation TIP = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final ResourceLocation TIP = new ResourceLocation(Wildscapes.MODID,
             "textures/entity/tongue_tip.png");
-    private static final ResourceLocation GRASP = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final ResourceLocation GRASP = new ResourceLocation(Wildscapes.MODID,
             "textures/entity/abomination_grasp.png");
     private static final double SEG = 0.5D;
 

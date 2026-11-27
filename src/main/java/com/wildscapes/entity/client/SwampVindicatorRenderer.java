@@ -16,13 +16,13 @@ import net.minecraft.world.entity.monster.Vindicator;
 
 public class SwampVindicatorRenderer extends IllagerRenderer<Vindicator> {
     private static final ResourceLocation DEFAULT =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/vindicator.png");
     private static final ResourceLocation SWAMP =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_swamp.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/vindicator_swamp.png");
     private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/vindicator_empowered.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/vindicator_empowered.png");
     private static final ResourceLocation VANILLA =
-            ResourceLocation.withDefaultNamespace("textures/entity/illager/vindicator.png");
+            new ResourceLocation("textures/entity/illager/vindicator.png");
 
     private final boolean vanilla;
 

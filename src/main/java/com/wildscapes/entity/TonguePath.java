@@ -11,6 +11,10 @@ import java.util.PriorityQueue;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -26,8 +30,12 @@ public final class TonguePath {
     private TonguePath() {}
 
     public static boolean clear(Level level, Vec3 from, Vec3 to) {
-        return level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
-                CollisionContext.empty())).getType() == HitResult.Type.MISS;
+        BlockHitResult hit = BlockGetter.traverseBlocks(from, to, level, (blocks, pos) -> {
+            BlockState state = blocks.getBlockState(pos);
+            VoxelShape shape = state.getCollisionShape(blocks, pos, CollisionContext.empty());
+            return blocks.clipWithInteractionOverride(from, to, pos, shape, state);
+        }, blocks -> null);
+        return hit == null;
     }
 
     @Nullable

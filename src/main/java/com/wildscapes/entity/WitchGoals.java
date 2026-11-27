@@ -1,18 +1,19 @@
 package com.wildscapes.entity;
 
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.server.level.ServerLevel;
 import java.util.List;
 
 import com.wildscapes.block.WildscapesBlocks;
 import com.wildscapes.effect.WildscapesPotions;
 
-import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
@@ -23,36 +24,38 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.AbstractCauldronBlock;
-import net.minecraft.server.level.ServerLevel;
 
 public final class WitchGoals {
     private static final String CHECKED = "wildscapes:cauldron_checked";
     private static final String HOME = "wildscapes:cauldron_home";
-    private static final ResourceLocation DRINKING_SPEED = ResourceLocation.withDefaultNamespace("drinking");
+    private static final java.util.UUID DRINKING_SPEED = java.util.UUID.fromString("5cd17e52-a79a-43d3-a529-90fde04b181e");
 
     private WitchGoals() {}
 
     public static void onJoinLevel(Entity entity, ServerLevel level) {
         if (entity instanceof Witch witch) {
             addGoals(witch);
-            CompoundTag data = ((WildscapesEntityData) witch).wildscapes$data();
+            CompoundTag data = WildscapesEntityData.of(witch);
             if (data.contains(HOME)) {
                 witch.restrictTo(BlockPos.of(data.getLong(HOME)), 12);
+            } else if (WildscapesEntityData.loadedFromDisk(witch)) {
+                data.putBoolean(CHECKED, true);
             }
         } else if (entity instanceof ThrownPotion potion
                 && potion.getOwner() instanceof Witch witch
                 && witch.getTarget() instanceof Player player
                 && player.getHealth() <= player.getMaxHealth() * 0.4F) {
-            potion.setItem(PotionContents.createItemStack(Items.SPLASH_POTION,
+            potion.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION),
                     witch.getRandom().nextBoolean() ? Potions.WEAKNESS : Potions.SLOWNESS));
         }
     }
 
-    public static void onEntityTick(Entity ticking) {
-        if (!(ticking instanceof Witch witch) || witch.level().isClientSide()) {
+    public static void onEntityTick(Entity entity) {
+        if (!(entity instanceof Witch witch) || witch.level().isClientSide()) {
             return;
         }
 
@@ -62,7 +65,7 @@ public final class WitchGoals {
             witch.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(DRINKING_SPEED);
         }
 
-        CompoundTag data = ((WildscapesEntityData) witch).wildscapes$data();
+        CompoundTag data = WildscapesEntityData.of(witch);
         if (!data.getBoolean(CHECKED)) {
             findCauldron(witch);
             data.putBoolean(CHECKED, true);
@@ -70,7 +73,7 @@ public final class WitchGoals {
         if (data.contains(HOME) && witch.tickCount % 100 == 0) {
             BlockPos home = BlockPos.of(data.getLong(HOME));
             if (!isCauldron(witch, home)) {
-                witch.restrictTo(BlockPos.ZERO, -1);
+                witch.clearRestriction();
                 data.remove(HOME);
             }
         }
@@ -85,8 +88,8 @@ public final class WitchGoals {
         }
 
         witch.setItemSlot(EquipmentSlot.MAINHAND,
-                PotionContents.createItemStack(Items.POTION, WildscapesPotions.RESISTANCE));
-        witch.usingTime = witch.getMainHandItem().getUseDuration(witch);
+                PotionUtils.setPotion(new ItemStack(Items.POTION), WildscapesPotions.RESISTANCE.get()));
+        witch.usingTime = witch.getMainHandItem().getUseDuration();
         witch.setUsingItem(true);
         if (!witch.isSilent()) {
             witch.level().playSound(null, witch.getX(), witch.getY(), witch.getZ(), SoundEvents.WITCH_DRINK,
@@ -115,7 +118,7 @@ public final class WitchGoals {
         BlockPos.findClosestMatch(witch.blockPosition(), 8, 4, pos -> isCauldron(witch, pos))
                 .ifPresent(pos -> {
                     witch.restrictTo(pos, 12);
-                    ((WildscapesEntityData) witch).wildscapes$data().putLong(HOME, pos.asLong());
+                    WildscapesEntityData.of(witch).putLong(HOME, pos.asLong());
                 });
     }
 
@@ -125,6 +128,6 @@ public final class WitchGoals {
             return false;
         }
         var state = witch.level().getBlockState(pos);
-        return state.getBlock() instanceof AbstractCauldronBlock || state.is(WildscapesBlocks.CAULDRON_OF_SOULS);
+        return state.getBlock() instanceof AbstractCauldronBlock || state.is(WildscapesBlocks.CAULDRON_OF_SOULS.get());
     }
 }

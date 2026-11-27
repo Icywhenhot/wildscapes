@@ -2,29 +2,29 @@ package com.wildscapes.effect;
 
 import com.wildscapes.entity.WildscapesEntityData;
 
-import com.wildscapes.WildscapesConfig;
 import com.wildscapes.WildscapesAdvancements;
+import com.wildscapes.WildscapesConfig;
 import com.wildscapes.item.WildscapesItems;
 import com.wildscapes.sound.WildscapesSounds;
 
-import net.minecraft.world.entity.Entity;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalEntityTypeTags;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.nbt.CompoundTag;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 
 public final class Intangibility {
     private static final String ACTIVE_KEY = "wildscapes:necklace_active";
@@ -45,11 +45,12 @@ public final class Intangibility {
             return true;
         }
         if (!WildscapesConfig.get(WildscapesConfig.NECKLACE_HIDES_FROM_BOSSES)
-                && observer.getType().builtInRegistryHolder().is(ConventionalEntityTypeTags.BOSSES)) {
+                && observer.getType().is(ConventionalEntityTypeTags.BOSSES)) {
             return false;
         }
-        CompoundTag seen = ((WildscapesEntityData) observer).wildscapes$data().getCompound(REVEALED_KEY);
-        return (seen.contains(player.getStringUUID()) ? seen.getLong(player.getStringUUID()) : Long.MIN_VALUE) < observer.level().getGameTime();
+        CompoundTag seen = WildscapesEntityData.of(observer).getCompound(REVEALED_KEY);
+        String id = player.getStringUUID();
+        return !seen.contains(id) || seen.getLong(id) < observer.level().getGameTime();
     }
 
     private static void reveal(Entity victim, Player player) {
@@ -58,7 +59,7 @@ public final class Intangibility {
             return;
         }
         long now = victim.level().getGameTime();
-        CompoundTag data = ((WildscapesEntityData) victim).wildscapes$data();
+        CompoundTag data = WildscapesEntityData.of(victim);
         CompoundTag seen = data.getCompound(REVEALED_KEY);
         for (String key : seen.getAllKeys().toArray(String[]::new)) {
             if (seen.getLong(key) < now) {
@@ -70,11 +71,11 @@ public final class Intangibility {
     }
 
     private static boolean canUse(ItemStack stack) {
-        return stack.is(WildscapesItems.ILLUSIONIST_NECKLACE) && stack.getDamageValue() < stack.getMaxDamage() - 1;
+        return stack.is(WildscapesItems.ILLUSIONIST_NECKLACE.get()) && stack.getDamageValue() < stack.getMaxDamage() - 1;
     }
 
-    public static void onMobTick(Entity ticking) {
-        if (!(ticking instanceof Mob mob) || mob.level().isClientSide()) {
+    public static void onMobTick(Entity entity) {
+        if (!(entity instanceof Mob mob) || mob.level().isClientSide()) {
             return;
         }
         if (mob.getTarget() instanceof Player player && hiddenFrom(player, mob)) {
@@ -92,25 +93,25 @@ public final class Intangibility {
         }
     }
 
-    public static void onPlayerTick(Entity ticking) {
-        if (!(ticking instanceof Player player)) {
+    public static void onPlayerTick(Entity entity) {
+        if (!(entity instanceof Player player)) {
             return;
         }
 
         boolean active = isActive(player);
         if (active && !player.level().isClientSide() && !player.getAbilities().instabuild) {
-            var data = ((WildscapesEntityData) player).wildscapes$data();
+            var data = WildscapesEntityData.of(player);
             int ticks = data.getInt("wildscapes:necklace_ticks") + 1;
             if (ticks >= WildscapesConfig.get(WildscapesConfig.NECKLACE_DRAIN_TICKS)) {
                 EquipmentSlot slot = canUse(player.getMainHandItem()) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-                player.getItemBySlot(slot).hurtAndBreak(1, player, slot);
+                player.getItemBySlot(slot).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(slot));
                 ticks = 0;
                 active = isActive(player);
             }
             data.putInt("wildscapes:necklace_ticks", ticks);
         }
         if (player.level() instanceof ServerLevel level) {
-            var data = ((WildscapesEntityData) player).wildscapes$data();
+            var data = WildscapesEntityData.of(player);
             boolean wasActive = data.getBoolean(ACTIVE_KEY);
             if (active) {
                 if (!player.isInvisible()) {
@@ -120,7 +121,7 @@ public final class Intangibility {
                 if (!wasActive) {
                     WildscapesAdvancements.award(player, "now_you_see_me_now_you_dont");
                     level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                            WildscapesSounds.NECKLACE_ACTIVATION, SoundSource.PLAYERS, 1.0F, 1.0F);
+                            WildscapesSounds.NECKLACE_ACTIVATION.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
                 }
                 if (player.tickCount % 5 == 0) {
                     level.sendParticles(ParticleTypes.LARGE_SMOKE, player.getX(), player.getY() + 0.6,
@@ -138,14 +139,14 @@ public final class Intangibility {
             }
             data.putBoolean(ACTIVE_KEY, active);
         }
-        MobEffectInstance effect = player.getEffect(WildscapesEffects.INTANGIBILITY);
+        MobEffectInstance effect = player.getEffect(WildscapesEffects.INTANGIBILITY.get());
         if (active) {
             if (effect == null) {
-                player.addEffect(new MobEffectInstance(WildscapesEffects.INTANGIBILITY,
+                player.addEffect(new MobEffectInstance(WildscapesEffects.INTANGIBILITY.get(),
                         MobEffectInstance.INFINITE_DURATION, 0, false, false, true));
             }
         } else if (effect != null) {
-            player.removeEffect(WildscapesEffects.INTANGIBILITY);
+            player.removeEffect(WildscapesEffects.INTANGIBILITY.get());
         }
     }
 
@@ -212,13 +213,13 @@ public final class Intangibility {
         return !level.getBlockState(below).getCollisionShape(level, below).isEmpty();
     }
 
-    public static boolean allowDamage(LivingEntity entity, DamageSource source, float amount) {
-        Entity attacker = source.getEntity();
-        if (attacker instanceof Player player && attacker != entity) {
-            reveal(entity, player);
+    public static boolean allowDamage(LivingEntity victim, DamageSource damage, float amount) {
+        Entity source = damage.getEntity();
+        if (source instanceof Player attacker && source != victim) {
+            reveal(victim, attacker);
         }
-        return !(entity instanceof Player player && attacker != null && attacker != player
+        return !(victim instanceof Player player && source != null && source != player
                 && WildscapesConfig.get(WildscapesConfig.NECKLACE_BLOCKS_DAMAGE)
-                && hiddenFrom(player, attacker));
+                && hiddenFrom(player, source));
     }
 }

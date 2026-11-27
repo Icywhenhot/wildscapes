@@ -17,7 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public final class SlimeBubbleLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final ResourceLocation TEXTURE = new ResourceLocation(Wildscapes.MODID,
             "textures/entity/slime_bubble.png");
     private final ModelPart bubble;
 
@@ -29,7 +29,7 @@ public final class SlimeBubbleLayer<T extends LivingEntity, M extends EntityMode
     @Override
     public void render(PoseStack pose, MultiBufferSource buffer, int light, T entity, float limbSwing,
             float limbSwingAmount, float partialTick, float age, float headYaw, float headPitch) {
-        if (!entity.hasEffect(WildscapesEffects.SLIMEBOUND)) {
+        if (!entity.hasEffect(WildscapesEffects.SLIMEBOUND.get())) {
             return;
         }
 

@@ -21,9 +21,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity> {
-    private static final Material WATER = surface(ResourceLocation.withDefaultNamespace("block/water_still"));
-    private static final Material CONCOCTION = surface(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/concoction"));
-    private static final Material JUMBLE = surface(ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "block/jumble_concoction"));
+    private static final Material WATER = surface(new ResourceLocation("block/water_still"));
+    private static final Material CONCOCTION = surface(new ResourceLocation(Wildscapes.MODID, "block/concoction"));
+    private static final Material JUMBLE = surface(new ResourceLocation(Wildscapes.MODID, "block/jumble_concoction"));
 
     private static Material surface(ResourceLocation texture) {
         return new Material(InventoryMenu.BLOCK_ATLAS, texture);
@@ -81,12 +81,12 @@ public class CauldronRenderer implements BlockEntityRenderer<CauldronBlockEntity
 
     private static void vertex(VertexConsumer vc, PoseStack.Pose p, float x, float y, float z,
             float r, float g, float b, float a, float u, float v, int light) {
-        vc.addVertex(p, x, y, z)
-                .setColor(r, g, b, a)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(p, 0.0F, 1.0F, 0.0F);
+        vc.vertex(p.pose(), x, y, z)
+                .color(r, g, b, a)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(light)
+                .normal(p.normal(), 0.0F, 1.0F, 0.0F).endVertex();
     }
 
     private void renderPendingIngredient(CauldronBlockEntity be, float partialTick, PoseStack pose,

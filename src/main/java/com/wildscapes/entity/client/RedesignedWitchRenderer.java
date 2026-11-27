@@ -10,10 +10,10 @@ import net.minecraft.world.entity.monster.Witch;
 
 public class RedesignedWitchRenderer extends WitchRenderer {
     private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/witch.png");
     private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/witch_empowered.png");
-    private static final ResourceLocation VANILLA = ResourceLocation.withDefaultNamespace("textures/entity/witch.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/witch_empowered.png");
+    private static final ResourceLocation VANILLA = new ResourceLocation("textures/entity/witch.png");
 
     private final boolean vanilla;
 

@@ -24,9 +24,9 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
 public final class MirelashHookRenderer extends EntityRenderer<MirelashHook> {
-    private static final ResourceLocation HOOK_TEXTURE = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final ResourceLocation HOOK_TEXTURE = new ResourceLocation(Wildscapes.MODID,
             "textures/entity/mirelash_hook.png");
-    private static final ResourceLocation SEGMENT_TEXTURE = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+    private static final ResourceLocation SEGMENT_TEXTURE = new ResourceLocation(Wildscapes.MODID,
             "textures/entity/mirelash_segment.png");
     private static final float SEGMENT_LENGTH = 0.5F;
     private final ModelPart hookModel;
@@ -88,7 +88,7 @@ public final class MirelashHookRenderer extends EntityRenderer<MirelashHook> {
     private Vec3 getHandPos(Player player, float partialTick) {
         int side = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
         ItemStack mainHand = player.getMainHandItem();
-        if (!mainHand.is(WildscapesItems.MIRELASH)) {
+        if (!mainHand.is(WildscapesItems.MIRELASH.get())) {
             side = -side;
         }
 

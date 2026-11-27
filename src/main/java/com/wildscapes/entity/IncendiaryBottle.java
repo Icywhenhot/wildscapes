@@ -38,11 +38,11 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
     }
 
     public IncendiaryBottle(Level level, LivingEntity thrower) {
-        super(WildscapesEntities.INCENDIARY_BOTTLE, thrower, level);
+        super(WildscapesEntities.INCENDIARY_BOTTLE.get(), thrower, level);
     }
 
     public IncendiaryBottle(Level level, double x, double y, double z) {
-        super(WildscapesEntities.INCENDIARY_BOTTLE, x, y, z, level);
+        super(WildscapesEntities.INCENDIARY_BOTTLE.get(), x, y, z, level);
     }
 
     public void haunt(BlockPos pos, Player player) {
@@ -87,12 +87,12 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
 
     @Override
     protected Item getDefaultItem() {
-        return WildscapesItems.INCENDIARY_BOTTLE;
+        return WildscapesItems.INCENDIARY_BOTTLE.get();
     }
 
     @Override
-    protected double getDefaultGravity() {
-        return 0.05;
+    protected float getGravity() {
+        return 0.05F;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class IncendiaryBottle extends ThrowableItemProjectile {
         if (result instanceof EntityHitResult hit && hit.getEntity() instanceof Player player) {
             at = player.position();
             player.hurt(damageSources().thrown(this, getOwner()), 3.0F);
-            player.igniteForSeconds(5.0F);
+            player.setSecondsOnFire((int) 5.0);
         }
         IncendiaryFireBlock.spread(level(), at);
         discard();

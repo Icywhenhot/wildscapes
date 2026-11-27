@@ -22,11 +22,11 @@ import net.minecraft.world.phys.Vec3;
 
 public class RedesignedIllusionerRenderer extends IllagerRenderer<Illusioner> {
     private static final ResourceLocation TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/illusioner.png");
     private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/illusioner_empowered.png");
     private static final ResourceLocation VANILLA =
-            ResourceLocation.withDefaultNamespace("textures/entity/illager/illusioner.png");
+            new ResourceLocation("textures/entity/illager/illusioner.png");
 
     private final Map<Illusioner, Trail> trails = new WeakHashMap<>();
     private final boolean vanilla;

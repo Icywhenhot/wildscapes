@@ -1,19 +1,16 @@
 package com.wildscapes.entity;
 
-import com.wildscapes.WildscapesConfig;
+import com.wildscapes.network.WildscapesNetwork;
 
-import com.mojang.serialization.Codec;
 import com.wildscapes.Wildscapes;
+import com.wildscapes.WildscapesConfig;
 import com.wildscapes.block.entity.CauldronOfSoulsBlockEntity;
 import com.wildscapes.particle.WildscapesParticles;
 
-import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
-import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import com.wildscapes.Backports;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -29,74 +26,77 @@ import net.minecraft.world.entity.player.Player;
 public final class SoulHarvest {
     private SoulHarvest() {}
 
-    private static final ResourceLocation HEALTH_BOOST =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "empowered_health");
-
-    public static final AttachmentType<Boolean> EMPOWERED = AttachmentRegistry.<Boolean>builder()
-            .persistent(Codec.BOOL)
-            .syncWith(ByteBufCodecs.BOOL, AttachmentSyncPredicate.all())
-            .buildAndRegister(Wildscapes.id("empowered"));
-
-    public static final AttachmentType<BlockPos> ORIGIN =
-            AttachmentRegistry.createPersistent(Wildscapes.id("soul_harvest_origin"), BlockPos.CODEC);
+    public static final String EMPOWERED = "wildscapes:empowered";
+    public static final String ORIGIN = "wildscapes:soul_harvest_origin";
+    private static final java.util.UUID HEALTH_BOOST = java.util.UUID.nameUUIDFromBytes(
+            "wildscapes:empowered_health".getBytes(java.nio.charset.StandardCharsets.UTF_8));
 
     public static boolean isEmpowered(Entity entity) {
-        return entity.getAttachedOrElse(EMPOWERED, false);
+        return WildscapesEntityData.of(entity).getBoolean(EMPOWERED);
     }
 
     public static void empower(Mob mob) {
-        mob.setAttached(EMPOWERED, true);
+        WildscapesEntityData.of(mob).putBoolean(EMPOWERED, true);
+        WildscapesNetwork.sync(mob);
         AttributeInstance health = mob.getAttribute(Attributes.MAX_HEALTH);
         if (health != null) {
-            health.addOrReplacePermanentModifier(new AttributeModifier(HEALTH_BOOST,
+            health.removeModifier(HEALTH_BOOST);
+            health.addPermanentModifier(new AttributeModifier(HEALTH_BOOST, "empowered health",
                     WildscapesConfig.get(WildscapesConfig.EMPOWERED_HEALTH) - 1.0,
-                    AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+                    AttributeModifier.Operation.MULTIPLY_TOTAL));
             mob.setHealth(mob.getMaxHealth());
         }
     }
 
     public static float damage(DamageSource source, float amount) {
-        return source.getEntity() instanceof Mob mob && isEmpowered(mob)
-                ? amount * WildscapesConfig.get(WildscapesConfig.EMPOWERED_DAMAGE).floatValue() : amount;
+        Entity attacker = source.getEntity();
+        if (attacker instanceof Mob && isEmpowered(attacker)) {
+            return amount * WildscapesConfig.get(WildscapesConfig.EMPOWERED_DAMAGE).floatValue();
+        }
+        return amount;
     }
 
     public static void onDeath(LivingEntity dead, DamageSource source) {
         if (!(dead.level() instanceof ServerLevel level)) {
             return;
         }
-        if (!dead.hasAttached(ORIGIN)) {
+        if (!WildscapesEntityData.of(dead).contains(ORIGIN)) {
             CauldronOfSoulsBlockEntity running = CauldronOfSoulsBlockEntity.harvesting(level, dead);
             if (running != null) {
                 running.onMobDeath(dead, source);
             }
             return;
         }
-        if (level.getBlockEntity(dead.getAttachedOrThrow(ORIGIN)) instanceof CauldronOfSoulsBlockEntity cauldron) {
+        if (level.getBlockEntity(BlockPos.of(WildscapesEntityData.of(dead).getLong(ORIGIN))) instanceof CauldronOfSoulsBlockEntity cauldron) {
             cauldron.onMobDeath(dead, source);
         } else if (isEmpowered(dead)) {
-            level.sendParticles(WildscapesParticles.LOST_SOUL, dead.getX(), dead.getY(0.6), dead.getZ(),
+            level.sendParticles(WildscapesParticles.LOST_SOUL.get(), dead.getX(), dead.getY(0.6), dead.getZ(),
                     6, 0.3, 0.4, 0.3, 0.02);
         }
     }
 
+    public static boolean keepsDrops(LivingEntity entity) {
+        return !WildscapesEntityData.of(entity).contains(ORIGIN);
+    }
+
     public static void onPlayerTick(Player player) {
-        if (player.level() instanceof ServerLevel level && player.hasEffect(MobEffects.BAD_OMEN)) {
+        if (player.level() instanceof ServerLevel level && Backports.omen(player) != null) {
             CauldronOfSoulsBlockEntity.tryStart(level, player);
         }
     }
 
     public static void onEntityTick(Entity entity) {
-        if (!entity.level().isClientSide() || !(entity instanceof Mob) || !isEmpowered(entity)) {
+        if (!entity.level().isClientSide || !(entity instanceof Mob mob) || !isEmpowered(entity)) {
             return;
         }
-        RandomSource random = entity.getRandom();
+        RandomSource random = mob.getRandom();
         if (random.nextInt(4) != 0) {
             return;
         }
         SimpleParticleType type = switch (random.nextInt(3)) {
-            case 0 -> WildscapesParticles.EMPOWERED_WISP;
-            case 1 -> WildscapesParticles.EMPOWERED_RING;
-            default -> WildscapesParticles.EMPOWERED_SOUL;
+            case 0 -> WildscapesParticles.EMPOWERED_WISP.get();
+            case 1 -> WildscapesParticles.EMPOWERED_RING.get();
+            default -> WildscapesParticles.EMPOWERED_SOUL.get();
         };
         double angle = random.nextDouble() * Math.PI * 2.0;
         double r = entity.getBbWidth() * 0.7 + 0.2;

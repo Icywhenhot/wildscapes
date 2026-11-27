@@ -15,11 +15,11 @@ public class IncendiaryEffect extends InstantenousMobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier) {
         if (!entity.level().isClientSide) {
             IncendiaryFireBlock.spread(entity.level(), entity.position());
         }
-        return true;
+
     }
 
     @Override

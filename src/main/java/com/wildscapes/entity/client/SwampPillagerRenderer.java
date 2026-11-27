@@ -16,11 +16,11 @@ import net.minecraft.world.entity.monster.Pillager;
 
 public class SwampPillagerRenderer extends IllagerRenderer<Pillager> {
     private static final ResourceLocation VANILLA =
-            ResourceLocation.withDefaultNamespace("textures/entity/illager/pillager.png");
+            new ResourceLocation("textures/entity/illager/pillager.png");
     private static final ResourceLocation SWAMP =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_swamp.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/pillager_swamp.png");
     private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/pillager_empowered.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/pillager_empowered.png");
 
     private final IllagerModel<Pillager> vanillaModel;
     private final IllagerModel<Pillager> swampModel;

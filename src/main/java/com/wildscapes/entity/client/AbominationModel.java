@@ -7,8 +7,7 @@ import com.wildscapes.entity.SoulHarvest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-import software.bernie.geckolib.animation.AnimationState;
-import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
@@ -24,7 +23,7 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
     private static ResourceLocation[] strip(String prefix, int count) {
         ResourceLocation[] out = new ResourceLocation[count];
         for (int i = 0; i < count; i++) {
-            out[i] = ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID,
+            out[i] = new ResourceLocation(Wildscapes.MODID,
                     "textures/entity/" + prefix + i + ".png");
         }
         return out;
@@ -42,7 +41,7 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
 
     @Override
     public ResourceLocation getModelResource(AbominationEntity animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "geo/abomination.geo.json");
+        return new ResourceLocation(Wildscapes.MODID, "geo/abomination.geo.json");
     }
 
     @Override
@@ -55,21 +54,21 @@ public class AbominationModel extends GeoModel<AbominationEntity> {
 
     @Override
     public ResourceLocation getAnimationResource(AbominationEntity animatable) {
-        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "animations/abomination.animation.json");
+        return new ResourceLocation(Wildscapes.MODID, "animations/abomination.animation.json");
     }
 
     @Override
     public void setCustomAnimations(AbominationEntity animatable, long instanceId, AnimationState<AbominationEntity> state) {
         super.setCustomAnimations(animatable, instanceId, state);
 
-        GeoBone head = getAnimationProcessor().getBone("head");
+        var head = getAnimationProcessor().getBone("head");
         EntityModelData data = state.getData(DataTickets.ENTITY_MODEL_DATA);
         if (head != null && data != null) {
             head.setRotX(head.getRotX() + data.headPitch() * Mth.DEG_TO_RAD);
             head.setRotY(head.getRotY() + data.netHeadYaw() * Mth.DEG_TO_RAD);
         }
 
-        GeoBone tongue = getAnimationProcessor().getBone("tongue");
+        var tongue = getAnimationProcessor().getBone("tongue");
         if (tongue != null) {
             tongue.setHidden(animatable.getTongueTicks() >= 0);
         }

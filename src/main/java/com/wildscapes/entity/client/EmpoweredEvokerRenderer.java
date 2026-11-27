@@ -10,7 +10,7 @@ import net.minecraft.world.entity.monster.Evoker;
 
 public class EmpoweredEvokerRenderer extends EvokerRenderer<Evoker> {
     private static final ResourceLocation EMPOWERED =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/illager/evoker_empowered.png");
+            new ResourceLocation(Wildscapes.MODID, "textures/entity/illager/evoker_empowered.png");
 
     public EmpoweredEvokerRenderer(EntityRendererProvider.Context context) {
         super(context);

@@ -41,6 +41,6 @@ public class RedesignedSlimeOuterLayer extends RenderLayer<Slime, SlimeModel<Sli
         this.getParentModel().copyPropertiesTo(outer);
         outer.prepareMobModel(slime, limbSwing, limbSwingAmount, partialTicks);
         outer.setupAnim(slime, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        outer.renderToBuffer(poseStack, consumer, packedLight, LivingEntityRenderer.getOverlayCoords(slime, 0.0F));
+        outer.renderToBuffer(poseStack, consumer, packedLight, LivingEntityRenderer.getOverlayCoords(slime, 0.0F), 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

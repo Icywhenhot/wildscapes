@@ -22,8 +22,7 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     private static final ResourceLocation[] TEXTURES = {
             texture("slime_small"), texture("slime_medium"), texture("slime_large"),
     };
-
-    private static final ResourceLocation VANILLA = ResourceLocation.withDefaultNamespace("textures/entity/slime/slime.png");
+    private static final ResourceLocation VANILLA = new ResourceLocation("textures/entity/slime/slime.png");
 
     private final SlimeModel<Slime>[] innerModels;
     private final boolean vanilla;
@@ -61,7 +60,7 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     @Override
     public void render(Slime entity, float entityYaw, float partialTicks, PoseStack poseStack,
             MultiBufferSource buffer, int packedLight) {
-        this.shadowRadius = 0.25F * entity.getSize();
+        this.shadowRadius = 0.25F * entity.getSize() * SlimeMerging.scale(entity);
         this.model = this.innerModels[modelIndex(entity)];
 
         float alpha = SlimeMerging.mergeAlpha(entity);
@@ -83,41 +82,64 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         }
     }
 
-    private record FadingConsumer(VertexConsumer delegate, float alpha) implements VertexConsumer {
+    private static class FadingConsumer implements VertexConsumer {
+        private final VertexConsumer parent;
+        private final float alpha;
+
+        private FadingConsumer(VertexConsumer parent, float alpha) {
+            this.parent = parent;
+            this.alpha = alpha;
+        }
+
         @Override
-        public VertexConsumer addVertex(float x, float y, float z) {
-            this.delegate.addVertex(x, y, z);
+        public VertexConsumer vertex(double x, double y, double z) {
+            parent.vertex(x, y, z);
             return this;
         }
 
         @Override
-        public VertexConsumer setColor(int red, int green, int blue, int vertexAlpha) {
-            this.delegate.setColor(red, green, blue, (int) (vertexAlpha * this.alpha));
+        public VertexConsumer color(int red, int green, int blue, int vertexAlpha) {
+            parent.color(red, green, blue, (int) (vertexAlpha * alpha));
             return this;
         }
 
         @Override
-        public VertexConsumer setUv(float u, float v) {
-            this.delegate.setUv(u, v);
+        public VertexConsumer uv(float u, float v) {
+            parent.uv(u, v);
             return this;
         }
 
         @Override
-        public VertexConsumer setUv1(int u, int v) {
-            this.delegate.setUv1(u, v);
+        public VertexConsumer overlayCoords(int u, int v) {
+            parent.overlayCoords(u, v);
             return this;
         }
 
         @Override
-        public VertexConsumer setUv2(int u, int v) {
-            this.delegate.setUv2(u, v);
+        public VertexConsumer uv2(int u, int v) {
+            parent.uv2(u, v);
             return this;
         }
 
         @Override
-        public VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
-            this.delegate.setNormal(normalX, normalY, normalZ);
+        public VertexConsumer normal(float x, float y, float z) {
+            parent.normal(x, y, z);
             return this;
+        }
+
+        @Override
+        public void endVertex() {
+            parent.endVertex();
+        }
+
+        @Override
+        public void defaultColor(int red, int green, int blue, int vertexAlpha) {
+            parent.defaultColor(red, green, blue, (int) (vertexAlpha * alpha));
+        }
+
+        @Override
+        public void unsetDefaultColor() {
+            parent.unsetDefaultColor();
         }
     }
 
@@ -129,7 +151,8 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
         float squish = Mth.lerp(partialTickTime, livingEntity.oSquish, livingEntity.squish) / (size * 0.5F + 1.0F);
         float stretch = 1.0F / (squish + 1.0F);
 
-        float ratio = size / (vanilla ? 1.0F : MODELLED_SIZES[modelIndex(livingEntity)]);
+        float modelled = vanilla ? 1.0F : MODELLED_SIZES[modelIndex(livingEntity)];
+        float ratio = size / modelled * SlimeMerging.scale(livingEntity);
         poseStack.scale(stretch * ratio, 1.0F / stretch * ratio, stretch * ratio);
     }
 
@@ -139,6 +162,6 @@ public class RedesignedSlimeRenderer extends MobRenderer<Slime, SlimeModel<Slime
     }
 
     private static ResourceLocation texture(String name) {
-        return ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "textures/entity/slime/" + name + ".png");
+        return new ResourceLocation(Wildscapes.MODID, "textures/entity/slime/" + name + ".png");
     }
 }

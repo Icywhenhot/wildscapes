@@ -1,5 +1,7 @@
 package com.wildscapes.entity;
 
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import com.wildscapes.item.WildscapesEnchantments;
 import java.util.UUID;
 
 import com.wildscapes.effect.WildscapesEffects;
@@ -47,32 +49,30 @@ public final class MirelashHook extends ThrowableProjectile {
     }
 
     public MirelashHook(Level level, Player owner, ItemStack stack) {
-        super(WildscapesEntities.MIRELASH_HOOK, owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), level);
-        setOwner(owner);
-        int elasticity = MirelashItem.enchantmentLevel(level, stack, MirelashItem.ELASTICITY);
+        super(WildscapesEntities.MIRELASH_HOOK.get(), owner, level);
+        int elasticity = EnchantmentHelper.getItemEnchantmentLevel(WildscapesEnchantments.ELASTICITY.get(), stack);
         entityData.set(MAX_RANGE, 30.0F * (elasticity + 1));
-        entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
+        entityData.set(SLIME_SNARE, EnchantmentHelper.getItemEnchantmentLevel(WildscapesEnchantments.SLIME_SNARE.get(), stack) > 0);
         setDeltaMovement(owner.getLookAngle().scale(5.0));
     }
 
     public MirelashHook(Level level, Player owner, ItemStack stack, LivingEntity target) {
-        super(WildscapesEntities.MIRELASH_HOOK, owner.getX(), owner.getEyeY() - 0.1, owner.getZ(), level);
-        setOwner(owner);
+        super(WildscapesEntities.MIRELASH_HOOK.get(), owner, level);
         entityData.set(MAX_RANGE, (float) MirelashItem.ATTACK_RANGE);
-        entityData.set(SLIME_SNARE, MirelashItem.enchantmentLevel(level, stack, MirelashItem.SLIME_SNARE) > 0);
+        entityData.set(SLIME_SNARE, EnchantmentHelper.getItemEnchantmentLevel(WildscapesEnchantments.SLIME_SNARE.get(), stack) > 0);
         entityData.set(ATTACK, true);
         entityData.set(TARGET, target.getId());
         setNoGravity(true);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(ANCHORED, false);
-        builder.define(TETHER_LENGTH, 1.5F);
-        builder.define(MAX_RANGE, 30.0F);
-        builder.define(SLIME_SNARE, false);
-        builder.define(ATTACK, false);
-        builder.define(TARGET, -1);
+    protected void defineSynchedData() {
+        entityData.define(ANCHORED, false);
+        entityData.define(TETHER_LENGTH, 1.5F);
+        entityData.define(MAX_RANGE, 30.0F);
+        entityData.define(SLIME_SNARE, false);
+        entityData.define(ATTACK, false);
+        entityData.define(TARGET, -1);
     }
 
     @Override
@@ -105,9 +105,9 @@ public final class MirelashHook extends ThrowableProjectile {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         super.onHitBlock(hit);
-        if (!level().isClientSide()) {
+        if (!level().isClientSide) {
             level().playSound(null, hit.getLocation().x, hit.getLocation().y, hit.getLocation().z,
-                    WildscapesSounds.MIRELASH_IMPACT, SoundSource.PLAYERS, 1.0F, 1.0F);
+                    WildscapesSounds.MIRELASH_IMPACT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         if (entityData.get(ATTACK)) {
             discard();
@@ -127,7 +127,7 @@ public final class MirelashHook extends ThrowableProjectile {
     @Override
     protected void onHitEntity(EntityHitResult hit) {
         super.onHitEntity(hit);
-        if (!level().isClientSide() && entityData.get(ATTACK) && hit.getEntity() instanceof LivingEntity target
+        if (!level().isClientSide && entityData.get(ATTACK) && hit.getEntity() instanceof LivingEntity target
                 && getOwner() instanceof Player player) {
             landAttack(player, target);
         }
@@ -141,7 +141,7 @@ public final class MirelashHook extends ThrowableProjectile {
         }
         Vec3 targetPos = new Vec3(target.getX(), target.getY(0.5), target.getZ());
         Vec3 travel = targetPos.subtract(position());
-        if (!level().isClientSide() && (tickCount >= 3 || travel.lengthSqr() < 0.36)) {
+        if (!level().isClientSide && (tickCount >= 3 || travel.lengthSqr() < 0.36)) {
             landAttack(player, target);
             return;
         }
@@ -154,10 +154,10 @@ public final class MirelashHook extends ThrowableProjectile {
         float distance = Mth.clamp(player.distanceTo(target), 0.0F, (float) MirelashItem.ATTACK_RANGE);
         float damage = Mth.lerp(distance / (float) MirelashItem.ATTACK_RANGE, 9.0F, 6.0F);
         target.hurt(level().damageSources().playerAttack(player), damage);
-        level().playSound(null, target.getX(), target.getY(0.5), target.getZ(), WildscapesSounds.MIRELASH_HIT,
+        level().playSound(null, target.getX(), target.getY(0.5), target.getZ(), WildscapesSounds.MIRELASH_HIT.get(),
                 SoundSource.PLAYERS, 1.0F, 1.0F);
         if (entityData.get(SLIME_SNARE)) {
-            target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND, 80, 0, false, true, false));
+            target.addEffect(new MobEffectInstance(WildscapesEffects.SLIMEBOUND.get(), 80, 0, false, true, false));
             ServerLevel level = (ServerLevel) level();
             ItemParticleOption slime = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.SLIME_BALL));
             level.sendParticles(slime, target.getX(), target.getY(0.55), target.getZ(), 28,

@@ -27,8 +27,8 @@ public final class MobLook {
     }
 
     private static boolean hasCem(ResourceManager rm, String ns, String name) {
-        return rm.getResource(ResourceLocation.fromNamespaceAndPath(ns, "optifine/cem/" + name + ".jem")).isPresent()
-                || rm.getResource(ResourceLocation.fromNamespaceAndPath(ns, "emf/cem/" + name + ".jem")).isPresent();
+        return rm.getResource(new ResourceLocation(ns, "optifine/cem/" + name + ".jem")).isPresent()
+                || rm.getResource(new ResourceLocation(ns, "emf/cem/" + name + ".jem")).isPresent();
     }
 
     private static String layerName(ModelLayerLocation layer) {

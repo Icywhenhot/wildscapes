@@ -2,12 +2,11 @@ package com.wildscapes.entity;
 
 import com.wildscapes.WildscapesConfig;
 
-import net.minecraft.world.entity.EntityType;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import com.wildscapes.Wildscapes;
+import com.wildscapes.network.WildscapesNetwork;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +16,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -29,8 +29,7 @@ import net.minecraft.world.phys.Vec3;
 public final class SlimeMerging {
     private SlimeMerging() {}
 
-    public static final ResourceLocation MERGE_MODIFIER_ID =
-            ResourceLocation.fromNamespaceAndPath(Wildscapes.MODID, "merging");
+    public static final String SCALE = "wildscapes:merge_scale";
 
     public static final double MAX_SHRINK = 0.9375;
 
@@ -43,26 +42,22 @@ public final class SlimeMerging {
     private static final String TAG_PROGRESS = "WildscapesMergeProgress";
     private static final String TAG_GROWING = "WildscapesMergeGrowing";
 
-    public static void onEntityTick(Entity ticking) {
-        if (!(ticking instanceof Slime slime)) {
+    public static void onEntityTick(Entity entity) {
+        if (!(entity instanceof Slime slime) || slime instanceof MagmaCube) {
             return;
         }
-        if (slime.level().isClientSide() || !slime.isAlive()) {
+        if (slime.level().isClientSide || !slime.isAlive()) {
             return;
         }
 
-        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
+        CompoundTag data = WildscapesEntityData.of(slime);
         if (data.contains(TAG_GROWING)) {
             tickGrowing(slime, data);
-        } else if (data.contains(TAG_PARTNER)) {
+        } else if (data.hasUUID(TAG_PARTNER)) {
             tickMerging(slime, data);
         } else if (slime.getSize() == 1 && WildscapesConfig.get(WildscapesConfig.SLIME_MERGING)) {
             seekPartner(slime, data);
         }
-    }
-
-    private static int readyAfter() {
-        return WildscapesConfig.get(WildscapesConfig.SLIME_MERGE_DELAY) * 20;
     }
 
     private static void seekPartner(Slime slime, CompoundTag data) {
@@ -91,29 +86,34 @@ public final class SlimeMerging {
         }
     }
 
+    private static int readyAfter() {
+        return WildscapesConfig.get(WildscapesConfig.SLIME_MERGE_DELAY) * 20;
+    }
+
     private static Slime findPartner(Slime slime) {
         List<Slime> candidates = slime.level().getEntitiesOfClass(Slime.class,
                 slime.getBoundingBox().inflate(SEEK_RADIUS),
                 other -> other != slime
                         && other.isAlive()
                         && other.getSize() == 1
+                        && !(other instanceof MagmaCube)
                         && isReady(other)
                         && !isMerging(other));
         return candidates.stream().min(Comparator.comparingDouble(slime::distanceToSqr)).orElse(null);
     }
 
     private static boolean isReady(Slime slime) {
-        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
+        CompoundTag data = WildscapesEntityData.of(slime);
         return data.contains(TAG_DELAY) && data.getInt(TAG_DELAY) <= 0;
     }
 
     private static boolean isMerging(Slime slime) {
-        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
-        return data.contains(TAG_PARTNER) || data.contains(TAG_GROWING);
+        CompoundTag data = WildscapesEntityData.of(slime);
+        return data.hasUUID(TAG_PARTNER) || data.contains(TAG_GROWING);
     }
 
     private static void link(Slime slime, Slime partner) {
-        CompoundTag data = ((WildscapesEntityData) slime).wildscapes$data();
+        CompoundTag data = WildscapesEntityData.of(slime);
         data.putUUID(TAG_PARTNER, partner.getUUID());
         data.putInt(TAG_PROGRESS, 0);
         slime.setTarget(null);
@@ -146,7 +146,7 @@ public final class SlimeMerging {
         if (!(slime.level() instanceof ServerLevel level)) {
             return null;
         }
-        UUID id = data.hasUUID(TAG_PARTNER) ? data.getUUID(TAG_PARTNER) : null;
+        UUID id = data.getUUID(TAG_PARTNER);
         Entity partner = level.getEntity(id);
         return partner instanceof Slime other && other.getSize() == 1 ? other : null;
     }
@@ -178,7 +178,7 @@ public final class SlimeMerging {
     }
 
     private static void beginGrowing(Slime slime) {
-        ((WildscapesEntityData) slime).wildscapes$data().putInt(TAG_GROWING, MERGE_TICKS);
+        WildscapesEntityData.of(slime).putInt(TAG_GROWING, MERGE_TICKS);
         setShrink(slime, 1.0);
         slime.setNoAi(true);
     }
@@ -196,28 +196,28 @@ public final class SlimeMerging {
         setShrink(slime, (double) remaining / MERGE_TICKS);
     }
 
+    public static float scale(Entity entity) {
+        var data = WildscapesEntityData.of(entity);
+        return data.contains(SCALE) ? data.getFloat(SCALE) : 1.0F;
+    }
+
     private static void setShrink(LivingEntity entity, double progress) {
-        AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
-        if (scale != null) {
-            scale.addOrUpdateTransientModifier(new AttributeModifier(MERGE_MODIFIER_ID,
-                    -MAX_SHRINK * Mth.clamp(progress, 0.0, 1.0),
-                    AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-        }
+        setScale(entity, (float) (1.0 - MAX_SHRINK * Mth.clamp(progress, 0.0, 1.0)));
     }
 
     private static void clearShrink(LivingEntity entity) {
-        AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
-        if (scale != null) {
-            scale.removeModifier(MERGE_MODIFIER_ID);
+        setScale(entity, 1.0F);
+    }
+
+    private static void setScale(LivingEntity entity, float value) {
+        if (scale(entity) != value) {
+            WildscapesEntityData.of(entity).putFloat(SCALE, value);
+            entity.refreshDimensions();
+            WildscapesNetwork.sync(entity);
         }
     }
 
     public static float mergeAlpha(LivingEntity entity) {
-        AttributeInstance scale = entity.getAttribute(Attributes.SCALE);
-        if (scale == null) {
-            return 1.0F;
-        }
-        AttributeModifier modifier = scale.getModifier(MERGE_MODIFIER_ID);
-        return modifier == null ? 1.0F : (float) Mth.clamp(1.0 + modifier.amount() / MAX_SHRINK, 0.0, 1.0);
+        return (float) Mth.clamp(1.0 + (scale(entity) - 1.0) / MAX_SHRINK, 0.0, 1.0);
     }
 }
