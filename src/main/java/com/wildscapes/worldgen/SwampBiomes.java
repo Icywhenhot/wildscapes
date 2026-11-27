@@ -1,5 +1,7 @@
 package com.wildscapes.worldgen;
 
+import com.wildscapes.entity.SwampVariants;
+import com.wildscapes.entity.WildscapesEntities;
 import net.minecraft.world.entity.EntityType;
 import com.wildscapes.Wildscapes;
 
@@ -18,7 +20,7 @@ public final class SwampBiomes {
 
     public static void register() {
         var swamp = BiomeSelectors.includeByKey(Biomes.SWAMP);
-        var trees = ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.withDefaultNamespace("trees_swamp"));
+        var trees = ResourceKey.create(Registries.PLACED_FEATURE, new ResourceLocation("trees_swamp"));
         BiomeModifications.create(Wildscapes.id("remove_swamp_oak"))
                 .add(ModificationPhase.REMOVALS, swamp, context -> context.getGenerationSettings().removeFeature(trees));
 
@@ -33,5 +35,7 @@ public final class SwampBiomes {
         }
 
         BiomeModifications.addSpawn(swamp, MobCategory.MONSTER, EntityType.DROWNED, 40, 1, 2);
+        BiomeModifications.addSpawn(BiomeSelectors.tag(SwampVariants.SWAMP_BIOMES), MobCategory.MONSTER,
+                WildscapesEntities.BOGGED.get(), 30, 4, 4);
     }
 }

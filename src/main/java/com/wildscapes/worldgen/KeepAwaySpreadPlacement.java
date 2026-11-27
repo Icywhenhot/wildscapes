@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.Holder;
@@ -24,7 +23,7 @@ public class KeepAwaySpreadPlacement extends RandomSpreadStructurePlacement {
         ).apply(i, KeepAway::new));
     }
 
-    public static final MapCodec<KeepAwaySpreadPlacement> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+    public static final Codec<KeepAwaySpreadPlacement> CODEC = RecordCodecBuilder.create(i -> i.group(
             Vec3i.offsetCodec(16).optionalFieldOf("locate_offset", Vec3i.ZERO).forGetter(p -> p.locateOffset()),
             FrequencyReductionMethod.CODEC.optionalFieldOf("frequency_reduction_method", FrequencyReductionMethod.DEFAULT)
                     .forGetter(p -> p.frequencyReductionMethod()),
@@ -62,6 +61,6 @@ public class KeepAwaySpreadPlacement extends RandomSpreadStructurePlacement {
 
     @Override
     public StructurePlacementType<?> type() {
-        return WildscapesStructures.KEEP_AWAY_SPREAD;
+        return WildscapesStructures.KEEP_AWAY_SPREAD.get();
     }
 }

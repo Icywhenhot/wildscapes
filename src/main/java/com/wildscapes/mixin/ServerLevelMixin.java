@@ -2,27 +2,23 @@ package com.wildscapes.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.wildscapes.block.PavShrooms;
+import com.wildscapes.Backports;
+import com.wildscapes.Wildscapes;
+import com.wildscapes.entity.WildscapesEntityData;
+
+import java.util.stream.Stream;
 import com.wildscapes.block.CauldronSwap;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.wildscapes.effect.Intangibility;
-import com.wildscapes.effect.MirageSync;
-import com.wildscapes.entity.JumpEnchantments;
-import com.wildscapes.entity.SlimeMerging;
-import com.wildscapes.entity.SoulHarvest;
-import com.wildscapes.entity.WitchGoals;
-import com.wildscapes.item.MirelashItem;
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin {
@@ -31,34 +27,35 @@ public abstract class ServerLevelMixin {
         CauldronSwap.onNeighborNotify((ServerLevel) (Object) this, pos);
     }
 
+    @Inject(method = "addEntity", at = @At("HEAD"), cancellable = true)
+    private void freshEntity(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        if (Backports.replaceOnJoin((ServerLevel) (Object) this, entity)) {
+            cir.setReturnValue(false);
+            return;
+        }
+        ((WildscapesEntityData) entity).wildscapes$markFresh();
+    }
+
+    @ModifyVariable(method = "addWorldGenChunkEntities", at = @At("HEAD"), argsOnly = true)
+    private Stream<Entity> freshWorldGenEntities(Stream<Entity> entities) {
+        ServerLevel level = (ServerLevel) (Object) this;
+        return entities.filter(entity -> !Backports.replaceOnJoin(level, entity))
+                .peek(entity -> ((WildscapesEntityData) entity).wildscapes$markFresh());
+    }
 
     @WrapOperation(method = "tickNonPassenger", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/entity/Entity;tick()V"))
     private void tick(Entity entity, Operation<Void> original) {
-        tickEntity(entity, original);
+        Wildscapes.beforeEntityTick(entity);
+        original.call(entity);
+        Wildscapes.tickEntity(entity);
     }
 
     @WrapOperation(method = "tickPassenger", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/entity/Entity;rideTick()V"))
     private void rideTick(Entity entity, Operation<Void> original) {
-        tickEntity(entity, original);
-    }
-
-    @Unique
-    private static void tickEntity(Entity entity, Operation<Void> original) {
-        Intangibility.onMobTick(entity);
-        if (entity instanceof Player player) {
-            SoulHarvest.onPlayerTick(player);
-        }
+        Wildscapes.beforeEntityTick(entity);
         original.call(entity);
-        if (entity instanceof Player player) {
-            Intangibility.onPlayerTick(player);
-            MirelashItem.onPlayerTick(player);
-            JumpEnchantments.onTick(player);
-            PavShrooms.onTick(player);
-        }
-        WitchGoals.onEntityTick(entity);
-        MirageSync.onEntityTick(entity);
-        SlimeMerging.onEntityTick(entity);
+        Wildscapes.tickEntity(entity);
     }
 }

@@ -47,12 +47,12 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
 
     private static List<ProcessorRule> buildRules() {
         List<ProcessorRule> rules = new java.util.ArrayList<>();
-        addPillar(rules, Blocks.DARK_OAK_LOG, WildscapesBlocks.CYPRESS_LOG);
-        addPillar(rules, Blocks.DARK_OAK_WOOD, WildscapesBlocks.CYPRESS_WOOD);
-        addPillar(rules, Blocks.STRIPPED_DARK_OAK_LOG, WildscapesBlocks.STRIPPED_CYPRESS_LOG);
-        addPillar(rules, Blocks.STRIPPED_DARK_OAK_WOOD, WildscapesBlocks.STRIPPED_CYPRESS_WOOD);
+        addPillar(rules, Blocks.DARK_OAK_LOG, WildscapesBlocks.CYPRESS_LOG.get());
+        addPillar(rules, Blocks.DARK_OAK_WOOD, WildscapesBlocks.CYPRESS_WOOD.get());
+        addPillar(rules, Blocks.STRIPPED_DARK_OAK_LOG, WildscapesBlocks.STRIPPED_CYPRESS_LOG.get());
+        addPillar(rules, Blocks.STRIPPED_DARK_OAK_WOOD, WildscapesBlocks.STRIPPED_CYPRESS_WOOD.get());
 
-        BlockState leaves = WildscapesBlocks.CYPRESS_LEAVES.defaultBlockState()
+        BlockState leaves = WildscapesBlocks.CYPRESS_LEAVES.get().defaultBlockState()
                 .setValue(LeavesBlock.PERSISTENT, true)
                 .setValue(LeavesBlock.DISTANCE, 1);
         rules.add(new ProcessorRule(new BlockMatchTest(Blocks.MANGROVE_LEAVES), AlwaysTrueTest.INSTANCE, leaves));
@@ -91,7 +91,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         ResourceLocation id = templates.get(random.nextInt(templates.size()));
         Optional<StructureTemplate> found = manager.get(id);
         if (found.isEmpty()) {
-            Wildscapes.LOGGER.warn("Tree structure {} is missing; expected it in data/{}/structure/{}.nbt",
+            Wildscapes.LOGGER.warn("Tree structure {} is missing; expected it in data/{}/structures/{}.nbt",
                     id, id.getNamespace(), id.getPath());
             return false;
         }
@@ -164,7 +164,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
 
     private static boolean isTrunk(BlockState state) {
         return state.is(Blocks.DARK_OAK_LOG) || state.is(Blocks.DARK_OAK_WOOD)
-                || state.is(WildscapesBlocks.CYPRESS_LOG) || state.is(WildscapesBlocks.CYPRESS_WOOD);
+                || state.is(WildscapesBlocks.CYPRESS_LOG.get()) || state.is(WildscapesBlocks.CYPRESS_WOOD.get());
     }
 
     private static boolean isWild(BlockState state) {
@@ -323,7 +323,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         for (Block part : SOLID_PARTS) {
             for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(corner, settings, part, true)) {
                 BlockState existing = level.getBlockState(info.pos());
-                if (existing.is(BlockTags.LOGS) || existing.is(WildscapesBlocks.CYPRESS_LEAVES)) {
+                if (existing.is(BlockTags.LOGS) || existing.is(WildscapesBlocks.CYPRESS_LEAVES.get())) {
                     return false;
                 }
             }
@@ -338,7 +338,7 @@ public class TemplateTreeFeature extends Feature<TemplateTreeConfiguration> {
         int sumZ = 0;
         int lowest = Integer.MAX_VALUE;
         for (Block trunk : new Block[] { Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_WOOD,
-                WildscapesBlocks.CYPRESS_LOG, WildscapesBlocks.CYPRESS_WOOD }) {
+                WildscapesBlocks.CYPRESS_LOG.get(), WildscapesBlocks.CYPRESS_WOOD.get() }) {
             for (StructureTemplate.StructureBlockInfo info : template.filterBlocks(BlockPos.ZERO, raw, trunk, false)) {
                 BlockPos pos = info.pos();
                 if (pos.getY() > lowest) {

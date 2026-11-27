@@ -1,19 +1,17 @@
 package com.wildscapes.worldgen;
 
-import java.util.Optional;
-
-import net.minecraft.world.level.block.grower.TreeGrower;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
 public final class WildscapesTreeGrowers {
     private WildscapesTreeGrowers() {}
 
-    public static final TreeGrower CYPRESS = new TreeGrower(
-            "wildscapes:cypress",
-            0.0F,
-            Optional.empty(),
-            Optional.empty(),
-            Optional.of(WildscapesConfiguredFeatures.CYPRESS),
-            Optional.empty(),
-            Optional.empty(),
-            Optional.empty());
+    public static final AbstractTreeGrower CYPRESS = new AbstractTreeGrower() {
+        @Override
+        protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource random, boolean bees) {
+            return WildscapesConfiguredFeatures.CYPRESS;
+        }
+    };
 }

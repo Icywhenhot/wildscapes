@@ -6,7 +6,6 @@ import com.wildscapes.effect.Intangibility;
 import com.wildscapes.entity.WildscapesEntityData;
 
 import net.minecraft.nbt.CompoundTag;
-import org.spongepowered.asm.mixin.Unique;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
@@ -14,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -24,9 +24,22 @@ public abstract class EntityMixin implements WildscapesEntityData {
     @Unique
     private CompoundTag wildscapes$data = new CompoundTag();
 
+    @Unique
+    private boolean wildscapes$fresh;
+
     @Override
     public CompoundTag wildscapes$data() {
         return wildscapes$data;
+    }
+
+    @Override
+    public boolean wildscapes$fresh() {
+        return wildscapes$fresh;
+    }
+
+    @Override
+    public void wildscapes$markFresh() {
+        wildscapes$fresh = true;
     }
 
     @Inject(method = "saveWithoutId", at = @At("TAIL"))
@@ -38,7 +51,7 @@ public abstract class EntityMixin implements WildscapesEntityData {
 
     @Inject(method = "load", at = @At("TAIL"))
     private void loadWildscapesData(CompoundTag tag, CallbackInfo ci) {
-        wildscapes$data = tag.getCompound(tag.contains("wildscapes_data") ? "wildscapes_data" : "NeoForgeData");
+        wildscapes$data = tag.getCompound("wildscapes_data");
     }
 
     @Shadow

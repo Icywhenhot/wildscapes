@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wildscapes.block.WildscapesBlocks;
 
@@ -25,7 +24,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class OvergrowthProcessor extends StructureProcessor {
-    public static final MapCodec<OvergrowthProcessor> CODEC = RecordCodecBuilder.mapCodec(
+    public static final Codec<OvergrowthProcessor> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Codec.floatRange(0.0F, 1.0F).optionalFieldOf("vines", 0.12F)
                             .forGetter(p -> p.vines),
@@ -43,7 +42,7 @@ public class OvergrowthProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.OVERGROWTH;
+        return WildscapesStructures.OVERGROWTH.get();
     }
 
     @Override
@@ -81,7 +80,7 @@ public class OvergrowthProcessor extends StructureProcessor {
     private BlockState grow(Map<BlockPos, BlockState> standing, BlockPos at, RandomSource random,
             Rotation rotation, Mirror mirror) {
         if (holds(standing.get(at.below())) && random.nextFloat() < moss) {
-            return WildscapesBlocks.MOSS_CARPET.defaultBlockState();
+            return WildscapesBlocks.MOSS_CARPET.get().defaultBlockState();
         }
         if (random.nextFloat() >= vines) {
             return null;

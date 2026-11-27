@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 import com.wildscapes.block.WildscapesBlocks;
 
 import net.minecraft.core.BlockPos;
@@ -23,13 +23,13 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 public class StiltProcessor extends StructureProcessor {
     public static final StiltProcessor INSTANCE = new StiltProcessor();
-    public static final MapCodec<StiltProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
+    public static final Codec<StiltProcessor> CODEC = Codec.unit(() -> INSTANCE);
 
     private static final int MAX_DEPTH = 24;
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return WildscapesStructures.STILTS;
+        return WildscapesStructures.STILTS.get();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class StiltProcessor extends StructureProcessor {
             }
         }
 
-        BlockState post = WildscapesBlocks.CYPRESS_LOG.defaultBlockState()
+        BlockState post = WildscapesBlocks.CYPRESS_LOG.get().defaultBlockState()
                 .setValue(RotatedPillarBlock.AXIS, Direction.Axis.Y);
 
         for (StructureTemplate.StructureBlockInfo info : lowest.values()) {
@@ -71,7 +71,7 @@ public class StiltProcessor extends StructureProcessor {
     }
 
     private static boolean isPost(BlockState state) {
-        return state.is(WildscapesBlocks.CYPRESS_LOG)
+        return state.is(WildscapesBlocks.CYPRESS_LOG.get())
                 && state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y;
     }
 
