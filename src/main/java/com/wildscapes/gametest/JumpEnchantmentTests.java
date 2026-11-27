@@ -1,10 +1,11 @@
 package com.wildscapes.gametest;
 
+import java.util.Map;
+import com.wildscapes.item.WildscapesEnchantments;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import com.wildscapes.entity.JumpEnchantments;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -23,10 +24,9 @@ public final class JumpEnchantmentTests {
 
     public static void airJumpsUseTheBootsAndResetOnLanding(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        var enchantment = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                .getOrThrow(JumpEnchantments.MULTI_JUMP);
+        var enchantment = WildscapesEnchantments.MULTI_JUMP.get();
         ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
-        boots.enchant(enchantment, 1);
+        EnchantmentHelper.setEnchantments(Map.of(enchantment, 1), boots);
         player.setItemSlot(EquipmentSlot.FEET, boots);
         player.setOnGround(true);
         helper.assertFalse(JumpEnchantments.jump(player), "air jump worked on the ground");
@@ -39,7 +39,7 @@ public final class JumpEnchantmentTests {
         helper.assertFalse(JumpEnchantments.jump(player), "level one allowed a second air jump");
         player.setOnGround(true);
         JumpEnchantments.onTick(player);
-        boots.enchant(enchantment, 2);
+        EnchantmentHelper.setEnchantments(Map.of(enchantment, 2), boots);
         player.setOnGround(false);
         helper.assertTrue(JumpEnchantments.jump(player), "landing did not restore air jumps");
         helper.assertTrue(JumpEnchantments.jump(player), "level two did not allow two air jumps");
@@ -49,17 +49,16 @@ public final class JumpEnchantmentTests {
         JumpEnchantments.onTick(player);
         player.setOnGround(false);
         helper.assertFalse(JumpEnchantments.jump(player), "air jump worked without enchanted boots");
-        helper.assertTrue(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_BOOTS)), "boots rejected multi jump");
-        helper.assertFalse(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_LEGGINGS)), "leggings accepted multi jump");
+        helper.assertTrue(enchantment.canEnchant(new ItemStack(Items.IRON_BOOTS)), "boots rejected multi jump");
+        helper.assertFalse(enchantment.canEnchant(new ItemStack(Items.IRON_LEGGINGS)), "leggings accepted multi jump");
         helper.succeed();
     }
 
     public static void poweredJumpChargesForTheLengthOfItsSound(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        var enchantment = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-                .getOrThrow(JumpEnchantments.EMPOWERED_JUMP);
+        var enchantment = WildscapesEnchantments.EMPOWERED_JUMP.get();
         ItemStack leggings = new ItemStack(Items.DIAMOND_LEGGINGS);
-        leggings.enchant(enchantment, 1);
+        EnchantmentHelper.setEnchantments(Map.of(enchantment, 1), leggings);
         player.setItemSlot(EquipmentSlot.LEGS, leggings);
         player.setOnGround(true);
         player.setShiftKeyDown(true);
@@ -89,8 +88,8 @@ public final class JumpEnchantmentTests {
         JumpEnchantments.onTick(player);
         player.setOnGround(true);
         helper.assertFalse(release(player), "leaving the ground kept a stored charge");
-        helper.assertTrue(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_LEGGINGS)), "leggings rejected empowered jump");
-        helper.assertFalse(enchantment.value().isSupportedItem(new ItemStack(Items.IRON_BOOTS)), "boots accepted empowered jump");
+        helper.assertTrue(enchantment.canEnchant(new ItemStack(Items.IRON_LEGGINGS)), "leggings rejected empowered jump");
+        helper.assertFalse(enchantment.canEnchant(new ItemStack(Items.IRON_BOOTS)), "boots accepted empowered jump");
         player.setItemSlot(EquipmentSlot.LEGS, ItemStack.EMPTY);
         helper.assertFalse(JumpEnchantments.canCharge(player), "charge worked without enchanted leggings");
         helper.succeed();
@@ -115,18 +114,17 @@ public final class JumpEnchantmentTests {
         LootParams params = new LootParams.Builder(helper.getLevel())
                 .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
                 .withParameter(LootContextParams.THIS_ENTITY, player)
-                .create(LootContextParamSets.VAULT);
+                .create(LootContextParamSets.CHEST);
         for (String tier : new String[] {"low", "high"}) {
-            ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
-                    ResourceLocation.fromNamespaceAndPath("wildscapes", "gameplay/soul_harvest_" + tier));
-            LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(key);
+            LootTable table = helper.getLevel().getServer().getLootData()
+                    .getLootTable(new ResourceLocation("wildscapes", "gameplay/soul_harvest_" + tier));
             int books = 0;
             for (int i = 0; i < 100; i++) {
                 for (ItemStack stack : table.getRandomItems(params)) {
                     helper.assertTrue(stack.is(Items.ENCHANTED_BOOK), "jump pool returned a non-book reward");
-                    var enchantments = stack.get(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS);
-                    var expected = tier.equals("low") ? JumpEnchantments.MULTI_JUMP : JumpEnchantments.EMPOWERED_JUMP;
-                    helper.assertTrue(enchantments != null && enchantments.keySet().stream().allMatch(e -> e.is(expected)),
+                    var enchantments = EnchantmentHelper.getEnchantments(stack);
+                    var expected = tier.equals("low") ? WildscapesEnchantments.MULTI_JUMP.get() : WildscapesEnchantments.EMPOWERED_JUMP.get();
+                    helper.assertTrue(!enchantments.isEmpty() && enchantments.keySet().stream().allMatch(e -> e == expected),
                             "jump book appeared in the wrong tier");
                     books++;
                 }

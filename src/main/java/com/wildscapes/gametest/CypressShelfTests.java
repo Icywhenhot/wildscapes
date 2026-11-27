@@ -22,9 +22,9 @@ public final class CypressShelfTests {
     public static void storesItemsAndSwapsHotbars(GameTestHelper helper) {
         var level = helper.getLevel();
         BlockPos pos = helper.absolutePos(new BlockPos(3, 3, 3));
-        level.setBlockAndUpdate(pos, WildscapesBlocks.CYPRESS_SHELF.defaultBlockState());
+        level.setBlockAndUpdate(pos, WildscapesBlocks.CYPRESS_SHELF.get().defaultBlockState());
         var shelf = (CypressShelfBlockEntity) level.getBlockEntity(pos);
-        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        Player player = helper.makeMockSurvivalPlayer();
         player.getInventory().selected = 0;
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOWL, 3));
         shelf.setItem(1, new ItemStack(Items.APPLE, 2));
@@ -33,16 +33,16 @@ public final class CypressShelfTests {
                 "shelf did not return its item");
         helper.assertTrue(shelf.getItem(1).is(Items.BOWL) && shelf.getItem(1).getCount() == 3,
                 "shelf did not store the held stack");
-        var saved = shelf.saveWithFullMetadata(level.registryAccess());
-        var loaded = (CypressShelfBlockEntity) BlockEntity.loadStatic(pos, shelf.getBlockState(), saved, level.registryAccess());
+        var saved = shelf.saveWithFullMetadata();
+        var loaded = (CypressShelfBlockEntity) BlockEntity.loadStatic(pos, shelf.getBlockState(), saved);
         helper.assertTrue(loaded != null && ItemStack.matches(loaded.getItem(1), shelf.getItem(1)), "shelf inventory was lost on reload");
 
         BlockPos row = helper.absolutePos(new BlockPos(7, 3, 7));
         for (int i = 0; i < 3; i++) {
             level.setBlockAndUpdate(row.east(i).below(), Blocks.REDSTONE_BLOCK.defaultBlockState());
-            level.setBlockAndUpdate(row.east(i), WildscapesBlocks.CYPRESS_SHELF.defaultBlockState().setValue(CypressShelfBlock.POWERED, true));
+            level.setBlockAndUpdate(row.east(i), WildscapesBlocks.CYPRESS_SHELF.get().defaultBlockState().setValue(CypressShelfBlock.POWERED, true));
         }
-        helper.assertTrue(WildscapesBlocks.CYPRESS_SHELF.getAllBlocksConnectedTo(level, row.east()).size() == 3,
+        helper.assertTrue(WildscapesBlocks.CYPRESS_SHELF.get().getAllBlocksConnectedTo(level, row.east()).size() == 3,
                 "powered shelves did not form a three-block chain");
         for (int i = 0; i < 9; i++) player.getInventory().setItem(i, new ItemStack(Items.EMERALD, i + 1));
         click(player, row.east());
@@ -59,7 +59,6 @@ public final class CypressShelfTests {
         var level = player.level();
         var hit = new BlockHitResult(Vec3.atCenterOf(pos).add(0, 0, -0.5), Direction.NORTH, pos, false);
         var state = level.getBlockState(pos);
-        if (player.getMainHandItem().isEmpty()) state.useWithoutItem(level, player, hit);
-        else state.useItemOn(player.getMainHandItem(), level, player, InteractionHand.MAIN_HAND, hit);
+                state.use(level, player, InteractionHand.MAIN_HAND, hit);
     }
 }

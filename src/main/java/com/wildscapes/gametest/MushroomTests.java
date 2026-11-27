@@ -31,11 +31,11 @@ import java.util.Optional;
 public class MushroomTests {
     public static void pavShroomsShareAnItemAndDropByHand(GameTestHelper helper) {
         var level = helper.getLevel();
-        var ground = WildscapesBlocks.LUMINOUS_MUSHROOM;
-        var shelf = WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM;
+        var ground = WildscapesBlocks.LUMINOUS_MUSHROOM.get();
+        var shelf = WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get();
         var item = ground.asItem();
         helper.assertTrue(shelf.asItem() == item, "log mushroom has a separate item");
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var player = helper.makeMockSurvivalPlayer();
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item, 8));
         BlockPos soil = new BlockPos(5, 2, 5);
         helper.setBlock(soil, Blocks.MUD);
@@ -63,7 +63,7 @@ public class MushroomTests {
             var drops = Block.getDrops(state, level, helper.absolutePos(pos), null, player, ItemStack.EMPTY);
             helper.assertTrue(!state.requiresCorrectToolForDrops() && state.getDestroySpeed(level, helper.absolutePos(pos)) == 0,
                     "mushroom requires a tool or is not instant to break");
-            helper.assertTrue(drops.size() == 1 && drops.getFirst().is(item) && drops.getFirst().getCount() == 1,
+            helper.assertTrue(drops.size() == 1 && drops.get(0).is(item) && drops.get(0).getCount() == 1,
                     "bare-hand harvest did not drop one pav shroom");
         }
         helper.succeed();
@@ -73,10 +73,10 @@ public class MushroomTests {
         var player = helper.makeMockServerPlayerInLevel();
         BlockPos pos = new BlockPos(10, 4, 10);
         helper.setBlock(pos.below(), Blocks.MUD);
-        helper.setBlock(pos.south(), WildscapesBlocks.CYPRESS_LOG);
+        helper.setBlock(pos.south(), WildscapesBlocks.CYPRESS_LOG.get());
         Vec3 center = Vec3.atCenterOf(helper.absolutePos(pos));
-        for (var mushroom : java.util.List.of(WildscapesBlocks.LUMINOUS_MUSHROOM.defaultBlockState(),
-                WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.defaultBlockState())) {
+        for (var mushroom : java.util.List.of(WildscapesBlocks.LUMINOUS_MUSHROOM.get().defaultBlockState(),
+                WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get().defaultBlockState())) {
             helper.setBlock(pos, mushroom);
             player.setHealth(10.0F);
             player.setPos(center.add(2.9, 0, 0));
@@ -95,7 +95,7 @@ public class MushroomTests {
             helper.assertTrue(player.getHealth() == 10.5F, "pav shroom aura used a cube instead of a radius");
         }
         helper.setBlock(pos.east().below(), Blocks.MUD);
-        helper.setBlock(pos.east(), WildscapesBlocks.LUMINOUS_MUSHROOM);
+        helper.setBlock(pos.east(), WildscapesBlocks.LUMINOUS_MUSHROOM.get());
         player.setPos(center);
         player.setHealth(10.0F);
         PavShrooms.onTick(player);
@@ -106,22 +106,22 @@ public class MushroomTests {
                 "pav shroom changed potion regeneration");
         player.removeEffect(MobEffects.REGENERATION);
         player.setHealth(10.0F);
-        MobEffects.REGENERATION.value().applyEffectTick(player, 0);
+        MobEffects.REGENERATION.applyEffectTick(player, 0);
         helper.assertTrue(player.getHealth() == 11.0F, "pav shroom healing was not half vanilla regeneration");
         helper.succeed();
     }
 
     public static void shelfMushroomsStayNearTheGround(GameTestHelper helper) {
-        helper.setBiome(Biomes.SWAMP);
+        TestBiomes.fill(helper, Biomes.SWAMP);
         for (int x = 7; x <= 13; x++) {
             for (int z = 7; z <= 13; z++) {
                 helper.setBlock(new BlockPos(x, 2, z), Blocks.MUD);
                 for (int y = 3; y <= 24; y++) helper.setBlock(new BlockPos(x, y, z), Blocks.AIR);
             }
         }
-        for (int y = 3; y <= 12; y++) helper.setBlock(new BlockPos(10, y, 10), WildscapesBlocks.CYPRESS_LOG);
+        for (int y = 3; y <= 12; y++) helper.setBlock(new BlockPos(10, y, 10), WildscapesBlocks.CYPRESS_LOG.get());
         var level = helper.getLevel();
-        var config = new SimpleBlockConfiguration(BlockStateProvider.simple(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM));
+        var config = new SimpleBlockConfiguration(BlockStateProvider.simple(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get()));
         var random = RandomSource.create(1234);
         BlockPos beside = helper.absolutePos(new BlockPos(9, 3, 10));
         helper.assertTrue(level.getBiome(beside).is(Biomes.SWAMP), "test biome is not swamp at " + beside);
@@ -132,13 +132,13 @@ public class MushroomTests {
         int low = 0;
         int high = 0;
         for (int i = 0; i < 160; i++) {
-            boolean placed = WildscapesFeatures.SHELF_MUSHROOM.place(new FeaturePlaceContext<>(Optional.empty(), level,
+            boolean placed = WildscapesFeatures.SHELF_MUSHROOM.get().place(new FeaturePlaceContext<>(Optional.empty(), level,
                     level.getChunkSource().getGenerator(), random, helper.absolutePos(new BlockPos(10, 3, 10)), config));
             if (!placed) continue;
             for (Direction face : Direction.Plane.HORIZONTAL) {
                 for (int y = 3; y <= 12; y++) {
                     BlockPos pos = new BlockPos(10, y, 10).relative(face);
-                    if (!helper.getBlockState(pos).is(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM)) continue;
+                    if (!helper.getBlockState(pos).is(WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get())) continue;
                     helper.assertTrue(y <= 6, "mushroom grew too high on the trunk");
                     if (y <= 4) low++; else high++;
                     helper.setBlock(pos, Blocks.AIR);
@@ -146,8 +146,8 @@ public class MushroomTests {
             }
         }
         helper.assertTrue(low > 30 && low > high * 2, "mushrooms did not favor the lower trunk: " + low + "/" + high);
-        helper.setBiome(Biomes.MANGROVE_SWAMP);
-        helper.assertTrue(!WildscapesFeatures.SHELF_MUSHROOM.place(new FeaturePlaceContext<>(Optional.empty(), level,
+        TestBiomes.fill(helper, Biomes.MANGROVE_SWAMP);
+        helper.assertTrue(!WildscapesFeatures.SHELF_MUSHROOM.get().place(new FeaturePlaceContext<>(Optional.empty(), level,
                 level.getChunkSource().getGenerator(), random, helper.absolutePos(new BlockPos(10, 3, 10)), config)),
                 "shelf mushroom generated in mangrove swamp");
         helper.succeed();
@@ -155,7 +155,7 @@ public class MushroomTests {
 
     public static void groundMushroomNeedsSoil(GameTestHelper helper) {
         BlockPos pos = new BlockPos(5, 3, 5);
-        var state = WildscapesBlocks.LUMINOUS_MUSHROOM.defaultBlockState();
+        var state = WildscapesBlocks.LUMINOUS_MUSHROOM.get().defaultBlockState();
         for (var soil : new net.minecraft.world.level.block.Block[] {Blocks.GRASS_BLOCK, Blocks.DIRT, Blocks.MUD, Blocks.CLAY}) {
             helper.setBlock(pos.below(), soil);
             helper.assertTrue(state.canSurvive(helper.getLevel(), helper.absolutePos(pos)), "mushroom rejected " + soil);
@@ -170,10 +170,10 @@ public class MushroomTests {
 
     public static void shelfMushroomNeedsATrunk(GameTestHelper helper) {
         BlockPos trunk = new BlockPos(10, 4, 10);
-        helper.setBlock(trunk, WildscapesBlocks.CYPRESS_LOG);
+        helper.setBlock(trunk, WildscapesBlocks.CYPRESS_LOG.get());
         for (Direction face : Direction.Plane.HORIZONTAL) {
             BlockPos pos = trunk.relative(face);
-            var state = WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.defaultBlockState().setValue(ShelfMushroomBlock.FACING, face);
+            var state = WildscapesBlocks.SHELF_LUMINOUS_MUSHROOM.get().defaultBlockState().setValue(ShelfMushroomBlock.FACING, face);
             helper.assertTrue(state.canSurvive(helper.getLevel(), helper.absolutePos(pos)), "mushroom rejected trunk face " + face);
             helper.setBlock(pos, state);
             helper.assertTrue(state.getLightEmission() == 7, "shelf mushroom light is not 7");

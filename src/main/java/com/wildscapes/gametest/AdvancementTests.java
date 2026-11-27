@@ -31,14 +31,14 @@ public final class AdvancementTests {
         BlockPos pos = new BlockPos(5, 3, 5);
         BlockPos at = helper.absolutePos(pos);
         helper.setBlock(pos.below(), Blocks.CAMPFIRE.defaultBlockState());
-        helper.setBlock(pos, WildscapesBlocks.CAULDRON.defaultBlockState()
+        helper.setBlock(pos, WildscapesBlocks.CAULDRON.get().defaultBlockState()
                 .setValue(WildscapesCauldronBlock.BOILING, true));
         var be = (CauldronBlockEntity) level.getBlockEntity(at);
         be.setPlainWater(3);
         be.startSoupBase();
         var hit = new BlockHitResult(Vec3.atCenterOf(at), Direction.UP, at, false);
         player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOWL));
-        level.getBlockState(at).useItemOn(player.getMainHandItem(), level, player, InteractionHand.MAIN_HAND, hit);
+        level.getBlockState(at).use(level, player, InteractionHand.MAIN_HAND, hit);
         helper.assertFalse(earned(player, "cooking_is_my_passion"), "unfinished soup awarded advancement");
 
         be.addIngredient(new ItemStack(Items.SUGAR));
@@ -48,15 +48,15 @@ public final class AdvancementTests {
         }
         helper.assertTrue(be.hasFinishedSoup(), "soup did not finish cooking");
         helper.assertFalse(earned(player, "cooking_is_my_passion"), "uncollected soup awarded advancement");
-        level.getBlockState(at).useItemOn(player.getMainHandItem(), level, player, InteractionHand.MAIN_HAND, hit);
-        helper.assertTrue(player.getMainHandItem().is(WildscapesItems.MAGIC_SOUP), "bowl did not collect soup");
+        level.getBlockState(at).use(level, player, InteractionHand.MAIN_HAND, hit);
+        helper.assertTrue(player.getMainHandItem().is(WildscapesItems.MAGIC_SOUP.get()), "bowl did not collect soup");
         helper.assertTrue(earned(player, "cooking_is_my_passion"), "collecting soup did not award advancement");
         helper.succeed();
     }
 
     public static void necklaceNeedsToBeActivated(GameTestHelper helper) {
         var player = helper.makeMockServerPlayerInLevel();
-        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE);
+        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get());
         player.setItemInHand(InteractionHand.OFF_HAND, stack);
         Intangibility.onPlayerTick(player);
         helper.assertFalse(earned(player, "now_you_see_me_now_you_dont"), "holding necklace awarded advancement");
@@ -71,7 +71,7 @@ public final class AdvancementTests {
     }
 
     private static boolean earned(ServerPlayer player, String path) {
-        var advancement = player.level().getServer().getAdvancements().get(ResourceLocation.fromNamespaceAndPath("wildscapes", path));
+        var advancement = player.level().getServer().getAdvancements().getAdvancement(new ResourceLocation("wildscapes", path));
         return player.getAdvancements().getOrStartProgress(advancement).isDone();
     }
 }

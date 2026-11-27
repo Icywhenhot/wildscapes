@@ -5,7 +5,6 @@ import com.wildscapes.entity.WildscapesEntities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.MobSpawnType;
@@ -36,7 +35,7 @@ public final class AbominationAnchorTests {
         mob.saveWithoutId(saved);
         mob.discard();
 
-        AbominationEntity loaded = WildscapesEntities.ABOMINATION.create(helper.getLevel());
+        AbominationEntity loaded = WildscapesEntities.ABOMINATION.get().create(helper.getLevel());
         loaded.load(saved);
         helper.assertTrue(anchor.equals(loaded.getRestrictCenter())
                 && loaded.getRestrictRadius() == AbominationEntity.ANCHOR_RADIUS,
@@ -45,9 +44,9 @@ public final class AbominationAnchorTests {
     }
 
     private static AbominationEntity spawnAt(ServerLevel level, BlockPos pos) {
-        AbominationEntity mob = WildscapesEntities.ABOMINATION.create(level);
+        AbominationEntity mob = WildscapesEntities.ABOMINATION.get().create(level);
         mob.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
-        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
+        mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null, null);
         level.addFreshEntity(mob);
         return mob;
     }

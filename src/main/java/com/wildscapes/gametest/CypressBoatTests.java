@@ -1,10 +1,11 @@
 package com.wildscapes.gametest;
 
-import com.wildscapes.item.CypressBoat;
+import net.minecraft.core.BlockSourceImpl;
+import com.wildscapes.item.CypressBoatItem;
+import com.wildscapes.entity.WildscapesEntities;
 import com.wildscapes.item.WildscapesItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.BoatDispenseItemBehavior;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
@@ -26,27 +27,27 @@ public final class CypressBoatTests {
         for (int x = -3; x <= 3; x++) {
             for (int z = -3; z <= 3; z++) level.setBlockAndUpdate(pos.offset(x, 0, z), Blocks.WATER.defaultBlockState());
         }
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var player = helper.makeMockSurvivalPlayer();
         player.moveTo(pos.getX() + 0.5, pos.getY() + 2, pos.getZ() + 0.5, 0, 90);
-        var types = java.util.List.of(CypressBoat.BOAT, CypressBoat.CHEST_BOAT);
-        var items = java.util.List.of(WildscapesItems.CYPRESS_BOAT, WildscapesItems.CYPRESS_CHEST_BOAT);
+        var types = java.util.List.of(WildscapesEntities.CYPRESS_BOAT.get(), WildscapesEntities.CYPRESS_CHEST_BOAT.get());
+        var items = java.util.List.of(WildscapesItems.CYPRESS_BOAT.get(), WildscapesItems.CYPRESS_CHEST_BOAT.get());
         for (int i = 0; i < 2; i++) {
             player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(items.get(i)));
             var result = items.get(i).use(level, player, InteractionHand.MAIN_HAND);
             helper.assertTrue(result.getResult().consumesAction(), "boat item did not place a boat");
             var boats = level.getEntitiesOfClass(Boat.class, new AABB(pos).inflate(6));
-            helper.assertTrue(boats.size() == 1 && boats.getFirst().getType() == types.get(i), "item spawned the wrong boat type");
-            helper.assertTrue(boats.getFirst().getDropItem() == items.get(i), "boat drops the wrong item");
+            helper.assertTrue(boats.size() == 1 && boats.get(0).getType() == types.get(i), "item spawned the wrong boat type");
+            helper.assertTrue(boats.get(0).getDropItem() == items.get(i), "boat drops the wrong item");
             boats.forEach(Boat::discard);
         }
         BlockPos dispenser = pos.above(2).east(5);
         level.setBlockAndUpdate(dispenser, Blocks.DISPENSER.defaultBlockState().setValue(DispenserBlock.FACING, Direction.NORTH));
         level.setBlockAndUpdate(dispenser.north(), Blocks.WATER.defaultBlockState());
-        var source = new BlockSource(level, dispenser, level.getBlockState(dispenser), (DispenserBlockEntity) level.getBlockEntity(dispenser));
+        var source = new BlockSourceImpl(level, dispenser);
         for (int i = 0; i < 2; i++) {
-            new BoatDispenseItemBehavior(Boat.Type.OAK, i == 1).execute(source, new ItemStack(items.get(i)));
+            CypressBoatItem.DISPENSER.dispense(source, new ItemStack(items.get(i)));
             var boats = level.getEntitiesOfClass(Boat.class, new AABB(dispenser).inflate(3));
-            helper.assertTrue(boats.size() == 1 && boats.getFirst().getType() == types.get(i), "dispenser spawned the wrong boat type");
+            helper.assertTrue(boats.size() == 1 && boats.get(0).getType() == types.get(i), "dispenser spawned the wrong boat type");
             boats.forEach(Boat::discard);
         }
         helper.succeed();

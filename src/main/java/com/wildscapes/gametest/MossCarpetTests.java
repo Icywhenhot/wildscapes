@@ -18,14 +18,14 @@ public class MossCarpetTests {
 
     public static void bonemealGrowsADrape(GameTestHelper helper) {
         helper.setBlock(PILLAR, Blocks.STONE);
-        helper.setBlock(CARPET, WildscapesBlocks.MOSS_CARPET.defaultBlockState());
+        helper.setBlock(CARPET, WildscapesBlocks.MOSS_CARPET.get().defaultBlockState());
 
         BlockState bare = helper.getBlockState(CARPET);
         helper.assertTrue(sidesGrown(bare) == 0, "the carpet did not start bare");
 
-        DrapingMossCarpetBlock carpet = WildscapesBlocks.MOSS_CARPET;
+        DrapingMossCarpetBlock carpet = WildscapesBlocks.MOSS_CARPET.get();
         helper.assertTrue(
-                carpet.isValidBonemealTarget(helper.getLevel(), helper.absolutePos(CARPET), bare),
+                carpet.isValidBonemealTarget(helper.getLevel(), helper.absolutePos(CARPET), bare, false),
                 "a bare carpet with open air all round it refused bone meal");
         carpet.performBonemeal(helper.getLevel(), helper.getLevel().getRandom(),
                 helper.absolutePos(CARPET), bare);
@@ -43,7 +43,7 @@ public class MossCarpetTests {
         helper.setBlock(CARPET, Blocks.MOSS_CARPET);
 
         net.minecraft.world.entity.player.Player player =
-                helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+                helper.makeMockSurvivalPlayer();
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
                 new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BONE_MEAL));
         com.wildscapes.block.MossCarpetSwap.onBonemeal(
@@ -52,7 +52,7 @@ public class MossCarpetTests {
                         net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CARPET)),
                         Direction.UP, helper.absolutePos(CARPET), false));
 
-        helper.succeedWhen(() -> helper.assertBlockPresent(WildscapesBlocks.MOSS_CARPET, CARPET));
+        helper.succeedWhen(() -> helper.assertBlockPresent(WildscapesBlocks.MOSS_CARPET.get(), CARPET));
     }
 
     private static int sidesGrown(BlockState carpet) {

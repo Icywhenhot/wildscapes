@@ -21,9 +21,9 @@ public final class IntangibilityTests {
     private IntangibilityTests() {}
 
     public static void mobsLoseIntangiblePlayer(GameTestHelper helper) {
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var player = helper.makeMockSurvivalPlayer();
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 5))));
-        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
+        player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
         var zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(6, 3, 5));
         zombie.setTarget(player);
         helper.assertTrue(zombie.getTarget() == player, "zombie did not acquire visible player");
@@ -43,8 +43,8 @@ public final class IntangibilityTests {
     }
 
     public static void necklaceWearsOutWhileActive(GameTestHelper helper) {
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
-        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE);
+        var player = helper.makeMockSurvivalPlayer();
+        var stack = new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get());
         player.setItemInHand(InteractionHand.OFF_HAND, stack);
         for (int i = 0; i < 40; i++) {
             Intangibility.onPlayerTick(player);
@@ -66,9 +66,9 @@ public final class IntangibilityTests {
     }
 
     public static void playerCrossesSolidBlocksAndCobwebs(GameTestHelper helper) {
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var player = helper.makeMockSurvivalPlayer();
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 5))));
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
         player.setShiftKeyDown(true);
         for (int x = 5; x <= 9; x++) {
             helper.setBlock(new BlockPos(x, 2, 5), Blocks.STONE);
@@ -88,10 +88,10 @@ public final class IntangibilityTests {
     }
 
     public static void playerPassesThroughWall(GameTestHelper helper) {
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var player = helper.makeMockSurvivalPlayer();
         player.setPos(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(5, 3, 5))));
         player.setShiftKeyDown(true);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
         helper.setBlock(new BlockPos(5, 2, 5), Blocks.STONE);
         helper.setBlock(new BlockPos(6, 3, 5), Blocks.STONE);
         helper.setBlock(new BlockPos(6, 4, 5), Blocks.STONE);
@@ -99,7 +99,7 @@ public final class IntangibilityTests {
         double y = player.getY();
 
         helper.assertTrue(player.isShiftKeyDown(), "mock player did not crouch");
-        helper.assertTrue(player.getMainHandItem().is(WildscapesItems.ILLUSIONIST_NECKLACE),
+        helper.assertTrue(player.getMainHandItem().is(WildscapesItems.ILLUSIONIST_NECKLACE.get()),
                 "mock player did not hold the necklace");
         helper.assertTrue(Intangibility.isActive(player), "necklace did not activate phasing");
         player.move(MoverType.PLAYER, new Vec3(1.0, -0.5, 0.0));
@@ -112,8 +112,8 @@ public final class IntangibilityTests {
     }
 
     public static void necklaceMakesPlayerInvisible(GameTestHelper helper) {
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE));
+        var player = helper.makeMockSurvivalPlayer();
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(WildscapesItems.ILLUSIONIST_NECKLACE.get()));
         player.setShiftKeyDown(true);
 
         Intangibility.onPlayerTick(player);

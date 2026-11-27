@@ -1,16 +1,15 @@
 package com.wildscapes.gametest;
 
+import net.minecraft.world.item.alchemy.PotionUtils;
 import com.wildscapes.effect.WildscapesPotions;
 import com.wildscapes.item.WildscapesItems;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -21,17 +20,17 @@ public final class GnashingTests {
     private GnashingTests() {}
 
     public static void potionFormsShareTheGreenTint(GameTestHelper helper) {
-        for (var potion : java.util.List.of(WildscapesPotions.GNASHING,
-                WildscapesPotions.LONG_GNASHING, WildscapesPotions.STRONG_GNASHING)) {
+        for (var potion : java.util.List.of(WildscapesPotions.GNASHING.get(),
+                WildscapesPotions.LONG_GNASHING.get(), WildscapesPotions.STRONG_GNASHING.get())) {
             for (var item : java.util.List.of(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION, Items.TIPPED_ARROW)) {
-                ItemStack stack = PotionContents.createItemStack(item, potion);
-                helper.assertTrue(stack.get(DataComponents.POTION_CONTENTS).getColor() == 0xFF354F2A,
+                ItemStack stack = PotionUtils.setPotion(new ItemStack(item), potion);
+                helper.assertTrue((PotionUtils.getColor(stack) & 0xFFFFFF) == 0x354F2A,
                         "gnashing form lost its green tint");
             }
         }
-        helper.assertTrue(WildscapesPotions.LONG_GNASHING.value().getEffects().getFirst().getDuration()
-                > WildscapesPotions.GNASHING.value().getEffects().getFirst().getDuration(), "long gnashing did not last longer");
-        helper.assertTrue(WildscapesPotions.STRONG_GNASHING.value().getEffects().getFirst().getAmplifier() == 1,
+        helper.assertTrue(WildscapesPotions.LONG_GNASHING.get().getEffects().get(0).getDuration()
+                > WildscapesPotions.GNASHING.get().getEffects().get(0).getDuration(), "long gnashing did not last longer");
+        helper.assertTrue(WildscapesPotions.STRONG_GNASHING.get().getEffects().get(0).getAmplifier() == 1,
                 "strong gnashing did not reach level two");
         helper.succeed();
     }
@@ -44,10 +43,9 @@ public final class GnashingTests {
                 "gameplay/cauldron_of_souls"}) {
             LootParams params = new LootParams.Builder(helper.getLevel())
                     .withParameter(LootContextParams.ORIGIN, Vec3.ZERO)
-                    .create(path.startsWith("gameplay/") ? LootContextParamSets.VAULT : LootContextParamSets.CHEST);
-            ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
-                    ResourceLocation.fromNamespaceAndPath("wildscapes", path));
-            LootTable table = helper.getLevel().getServer().reloadableRegistries().getLootTable(key);
+                    .create(LootContextParamSets.CHEST);
+            LootTable table = helper.getLevel().getServer().getLootData()
+                    .getLootTable(new ResourceLocation("wildscapes", path));
             int found = 0;
             int splashes = 0;
             int arrows = 0;
@@ -55,18 +53,14 @@ public final class GnashingTests {
             for (int i = 0; i < 128; i++) {
                 boolean hit = false;
                 for (ItemStack stack : table.getRandomItems(params)) {
-                    if (stack.is(WildscapesItems.INCENDIARY_BOTTLE)) {
+                    if (stack.is(WildscapesItems.INCENDIARY_BOTTLE.get())) {
                         helper.assertTrue(stack.getCount() >= 1 && stack.getCount() <= 4, "wrong incendiary bottle count");
                         bottles++;
                     }
-                    var contents = stack.get(DataComponents.POTION_CONTENTS);
-                    if (contents == null || contents.potion().isEmpty()) {
-                        continue;
-                    }
-                    var potion = contents.potion().get();
-                    if (!potion.is(WildscapesPotions.GNASHING.key())
-                            && !potion.is(WildscapesPotions.LONG_GNASHING.key())
-                            && !potion.is(WildscapesPotions.STRONG_GNASHING.key())) {
+                    var potion = PotionUtils.getPotion(stack);
+                    if (potion != WildscapesPotions.GNASHING.get()
+                            && potion != WildscapesPotions.LONG_GNASHING.get()
+                            && potion != WildscapesPotions.STRONG_GNASHING.get()) {
                         continue;
                     }
                     helper.assertTrue(stack.is(Items.SPLASH_POTION) || stack.is(Items.TIPPED_ARROW),

@@ -77,7 +77,7 @@ public class WitchCampTests {
         helper.assertTrue(abominations == 1, abominations + " abominations guarding the centre");
         helper.assertTrue(vindicators >= 2 && witches >= 2,
                 vindicators + " vindicators and " + witches + " witches, the centre alone needs 2 of each");
-        helper.assertTrue(level.getEntities(WildscapesEntities.ABOMINATION, AABB.of(start.getBoundingBox()),
+        helper.assertTrue(level.getEntities(WildscapesEntities.ABOMINATION.get(), AABB.of(start.getBoundingBox()),
                 e -> e.isPersistenceRequired()).size() == 1, "the abomination did not turn up, or will despawn");
         helper.assertTrue(!shafts.isEmpty(), "no dungeon entrance at all");
         helper.assertTrue(shafts.size() <= hideouts, shafts.size() + " shafts for " + hideouts + " trapdoors");
@@ -120,7 +120,7 @@ public class WitchCampTests {
     private static StructureStart generate(ServerLevel level, ChunkPos chunk) {
         var camp = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(
                 net.minecraft.resources.ResourceKey.create(Registries.STRUCTURE,
-                        ResourceLocation.fromNamespaceAndPath("wildscapes", "witch_camp")));
+                        new ResourceLocation("wildscapes", "witch_camp")));
         ChunkGenerator generator = level.getChunkSource().getGenerator();
         return camp.value().generate(level.registryAccess(), generator, generator.getBiomeSource(),
                 level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(),

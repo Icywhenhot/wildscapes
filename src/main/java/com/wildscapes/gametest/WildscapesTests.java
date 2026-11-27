@@ -160,6 +160,11 @@ public final class WildscapesTests {
         MushroomTests.mangroveKeepsVanillaGeneration(helper);
     }
 
+    @GameTest(template = "wildscapes:gametest/tree_platform", timeoutTicks = 100)
+    public void captains_drop_an_ominous_bottle(GameTestHelper helper) {
+        SoulHarvestTests.captainsDropAnOminousBottle(helper);
+    }
+
     @GameTest(template = "wildscapes:gametest/tree_platform", timeoutTicks = 4000)
     public void omen_starts_it_and_souls_finish_it(GameTestHelper helper) {
         SoulHarvestTests.omenStartsItAndSoulsFinishIt(helper);
