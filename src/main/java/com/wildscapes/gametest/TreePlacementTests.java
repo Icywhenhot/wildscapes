@@ -26,9 +26,10 @@ public class TreePlacementTests {
     private static final BlockPos GROUND = new BlockPos(12, 2, 12);
 
     public static void landTreeGrowsAsCypress(GameTestHelper helper) {
+        helper.setBlock(GROUND.below(), Blocks.GRASS_BLOCK);
         boolean placed = grow(helper, GROUND, "wildscapes:tree/land/tree1",
                 TemplateTreeConfiguration.Ground.LAND, -1);
-        helper.assertTrue(placed, "the land tree refused to place on dirt; at the spot: "
+        helper.assertTrue(placed, "the land tree refused to place on grass; at the spot: "
                 + helper.getBlockState(GROUND) + ", below it: " + helper.getBlockState(GROUND.below()));
 
         helper.succeedWhen(() -> {

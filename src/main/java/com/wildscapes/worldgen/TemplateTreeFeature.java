@@ -113,7 +113,7 @@ public record TemplateTreeFeature(TemplateTreeConfiguration config) implements F
         BlockPos corner = trunk.subtract(StructureTemplate.calculateRelativePosition(settings, anchor));
         if (!hasRoomFor(level, template, settings, corner, trunk)
                 || hitsBuiltBlocks(level, template, settings, corner)
-                || overhangs(level, template, settings, corner)) {
+                || overhangs(level, template, settings, corner, config.ground())) {
             return false;
         }
         if (!template.placeInWorld(level, corner, corner, settings, random, Block.UPDATE_CLIENTS)) {
@@ -143,7 +143,7 @@ public record TemplateTreeFeature(TemplateTreeConfiguration config) implements F
     }
 
     private static boolean overhangs(WorldGenLevel level, StructureTemplate template,
-            StructurePlaceSettings settings, BlockPos corner) {
+            StructurePlaceSettings settings, BlockPos corner, Ground ground) {
         List<StructureTemplate.StructureBlockInfo> blocks = settings.getRandomPalette(template.palettes, corner).blocks();
         int lowest = Integer.MAX_VALUE;
         for (StructureTemplate.StructureBlockInfo info : blocks) {
@@ -155,8 +155,14 @@ public record TemplateTreeFeature(TemplateTreeConfiguration config) implements F
             if (info.pos().getY() != lowest || !isTrunk(info.state())) {
                 continue;
             }
-            BlockPos below = StructureTemplate.calculateRelativePosition(settings, info.pos()).offset(corner).below();
-            BlockState support = level.getBlockState(below);
+            BlockPos pos = StructureTemplate.calculateRelativePosition(settings, info.pos()).offset(corner);
+            if (ground == Ground.LAND) {
+                BlockState at = level.getBlockState(pos);
+                if (!at.isAir() && !at.canBeReplaced() && at.getFluidState().isEmpty()) {
+                    continue;
+                }
+            }
+            BlockState support = level.getBlockState(pos.below());
             if (!support.is(Blocks.WATER) && (support.isAir() || support.canBeReplaced())) {
                 return true;
             }
@@ -176,7 +182,7 @@ public record TemplateTreeFeature(TemplateTreeConfiguration config) implements F
                 || state.is(BlockTags.REPLACEABLE_BY_TREES)
                 || state.is(BlockTags.LEAVES)
                 || state.is(BlockTags.LOGS)
-                || state.is(BlockTags.DIRT)
+                || state.is(WildscapesBlocks.SOIL)
                 || state.is(BlockTags.SAND)
                 || state.is(BlockTags.BASE_STONE_OVERWORLD)
                 || state.is(Blocks.CLAY)
