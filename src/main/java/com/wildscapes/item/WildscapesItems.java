@@ -1,5 +1,7 @@
 package com.wildscapes.item;
 
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.StandingAndWallBlockItem;
 import java.util.function.Function;
 
 import com.wildscapes.Wildscapes;
@@ -23,7 +25,6 @@ import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SignItem;
 import net.minecraft.world.item.SmithingTemplateItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -52,13 +53,13 @@ public final class WildscapesItems {
     public static final Item ILLUSIONER_SPAWN_EGG = register("illusioner_spawn_egg",
             properties -> new SpawnEggItem(properties.spawnEgg(EntityTypes.ILLUSIONER)));
 
-    public static final SignItem CYPRESS_SIGN = register("cypress_sign",
-            properties -> new SignItem(WildscapesBlocks.CYPRESS_SIGN, WildscapesBlocks.CYPRESS_WALL_SIGN,
-                    properties.stacksTo(16)));
+    public static final StandingAndWallBlockItem CYPRESS_SIGN = register("cypress_sign",
+            properties -> new StandingAndWallBlockItem(WildscapesBlocks.CYPRESS_SIGN, WildscapesBlocks.CYPRESS_WALL_SIGN,
+                    Direction.DOWN, properties.stacksTo(16).signText().useBlockDescriptionPrefix()));
 
     public static final HangingSignItem CYPRESS_HANGING_SIGN = register("cypress_hanging_sign",
             properties -> new HangingSignItem(WildscapesBlocks.CYPRESS_HANGING_SIGN,
-                    WildscapesBlocks.CYPRESS_WALL_HANGING_SIGN, properties.stacksTo(16)));
+                    WildscapesBlocks.CYPRESS_WALL_HANGING_SIGN, properties.stacksTo(16).signText()));
 
     public static final BoatItem CYPRESS_BOAT = register("cypress_boat",
             properties -> new BoatItem(CypressBoat.BOAT, properties.stacksTo(1)));

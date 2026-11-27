@@ -22,11 +22,11 @@ public final class VanillaTweaks {
     }
 
     private static void modifyComponents(DefaultItemComponentEvents.ModifyContext event) {
-        event.modify(Items.POTION, builder -> builder.set(DataComponents.MAX_STACK_SIZE, 8));
+        event.modify(Items.POTION, (builder, registries, item) -> builder.set(DataComponents.MAX_STACK_SIZE, 8));
 
         for (Item stew : STEWS) {
             Consumable food = stew.components().get(DataComponents.CONSUMABLE);
-            event.modify(stew, builder -> {
+            event.modify(stew, (builder, registries, item) -> {
                 builder.set(DataComponents.MAX_STACK_SIZE, 8);
                 if (food != null) {
                     builder.set(DataComponents.CONSUMABLE, new Consumable(FAST_EAT_SECONDS, food.animation(),

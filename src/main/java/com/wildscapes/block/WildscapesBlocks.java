@@ -1,5 +1,14 @@
 package com.wildscapes.block;
 
+import com.wildscapes.item.WildscapesItems;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
+import net.minecraft.world.item.component.CookingFuel;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
+import net.minecraft.world.item.component.Compostable;
+import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
+import net.fabricmc.fabric.api.item.v1.BlockTransformerHelper;
 import java.util.function.Function;
 import java.util.function.BiFunction;
 
@@ -9,8 +18,6 @@ import com.wildscapes.worldgen.WildscapesTreeGrowers;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityType;
 import net.fabricmc.fabric.api.object.builder.v1.block.type.BlockSetTypeBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.block.type.WoodTypeBuilder;
-import net.fabricmc.fabric.api.registry.CompostableRegistry;
-import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -81,9 +88,9 @@ public final class WildscapesBlocks {
                     .noOcclusion()
                     .isValidSpawn((state, level, pos, type) -> false)
                     .isSuffocating((state, level, pos) -> false)
-                    .isViewBlocking((state, level, pos) -> false)
+                    .isViewBlocking((state, level, pos, box) -> false)
                     .ignitedByLava()
-                    .pushReaction(PushReaction.DESTROY)
+                    .pushReaction(PushReaction.POPPED)
                     .isRedstoneConductor((state, level, pos) -> false)));
 
     public static final CypressSaplingBlock CYPRESS_SAPLING = register("cypress_sapling",
@@ -93,14 +100,14 @@ public final class WildscapesBlocks {
                     .randomTicks()
                     .instabreak()
                     .sound(SoundType.GRASS)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final DoorBlock CYPRESS_DOOR = register("cypress_door",
             properties -> new DoorBlock(BlockSetType.OAK, properties
                     .mapColor(MapColor.COLOR_BROWN)
                     .strength(3.0F)
                     .noOcclusion()
-                    .pushReaction(PushReaction.DESTROY)
+                    .pushReaction(PushReaction.POPPED)
                     .ignitedByLava()));
 
     public static final TrapDoorBlock CYPRESS_TRAPDOOR = register("cypress_trapdoor",
@@ -127,7 +134,7 @@ public final class WildscapesBlocks {
             properties -> new ButtonBlock(CYPRESS_SET, 30, properties
                     .noCollision()
                     .strength(0.5F)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final PressurePlateBlock CYPRESS_PRESSURE_PLATE = register("cypress_pressure_plate",
             properties -> new PressurePlateBlock(CYPRESS_SET, properties
@@ -137,7 +144,7 @@ public final class WildscapesBlocks {
                     .noCollision()
                     .strength(0.5F)
                     .ignitedByLava()
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final ShelfBlock CYPRESS_SHELF = register("cypress_shelf",
             properties -> new ShelfBlock(properties
@@ -165,7 +172,7 @@ public final class WildscapesBlocks {
                     .noCollision()
                     .instabreak()
                     .sound(SoundType.GRASS)
-                    .pushReaction(PushReaction.DESTROY)),
+                    .pushReaction(PushReaction.POPPED)),
 
             PlaceOnWaterBlockItem::new);
 
@@ -176,7 +183,7 @@ public final class WildscapesBlocks {
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final ShortRushesBlock SHORT_RUSHES = register("short_rushes",
             properties -> new ShortRushesBlock(properties
@@ -185,7 +192,7 @@ public final class WildscapesBlocks {
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .offsetType(BlockBehaviour.OffsetType.XZ)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final ShelfMushroomBlock SHELF_LUMINOUS_MUSHROOM = registerBlock("shelf_luminous_mushroom",
             properties -> new ShelfMushroomBlock(properties
@@ -194,7 +201,7 @@ public final class WildscapesBlocks {
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .lightLevel(state -> 7)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final LuminousMushroomBlock LUMINOUS_MUSHROOM = register("luminous_mushroom",
             properties -> new LuminousMushroomBlock(properties
@@ -203,7 +210,7 @@ public final class WildscapesBlocks {
                     .instabreak()
                     .sound(SoundType.GRASS)
                     .lightLevel(state -> 7)
-                    .pushReaction(PushReaction.DESTROY)),
+                    .pushReaction(PushReaction.POPPED)),
             (block, properties) -> new StandingAndWallBlockItem(block, SHELF_LUMINOUS_MUSHROOM, Direction.DOWN, properties));
 
     public static final DrapingMossCarpetBlock MOSS_CARPET = registerBlock("moss_carpet",
@@ -212,7 +219,7 @@ public final class WildscapesBlocks {
                     .strength(0.1F)
                     .randomTicks()
                     .sound(SoundType.MOSS_CARPET)
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final HangingMossBlock HANGING_MOSS = registerBlock("hanging_moss",
             properties -> new HangingMossBlock(properties
@@ -222,7 +229,7 @@ public final class WildscapesBlocks {
                     .randomTicks()
                     .sound(SoundType.MOSS_CARPET)
                     .noOcclusion()
-                    .pushReaction(PushReaction.DESTROY)));
+                    .pushReaction(PushReaction.POPPED)));
 
     public static final BonfireBlock BONFIRE = register("bonfire",
             properties -> new BonfireBlock(1.0F, properties
@@ -268,7 +275,7 @@ public final class WildscapesBlocks {
                     .instabreak()
                     .lightLevel(state -> 12)
                     .sound(SoundType.WOOL)
-                    .pushReaction(PushReaction.DESTROY)
+                    .pushReaction(PushReaction.POPPED)
                     .noLootTable()));
 
     public static final WildscapesCauldronBlock CAULDRON = registerBlock("cauldron",
@@ -327,15 +334,9 @@ public final class WildscapesBlocks {
 
     public static void register() {
         MudBrickBlocks.init();
-        CompostableRegistry compostables = CompostableRegistry.INSTANCE;
-        compostables.add(CYPRESS_LEAVES, 0.3F);
-        compostables.add(CYPRESS_SAPLING, 0.3F);
-        compostables.add(DUCKWEED, 0.3F);
-        compostables.add(SHORT_RUSHES, 0.3F);
-        compostables.add(RUSHES, 0.5F);
-        compostables.add(LUMINOUS_MUSHROOM, 0.65F);
-        StrippableBlockRegistry.register(CYPRESS_LOG, STRIPPED_CYPRESS_LOG);
-        StrippableBlockRegistry.register(CYPRESS_WOOD, STRIPPED_CYPRESS_WOOD);
+        DefaultItemComponentEvents.MODIFY.register(WildscapesBlocks::compostables);
+        BlockTransformerHelper.registerStripping(CYPRESS_LOG, STRIPPED_CYPRESS_LOG);
+        BlockTransformerHelper.registerStripping(CYPRESS_WOOD, STRIPPED_CYPRESS_WOOD);
         FabricBlockEntityType sign = (FabricBlockEntityType) BlockEntityTypes.SIGN;
         sign.addValidBlock(CYPRESS_SIGN);
         sign.addValidBlock(CYPRESS_WALL_SIGN);
@@ -343,5 +344,35 @@ public final class WildscapesBlocks {
         hangingSign.addValidBlock(CYPRESS_HANGING_SIGN);
         hangingSign.addValidBlock(CYPRESS_WALL_HANGING_SIGN);
         ((FabricBlockEntityType) BlockEntityTypes.SHELF).addValidBlock(CYPRESS_SHELF);
+    }
+
+    private static void compostables(DefaultItemComponentEvents.ModifyContext event) {
+        compost(event, ContextIntProviders.COMPOSTABLE_LOW, CYPRESS_LEAVES, CYPRESS_SAPLING, DUCKWEED, SHORT_RUSHES);
+        compost(event, ContextIntProviders.COMPOSTABLE_LOW_MEDIUM, RUSHES);
+        compost(event, ContextIntProviders.COMPOSTABLE_MEDIUM, LUMINOUS_MUSHROOM);
+        fuel(event, ContextIntProviders.COOKING_TIME_WOOD_BLOCKS, CYPRESS_PLANKS.asItem(), CYPRESS_LOG.asItem(),
+                STRIPPED_CYPRESS_LOG.asItem(), CYPRESS_WOOD.asItem(), STRIPPED_CYPRESS_WOOD.asItem(), CYPRESS_SHELF.asItem(),
+                CYPRESS_FENCE.asItem(), CYPRESS_STAIRS.asItem(), CYPRESS_PRESSURE_PLATE.asItem(), CYPRESS_TRAPDOOR.asItem(),
+                CYPRESS_FENCE_GATE.asItem());
+        fuel(event, ContextIntProviders.COOKING_TIME_WOOD_SLABS, CYPRESS_SLAB.asItem());
+        fuel(event, ContextIntProviders.COOKING_TIME_WOOD_ITEMS_EXTRA_SMALL, CYPRESS_BUTTON.asItem());
+        fuel(event, ContextIntProviders.COOKING_TIME_WOOD_ITEMS_LARGE, CYPRESS_DOOR.asItem(), WildscapesItems.CYPRESS_SIGN);
+        fuel(event, ContextIntProviders.COOKING_TIME_HANGING_SIGNS, WildscapesItems.CYPRESS_HANGING_SIGN);
+        fuel(event, ContextIntProviders.COOKING_TIME_BOATS, WildscapesItems.CYPRESS_BOAT, WildscapesItems.CYPRESS_CHEST_BOAT);
+        fuel(event, ContextIntProviders.COOKING_TIME_DRY_PLANTS, CYPRESS_SAPLING.asItem());
+    }
+
+    private static void fuel(DefaultItemComponentEvents.ModifyContext event, ResourceKey<ContextIntProvider> time,
+            Item... items) {
+        for (Item fuel : items) {
+            event.modify(fuel, (builder, registries, item) -> builder.set(DataComponents.COOKING_FUEL, new CookingFuel(time, ContextFloatProviders.COOKING_DEFAULT_SPEED_MULTIPLIER)));
+        }
+    }
+
+    private static void compost(DefaultItemComponentEvents.ModifyContext event,
+            ResourceKey<ContextIntProvider> chance, Block... blocks) {
+        for (Block block : blocks) {
+            event.modify(block.asItem(), (builder, registries, item) -> builder.set(DataComponents.COMPOSTABLE, new Compostable(chance)));
+        }
     }
 }
