@@ -1,0 +1,9 @@
+{
+  "type": "wildscapes:shelf_mushroom",
+  "to_place": {
+    "id": "wildscapes:shelf_luminous_mushroom",
+    "properties": {
+      "facing": "north"
+    }
+  }
+}

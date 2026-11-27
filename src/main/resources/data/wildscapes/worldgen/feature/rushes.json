@@ -1,0 +1,10 @@
+{
+  "type": "wildscapes:waterlogged_double_plant",
+  "to_place": {
+    "id": "wildscapes:rushes",
+    "properties": {
+      "half": "lower",
+      "waterlogged": "false"
+    }
+  }
+}

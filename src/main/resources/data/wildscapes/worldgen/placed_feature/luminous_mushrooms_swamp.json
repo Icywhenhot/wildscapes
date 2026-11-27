@@ -41,7 +41,7 @@
           {
             "type": "minecraft:would_survive",
             "state": {
-              "Name": "wildscapes:luminous_mushroom"
+              "id": "wildscapes:luminous_mushroom"
             }
           }
         ]

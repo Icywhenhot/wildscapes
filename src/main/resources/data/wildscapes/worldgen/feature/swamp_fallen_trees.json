@@ -1,0 +1,10 @@
+{
+  "type": "wildscapes:template_tree",
+  "templates": [
+    "wildscapes:tree/fallen/fallentree1",
+    "wildscapes:tree/fallen/fallentree2",
+    "wildscapes:tree/fallen/fallentree3"
+  ],
+  "ground": "water",
+  "y_offset": -4
+}
